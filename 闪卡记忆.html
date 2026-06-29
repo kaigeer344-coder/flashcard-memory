@@ -484,7 +484,8 @@
         .btn-dont-know { background: var(--danger); color: #ffffff; box-shadow: 0 5px 0 var(--danger-dark); }
         .btn-fuzzy { background: var(--accent); color: #6f4b00; box-shadow: 0 5px 0 #d6a900; }
         .btn-know { background: var(--primary); color: #ffffff; box-shadow: 0 5px 0 var(--primary-dark); }
-        .completion-screen { text-align: center; padding: 24px 20px 90px; display: flex; flex-direction: column; height: calc(100dvh - 82px); overflow: hidden; }
+        .completion-screen { text-align: center; padding: 24px 20px 90px; flex-direction: column; height: calc(100dvh - 82px); overflow: hidden; }
+        .completion-screen.active { display: flex; }
         .completion-screen h2 { color: var(--dark); font-size: 26px; font-weight: 1000; margin-bottom: 8px; }
         .completion-screen > p { color: var(--muted); font-size: 15px; line-height: 1.55; margin-bottom: 16px; }
         .completion-stats {
