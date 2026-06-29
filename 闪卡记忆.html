@@ -33,8 +33,7 @@
             min-height: 100dvh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            padding: 22px 14px;
+            align-items: stretch;
             background:
                 linear-gradient(#eef8ea 1px, transparent 1px),
                 linear-gradient(90deg, #eef8ea 1px, transparent 1px),
@@ -46,12 +45,12 @@
         }
         .game-container {
             width: 100%;
-            max-width: 520px;
-            min-height: calc(100dvh - 44px);
-            border-radius: 28px;
-            border: 2px solid var(--border);
+            max-width: 100%;
+            min-height: 100dvh;
+            border-radius: 0;
+            border: none;
             background: var(--surface);
-            box-shadow: 0 8px 0 #d9d9d9, 0 18px 38px rgba(60, 60, 60, 0.08);
+            box-shadow: none;
             overflow: hidden;
             position: relative;
             display: flex;
