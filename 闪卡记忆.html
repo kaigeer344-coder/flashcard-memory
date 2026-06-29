@@ -12435,6 +12435,8 @@
             completedToday: new Set(),
             currentWords: [],
             learningIndex: 0,
+            currentGroupWords: [],
+            groupWordIndex: 0,
             todayTaskTotal: 0,
             todayTaskStarted: false,
             roundResults: [],
@@ -12470,10 +12472,10 @@
         // Progression System
         const LEVELS = [
             { level: 1, title: '新手上路', score: 0 },
-            { level: 2, title: '初窥门径', score: 500 },
-            { level: 3, title: '渐入佳境', score: 1500 },
-            { level: 4, title: '词汇达人', score: 3500 },
-            { level: 5, title: '单词大师', score: 7000 }
+            { level: 2, title: '初窥门径', score: 2000 },
+            { level: 3, title: '渐入佳境', score: 6000 },
+            { level: 4, title: '词汇达人', score: 15000 },
+            { level: 5, title: '单词大师', score: 30000 }
         ];
         const PROGRESS_KEY = 'wordmatch_progress';
         const STUDY_DAYS_KEY = 'wordmatch_study_days';
@@ -13648,12 +13650,21 @@
             if (audioCtx) playSilentBuffer(audioCtx);
             SFX.taskStart();
             state.currentWords = [];
+            state.currentGroupWords = [];
+            state.groupWordIndex = 0;
             state.todayQueue = [];
             state.sessionReviewQueue = [];
             state.completedToday.clear();
             state.roundResults = [];
             state.gameRounds = [];
             state.gameRoundIndex = 0;
+            state.totalGameScore = 0;
+            state.totalGameMaxCombo = 0;
+            state.totalGameAttempts = 0;
+            state.totalGameCorrectAttempts = 0;
+            state.totalGameMatchedPairs = 0;
+            state.totalGameCoinsEarned = 0;
+            state.totalGameGemsEarned = 0;
             state.todayTaskStarted = true;
             state.learningIndex = 0;
             buildTodayQueue(state.level);
@@ -13670,16 +13681,50 @@
                 state.sessionReviewQueue = [];
                 state.gameRounds = [];
                 state.gameRoundIndex = 0;
+                state.currentGroupWords = [];
+                state.groupWordIndex = 0;
                 buildTodayQueue(state.level);
             }
             updateTodayProgressHeader();
-            const nextWord = getNextDueWord();
-            if (!nextWord) {
-                // 没有可学/复习的词，直接进入配对游戏
-                startReviewGame();
+
+            // 取当前组最多 wordsPerRound（默认 10）个单词
+            const now = Date.now();
+            const group = [];
+            const usedIds = new Set();
+
+            // 优先取本轮需要反复复习的 fuzzy/unknown 词
+            for (const word of state.sessionReviewQueue) {
+                if (group.length >= state.wordsPerRound) break;
+                if (state.completedToday.has(word.wordId) || usedIds.has(word.wordId)) continue;
+                group.push(word);
+                usedIds.add(word.wordId);
+            }
+
+            // 再取今日队列里正常到期的词
+            const due = state.todayQueue.filter(w => !state.completedToday.has(w.wordId) && w.nextReviewAt <= now && !usedIds.has(w.wordId));
+            due.sort((a, b) => a.nextReviewAt - b.nextReviewAt);
+            for (const word of due) {
+                if (group.length >= state.wordsPerRound) break;
+                group.push(word);
+                usedIds.add(word.wordId);
+            }
+
+            // 已加入当前组的词从 sessionReviewQueue 中移除，避免重复
+            state.sessionReviewQueue = state.sessionReviewQueue.filter(w => !usedIds.has(w.wordId));
+
+            if (group.length === 0) {
+                // 没有可学/复习的词
+                if (state.roundResults.length > 0) {
+                    startReviewGame();
+                } else {
+                    showCompletionSummary(null);
+                }
                 return;
             }
-            state.currentWords = [nextWord];
+
+            state.currentGroupWords = group;
+            state.groupWordIndex = 0;
+            state.currentWords = [group[0]];
             state.learningIndex = 0;
             renderLearningProgress();
             renderQueueInfo();
@@ -13853,15 +13898,17 @@
             renderLearningProgress();
             renderQueueInfo();
 
-            const nextWord = getNextDueWord();
-            if (!nextWord) {
-                // 学习完成后自动进入配对游戏
-                startReviewGame();
+            // 当前组下一个单词
+            state.groupWordIndex++;
+            if (state.groupWordIndex < state.currentGroupWords.length) {
+                state.currentWords = [state.currentGroupWords[state.groupWordIndex]];
+                state.learningIndex = 0;
+                showLearningCard();
                 return;
             }
-            state.currentWords = [nextWord];
-            state.learningIndex = 0;
-            showLearningCard();
+
+            // 当前组学完，进入配对游戏；游戏结束后若有剩余单词会自动进入下一组
+            startReviewGame();
         }
 
         // ================== 单词配对游戏 ==================
@@ -13869,25 +13916,22 @@
 
         function startReviewGame() {
             if (!audioUnlocked) unlockAudio();
-            const results = state.roundResults || [];
+            // 只取当前组（currentGroupWords）对应的 roundResults，避免重复游戏之前组的结果
+            const groupIds = new Set((state.currentGroupWords || []).map(w => w.wordId));
+            const results = (state.roundResults || []).filter(r => groupIds.has(r.wordId));
             if (results.length === 0) {
                 // 没有本轮学过的词，直接显示完成页
                 showCompletionSummary(null);
                 return;
             }
-            // 将今日学过的词按 wordsPerRound（默认 10）切成多轮连连看
+            // 将当前组学过的词按 wordsPerRound（默认 10）切成多轮连连看
             state.gameRounds = [];
             for (let i = 0; i < results.length; i += state.wordsPerRound) {
                 state.gameRounds.push(results.slice(i, i + state.wordsPerRound));
             }
             state.gameRoundIndex = 0;
-            state.totalGameScore = 0;
-            state.totalGameMaxCombo = 0;
-            state.totalGameAttempts = 0;
-            state.totalGameCorrectAttempts = 0;
-            state.totalGameMatchedPairs = 0;
-            state.totalGameCoinsEarned = 0;
-            state.totalGameGemsEarned = 0;
+            // 多组学习时 totalGame 累计值在 startTodayTask 中重置，
+            // 并在完成页最终展示后清空，这里不再重置以免覆盖前面几组的成绩。
             startGameRound(0);
         }
 
@@ -14363,7 +14407,16 @@
                 return;
             }
 
-            // 最后一轮结束，更新进度并显示完成页
+            // 最后一轮结束，检查是否还有剩余单词需要继续下一组
+            const now = Date.now();
+            const remaining = state.todayQueue.filter(w => !state.completedToday.has(w.wordId) && w.nextReviewAt <= now);
+            if (remaining.length > 0) {
+                shopToast('下一组学习');
+                setTimeout(() => startLearning(), 1200);
+                return;
+            }
+
+            // 全部组完成，更新进度并显示完成页
             const totalAccuracy = state.totalGameAttempts > 0
                 ? Math.round((state.totalGameCorrectAttempts / state.totalGameAttempts) * 100)
                 : 0;
@@ -14452,6 +14505,15 @@
             updateTodayProgressHeader();
             updateEstimate();
             showScreen('completionScreen');
+
+            // 完成页展示后清空累计数据，为下一轮学习做准备
+            state.totalGameScore = 0;
+            state.totalGameMaxCombo = 0;
+            state.totalGameAttempts = 0;
+            state.totalGameCorrectAttempts = 0;
+            state.totalGameMatchedPairs = 0;
+            state.totalGameCoinsEarned = 0;
+            state.totalGameGemsEarned = 0;
         }
 
         function renderStatsScreen() {
