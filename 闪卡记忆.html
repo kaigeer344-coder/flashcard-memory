@@ -13458,6 +13458,7 @@
         }
 
         function selectLevel(el) {
+            SFX.select();
             document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
             state.level = el.dataset.level;
@@ -13972,6 +13973,7 @@
             hideComboPopup();
             renderGameBoard();
             updateGameHUD();
+            SFX.roundStart();
             showScreen('gameScreen');
             startGameTimer();
         }
