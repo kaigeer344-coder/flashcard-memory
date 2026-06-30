@@ -944,45 +944,6 @@
             font-weight: 1000;
             box-shadow: 0 2px 0 rgba(0,0,0,0.1);
         }
-        /* 会员入口卡片 */
-        .profile-vip-card {
-            display: flex; align-items: center; gap: 14px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            border-radius: 18px;
-            padding: 14px 18px;
-            margin-bottom: 18px;
-            cursor: pointer;
-            box-shadow: 0 6px 16px rgba(255, 165, 0, 0.35);
-            transition: transform 140ms ease;
-        }
-        .profile-vip-card:active { transform: scale(0.98); }
-        .profile-vip-card.activated {
-            background: linear-gradient(135deg, #5D4037 0%, #3E2723 100%);
-            box-shadow: 0 6px 16px rgba(62, 39, 35, 0.35);
-        }
-        .profile-vip-icon {
-            font-size: 30px;
-            flex-shrink: 0;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-        }
-        .profile-vip-text { flex: 1; }
-        .profile-vip-title {
-            font-size: 16px;
-            font-weight: 1000;
-            color: #fff;
-            margin-bottom: 2px;
-        }
-        .profile-vip-sub {
-            font-size: 12px;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.92);
-        }
-        .profile-vip-arrow {
-            font-size: 22px;
-            font-weight: 1000;
-            color: rgba(255, 255, 255, 0.85);
-            flex-shrink: 0;
-        }
         .xp-progress-section {
             background: var(--surface);
             border: 2px solid var(--border);
@@ -1539,206 +1500,6 @@
             color: var(--muted);
             margin-top: 10px;
         }
-
-        /* ===== 测验（选择题）UI ===== */
-        .quiz-stage {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            overflow-y: auto;
-            padding: 4px 2px;
-        }
-        .quiz-prompt-wrap {
-            text-align: center;
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 20px;
-            padding: 22px 18px 18px;
-            box-shadow: var(--shadow-neutral);
-            position: relative;
-        }
-        .quiz-pronounce-btn {
-            position: absolute;
-            top: 12px; right: 12px;
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            border: 0;
-            background: var(--primary-soft);
-            color: var(--primary-dark);
-            font-size: 18px;
-            cursor: pointer;
-            display: grid; place-items: center;
-            transition: transform 140ms ease;
-        }
-        .quiz-pronounce-btn:active { transform: scale(0.9); }
-        .quiz-word {
-            font-size: 34px;
-            font-weight: 1000;
-            color: var(--dark);
-            line-height: 1.15;
-            margin-bottom: 4px;
-            word-break: break-word;
-        }
-        .quiz-phonetic {
-            font-size: 15px;
-            color: var(--muted);
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        .quiz-instruction {
-            font-size: 13px;
-            font-weight: 800;
-            color: var(--muted);
-        }
-        .quiz-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .quiz-option {
-            width: 100%;
-            min-height: 54px;
-            border-radius: 16px;
-            border: 2px solid var(--border);
-            background: var(--surface);
-            box-shadow: 0 4px 0 #e5e5e5;
-            padding: 12px 16px;
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--dark);
-            text-align: left;
-            cursor: pointer;
-            transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
-            line-height: 1.4;
-            word-break: break-word;
-        }
-        .quiz-option:active:not(.disabled) {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #e5e5e5;
-        }
-        .quiz-option.disabled {
-            pointer-events: none;
-        }
-        .quiz-option.correct {
-            border-color: var(--primary);
-            background: #eefbe2;
-            box-shadow: 0 4px 0 var(--primary-dark);
-            color: var(--primary-dark);
-        }
-        .quiz-option.wrong {
-            border-color: var(--danger);
-            background: #ffeaea;
-            box-shadow: 0 4px 0 #c93636;
-            color: var(--danger);
-            animation: cardShake 420ms ease-in-out;
-        }
-        .quiz-option.faded { opacity: 0.45; }
-        .quiz-feedback {
-            border-radius: 16px;
-            padding: 14px 16px;
-            font-size: 14px;
-            font-weight: 800;
-            text-align: center;
-            line-height: 1.5;
-        }
-        .quiz-feedback.correct {
-            background: #eefbe2;
-            color: var(--primary-dark);
-            border: 2px solid var(--primary);
-        }
-        .quiz-feedback.wrong {
-            background: #ffeaea;
-            color: var(--danger);
-            border: 2px solid var(--danger);
-        }
-        .quiz-next-btn {
-            min-height: 52px;
-            border-radius: 16px;
-            font-size: 17px;
-            font-weight: 1000;
-        }
-        @media (max-width: 480px) {
-            .quiz-word { font-size: 28px; }
-            .quiz-option { min-height: 50px; font-size: 14px; padding: 10px 14px; }
-            .quiz-stage { gap: 12px; }
-        }
-
-        /* ===== 学习报告（结束页） ===== */
-        .report-summary {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-        .report-stat-card {
-            flex: 1;
-            min-width: 70px;
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            padding: 12px 8px;
-            text-align: center;
-            box-shadow: 0 3px 0 #e5e5e5;
-        }
-        .report-stat-card .value {
-            font-size: 24px;
-            font-weight: 1000;
-            line-height: 1.1;
-        }
-        .report-stat-card .label {
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--muted);
-            margin-top: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .report-stat-card.mastered .value { color: var(--primary); }
-        .report-stat-card.learning .value { color: var(--secondary); }
-        .report-stat-card.review .value { color: var(--accent); }
-        .report-stat-card.total .value { color: var(--dark); }
-        .report-section-title {
-            font-size: 14px;
-            font-weight: 1000;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 10px;
-        }
-        .rating-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 12px 14px;
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 14px;
-            margin-bottom: 8px;
-            box-shadow: 0 2px 0 #e5e5e5;
-        }
-        .rating-row .word-text {
-            flex: 1;
-            min-width: 0;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--dark);
-            word-break: break-word;
-        }
-        .rating-row .word-text strong { color: var(--primary-dark); font-size: 15px; }
-        .rating-badge {
-            flex-shrink: 0;
-            font-size: 11px;
-            font-weight: 1000;
-            padding: 4px 10px;
-            border-radius: 999px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .rating-badge.known, .rating-badge.quizCorrect { background: #eefbe2; color: var(--primary-dark); }
-        .rating-badge.fuzzy { background: #fff5d6; color: #b07c00; }
-        .rating-badge.unknown, .rating-badge.quizWrong { background: #ffeaea; color: var(--danger); }
         @media (max-width: 480px) {
             .game-screen { padding: 14px 12px 18px; height: calc(100dvh - 74px); }
             .completion-screen { padding: 18px 14px 90px; height: calc(100dvh - 74px); }
@@ -2044,254 +1805,6 @@
         }
         .shop-toast.show { opacity: 1; }
 
-        /* ===== 支付页 ===== */
-        .pay-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            align-items: center; justify-content: center;
-            z-index: 3800;
-            padding: 16px;
-            backdrop-filter: blur(4px);
-            overflow-y: auto;
-        }
-        .pay-overlay.show { display: flex; }
-        .pay-card {
-            width: 100%; max-width: 380px;
-            background: var(--surface);
-            border-radius: 22px;
-            padding: 20px 18px 18px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-            margin: auto;
-            animation: payCardIn 220ms ease;
-        }
-        @keyframes payCardIn {
-            from { opacity: 0; transform: translateY(12px) scale(0.98); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .pay-header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 14px;
-        }
-        .pay-title { font-size: 19px; font-weight: 1000; color: var(--dark); }
-        .pay-close {
-            width: 32px; height: 32px; border-radius: 50%;
-            border: 0; background: var(--light);
-            font-size: 16px; font-weight: 1000; cursor: pointer;
-            color: var(--muted);
-            display: grid; place-items: center;
-        }
-        .pay-close:active { transform: scale(0.92); }
-        .pay-order {
-            background: linear-gradient(135deg, #FFF9E6 0%, #FFF3D6 100%);
-            border: 1.5px solid #FFE082;
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 16px;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .pay-order-name { font-size: 15px; font-weight: 1000; color: var(--dark); }
-        .pay-order-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-        .pay-order-price { font-size: 24px; font-weight: 1000; color: #E53935; }
-        .pay-order-price small { font-size: 13px; font-weight: 800; }
-        .pay-section-label {
-            font-size: 12px; font-weight: 1000; color: var(--muted);
-            margin-bottom: 8px;
-        }
-        .pay-methods { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
-        .pay-method {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px 14px;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            background: var(--surface);
-            cursor: pointer;
-            transition: border-color 140ms ease, background 140ms ease;
-        }
-        .pay-method.selected {
-            border-color: var(--primary);
-            background: #F5FBF0;
-        }
-        .pay-method-icon { font-size: 22px; }
-        .pay-method-name {
-            flex: 1; font-size: 14px; font-weight: 800; color: var(--dark);
-        }
-        .pay-method-radio {
-            width: 18px; height: 18px; border-radius: 50%;
-            border: 2px solid var(--border);
-            display: grid; place-items: center;
-            flex-shrink: 0;
-        }
-        .pay-method.selected .pay-method-radio {
-            border-color: var(--primary);
-            background: var(--primary);
-        }
-        .pay-method-radio::after {
-            content: ''; width: 8px; height: 8px;
-            border-radius: 50%; background: #fff;
-            transform: scale(0);
-            transition: transform 140ms ease;
-        }
-        .pay-method.selected .pay-method-radio::after { transform: scale(1); }
-        .pay-confirm-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #4CAF50 0%, #43A047 100%);
-            color: #fff; font-size: 16px; font-weight: 1000;
-            border: 0; border-radius: 14px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #357A38;
-            transition: transform 120ms ease, box-shadow 120ms ease;
-        }
-        .pay-confirm-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #357A38; }
-        .pay-confirm-btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: 0 4px 0 #357A38; }
-        .pay-tip {
-            text-align: center; font-size: 11px; color: var(--muted);
-            margin-top: 10px;
-        }
-        /* Loading 状态 */
-        .pay-loading {
-            display: none;
-            flex-direction: column; align-items: center;
-            padding: 30px 0 20px;
-        }
-        .pay-loading.show { display: flex; }
-        .pay-spinner {
-            width: 44px; height: 44px;
-            border: 4px solid var(--light);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: paySpin 0.8s linear infinite;
-        }
-        @keyframes paySpin { to { transform: rotate(360deg); } }
-        .pay-loading-text { margin-top: 14px; font-size: 14px; font-weight: 800; color: var(--muted); }
-        /* 成功状态 */
-        .pay-success {
-            display: none;
-            flex-direction: column; align-items: center;
-            padding: 24px 0 16px;
-        }
-        .pay-success.show { display: flex; }
-        .pay-success-icon {
-            width: 64px; height: 64px;
-            border-radius: 50%;
-            background: #4CAF50;
-            color: #fff; font-size: 36px;
-            display: grid; place-items: center;
-            animation: paySuccessPop 360ms cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        @keyframes paySuccessPop {
-            0%   { transform: scale(0); opacity: 0; }
-            60%  { transform: scale(1.15); opacity: 1; }
-            100% { transform: scale(1); }
-        }
-        .pay-success-text {
-            margin-top: 14px;
-            font-size: 17px; font-weight: 1000; color: var(--dark);
-        }
-        .pay-success-sub { margin-top: 4px; font-size: 12px; color: var(--muted); }
-        .pay-success-btn {
-            margin-top: 18px;
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #fff; font-size: 15px; font-weight: 1000;
-            border: 0; border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #B8860B;
-        }
-        .pay-success-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #B8860B; }
-        /* ===== 支付页 END ===== */
-
-        /* ===== 词库 VIP 徽标 ===== */
-        .level-btn.vip-locked {
-            position: relative;
-            overflow: hidden;
-        }
-        .level-btn.vip-locked:not(.unlocked) {
-            opacity: 0.92;
-        }
-        .level-btn.vip-locked.unlocked {
-            opacity: 1;
-        }
-        .level-btn.vip-locked.unlocked .vip-badge {
-            background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%);
-        }
-        .level-btn.vip-locked.unlocked .vip-badge::before {
-            content: '✓ ';
-        }
-        .vip-badge {
-            position: absolute;
-            top: 6px; right: 6px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #fff;
-            font-size: 9px;
-            font-weight: 1000;
-            padding: 2px 6px;
-            border-radius: 999px;
-            letter-spacing: 0.3px;
-            box-shadow: 0 2px 4px rgba(255, 165, 0, 0.4);
-            z-index: 2;
-            pointer-events: none;
-        }
-        /* ===== 词库 VIP 徽标 END ===== */
-
-        /* ===== VIP 解锁提示弹窗 ===== */
-        .vip-lock-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            align-items: center; justify-content: center;
-            z-index: 3900;
-            padding: 16px;
-            backdrop-filter: blur(4px);
-        }
-        .vip-lock-overlay.show { display: flex; }
-        .vip-lock-card {
-            width: 100%; max-width: 320px;
-            background: var(--surface);
-            border-radius: 22px;
-            padding: 26px 20px 18px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-            animation: payCardIn 220ms ease;
-        }
-        .vip-lock-icon {
-            font-size: 44px;
-            margin-bottom: 8px;
-        }
-        .vip-lock-title {
-            font-size: 17px; font-weight: 1000; color: var(--dark);
-            margin-bottom: 4px;
-        }
-        .vip-lock-name {
-            font-size: 15px; font-weight: 800; color: #E53935;
-            margin-bottom: 10px;
-        }
-        .vip-lock-desc {
-            font-size: 13px; color: var(--muted); line-height: 1.5;
-            margin-bottom: 18px;
-        }
-        .vip-lock-btn {
-            width: 100%;
-            padding: 13px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #fff; font-size: 15px; font-weight: 1000;
-            border: 0; border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #B8860B;
-            margin-bottom: 8px;
-        }
-        .vip-lock-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #B8860B; }
-        .vip-lock-cancel {
-            width: 100%;
-            padding: 10px;
-            background: none; border: 0;
-            color: var(--muted); font-size: 13px; font-weight: 700;
-            cursor: pointer;
-        }
-        /* ===== VIP 解锁提示弹窗 END ===== */
-
         /* ===== 游戏内道具栏 ===== */
         .game-items-bar {
             display: flex; gap: 8px;
@@ -2344,14 +1857,12 @@
                     <div class="level-name">六级词汇</div>
                     <div class="level-desc">进阶提升</div>
                 </div>
-                <div class="level-btn vip-locked" data-level="toefl" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
-                    <div class="vip-badge">👑 VIP</div>
+                <div class="level-btn" data-level="toefl" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
                     <div class="level-icon"><img src="assets/icon-toefl.png" alt=""></div>
                     <div class="level-name">托福词汇</div>
                     <div class="level-desc">留学必备</div>
                 </div>
-                <div class="level-btn vip-locked" data-level="gre" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
-                    <div class="vip-badge">👑 VIP</div>
+                <div class="level-btn" data-level="gre" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
                     <div class="level-icon"><img src="assets/icon-gre.png" alt=""></div>
                     <div class="level-name">GRE词汇</div>
                     <div class="level-desc">挑战高难</div>
@@ -2402,36 +1913,38 @@
 
         <div class="screen game-screen" id="gameScreen">
             <div class="game-hud">
-                <div class="game-round-info" id="gameRoundInfo">抽查测验</div>
+                <div class="game-round-info" id="gameRoundInfo"></div>
                 <div class="game-hud-row">
+                    <div class="game-hud-item game-timer">
+                        <span class="hud-label">时间</span>
+                        <span class="hud-value" id="gameTimer">60</span>
+                    </div>
                     <div class="game-hud-item game-score">
                         <span class="hud-label">得分</span>
                         <span class="hud-value" id="gameScore">0</span>
                     </div>
                     <div class="game-hud-item game-combo">
-                        <span class="hud-label">连对</span>
+                        <span class="hud-label">连击</span>
                         <span class="hud-value" id="gameCombo">0</span>
-                    </div>
-                    <div class="game-hud-item game-timer">
-                        <span class="hud-label">已掌握</span>
-                        <span class="hud-value" id="gameTimer">0</span>
                     </div>
                 </div>
                 <div class="timer-bar-track">
-                    <div class="timer-bar-fill" id="timerBar" style="width:100%"></div>
+                    <div class="timer-bar-fill" id="timerBar"></div>
                 </div>
             </div>
-            <div class="quiz-stage" id="quizStage">
-                <div class="quiz-prompt-wrap">
-                    <button class="quiz-pronounce-btn" id="quizPronounceBtn" onclick="pronounceQuizWord()" title="听发音">🔊</button>
-                    <div class="quiz-word" id="quizWord"></div>
-                    <div class="quiz-phonetic" id="quizPhonetic"></div>
-                    <div class="quiz-instruction">这个词是什么意思？</div>
-                </div>
-                <div class="quiz-options" id="quizOptions"></div>
-                <div class="quiz-feedback" id="quizFeedback" style="display:none;"></div>
-                <button class="btn-primary quiz-next-btn" id="quizNextBtn" style="display:none;" onclick="proceedAfterQuiz()">继续</button>
+            <div class="game-items-bar" id="gameItemsBar">
+                <button class="game-item-btn" id="useHintBtn" onclick="useHint()" title="提示一对配对">
+                    💡 <span class="game-item-count" id="hintCount">0</span>
+                </button>
+                <button class="game-item-btn" id="useTimeBonusBtn" onclick="useTimeBonus()" title="增加10秒">
+                    ⏱️ <span class="game-item-count" id="timeBonusCount">0</span>
+                </button>
+                <button class="game-item-btn" id="useShuffleBtn" onclick="useShuffle()" title="重新洗牌">
+                    🔄 <span class="game-item-count" id="shuffleCount">0</span>
+                </button>
             </div>
+            <div class="game-board" id="gameBoard"></div>
+            <div class="game-hint">点击卡片，将英文和中文配对</div>
             <div class="combo-popup" id="comboPopup"></div>
         </div>
 
@@ -2440,9 +1953,7 @@
                 <div class="game-result-score" id="gameResultScore">0</div>
                 <div class="game-result-stars" id="gameResultStars"></div>
             </div>
-            <div class="report-summary" id="reportSummary"></div>
             <div class="completion-summary">
-                <div class="report-section-title">本组单词</div>
                 <div id="completionList"></div>
             </div>
             <div class="completion-btns">
@@ -2511,15 +2022,6 @@
                     <div class="profile-level" id="profileLevelTitle">新手上路</div>
                     <div class="profile-level-badge" id="profileLevelBadge">Lv.1</div>
                 </div>
-            </div>
-            <!-- 会员入口卡片 -->
-            <div class="profile-vip-card" id="profileVipCard" onclick="switchTab('vip')">
-                <div class="profile-vip-icon">👑</div>
-                <div class="profile-vip-text">
-                    <div class="profile-vip-title" id="profileVipTitle">开通会员</div>
-                    <div class="profile-vip-sub" id="profileVipSub">解锁全部词库 · 享无限道具</div>
-                </div>
-                <div class="profile-vip-arrow">›</div>
             </div>
             <div class="xp-progress-section">
                 <div class="xp-progress-header">
@@ -2731,65 +2233,6 @@
 
     <!-- 商店提示 -->
     <div class="shop-toast" id="shopToast"></div>
-
-    <!-- 支付页弹窗 -->
-    <div class="pay-overlay" id="payOverlay">
-        <div class="pay-card">
-            <!-- 订单表单 -->
-            <div id="payFormWrap">
-                <div class="pay-header">
-                    <div class="pay-title">确认订单</div>
-                    <button class="pay-close" onclick="closePay()">✕</button>
-                </div>
-                <div class="pay-order">
-                    <div>
-                        <div class="pay-order-name" id="payOrderName">月卡</div>
-                        <div class="pay-order-sub" id="payOrderSub">有效期 30 天</div>
-                    </div>
-                    <div class="pay-order-price"><small>¥</small><span id="payOrderPrice">9.9</span></div>
-                </div>
-                <div class="pay-section-label">选择支付方式</div>
-                <div class="pay-methods">
-                    <div class="pay-method selected" data-method="wechat" onclick="selectPayMethod('wechat')">
-                        <div class="pay-method-icon">💬</div>
-                        <div class="pay-method-name">微信支付</div>
-                        <div class="pay-method-radio"></div>
-                    </div>
-                    <div class="pay-method" data-method="alipay" onclick="selectPayMethod('alipay')">
-                        <div class="pay-method-icon">💰</div>
-                        <div class="pay-method-name">支付宝</div>
-                        <div class="pay-method-radio"></div>
-                    </div>
-                </div>
-                <button class="pay-confirm-btn" id="payConfirmBtn" onclick="confirmPay()">确认支付 ¥<span id="payBtnPrice">9.9</span></button>
-                <div class="pay-tip">Demo 环境模拟支付，不会产生真实交易</div>
-            </div>
-            <!-- Loading 状态 -->
-            <div class="pay-loading" id="payLoading">
-                <div class="pay-spinner"></div>
-                <div class="pay-loading-text" id="payLoadingText">支付处理中…</div>
-            </div>
-            <!-- 成功状态 -->
-            <div class="pay-success" id="paySuccess">
-                <div class="pay-success-icon">✓</div>
-                <div class="pay-success-text">支付成功</div>
-                <div class="pay-success-sub" id="paySuccessSub">会员已开通</div>
-                <button class="pay-success-btn" onclick="closePayAndRefresh()">完成</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- VIP 解锁提示弹窗 -->
-    <div class="vip-lock-overlay" id="vipLockOverlay">
-        <div class="vip-lock-card">
-            <div class="vip-lock-icon">🔒</div>
-            <div class="vip-lock-title">会员专享词库</div>
-            <div class="vip-lock-name" id="vipLockName">托福词汇</div>
-            <div class="vip-lock-desc">开通会员即可解锁托福 / GRE 等全部高级词库，并享每日 50 词上限、专属道具等权益</div>
-            <button class="vip-lock-btn" onclick="goVipFromLock()">开通会员 ¥9.9/月起</button>
-            <button class="vip-lock-cancel" onclick="closeVipLock()">稍后再说</button>
-        </div>
-    </div>
 
     <script>
         const wordDB = {
@@ -13247,67 +12690,6 @@
                 return normalized;
             },
 
-            rate(word, outcome) {
-                const wordKey = word.wordId || this.getWordId(state.level, word, word.sourceIndex || 0);
-                const mem = word.memoryData || this.getMemoryForWord(state.level, word, word.sourceIndex || 0);
-                const now = Date.now();
-                const MINUTE = 60 * 1000;
-                const DAY = 24 * 60 * 60 * 1000;
-                const updated = { ...mem };
-
-                updated.reviewCount = (mem.reviewCount || 0) + 1;
-                updated.lastReview = now;
-                updated.firstLearnedAt = mem.firstLearnedAt || now;
-                updated.selfRating = outcome;
-
-                if (outcome === 'known') {
-                    updated.consecutiveCorrect = (mem.consecutiveCorrect || 0) + 1;
-                    updated.correctCount = (mem.correctCount || 0) + 1;
-                    updated.wrongCount = 0;
-                    updated.fuzzyCount = 0;
-                    updated.lapseCount = 0;
-                    updated.familiarity = Math.min(5, (mem.familiarity || 0) + 2);
-                    const dayIntervals = [1, 3, 7, 14, 30, 60, 90];
-                    const idx = Math.min(updated.consecutiveCorrect - 1, dayIntervals.length - 1);
-                    updated.nextReview = now + dayIntervals[idx] * DAY;
-                    updated.status = 'mastered';
-                } else if (outcome === 'fuzzy') {
-                    updated.consecutiveCorrect = 0;
-                    updated.fuzzyCount = (mem.fuzzyCount || 0) + 1;
-                    updated.familiarity = Math.min(5, (mem.familiarity || 0) + 1);
-                    const fuzzyDelays = [3, 5, 10, 15];
-                    const idx = Math.min(updated.fuzzyCount - 1, fuzzyDelays.length - 1);
-                    updated.nextReview = now + fuzzyDelays[idx] * MINUTE;
-                    updated.status = 'learning';
-                } else if (outcome === 'unknown') {
-                    updated.consecutiveCorrect = 0;
-                    updated.wrongCount = (mem.wrongCount || 0) + 1;
-                    updated.lapseCount = (mem.lapseCount || 0) + 1;
-                    updated.fuzzyCount = 0;
-                    updated.familiarity = Math.max(0, (mem.familiarity || 0) - 1);
-                    const wrongDelays = [1, 5, 10, 15];
-                    const idx = Math.min(updated.wrongCount - 1, wrongDelays.length - 1);
-                    updated.nextReview = now + wrongDelays[idx] * MINUTE;
-                    updated.status = 'lapsed';
-                } else if (outcome === 'quizCorrect') {
-                    updated.consecutiveCorrect = (mem.consecutiveCorrect || 0) + 1;
-                    updated.correctCount = (mem.correctCount || 0) + 1;
-                    updated.familiarity = Math.min(5, (mem.familiarity || 0) + 1);
-                    const dayIntervals = [1, 3, 7, 14, 30, 60, 90];
-                    const idx = Math.min(updated.consecutiveCorrect - 1, dayIntervals.length - 1);
-                    updated.nextReview = now + dayIntervals[idx] * DAY;
-                    updated.status = updated.familiarity >= 4 ? 'mastered' : 'learning';
-                } else if (outcome === 'quizWrong') {
-                    updated.consecutiveCorrect = 0;
-                    updated.wrongCount = (mem.wrongCount || 0) + 1;
-                    updated.familiarity = Math.max(0, (mem.familiarity || 0) - 1);
-                    updated.nextReview = now + 5 * MINUTE;
-                    updated.status = 'lapsed';
-                }
-
-                return this.saveWordMemory(wordKey, updated);
-            },
-
             hydrateWord(level, word, index) {
                 const memoryKey = this.getWordId(level, word, index);
                 const legacyKey = this.getLegacyKey(level, word);
@@ -13361,18 +12743,31 @@
             roundResults: [],
             reviewDebtCount: 0,
             newWordQuota: 0,
-            quizScore: 0,
-            quizStreak: 0,
-            quizMaxStreak: 0,
-            quizCorrectCount: 0,
-            quizAttemptCount: 0,
-            quizCoinsEarned: 0,
-            quizPool: [],
-            quizWordsSinceLastQuiz: 0,
-            quizMinInterval: 2,
-            currentQuiz: null,
-            quizPhaseActive: false,
-            quizPhaseWords: []
+            gameCards: [],
+            gameSelected: [],
+            gameScore: 0,
+            gameCombo: 0,
+            gameMaxCombo: 0,
+            gameAttempts: 0,
+            gameCorrectAttempts: 0,
+            gameCoinsEarned: 0,
+            gameTimeLeft: 60,
+            gameTimerId: null,
+            gameActive: false,
+            gameMatchedPairs: 0,
+            gameMatchLock: false,
+            timeFrozen: false,
+            hintedWordIds: new Set(),
+            gameRounds: [],
+            gameRoundIndex: 0,
+            totalGameScore: 0,
+            totalGameMaxCombo: 0,
+            totalGameAttempts: 0,
+            totalGameCorrectAttempts: 0,
+            totalGameMatchedPairs: 0,
+            totalGameCoinsEarned: 0,
+            totalGameGemsEarned: 0,
+            pendingMemoryUpdates: new Map()
         };
 
         // Progression System
@@ -14373,16 +13768,9 @@
 
         function selectLevel(el) {
             SFX.select();
-            const level = el.dataset.level;
-            // VIP 词库拦截：非会员不能选 toefl / gre
-            if (VIP_LEVELS.indexOf(level) >= 0 && !isVip()) {
-                const names = { toefl: '托福词汇', gre: 'GRE 词汇' };
-                showVipLock(names[level] || '该词库');
-                return;
-            }
             document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
-            state.level = level;
+            state.level = el.dataset.level;
             state.todayQueue = [];
             state.completedToday.clear();
             state.currentWords = [];
@@ -14392,43 +13780,12 @@
             updateEstimate();
         }
 
-        // ============ VIP 词库锁弹窗 ============
-        function showVipLock(levelName) {
-            document.getElementById('vipLockName').textContent = levelName;
-            document.getElementById('vipLockOverlay').classList.add('show');
-            SFX.click();
-        }
-        function closeVipLock() {
-            document.getElementById('vipLockOverlay').classList.remove('show');
-            SFX.click();
-        }
-        function goVipFromLock() {
-            closeVipLock();
-            switchTab('vip');
-        }
-        // 刷新词库卡片的「已解锁」视觉状态（VIP 状态变化后调用）
-        function refreshLevelLockState() {
-            const vip = isVip();
-            document.querySelectorAll('.level-btn.vip-locked').forEach(btn => {
-                btn.classList.toggle('unlocked', vip);
-            });
-        }
-        // ============ VIP 词库锁弹窗 END ============
-
         // 修改「今日学习新词数」（首页）
-        // 非会员上限 20 词/天，会员上限 50 词/天
         function changeDailyNewWords(delta) {
             SFX.click();
             const min = 5;
-            const vipLimit = isVip() ? VIP_DAILY_MAX : FREE_DAILY_MAX;
-            const max = Math.min(vipLimit, wordDB[state.level].length);
-            const next = state.dailyNewWords + delta;
-            // 非会员尝试突破上限时，提示开通会员
-            if (!isVip() && delta > 0 && state.dailyNewWords >= FREE_DAILY_MAX) {
-                showVipLock('每日 50 词上限');
-                return;
-            }
-            state.dailyNewWords = Math.max(min, Math.min(max, next));
+            const max = Math.min(50, wordDB[state.level].length);
+            state.dailyNewWords = Math.max(min, Math.min(max, state.dailyNewWords + delta));
             const el = document.getElementById('dailyNewWordsNum');
             if (el) el.textContent = state.dailyNewWords;
             saveDailyNewWords();
@@ -14471,9 +13828,7 @@
                 const saved = localStorage.getItem(DAILY_NEW_WORDS_KEY);
                 const parsed = parseInt(saved, 10);
                 if (!isNaN(parsed) && parsed >= 5 && parsed <= 50) {
-                    // 非会员上限 20，自动夹紧历史值
-                    const cap = isVip() ? VIP_DAILY_MAX : FREE_DAILY_MAX;
-                    state.dailyNewWords = Math.min(parsed, cap);
+                    state.dailyNewWords = parsed;
                 }
             } catch (e) {}
         }
@@ -14726,18 +14081,15 @@
             state.sessionReviewQueue = [];
             state.completedToday.clear();
             state.roundResults = [];
-            state.quizScore = 0;
-            state.quizStreak = 0;
-            state.quizMaxStreak = 0;
-            state.quizCorrectCount = 0;
-            state.quizAttemptCount = 0;
-            state.quizCoinsEarned = 0;
-            state.quizPool = [];
-            state.quizWordsSinceLastQuiz = 0;
-            state.quizMinInterval = 2 + Math.floor(Math.random() * 2);
-            state.currentQuiz = null;
-            state.quizPhaseActive = false;
-            state.quizPhaseWords = [];
+            state.gameRounds = [];
+            state.gameRoundIndex = 0;
+            state.totalGameScore = 0;
+            state.totalGameMaxCombo = 0;
+            state.totalGameAttempts = 0;
+            state.totalGameCorrectAttempts = 0;
+            state.totalGameMatchedPairs = 0;
+            state.totalGameCoinsEarned = 0;
+            state.totalGameGemsEarned = 0;
             state.todayTaskStarted = true;
             state.learningIndex = 0;
             buildTodayQueue(state.level);
@@ -14752,6 +14104,8 @@
                 state.todayTaskStarted = true;
                 state.roundResults = [];
                 state.sessionReviewQueue = [];
+                state.gameRounds = [];
+                state.gameRoundIndex = 0;
                 state.currentGroupWords = [];
                 state.groupWordIndex = 0;
                 state.currentGroupIndex = 0;
@@ -14787,8 +14141,12 @@
             state.sessionReviewQueue = state.sessionReviewQueue.filter(w => !usedIds.has(w.wordId));
 
             if (group.length === 0) {
-                // 没有可学/复习的词 → 直接显示学习报告
-                showCompletionSummary();
+                // 没有可学/复习的词
+                if (state.roundResults.length > 0) {
+                    startReviewGame();
+                } else {
+                    showCompletionSummary(null);
+                }
                 return;
             }
 
@@ -14870,15 +14228,58 @@
 
         function applyRating(word, rating) {
             if (!word) return null;
-            const updated = MemorySystem.rate(word, rating);
-            recordRoundResult(word, rating, updated);
-            updateTodayProgressHeader();
-            return updated;
-        }
+            const mem = MemorySystem.getMemoryForWord(state.level, word, word.sourceIndex || 0);
+            const oldFamiliarity = mem.familiarity;
+            const now = Date.now();
+            const MINUTE = 60 * 1000;
+            const DAY = 24 * 60 * MINUTE;
+            const isNewWord = mem.reviewCount === 0;
 
-        function recordRoundResult(word, rating, updated) {
+            let updated = { ...mem };
+            updated.reviewCount = mem.reviewCount + 1;
+            updated.lastReview = now;
+            updated.firstLearnedAt = mem.firstLearnedAt || now;
+            updated.selfRating = rating;
+
+            if (rating === 'known') {
+                // 认识：记忆加深，下次复习时间越来越长（1天、3天、7天、14天、30天...）
+                updated.consecutiveCorrect = (mem.consecutiveCorrect || 0) + 1;
+                updated.correctCount = (mem.correctCount || 0) + 1;
+                updated.wrongCount = 0;
+                updated.fuzzyCount = 0;
+                updated.lapseCount = 0;
+                updated.familiarity = Math.min(5, mem.familiarity + 2);
+                const dayIntervals = [1, 3, 7, 14, 30, 60, 90];
+                const idx = Math.min(updated.consecutiveCorrect - 1, dayIntervals.length - 1);
+                updated.nextReview = now + dayIntervals[idx] * DAY;
+                updated.status = 'mastered';
+            } else if (rating === 'fuzzy') {
+                // 模糊：今天稍后重新出现（3、5、10、15 分钟后），打断连续正确
+                updated.consecutiveCorrect = 0;
+                updated.fuzzyCount = (mem.fuzzyCount || 0) + 1;
+                updated.familiarity = Math.min(5, mem.familiarity + 1);
+                const fuzzyDelays = [3, 5, 10, 15];
+                const idx = Math.min(updated.fuzzyCount - 1, fuzzyDelays.length - 1);
+                updated.nextReview = now + fuzzyDelays[idx] * MINUTE;
+                updated.status = 'learning';
+            } else {
+                // 不认识：很快再复习（1、5、10、15 分钟后），连续正确归零
+                updated.consecutiveCorrect = 0;
+                updated.wrongCount = (mem.wrongCount || 0) + 1;
+                updated.lapseCount = (mem.lapseCount || 0) + 1;
+                updated.fuzzyCount = 0;
+                updated.familiarity = Math.max(0, mem.familiarity - 1);
+                const wrongDelays = [1, 5, 10, 15];
+                const idx = Math.min(updated.wrongCount - 1, wrongDelays.length - 1);
+                updated.nextReview = now + wrongDelays[idx] * MINUTE;
+                updated.status = 'lapsed';
+            }
+
+            MemorySystem.saveWordMemory(word.wordId, updated);
+            word.memoryData = updated;
+
+            // 记录本轮结果（每个单词只记第一次出现时的评级，避免重复统计）
             const existingIndex = state.roundResults.findIndex(r => r.wordId === word.wordId);
-            const isNewWord = updated.reviewCount === 1;
             if (existingIndex === -1) {
                 state.roundResults.push({
                     wordId: word.wordId,
@@ -14886,17 +14287,21 @@
                     cn: getDisplayMeanings(word),
                     rating,
                     isNew: isNewWord,
-                    familiarityBefore: 0,
+                    familiarityBefore: oldFamiliarity,
                     familiarityAfter: updated.familiarity,
                     memoryData: updated
                 });
             } else {
-                const priority = { unknown: 0, quizWrong: 0, fuzzy: 1, known: 2, quizCorrect: 2 };
+                // 后续复习只更新评级为最差的那次
+                const priority = { unknown: 0, fuzzy: 1, known: 2 };
                 if (priority[rating] < priority[state.roundResults[existingIndex].rating]) {
                     state.roundResults[existingIndex].rating = rating;
                 }
                 state.roundResults[existingIndex].memoryData = updated;
             }
+
+            updateTodayProgressHeader();
+            return updated;
         }
 
         function markWord(rating) {
@@ -14919,29 +14324,158 @@
                 requeueWord(word, updatedMem.nextReview);
             }
 
-            // 加入本轮测验词池
-            if (!state.quizPool.some(w => w.wordId === word.wordId)) {
-                state.quizPool.push(word);
-            }
-            state.quizWordsSinceLastQuiz++;
-
             renderLearningProgress();
             renderQueueInfo();
 
-            // 前进到下一个词位置
+            // 当前组下一个单词
             state.groupWordIndex++;
-
-            // 满足间隔则插入一个测验
-            if (shouldInsertQuiz()) {
-                insertQuiz();
+            if (state.groupWordIndex < state.currentGroupWords.length) {
+                state.currentWords = [state.currentGroupWords[state.groupWordIndex]];
+                state.learningIndex = 0;
+                showLearningCard();
                 return;
             }
 
-            continueToNextLearning();
+            // 当前组学完，进入配对游戏；游戏结束后若有剩余单词会自动进入下一组
+            startReviewGame();
         }
 
-        // ================== 穿插测验系统 ==================
-        // 每学 2-3 个新词后，插入一个刚才学过的词的选择题测验
+        // ================== 单词配对游戏 ==================
+        const GAME_DURATION = 60;
+
+        function startReviewGame() {
+            if (!audioUnlocked) unlockAudio();
+            // 只取当前组（currentGroupWords）对应的 roundResults，避免重复游戏之前组的结果
+            const groupIds = new Set((state.currentGroupWords || []).map(w => w.wordId));
+            const results = (state.roundResults || []).filter(r => groupIds.has(r.wordId));
+            if (results.length === 0) {
+                // 没有本轮学过的词，直接显示完成页
+                showCompletionSummary(null);
+                return;
+            }
+            // 将当前组学过的词按 wordsPerRound（默认 10）切成多轮连连看
+            state.gameRounds = [];
+            for (let i = 0; i < results.length; i += state.wordsPerRound) {
+                state.gameRounds.push(results.slice(i, i + state.wordsPerRound));
+            }
+            state.gameRoundIndex = 0;
+            // 多组学习时 totalGame 累计值在 startTodayTask 中重置，
+            // 并在完成页最终展示后清空，这里不再重置以免覆盖前面几组的成绩。
+            startGameRound(0);
+        }
+
+        function startGameRound(roundIndex) {
+            const roundResults = state.gameRounds[roundIndex];
+            if (!roundResults || roundResults.length === 0) {
+                showCompletionSummary(null);
+                return;
+            }
+            const words = roundResults.map(r => ({
+                en: r.en,
+                cn: r.cn,
+                wordId: r.wordId,
+                memoryData: r.memoryData || MemorySystem.getMemoryForWord(state.level, { en: r.en }, 0)
+            }));
+            state.currentWords = words;
+            startGame();
+            updateGameRoundHUD();
+        }
+
+        function startGame() {
+            if (!audioUnlocked) unlockAudio();
+            state.pendingMemoryUpdates = new Map();
+            state.gameScore = 0;
+            state.gameCombo = 0;
+            state.gameMaxCombo = 0;
+            state.gameAttempts = 0;
+            state.gameCorrectAttempts = 0;
+            state.gameCoinsEarned = 0;
+            state.gameTimeLeft = GAME_DURATION;
+            state.gameMatchedPairs = 0;
+            state.gameMatchLock = false;
+            state.timeFrozen = false;
+            state.gameSelected = [];
+            state.hintedWordIds.clear();
+            state.gameActive = true;
+            state.gameCards = buildGameCards();
+            hideComboPopup();
+            renderGameBoard();
+            updateGameHUD();
+            SFX.roundStart();
+            showScreen('gameScreen');
+            startGameTimer();
+        }
+
+        function applyGameMemoryFeedback(word, type) {
+            if (!word || !word.wordId) return;
+            const mem = word.memoryData || MemorySystem.getMemoryForWord(state.level, word, word.sourceIndex || 0);
+            const now = Date.now();
+            const MINUTE = 60 * 1000;
+            const DAY = 24 * 60 * MINUTE;
+            const updated = { ...mem };
+            updated.reviewCount = mem.reviewCount + 1;
+            updated.lastReview = now;
+
+            if (type === 'matchSuccess') {
+                // 配对成功：正向反馈（轻量版 known）
+                const wasHinted = state.hintedWordIds.has(word.wordId);
+                if (!wasHinted) {
+                    updated.consecutiveCorrect = (mem.consecutiveCorrect || 0) + 1;
+                }
+                updated.correctCount = (mem.correctCount || 0) + 1;
+                updated.familiarity = Math.min(5, mem.familiarity + 1);
+                const dayIntervals = [1, 3, 7, 14, 30, 60, 90];
+                const idx = Math.min(Math.max(updated.consecutiveCorrect - 1, 0), dayIntervals.length - 1);
+                updated.nextReview = now + dayIntervals[idx] * DAY;
+                updated.status = updated.familiarity >= 4 ? 'mastered' : 'learning';
+            } else if (type === 'matchFail') {
+                // 配对失败：轻微负向反馈
+                updated.consecutiveCorrect = 0;
+                updated.wrongCount = (mem.wrongCount || 0) + 1;
+                updated.familiarity = Math.max(0, mem.familiarity - 1);
+                updated.nextReview = now + 5 * MINUTE;
+                updated.status = 'lapsed';
+            } else if (type === 'timeout') {
+                // 超时未配对：视为需要复习
+                updated.consecutiveCorrect = 0;
+                updated.wrongCount = (mem.wrongCount || 0) + 1;
+                updated.lapseCount = (mem.lapseCount || 0) + 1;
+                updated.familiarity = Math.max(0, mem.familiarity - 1);
+                updated.nextReview = now + 1 * MINUTE;
+                updated.status = 'lapsed';
+            }
+
+            state.pendingMemoryUpdates.set(word.wordId, updated);
+            word.memoryData = updated;
+        }
+
+        function buildGameCards() {
+            const cards = [];
+            state.currentWords.forEach((word, index) => {
+                cards.push({
+                    id: `en-${index}`,
+                    type: 'en',
+                    text: word.en,
+                    pairId: index
+                });
+                cards.push({
+                    id: `cn-${index}`,
+                    type: 'cn',
+                    text: getDisplayMeanings(word),
+                    pairId: index
+                });
+            });
+            return shuffle(cards);
+        }
+
+        function renderGameBoard() {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = state.gameCards.map(card => `
+                <div class="match-card ${card.type}-card" data-id="${card.id}" data-pair="${card.pairId}" data-type="${card.type}" onclick="handleCardClick('${card.id}')">
+                    <div class="card-text">${escapeHtml(card.text)}</div>
+                </div>
+            `).join('');
+        }
 
         function escapeHtml(str) {
             return String(str).replace(/[&<>"']/g, ch => ({
@@ -14949,14 +14483,268 @@
             }[ch]));
         }
 
+        function handleCardClick(cardId) {
+            if (!state.gameActive || state.gameSelected.length >= 2 || state.gameMatchLock) return;
+            const card = state.gameCards.find(c => c.id === cardId);
+            const cardEl = document.querySelector(`.match-card[data-id="${cardId}"]`);
+            if (!card || !cardEl || cardEl.classList.contains('matched') || cardEl.classList.contains('selected')) return;
+
+            SFX.cardClick();
+            selectCard(cardEl, card);
+
+            if (state.gameSelected.length === 2) {
+                state.gameMatchLock = true;
+                setTimeout(checkMatch, 280);
+            }
+        }
+
+        function selectCard(cardEl, card) {
+            cardEl.classList.add('selected');
+            state.gameSelected.push({ el: cardEl, card });
+        }
+
+        function checkMatch() {
+            const [first, second] = state.gameSelected;
+            if (!first || !second) {
+                clearSelection();
+                state.gameMatchLock = false;
+                return;
+            }
+
+            state.gameAttempts++;
+            const isMatch = first.card.pairId === second.card.pairId && first.card.type !== second.card.type;
+            if (isMatch) {
+                state.gameCorrectAttempts++;
+                state.gameCombo++;
+                state.gameMaxCombo = Math.max(state.gameMaxCombo, state.gameCombo);
+                const points = 10 + (state.gameCombo - 1) * 5;
+                state.gameScore += points;
+                state.gameTimeLeft = Math.min(GAME_DURATION, state.gameTimeLeft + 2);
+                state.gameMatchedPairs++;
+                state.gameCoinsEarned += 2;
+                SFX.matchSuccess();
+                SFX.coin();
+                if (state.gameCombo > 1) SFX.combo(state.gameCombo);
+                markMatched(first.el, second.el);
+                updateGameHUD(true);
+                if (state.gameCombo >= 2) showComboPopup(state.gameCombo);
+                if (state.gameCombo >= 5) showMegaCombo(state.gameCombo);
+
+                // 配对成功：更新两个词的记忆数据
+                const word1 = state.currentWords[first.card.pairId];
+                const word2 = state.currentWords[second.card.pairId];
+                if (word1) applyGameMemoryFeedback(word1, 'matchSuccess');
+                if (word2 && word2.wordId !== word1.wordId) applyGameMemoryFeedback(word2, 'matchSuccess');
+
+                if (state.gameMatchedPairs >= state.currentWords.length) {
+                    setTimeout(() => endGame('cleared'), 420);
+                }
+            } else {
+                if (state.gameCombo >= 2) hideComboPopup();
+                state.gameCombo = 0;
+                state.gameTimeLeft = Math.max(0, state.gameTimeLeft - 2);
+                SFX.matchFail();
+                shakeCards(first.el, second.el);
+                updateGameHUD(true);
+
+                // 配对失败：更新两个词的记忆数据
+                const word1 = state.currentWords[first.card.pairId];
+                const word2 = state.currentWords[second.card.pairId];
+                if (word1) applyGameMemoryFeedback(word1, 'matchFail');
+                if (word2 && word2.wordId !== word1.wordId) applyGameMemoryFeedback(word2, 'matchFail');
+            }
+            clearSelection();
+            state.gameMatchLock = false;
+        }
+
+        function clearSelection() {
+            state.gameSelected = [];
+        }
+
+        function markMatched(el1, el2) {
+            el1.classList.remove('selected');
+            el2.classList.remove('selected');
+            spawnSparkle(el1);
+            spawnSparkle(el2);
+            el1.classList.add('matched');
+            el2.classList.add('matched');
+        }
+
+        function spawnSparkle(el) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            el.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 480);
+        }
+
+        let megaComboTimeout = null;
+        function showMegaCombo(combo) {
+            if (combo < 5) return;
+            const el = document.getElementById('megaCombo');
+            el.textContent = `${combo} COMBO!`;
+            el.classList.remove('show');
+            void el.offsetWidth;
+            el.classList.add('show');
+            clearTimeout(megaComboTimeout);
+            megaComboTimeout = setTimeout(() => el.classList.remove('show'), 900);
+        }
+
+        function shakeCards(el1, el2) {
+            el1.classList.add('shake');
+            el2.classList.add('shake');
+            setTimeout(() => {
+                el1.classList.remove('selected', 'shake');
+                el2.classList.remove('selected', 'shake');
+            }, 420);
+        }
+
+        function updateGameRoundHUD() {
+            const el = document.getElementById('gameRoundInfo');
+            if (el && state.gameRounds.length > 1) {
+                el.textContent = `第 ${state.gameRoundIndex + 1}/${state.gameRounds.length} 轮`;
+                el.style.display = 'block';
+            } else if (el) {
+                el.style.display = 'none';
+            }
+        }
+
+        function updateGameHUD(animateScore = false) {
+            const timerEl = document.getElementById('gameTimer');
+            const scoreEl = document.getElementById('gameScore');
+            const comboHudEl = document.getElementById('gameCombo');
+            const timerHudEl = document.querySelector('.game-timer');
+
+            timerEl.textContent = state.gameTimeLeft;
+            scoreEl.textContent = state.gameScore;
+            comboHudEl.textContent = state.gameCombo;
+
+            if (animateScore) {
+                scoreEl.classList.remove('pop');
+                void scoreEl.offsetWidth;
+                scoreEl.classList.add('pop');
+            }
+
+            const timerBar = document.getElementById('timerBar');
+            const pct = Math.max(0, (state.gameTimeLeft / GAME_DURATION) * 100);
+            timerBar.style.width = `${pct}%`;
+            timerBar.classList.toggle('warning', state.gameTimeLeft <= 10);
+            timerHudEl.classList.toggle('danger', state.gameTimeLeft <= 10);
+
+            const comboEl = document.querySelector('.game-combo');
+            comboEl.classList.remove('active');
+            if (state.gameCombo > 1) {
+                void comboEl.offsetWidth;
+                comboEl.classList.add('active');
+            }
+
+            updateGameItemsBar();
+        }
+
+        function updateGameItemsBar() {
+            const hintCount = document.getElementById('hintCount');
+            const shuffleCount = document.getElementById('shuffleCount');
+            if (hintCount) {
+                hintCount.textContent = progress.hints || 0;
+                document.getElementById('useHintBtn').disabled = !progress.hints;
+            }
+            const timeBonusCount = document.getElementById('timeBonusCount');
+            if (timeBonusCount) {
+                timeBonusCount.textContent = progress.timeBonuses || 0;
+                document.getElementById('useTimeBonusBtn').disabled = !progress.timeBonuses;
+            }
+            if (shuffleCount) {
+                shuffleCount.textContent = progress.shuffles || 0;
+                document.getElementById('useShuffleBtn').disabled = !progress.shuffles;
+            }
+        }
+
+        function useHint() {
+            if (!state.gameActive || !progress.hints) return;
+            const unmatched = state.gameCards.filter(c => {
+                const el = document.querySelector(`.match-card[data-id="${c.id}"]`);
+                return el && !el.classList.contains('matched') && !el.classList.contains('selected');
+            });
+            const pairMap = new Map();
+            for (const card of unmatched) {
+                if (!pairMap.has(card.pairId)) {
+                    pairMap.set(card.pairId, []);
+                }
+                pairMap.get(card.pairId).push(card);
+            }
+            let found = false;
+            for (const [pairId, cards] of pairMap) {
+                if (cards.length >= 2) {
+                    const el1 = document.querySelector(`.match-card[data-id="${cards[0].id}"]`);
+                    const el2 = document.querySelector(`.match-card[data-id="${cards[1].id}"]`);
+                    el1.classList.add('hint-glow');
+                    el2.classList.add('hint-glow');
+                    SFX.hint();
+                    setTimeout(() => {
+                        el1.classList.remove('hint-glow');
+                        el2.classList.remove('hint-glow');
+                    }, 1500);
+                    const word = state.currentWords[pairId];
+                    if (word) state.hintedWordIds.add(word.wordId);
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                progress.hints--;
+                saveProgress();
+                updateGameItemsBar();
+            }
+        }
+
+        function useTimeBonus() {
+            if (!state.gameActive || !progress.timeBonuses) return;
+            progress.timeBonuses--;
+            saveProgress();
+            SFX.timeBonus();
+            state.gameTimeLeft = Math.min(GAME_DURATION, state.gameTimeLeft + 10);
+            updateGameHUD(true);
+            shopToast('⏱️ 时间 +10 秒');
+            updateGameItemsBar();
+        }
+
+        function useShuffle() {
+            if (!state.gameActive || !progress.shuffles) return;
+            // 清空当前选中状态
+            state.gameSelected.forEach(({ el }) => {
+                if (el) el.classList.remove('selected');
+            });
+            state.gameSelected = [];
+            state.gameMatchLock = false;
+            // 收集未配对的卡片
+            const unmatchedCards = state.gameCards.filter(c => {
+                const el = document.querySelector(`.match-card[data-id="${c.id}"]`);
+                return el && !el.classList.contains('matched');
+            });
+            if (unmatchedCards.length < 2) return;
+            const shuffled = shuffle(unmatchedCards);
+            // 替换 gameCards 中未配对的位置
+            let idx = 0;
+            state.gameCards = state.gameCards.map(c => {
+                const el = document.querySelector(`.match-card[data-id="${c.id}"]`);
+                if (el && !el.classList.contains('matched')) {
+                    return shuffled[idx++];
+                }
+                return c;
+            });
+            progress.shuffles--;
+            saveProgress();
+            SFX.shuffle();
+            renderGameBoard();
+            updateGameItemsBar();
+        }
+
         let comboPopupTimeout = null;
         function showComboPopup(combo) {
             const popup = document.getElementById('comboPopup');
-            if (!popup) return;
             popup.className = 'combo-popup';
             void popup.offsetWidth;
             const cls = combo >= 10 ? 'x10' : combo >= 5 ? 'x5' : `x${Math.min(combo, 4)}`;
-            popup.innerHTML = `<div class="combo-num">x${combo}</div><div class="combo-text">连对</div>`;
+            popup.innerHTML = `<div class="combo-num">x${combo}</div><div class="combo-text">连击</div>`;
             popup.classList.add(cls, 'show');
             clearTimeout(comboPopupTimeout);
             comboPopupTimeout = setTimeout(() => {
@@ -14967,336 +14755,140 @@
 
         function hideComboPopup() {
             const popup = document.getElementById('comboPopup');
-            if (!popup) return;
             popup.classList.remove('show');
             popup.classList.add('fade');
             clearTimeout(comboPopupTimeout);
         }
 
-        let megaComboTimeout = null;
-        function showMegaCombo(combo) {
-            if (combo < 5) return;
-            const el = document.getElementById('megaCombo');
-            if (!el) return;
-            el.textContent = `${combo} 连对！`;
-            el.classList.remove('show');
-            void el.offsetWidth;
-            el.classList.add('show');
-            clearTimeout(megaComboTimeout);
-            megaComboTimeout = setTimeout(() => el.classList.remove('show'), 900);
-        }
-
-        function shouldInsertQuiz() {
-            // 至少学过 quizMinInterval 个词后才插入测验
-            // 且测验池里必须有可考的词
-            if (state.quizWordsSinceLastQuiz < state.quizMinInterval) return false;
-            if (state.quizPool.length === 0) return false;
-            return true;
-        }
-
-        function pickQuizWord() {
-            // 从本轮学过的词中随机抽一个作为考题
-            // 优先抽「未掌握」的词
-            const candidates = state.quizPool.filter(w => {
-                const mem = w.memoryData || MemorySystem.getMemoryForWord(state.level, w, w.sourceIndex);
-                return mem.status !== 'mastered' || state.quizPool.length <= 2;
-            });
-            const pool = candidates.length > 0 ? candidates : state.quizPool;
-            return pool[Math.floor(Math.random() * pool.length)];
-        }
-
-        function buildQuizOptions(targetWord) {
-            // 1 个正确答案 + 3 个干扰项（来自同组其他词的释义）
-            const correctMeaning = getDisplayMeanings(targetWord);
-            const distractors = [];
-            const groupWords = state.currentGroupWords || state.quizPool || [];
-            const others = groupWords.filter(w => w.wordId !== targetWord.wordId);
-            const shuffledOthers = shuffle(others);
-            for (const w of shuffledOthers) {
-                if (distractors.length >= 3) break;
-                const m = getDisplayMeanings(w);
-                if (m && m !== correctMeaning && !distractors.includes(m)) {
-                    distractors.push(m);
+        function startGameTimer() {
+            clearGameTimer();
+            state.gameTimerId = setInterval(() => {
+                if (state.timeFrozen) return;
+                state.gameTimeLeft--;
+                updateGameHUD();
+                if (state.gameTimeLeft <= 10 && state.gameTimeLeft > 0) {
+                    SFX.tick();
                 }
-            }
-            // 如果同组干扰项不足，从整个词库随机补
-            if (distractors.length < 3) {
-                const allWords = MemorySystem.getAllWords(state.level);
-                const shuffledAll = shuffle(allWords);
-                for (const w of shuffledAll) {
-                    if (distractors.length >= 3) break;
-                    const m = getDisplayMeanings(w);
-                    if (m && m !== correctMeaning && !distractors.includes(m)) {
-                        distractors.push(m);
-                    }
+                if (state.gameTimeLeft <= 0) {
+                    endGame('timeout');
                 }
-            }
-            const options = shuffle([correctMeaning, ...distractors]);
-            return { options, correctIndex: options.indexOf(correctMeaning) };
+            }, 1000);
         }
 
-        function insertQuiz() {
-            const targetWord = pickQuizWord();
-            if (!targetWord) {
-                continueToNextLearning();
-                return;
-            }
-            state.quizWordsSinceLastQuiz = 0;
-            startQuiz(targetWord);
-        }
-
-        function startQuiz(word) {
-            state.currentQuiz = { word, answered: false };
-            state.quizPhaseActive = true;
-            const { options, correctIndex } = buildQuizOptions(word);
-            state.currentQuiz.options = options;
-            state.currentQuiz.correctIndex = correctIndex;
-
-            // 渲染测验界面
-            document.getElementById('quizWord').textContent = word.en;
-            document.getElementById('quizPhonetic').textContent = word.phonetic || '';
-            const optionsEl = document.getElementById('quizOptions');
-            optionsEl.innerHTML = options.map((opt, i) => `
-                <button class="quiz-option" data-index="${i}" onclick="answerQuiz(${i})">${escapeHtml(opt)}</button>
-            `).join('');
-            document.getElementById('quizFeedback').style.display = 'none';
-            document.getElementById('quizNextBtn').style.display = 'none';
-
-            // 更新 HUD
-            updateQuizHUD();
-            showScreen('gameScreen');
-
-            // 自动播放发音（如果已解锁音频）
-            if (audioUnlocked) {
-                try { pronounceWord(word.en); } catch (e) {}
+        function clearGameTimer() {
+            if (state.gameTimerId) {
+                clearInterval(state.gameTimerId);
+                state.gameTimerId = null;
             }
         }
 
-        function pronounceQuizWord() {
-            if (!state.currentQuiz) return;
-            try { pronounceWord(state.currentQuiz.word.en); } catch (e) {}
-        }
-
-        function answerQuiz(selectedIndex) {
-            if (!state.currentQuiz || state.currentQuiz.answered) return;
-            state.currentQuiz.answered = true;
-            state.quizAttemptCount++;
-
-            const isCorrect = selectedIndex === state.currentQuiz.correctIndex;
-            const word = state.currentQuiz.word;
-            const optionEls = document.querySelectorAll('.quiz-option');
-            optionEls.forEach(el => el.classList.add('disabled'));
-
-            if (isCorrect) {
-                state.quizCorrectCount++;
-                state.quizStreak++;
-                state.quizMaxStreak = Math.max(state.quizMaxStreak, state.quizStreak);
-                const points = 10 + (state.quizStreak - 1) * 5;
-                state.quizScore += points;
-                state.quizCoinsEarned += 2;
-                // 统一通过 MemorySystem.rate 更新记忆状态
-                const updated = MemorySystem.rate(word, 'quizCorrect');
-                word.memoryData = updated;
-                recordRoundResult(word, 'quizCorrect', updated);
-                // 答对：若已达 mastered，从本轮复习队列移除
-                if (updated.status === 'mastered') {
-                    state.completedToday.add(word.wordId);
-                    state.sessionReviewQueue = state.sessionReviewQueue.filter(w => w.wordId !== word.wordId);
-                }
-                optionEls[selectedIndex].classList.add('correct');
-                SFX.matchSuccess();
-                if (state.quizStreak >= 2) {
-                    SFX.combo(state.quizStreak);
-                    showComboPopup(state.quizStreak);
-                }
-                if (state.quizStreak >= 5) showMegaCombo(state.quizStreak);
-
-                const fb = document.getElementById('quizFeedback');
-                fb.style.display = 'block';
-                fb.className = 'quiz-feedback correct';
-                fb.innerHTML = `✓ 答对了！+${points} 分`;
+        function endGame(reason) {
+            if (!state.gameActive) return;
+            state.gameActive = false;
+            clearGameTimer();
+            const accuracy = state.gameAttempts > 0
+                ? Math.round((state.gameCorrectAttempts / state.gameAttempts) * 100)
+                : 0;
+            const isPoor = accuracy < 50 || state.gameMatchedPairs < state.currentWords.length / 2;
+            if (reason === 'cleared' || !isPoor) {
+                SFX.victory();
             } else {
-                state.quizStreak = 0;
-                // 统一通过 MemorySystem.rate 更新记忆状态
-                const updated = MemorySystem.rate(word, 'quizWrong');
-                word.memoryData = updated;
-                recordRoundResult(word, 'quizWrong', updated);
-                // 答错：重新加入本轮复习队列
-                if (!state.sessionReviewQueue.some(w => w.wordId === word.wordId)) {
-                    state.sessionReviewQueue.push(word);
-                }
-                requeueWord(word, updated.nextReview);
+                SFX.timeup();
+            }
 
-                optionEls[selectedIndex].classList.add('wrong');
-                optionEls[state.currentQuiz.correctIndex].classList.add('correct');
-                // 其它选项淡化
-                optionEls.forEach((el, i) => {
-                    if (i !== selectedIndex && i !== state.currentQuiz.correctIndex) {
-                        el.classList.add('faded');
+            // 超时：未匹配完的词视为需要复习
+            if (reason === 'timeout') {
+                const matchedPairIds = new Set();
+                document.querySelectorAll('.match-card.matched').forEach(el => {
+                    matchedPairIds.add(parseInt(el.dataset.pair, 10));
+                });
+                state.currentWords.forEach((word, index) => {
+                    if (!matchedPairIds.has(index)) {
+                        applyGameMemoryFeedback(word, 'timeout');
                     }
                 });
-                SFX.matchFail();
-                hideComboPopup();
-
-                const correctMeaning = state.currentQuiz.options[state.currentQuiz.correctIndex];
-                const fb = document.getElementById('quizFeedback');
-                fb.style.display = 'block';
-                fb.className = 'quiz-feedback wrong';
-                fb.innerHTML = `✗ 正确答案：${escapeHtml(correctMeaning)}<br>这个词稍后会再次出现`;
             }
 
-            updateQuizHUD();
-            document.getElementById('quizNextBtn').style.display = 'block';
-            updateTodayProgressHeader();
-        }
-
-        function proceedAfterQuiz() {
-            state.currentQuiz = null;
-            state.quizPhaseActive = false;
-            hideComboPopup();
-
-            // 测验后继续学习流程
-            continueToNextLearning();
-        }
-
-        function updateQuizHUD() {
-            document.getElementById('gameScore').textContent = state.quizScore;
-            document.getElementById('gameCombo').textContent = state.quizStreak;
-            // 第三个 HUD 显示已掌握数
-            const mastered = state.roundResults.filter(r => {
-                const mem = r.memoryData;
-                return mem && (mem.status === 'mastered' || mem.familiarity >= 4);
-            }).length;
-            document.getElementById('gameTimer').textContent = mastered;
-
-            // 进度条显示本轮完成进度
-            const total = state.currentGroupWords.length || 1;
-            const done = state.groupWordIndex;
-            const pct = Math.max(0, Math.min(100, (done / total) * 100));
-            document.getElementById('timerBar').style.width = pct + '%';
-
-            // 连对高亮
-            const comboEl = document.querySelector('.game-combo');
-            if (comboEl) {
-                comboEl.classList.remove('active');
-                if (state.quizStreak > 1) {
-                    void comboEl.offsetWidth;
-                    comboEl.classList.add('active');
+            // 批量写入本轮游戏过程中积累的记忆数据
+            if (state.pendingMemoryUpdates && state.pendingMemoryUpdates.size > 0) {
+                for (const [wordId, mem] of state.pendingMemoryUpdates) {
+                    MemorySystem.saveWordMemory(wordId, mem);
                 }
+                state.pendingMemoryUpdates.clear();
             }
-        }
 
-        function continueToNextLearning() {
-            // 当前组还有词未学 → 继续学下一个
-            if (state.groupWordIndex < state.currentGroupWords.length) {
-                state.currentWords = [state.currentGroupWords[state.groupWordIndex]];
-                state.learningIndex = 0;
-                showLearningCard();
-                showScreen('learningScreen');
+            // 累加本轮数据到多轮总计
+            state.totalGameScore += state.gameScore;
+            state.totalGameMaxCombo = Math.max(state.totalGameMaxCombo, state.gameMaxCombo);
+            state.totalGameAttempts += state.gameAttempts;
+            state.totalGameCorrectAttempts += state.gameCorrectAttempts;
+            state.totalGameMatchedPairs += state.gameMatchedPairs;
+
+            const starCount = accuracy >= 90 ? 3 : accuracy >= 70 ? 2 : accuracy >= 50 ? 1 : 0;
+            const roundCoins = 10 + starCount * 5 + state.gameCoinsEarned + (accuracy === 100 ? 10 : 0);
+            state.totalGameCoinsEarned += roundCoins;
+            state.totalGameGemsEarned += starCount === 3 ? 1 : 0;
+
+            // 若还有下一轮，继续游戏
+            if (state.gameRounds && state.gameRoundIndex < state.gameRounds.length - 1) {
+                state.gameRoundIndex++;
+                shopToast(`第 ${state.gameRoundIndex + 1}/${state.gameRounds.length} 轮`);
+                setTimeout(() => startGameRound(state.gameRoundIndex), 900);
                 return;
             }
 
-            // 当前组学完：检查是否还有到期的复习词（模糊/不认识的）
+            // 最后一轮结束，检查是否还有剩余单词需要继续下一组
             const now = Date.now();
-            const dueReviews = state.sessionReviewQueue.filter(w =>
-                !state.completedToday.has(w.wordId) && w.nextReviewAt <= now
-            );
-            // 重新加入待学队列
-            if (dueReviews.length > 0) {
-                // 把到期复习词作为新的一组继续学
-                state.currentGroupWords = dueReviews.slice(0, state.wordsPerRound);
-                state.groupWordIndex = 0;
-                state.currentWords = [state.currentGroupWords[0]];
-                state.learningIndex = 0;
-                // 从 sessionReviewQueue 移除已取出的
-                const takenIds = new Set(state.currentGroupWords.map(w => w.wordId));
-                state.sessionReviewQueue = state.sessionReviewQueue.filter(w => !takenIds.has(w.wordId));
-                renderLearningProgress();
-                showLearningCard();
-                showScreen('learningScreen');
-                return;
-            }
-
-            // 当前组全部完成且无到期复习词 → 结束报告
-            finishGroupAndReport();
-        }
-
-        function finishGroupAndReport() {
-            // 检查今日队列是否还有未完成的词
-            const now = Date.now();
-            const remaining = state.todayQueue.filter(w =>
-                !state.completedToday.has(w.wordId) && w.nextReviewAt <= now
-            );
+            const remaining = state.todayQueue.filter(w => !state.completedToday.has(w.wordId) && w.nextReviewAt <= now);
             if (remaining.length > 0) {
-                // 还有下一组，继续学习
-                shopToast('继续学习下一组');
-                setTimeout(() => startLearning(), 800);
+                shopToast('下一组学习');
+                setTimeout(() => startLearning(), 1200);
                 return;
             }
-            // 全部完成 → 显示学习报告
-            showCompletionSummary();
+
+            // 全部组完成，更新进度并显示完成页
+            const totalAccuracy = state.totalGameAttempts > 0
+                ? Math.round((state.totalGameCorrectAttempts / state.totalGameAttempts) * 100)
+                : 0;
+            const levelResult = updateProgressTotalScore(state.totalGameScore);
+            const totalGemsEarned = state.totalGameGemsEarned + levelResult.gemsEarned;
+            progress.coins += state.totalGameCoinsEarned;
+            progress.gems += totalGemsEarned;
+            progress.maxCombo = Math.max(progress.maxCombo, state.totalGameMaxCombo);
+            progress.gameTotalAttempts += state.totalGameAttempts;
+            progress.gameTotalCorrectAttempts += state.totalGameCorrectAttempts;
+            saveProgress();
+            renderHeaderStats();
+
+            showCompletionSummary({
+                score: state.totalGameScore,
+                maxCombo: state.totalGameMaxCombo,
+                accuracy: totalAccuracy,
+                matchedPairs: state.totalGameMatchedPairs,
+                reason,
+                coinsEarned: state.totalGameCoinsEarned,
+                gemsEarned: totalGemsEarned,
+                levelResult
+            });
         }
 
         function ratingLabel(rating) {
-            const map = {
-                known: '认识',
-                fuzzy: '模糊',
-                unknown: '不认识',
-                quizCorrect: '测验答对',
-                quizWrong: '测验答错'
-            };
-            return map[rating] || rating;
+            return rating === 'known' ? '认识' : rating === 'fuzzy' ? '模糊' : '不认识';
         }
 
-        function showCompletionSummary() {
+        function showCompletionSummary(gameResult) {
             const list = document.getElementById('completionList');
-            const reportSummary = document.getElementById('reportSummary');
             const gamePanel = document.getElementById('gameResultPanel');
 
+            // 统计学习数据
             const results = state.roundResults || [];
 
-            // 统计分类
-            const mastered = results.filter(r => {
-                const mem = r.memoryData;
-                return mem && (mem.status === 'mastered' || mem.familiarity >= 4);
-            });
-            const learning = results.filter(r => {
-                const mem = r.memoryData;
-                return mem && mem.status !== 'mastered' && mem.familiarity > 0 && mem.familiarity < 4;
-            });
-            const needReview = results.filter(r => {
-                const mem = r.memoryData;
-                return mem && (mem.status === 'lapsed' || mem.familiarity === 0);
-            });
-
-            // 顶部报告卡片
-            reportSummary.innerHTML = `
-                <div class="report-stat-card total">
-                    <div class="value">${results.length}</div>
-                    <div class="label">总词数</div>
-                </div>
-                <div class="report-stat-card mastered">
-                    <div class="value">${mastered.length}</div>
-                    <div class="label">已掌握</div>
-                </div>
-                <div class="report-stat-card learning">
-                    <div class="value">${learning.length}</div>
-                    <div class="label">学习中</div>
-                </div>
-                <div class="report-stat-card review">
-                    <div class="value">${needReview.length}</div>
-                    <div class="label">需复习</div>
-                </div>
-            `;
-
-            // 游戏得分面板（基于学习成果）
-            const accuracy = state.quizAttemptCount > 0
-                ? Math.round((state.quizCorrectCount / state.quizAttemptCount) * 100)
-                : 0;
-            if (state.quizAttemptCount > 0) {
+            // 显示游戏结果（得分 + 星星）
+            if (gameResult) {
                 gamePanel.style.display = 'block';
-                document.getElementById('gameResultScore').textContent = state.quizScore;
-                const starCount = accuracy >= 90 ? 3 : accuracy >= 70 ? 2 : accuracy >= 50 ? 1 : 0;
+                document.getElementById('gameResultScore').textContent = gameResult.score || 0;
+
+                const starCount = gameResult.accuracy >= 90 ? 3 : gameResult.accuracy >= 70 ? 2 : gameResult.accuracy >= 50 ? 1 : 0;
                 const starsEl = document.getElementById('gameResultStars');
                 starsEl.innerHTML = '';
                 for (let i = 0; i < 3; i++) {
@@ -15305,62 +14897,46 @@
                     star.textContent = '★';
                     starsEl.appendChild(star);
                 }
+
+                // 升级提示
+                if (gameResult.levelResult && gameResult.levelResult.leveledUp) {
+                    SFX.levelUp();
+                    shopToast(`升级！Lv.${gameResult.levelResult.oldLevel} → Lv.${gameResult.levelResult.newLevel}`);
+                }
             } else {
                 gamePanel.style.display = 'none';
             }
 
-            // 单词列表
             if (results.length === 0) {
-                list.innerHTML = '<div class="rating-row"><span class="word-text">今日任务已全部完成，休息一下吧！</span></div>';
-                SFX.taskComplete();
+                list.innerHTML = '<div class="rating-row"><span>今日任务已全部完成，休息一下吧！</span></div>';
+                if (!gameResult) SFX.taskComplete();
             } else {
-                list.innerHTML = results.map(r => {
-                    const mem = r.memoryData || {};
-                    const statusBadge = mem.status === 'mastered' || mem.familiarity >= 4
-                        ? '<span class="rating-badge known">已掌握</span>'
-                        : mem.status === 'lapsed' || mem.familiarity === 0
-                            ? '<span class="rating-badge unknown">需复习</span>'
-                            : '<span class="rating-badge fuzzy">学习中</span>';
-                    return `
-                        <div class="rating-row">
-                            <span class="word-text"><strong>${escapeHtml(r.en)}</strong> ${escapeHtml(r.cn)}</span>
-                            ${statusBadge}
-                        </div>
-                    `;
-                }).join('');
-                SFX.victory();
+                list.innerHTML = results.map(r => `
+                    <div class="rating-row">
+                        <span><strong>${r.en}</strong> ${r.cn}</span>
+                        <span class="rating-badge ${r.rating}">${ratingLabel(r.rating)}</span>
+                    </div>
+                `).join('');
+                if (!gameResult) SFX.victory();
             }
 
-            // 发放金币奖励：基于学习成果
-            const coinsEarned = mastered.length * 3 + learning.length * 1 + state.quizCoinsEarned;
-            if (coinsEarned > 0) {
-                progress.coins += coinsEarned;
-                progress.totalScore = (progress.totalScore || 0) + state.quizScore;
-                progress.gameTotalAttempts = (progress.gameTotalAttempts || 0) + state.quizAttemptCount;
-                progress.gameTotalCorrectAttempts = (progress.gameTotalCorrectAttempts || 0) + state.quizCorrectCount;
-                progress.maxCombo = Math.max(progress.maxCombo || 0, state.quizMaxStreak);
-                saveProgress();
-                SFX.coin();
-            }
-
-            // 升级检查
-            const levelResult = updateProgressTotalScore(state.quizScore);
-            if (levelResult.leveledUp) {
-                SFX.levelUp();
-                shopToast(`升级！Lv.${levelResult.oldLevel} → Lv.${levelResult.newLevel}`);
+            // 给予学习金币奖励（仅在正常今日任务流程）
+            if (!gameResult) {
+                const known = results.filter(r => r.rating === 'known').length;
+                const fuzzy = results.filter(r => r.rating === 'fuzzy').length;
+                const coinsEarned = known * 2 + fuzzy * 1;
+                if (coinsEarned > 0) {
+                    progress.coins += coinsEarned;
+                    saveProgress();
+                    SFX.coin();
+                }
             }
 
             updateTodayProgressHeader();
             updateEstimate();
             showScreen('completionScreen');
 
-            // 清空本轮累计数据
-            state.quizScore = 0;
-            state.quizStreak = 0;
-            state.quizMaxStreak = 0;
-            state.quizCorrectCount = 0;
-            state.quizAttemptCount = 0;
-            state.quizCoinsEarned = 0;
+            // 完成页展示后清空累计数据，为下一轮学习做准备
             state.totalGameScore = 0;
             state.totalGameMaxCombo = 0;
             state.totalGameAttempts = 0;
@@ -15456,20 +15032,6 @@
             document.getElementById('profileTimeBonuses').textContent = progress.timeBonuses || 0;
             document.getElementById('profileShuffles').textContent = progress.shuffles || 0;
 
-            // 会员入口卡片：根据 VIP 状态切换文案
-            const vipCard = document.getElementById('profileVipCard');
-            const vipTitle = document.getElementById('profileVipTitle');
-            const vipSub = document.getElementById('profileVipSub');
-            if (isVip()) {
-                vipCard.classList.add('activated');
-                vipTitle.textContent = '👑 会员尊享';
-                vipSub.textContent = `${getVipPlanName()} · 到期 ${getVipExpireDate()}`;
-            } else {
-                vipCard.classList.remove('activated');
-                vipTitle.textContent = '开通会员';
-                vipSub.textContent = '解锁全部词库 · 享无限道具 · ¥9.9/月起';
-            }
-
             if (nextLevel) {
                 const current = levelInfo.score;
                 const next = nextLevel.score;
@@ -15525,114 +15087,6 @@
             }).join('');
         }
 
-        // ============ 支付页 ============
-        let _paySelectedPlan = null;   // 当前选中的套餐 id
-        let _paySelectedMethod = 'wechat'; // 当前选中的支付方式
-        let _payProcessing = false;    // 是否正在处理支付（防止重复点击）
-
-        // 打开支付页：填入套餐信息 + 重置状态
-        function openPay(planId) {
-            const plan = VIP_PLANS[planId];
-            if (!plan) return;
-            _paySelectedPlan = planId;
-            _paySelectedMethod = 'wechat';
-            _payProcessing = false;
-
-            // 填入订单信息
-            document.getElementById('payOrderName').textContent = plan.name;
-            document.getElementById('payOrderSub').textContent =
-                `有效期 ${plan.durationDays} 天${isVip() ? ' · 续费将累加到原到期时间' : ''}`;
-            document.getElementById('payOrderPrice').textContent = plan.price;
-            document.getElementById('payBtnPrice').textContent = plan.price;
-
-            // 重置支付方式为微信
-            document.querySelectorAll('.pay-method').forEach(el => {
-                el.classList.toggle('selected', el.dataset.method === 'wechat');
-            });
-
-            // 重置三态：表单显示 / loading 隐藏 / 成功隐藏
-            document.getElementById('payFormWrap').style.display = '';
-            document.getElementById('payLoading').classList.remove('show');
-            document.getElementById('paySuccess').classList.remove('show');
-            const btn = document.getElementById('payConfirmBtn');
-            btn.disabled = false;
-            btn.innerHTML = `确认支付 ¥<span id="payBtnPrice">${plan.price}</span>`;
-
-            // 显示弹窗
-            document.getElementById('payOverlay').classList.add('show');
-            SFX.click();
-        }
-
-        // 切换支付方式
-        function selectPayMethod(method) {
-            if (_payProcessing) return;
-            _paySelectedMethod = method;
-            document.querySelectorAll('.pay-method').forEach(el => {
-                el.classList.toggle('selected', el.dataset.method === method);
-            });
-            SFX.click();
-        }
-
-        // 关闭支付页（取消）
-        function closePay() {
-            if (_payProcessing) return;
-            document.getElementById('payOverlay').classList.remove('show');
-            SFX.click();
-        }
-
-        // 确认支付：显示 loading → 2 秒后显示成功
-        function confirmPay() {
-            if (_payProcessing || !_paySelectedPlan) return;
-            _payProcessing = true;
-            const btn = document.getElementById('payConfirmBtn');
-            btn.disabled = true;
-
-            // 隐藏表单，显示 loading
-            document.getElementById('payFormWrap').style.display = 'none';
-            document.getElementById('payLoading').classList.add('show');
-            document.getElementById('payLoadingText').textContent =
-                _paySelectedMethod === 'wechat' ? '正在唤起微信支付…' : '正在跳转支付宝…';
-
-            // 模拟支付处理（2 秒）
-            setTimeout(() => {
-                // 真正激活会员
-                activateVip(_paySelectedPlan);
-
-                // 隐藏 loading，显示成功
-                document.getElementById('payLoading').classList.remove('show');
-                const successBox = document.getElementById('paySuccess');
-                successBox.classList.add('show');
-                // 重置成功动画（移除再加，保证每次都播放）
-                const icon = successBox.querySelector('.pay-success-icon');
-                icon.style.animation = 'none';
-                void icon.offsetWidth;
-                icon.style.animation = '';
-
-                // 显示到期日期
-                document.getElementById('paySuccessSub').textContent =
-                    `${getVipPlanName()} 已开通 · 到期：${getVipExpireDate()}`;
-
-                _payProcessing = false;
-            }, 2000);
-        }
-
-        // 关闭支付页并刷新会员中心
-        function closePayAndRefresh() {
-            document.getElementById('payOverlay').classList.remove('show');
-            SFX.click();
-            // VIP 状态已变化，刷新词库卡片锁定状态
-            refreshLevelLockState();
-            // 刷新会员中心页
-            if (document.getElementById('vipScreen').classList.contains('active')) {
-                renderVipScreen();
-            }
-            // 同时刷新个人中心（如可见）
-            if (document.getElementById('profileScreen').classList.contains('active')) {
-                renderProfileScreen();
-            }
-        }
-        // ============ 支付页 END ============
-
         function clearLearningData() {
             SFX.click();
             if (!confirm('确定要清除所有学习数据吗？进度、金币、宝石会保留，但单词记忆记录将被清空。')) return;
@@ -15663,17 +15117,27 @@
 
         function continueTodayTask() {
             SFX.click();
-            state.quizPhaseActive = false;
-            state.currentQuiz = null;
+            clearGameTimer();
+            state.gameActive = false;
             startLearning();
         }
 
         function goHome() {
             SFX.click();
-            state.quizPhaseActive = false;
-            state.currentQuiz = null;
-            state.quizStreak = 0;
-            state.quizScore = 0;
+            clearGameTimer();
+            state.gameActive = false;
+            state.gameMatchLock = false;
+            state.timeFrozen = false;
+            state.gameScore = 0;
+            state.gameCombo = 0;
+            state.gameMaxCombo = 0;
+            state.gameAttempts = 0;
+            state.gameCorrectAttempts = 0;
+            state.gameCoinsEarned = 0;
+            state.gameTimeLeft = GAME_DURATION;
+            state.gameMatchedPairs = 0;
+            state.gameSelected = [];
+            state.gameCards = [];
             state.currentWords = [];
             state.todayQueue = [];
             state.completedToday.clear();
@@ -15696,10 +15160,9 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             loadWordOrder();
-            loadVipState();
             loadDailyNewWords();
             loadWordsPerRound();
-            refreshLevelLockState();
+            loadVipState();
             // 初始化两个数字显示
             const dnEl = document.getElementById('dailyNewWordsNum');
             if (dnEl) dnEl.textContent = state.dailyNewWords;
