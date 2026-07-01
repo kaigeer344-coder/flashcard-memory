@@ -553,6 +553,14 @@
         .rating-badge.known { background: var(--primary); }
         .rating-badge.fuzzy { background: var(--accent); color: #6f4b00; }
         .rating-badge.unknown { background: var(--danger); }
+        .rating-badge.matchSuccess { background: var(--primary); }
+        .rating-badge.matchFail { background: var(--danger); }
+        .rating-badge.matchTimeout { background: var(--accent); color: #6f4b00; }
+        .game-icons { display: inline-flex; gap: 4px; flex-shrink: 0; font-size: 14px; }
+        .game-icon.matchSuccess { color: var(--primary); }
+        .game-icon.matchFail { color: var(--danger); }
+        .game-icon.matchTimeout { color: var(--accent); }
+        .next-review { font-size: 11px; color: #999; flex-shrink: 0; }
         .completion-btns { display: flex; gap: 12px; flex-shrink: 0; }
         .completion-btns button {
             flex: 1;
@@ -12519,6 +12527,69 @@
             return parts[0].trim();
         }
 
+        // ================== FSRS-4 算法 ==================
+        const FSRS = {
+            initStability: [0.4, 0.6, 2.4, 5.8],
+            initDifficulty: 4.93,
+            difficultyCoeff: 0.94,
+            successFactor: [0.86, 0.01, 1.49],
+            hardPenalty: 0.94,
+            easyBonus: 2.18,
+            failFactor: [0.05, 0.34, 1.26, 0.29],
+            difficultyUpdate: [0.7, 2.61],
+            desiredRetention: 0.9,
+            retentionCoeff: 0.2,
+
+            retrievability(elapsedDays, S) {
+                if (S <= 0) return 0;
+                return Math.pow(1 + elapsedDays / (9 * S), -1);
+            },
+
+            initS(grade) {
+                return this.initStability[grade - 1] || 0.4;
+            },
+
+            initD(grade) {
+                const D = this.initDifficulty - (grade - 3) * this.difficultyCoeff;
+                return Math.max(1, Math.min(10, D));
+            },
+
+            updateD(D, grade) {
+                let newD = D + (grade - 3) * 0.1 - (D - this.initDifficulty) * 0.1;
+                return Math.max(1, Math.min(10, newD));
+            },
+
+            updateSSuccess(S, D, R, grade) {
+                const base = S * (1 + Math.exp(this.successFactor[0]) * (11 - D) * Math.pow(S, -this.successFactor[1]) * (Math.exp((1 - R) * this.successFactor[2]) - 1));
+                if (grade === 2) return Math.max(0.1, base * this.hardPenalty);
+                if (grade === 4) return Math.max(0.1, base * this.easyBonus);
+                return Math.max(0.1, base);
+            },
+
+            updateSFail(S, D, R) {
+                return Math.max(0.1, this.failFactor[0] * Math.pow(D, -this.failFactor[1]) * (Math.pow(S + 1, this.failFactor[2]) - 1) * Math.exp((1 - R) * this.failFactor[3]));
+            },
+
+            nextInterval(S) {
+                const R = this.desiredRetention;
+                const days = S * (Math.pow(R, -1 / this.retentionCoeff) - 1);
+                return Math.max(0.01, days);
+            },
+
+            outcomeToGrade(outcome, context) {
+                const cc = context.consecutiveCorrectBefore || 0;
+                switch (outcome) {
+                    case 'known': return cc >= 3 ? 4 : 3;
+                    case 'fuzzy': return 2;
+                    case 'unknown': return 1;
+                    case 'matchSuccess': return context.wasHinted ? 2 : 3;
+                    case 'matchFail': return 1;
+                    case 'matchTimeout': return 2;
+                    default: return 3;
+                }
+            }
+        };
+
         const MemorySystem = {
             intervals: [5 * 60 * 1000, 15 * 60 * 1000, 24 * 60 * 60 * 1000, 3 * 24 * 60 * 60 * 1000, 7 * 24 * 60 * 60 * 1000, 15 * 24 * 60 * 60 * 1000, 30 * 24 * 60 * 60 * 1000],
             shortIntervals: { retry: 60 * 1000, wrong: 5 * 60 * 1000, hint: 15 * 60 * 1000 },
@@ -12637,7 +12708,12 @@
                     selfRating: null,
                     lastGameResult: null,
                     lastReview: null,
-                    firstLearnedAt: null
+                    firstLearnedAt: null,
+                    stability: 0,
+                    difficulty: 0,
+                    lastGrade: 0,
+                    retrievability: 1.0,
+                    algorithmVersion: 0
                 };
             },
 
@@ -12652,6 +12728,11 @@
                 normalized.fuzzyCount = Number(normalized.fuzzyCount) || 0;
                 normalized.consecutiveCorrect = Number(normalized.consecutiveCorrect) || 0;
                 normalized.lapseCount = Number(normalized.lapseCount) || 0;
+                normalized.stability = Math.max(0, Number(normalized.stability) || 0);
+                normalized.difficulty = Math.max(0, Math.min(10, Number(normalized.difficulty) || 0));
+                normalized.lastGrade = Math.max(0, Math.min(4, Number(normalized.lastGrade) || 0));
+                normalized.retrievability = Math.max(0, Math.min(1, Number(normalized.retrievability) || 1));
+                normalized.algorithmVersion = Number(normalized.algorithmVersion) || 0;
                 if (!normalized.status) normalized.status = normalized.familiarity >= 4 ? 'mastered' : normalized.familiarity > 0 ? 'learning' : 'new';
                 return normalized;
             },
@@ -12690,6 +12771,144 @@
                 return normalized;
             },
 
+            _migrateToFSRS(mem) {
+                if (mem.algorithmVersion >= 2) return mem;
+                let S;
+                const f = mem.familiarity || 0;
+                const cc = mem.consecutiveCorrect || 0;
+                if (f === 0) S = 0.4;
+                else if (f === 1) S = 0.6;
+                else if (f === 2) S = 1.5;
+                else if (f === 3) S = 3.0;
+                else if (f === 4) S = 7.0 + cc * 1.5;
+                else S = 20.0 + cc * 5.0;
+
+                let D = 5.0;
+                D += (mem.lapseCount || 0) * 0.6;
+                D -= (cc || 0) * 0.3;
+                D += (mem.wrongCount || 0) * 0.1;
+                D = Math.max(1, Math.min(10, D));
+
+                let lastGrade = 3;
+                if (mem.selfRating === 'known') lastGrade = 3;
+                else if (mem.selfRating === 'fuzzy') lastGrade = 2;
+                else if (mem.selfRating === 'unknown') lastGrade = 1;
+                else if (mem.lastGameResult === 'matchFail') lastGrade = 1;
+                else if (mem.lastGameResult === 'matchTimeout') lastGrade = 2;
+
+                let R = 1.0;
+                if (mem.lastReview && S > 0) {
+                    const elapsedDays = Math.max(0, (Date.now() - mem.lastReview) / 86400000);
+                    R = FSRS.retrievability(elapsedDays, S);
+                }
+
+                return {
+                    ...mem,
+                    stability: S,
+                    difficulty: D,
+                    lastGrade: lastGrade,
+                    retrievability: R,
+                    algorithmVersion: 2
+                };
+            },
+
+            _familiarityFromFSRS(S, D, grade) {
+                let f;
+                if (S < 0.5) f = grade >= 3 ? 1 : 0;
+                else if (S < 2) f = 2;
+                else if (S < 7) f = 3;
+                else if (S < 30) f = 4;
+                else f = 5;
+                if (D > 8 && f > 0) f -= 1;
+                return f;
+            },
+
+            _statusFromFSRS(S, grade, reviewCount) {
+                if (reviewCount === 0) return 'new';
+                if (grade === 1) return 'lapsed';
+                if (S >= 7) return 'mastered';
+                return 'learning';
+            },
+
+            getRetrievability(word) {
+                const mem = word.memoryData;
+                if (!mem || mem.stability <= 0) return 0;
+                const elapsedDays = mem.lastReview
+                    ? Math.max(0, (Date.now() - mem.lastReview) / 86400000)
+                    : 0;
+                return FSRS.retrievability(elapsedDays, mem.stability);
+            },
+
+            rate(word, outcome, context = {}) {
+                const mem = this.normalizeMemory(
+                    word.memoryData || this.getMemoryForWord(state.level, word, word.sourceIndex || 0),
+                    word.wordId
+                );
+                const now = Date.now();
+                const DAY = 86400000;
+                const MINUTE = 60000;
+
+                const memV2 = mem.algorithmVersion < 2 ? this._migrateToFSRS(mem) : mem;
+
+                const grade = FSRS.outcomeToGrade(outcome, {
+                    wasHinted: context.wasHinted || false,
+                    consecutiveCorrectBefore: memV2.consecutiveCorrect || 0
+                });
+
+                const elapsedDays = memV2.lastReview
+                    ? Math.max(0, (now - memV2.lastReview) / DAY)
+                    : 0;
+
+                const R = memV2.stability > 0
+                    ? FSRS.retrievability(elapsedDays, memV2.stability)
+                    : 0;
+
+                let newS, newD;
+                if (memV2.reviewCount === 0) {
+                    newS = FSRS.initS(grade);
+                    newD = FSRS.initD(grade);
+                } else {
+                    newD = FSRS.updateD(memV2.difficulty || 5, grade);
+                    if (grade === 1) {
+                        newS = FSRS.updateSFail(memV2.stability, newD, R);
+                    } else {
+                        newS = FSRS.updateSSuccess(memV2.stability, newD, R, grade);
+                    }
+                }
+
+                const intervalDays = FSRS.nextInterval(newS);
+                let intervalMs = intervalDays * DAY;
+                const minInterval = grade === 1 ? 1 * MINUTE : grade === 2 ? 10 * MINUTE : 0;
+                intervalMs = Math.max(intervalMs, minInterval);
+
+                const newReviewCount = memV2.reviewCount + 1;
+                const updated = {
+                    ...memV2,
+                    stability: newS,
+                    difficulty: newD,
+                    lastGrade: grade,
+                    retrievability: FSRS.retrievability(0, newS),
+                    algorithmVersion: 2,
+                    reviewCount: newReviewCount,
+                    lastReview: now,
+                    firstLearnedAt: memV2.firstLearnedAt || now,
+                    nextReview: now + intervalMs,
+                    selfRating: ['known', 'fuzzy', 'unknown'].includes(outcome) ? outcome : memV2.selfRating,
+                    lastGameResult: ['matchSuccess', 'matchFail', 'matchTimeout'].includes(outcome) ? outcome : memV2.lastGameResult,
+                    consecutiveCorrect: grade >= 3 ? (memV2.consecutiveCorrect || 0) + 1 : 0,
+                    correctCount: grade >= 3 ? (memV2.correctCount || 0) + 1 : memV2.correctCount,
+                    wrongCount: grade === 1 ? (memV2.wrongCount || 0) + 1 : memV2.wrongCount,
+                    fuzzyCount: outcome === 'fuzzy' ? (memV2.fuzzyCount || 0) + 1 : memV2.fuzzyCount,
+                    lapseCount: grade === 1 && (memV2.consecutiveCorrect || 0) > 0 ? (memV2.lapseCount || 0) + 1 : memV2.lapseCount,
+                    familiarity: this._familiarityFromFSRS(newS, newD, grade),
+                    status: this._statusFromFSRS(newS, grade, newReviewCount)
+                };
+
+                this.saveWordMemory(word.wordId, updated);
+                word.memoryData = updated;
+                return updated;
+            },
+
             hydrateWord(level, word, index) {
                 const memoryKey = this.getWordId(level, word, index);
                 const legacyKey = this.getLegacyKey(level, word);
@@ -12713,7 +12932,7 @@
                 words.forEach(w => {
                     const mem = w.memoryData;
                     if (mem.reviewCount === 0 || mem.status === 'new') stats.new++;
-                    else if (mem.status === 'mastered' || mem.familiarity >= 4) stats.mastered++;
+                    else if (mem.algorithmVersion >= 2 ? (mem.stability >= 7 || mem.status === 'mastered') : (mem.status === 'mastered' || mem.familiarity >= 4)) stats.mastered++;
                     else stats.learning++;
                     if (mem.status === 'lapsed') stats.lapsed++;
                     if (mem.nextReview <= now && mem.reviewCount > 0 && mem.status !== 'new') stats.dueForReview++;
@@ -12757,6 +12976,7 @@
             gameMatchedPairs: 0,
             gameMatchLock: false,
             timeFrozen: false,
+            gameMaxTime: 60,
             hintedWordIds: new Set(),
             gameRounds: [],
             gameRoundIndex: 0,
@@ -12766,8 +12986,7 @@
             totalGameCorrectAttempts: 0,
             totalGameMatchedPairs: 0,
             totalGameCoinsEarned: 0,
-            totalGameGemsEarned: 0,
-            pendingMemoryUpdates: new Map()
+            totalGameGemsEarned: 0
         };
 
         // Progression System
@@ -13972,7 +14191,7 @@
                 }
             }
 
-            dueReviews.sort((a, b) => a.memoryData.nextReview - b.memoryData.nextReview);
+            dueReviews.sort((a, b) => MemorySystem.getRetrievability(a) - MemorySystem.getRetrievability(b));
             dueReviews.forEach(word => addWord(word, 'dueReview', false));
 
             lapsedWords.sort((a, b) => b.memoryData.lapseCount - a.memoryData.lapseCount);
@@ -14115,14 +14334,15 @@
             }
             updateTodayProgressHeader();
 
-            // 取当前组最多 wordsPerRound（默认 10）个单词
+            // 微组大小：首组 4 个，后续组 5 个（含重学词）
+            const microBatchSize = state.currentGroupIndex === 0 ? 4 : 5;
             const now = Date.now();
             const group = [];
             const usedIds = new Set();
 
             // 优先取本轮需要反复复习的 fuzzy/unknown 词
             for (const word of state.sessionReviewQueue) {
-                if (group.length >= state.wordsPerRound) break;
+                if (group.length >= microBatchSize) break;
                 if (state.completedToday.has(word.wordId) || usedIds.has(word.wordId)) continue;
                 group.push(word);
                 usedIds.add(word.wordId);
@@ -14132,7 +14352,7 @@
             const due = state.todayQueue.filter(w => !state.completedToday.has(w.wordId) && w.nextReviewAt <= now && !usedIds.has(w.wordId));
             due.sort((a, b) => a.nextReviewAt - b.nextReviewAt);
             for (const word of due) {
-                if (group.length >= state.wordsPerRound) break;
+                if (group.length >= microBatchSize) break;
                 group.push(word);
                 usedIds.add(word.wordId);
             }
@@ -14226,108 +14446,56 @@
             SFX.flip();
         }
 
-        function applyRating(word, rating) {
-            if (!word) return null;
-            const mem = MemorySystem.getMemoryForWord(state.level, word, word.sourceIndex || 0);
-            const oldFamiliarity = mem.familiarity;
-            const now = Date.now();
-            const MINUTE = 60 * 1000;
-            const DAY = 24 * 60 * MINUTE;
-            const isNewWord = mem.reviewCount === 0;
-
-            let updated = { ...mem };
-            updated.reviewCount = mem.reviewCount + 1;
-            updated.lastReview = now;
-            updated.firstLearnedAt = mem.firstLearnedAt || now;
-            updated.selfRating = rating;
-
-            if (rating === 'known') {
-                // 认识：记忆加深，下次复习时间越来越长（1天、3天、7天、14天、30天...）
-                updated.consecutiveCorrect = (mem.consecutiveCorrect || 0) + 1;
-                updated.correctCount = (mem.correctCount || 0) + 1;
-                updated.wrongCount = 0;
-                updated.fuzzyCount = 0;
-                updated.lapseCount = 0;
-                updated.familiarity = Math.min(5, mem.familiarity + 2);
-                const dayIntervals = [1, 3, 7, 14, 30, 60, 90];
-                const idx = Math.min(updated.consecutiveCorrect - 1, dayIntervals.length - 1);
-                updated.nextReview = now + dayIntervals[idx] * DAY;
-                updated.status = 'mastered';
-            } else if (rating === 'fuzzy') {
-                // 模糊：今天稍后重新出现（3、5、10、15 分钟后），打断连续正确
-                updated.consecutiveCorrect = 0;
-                updated.fuzzyCount = (mem.fuzzyCount || 0) + 1;
-                updated.familiarity = Math.min(5, mem.familiarity + 1);
-                const fuzzyDelays = [3, 5, 10, 15];
-                const idx = Math.min(updated.fuzzyCount - 1, fuzzyDelays.length - 1);
-                updated.nextReview = now + fuzzyDelays[idx] * MINUTE;
-                updated.status = 'learning';
-            } else {
-                // 不认识：很快再复习（1、5、10、15 分钟后），连续正确归零
-                updated.consecutiveCorrect = 0;
-                updated.wrongCount = (mem.wrongCount || 0) + 1;
-                updated.lapseCount = (mem.lapseCount || 0) + 1;
-                updated.fuzzyCount = 0;
-                updated.familiarity = Math.max(0, mem.familiarity - 1);
-                const wrongDelays = [1, 5, 10, 15];
-                const idx = Math.min(updated.wrongCount - 1, wrongDelays.length - 1);
-                updated.nextReview = now + wrongDelays[idx] * MINUTE;
-                updated.status = 'lapsed';
-            }
-
-            MemorySystem.saveWordMemory(word.wordId, updated);
-            word.memoryData = updated;
-
-            // 记录本轮结果（每个单词只记第一次出现时的评级，避免重复统计）
+        function recordRoundResult(word, outcome, mem) {
             const existingIndex = state.roundResults.findIndex(r => r.wordId === word.wordId);
+            const priority = { unknown: 0, matchFail: 1, matchTimeout: 2, fuzzy: 3, matchSuccess: 4, known: 5 };
             if (existingIndex === -1) {
                 state.roundResults.push({
                     wordId: word.wordId,
                     en: word.en,
                     cn: getDisplayMeanings(word),
-                    rating,
-                    isNew: isNewWord,
-                    familiarityBefore: oldFamiliarity,
-                    familiarityAfter: updated.familiarity,
-                    memoryData: updated
+                    rating: outcome,
+                    outcomes: [outcome],
+                    isNew: mem.reviewCount === 1,
+                    familiarityAfter: mem.familiarity,
+                    stability: mem.stability,
+                    nextReview: mem.nextReview,
+                    memoryData: mem
                 });
             } else {
-                // 后续复习只更新评级为最差的那次
-                const priority = { unknown: 0, fuzzy: 1, known: 2 };
-                if (priority[rating] < priority[state.roundResults[existingIndex].rating]) {
-                    state.roundResults[existingIndex].rating = rating;
+                state.roundResults[existingIndex].outcomes.push(outcome);
+                if (priority[outcome] < priority[state.roundResults[existingIndex].rating]) {
+                    state.roundResults[existingIndex].rating = outcome;
                 }
-                state.roundResults[existingIndex].memoryData = updated;
+                state.roundResults[existingIndex].familiarityAfter = mem.familiarity;
+                state.roundResults[existingIndex].stability = mem.stability;
+                state.roundResults[existingIndex].nextReview = mem.nextReview;
+                state.roundResults[existingIndex].memoryData = mem;
             }
-
-            updateTodayProgressHeader();
-            return updated;
         }
 
         function markWord(rating) {
             const word = state.currentWords[state.learningIndex];
             if (!word) return;
             SFX.selfRate(rating);
-            const updatedMem = applyRating(word, rating);
+            const updatedMem = MemorySystem.rate(word, rating);
+            recordRoundResult(word, rating, updatedMem);
 
             if (rating === 'known') {
-                // 认识的词今天完成，从复习队列中移除
                 state.completedToday.add(word.wordId);
                 state.sessionReviewQueue = state.sessionReviewQueue.filter(w => w.wordId !== word.wordId);
             } else {
-                // 模糊/不认识：加入本轮复习队列末尾，稍后再出现
                 const alreadyInSession = state.sessionReviewQueue.some(w => w.wordId === word.wordId);
                 if (!alreadyInSession) {
                     state.sessionReviewQueue.push(word);
                 }
-                // 同时更新今日队列的下次复习时间
                 requeueWord(word, updatedMem.nextReview);
             }
 
             renderLearningProgress();
             renderQueueInfo();
+            updateTodayProgressHeader();
 
-            // 当前组下一个单词
             state.groupWordIndex++;
             if (state.groupWordIndex < state.currentGroupWords.length) {
                 state.currentWords = [state.currentGroupWords[state.groupWordIndex]];
@@ -14336,12 +14504,10 @@
                 return;
             }
 
-            // 当前组学完，进入配对游戏；游戏结束后若有剩余单词会自动进入下一组
             startReviewGame();
         }
 
         // ================== 单词配对游戏 ==================
-        const GAME_DURATION = 60;
 
         function startReviewGame() {
             if (!audioUnlocked) unlockAudio();
@@ -14383,14 +14549,14 @@
 
         function startGame() {
             if (!audioUnlocked) unlockAudio();
-            state.pendingMemoryUpdates = new Map();
             state.gameScore = 0;
             state.gameCombo = 0;
             state.gameMaxCombo = 0;
             state.gameAttempts = 0;
             state.gameCorrectAttempts = 0;
             state.gameCoinsEarned = 0;
-            state.gameTimeLeft = GAME_DURATION;
+            state.gameMaxTime = calcGameDuration(state.currentWords.length);
+            state.gameTimeLeft = state.gameMaxTime;
             state.gameMatchedPairs = 0;
             state.gameMatchLock = false;
             state.timeFrozen = false;
@@ -14406,47 +14572,8 @@
             startGameTimer();
         }
 
-        function applyGameMemoryFeedback(word, type) {
-            if (!word || !word.wordId) return;
-            const mem = word.memoryData || MemorySystem.getMemoryForWord(state.level, word, word.sourceIndex || 0);
-            const now = Date.now();
-            const MINUTE = 60 * 1000;
-            const DAY = 24 * 60 * MINUTE;
-            const updated = { ...mem };
-            updated.reviewCount = mem.reviewCount + 1;
-            updated.lastReview = now;
-
-            if (type === 'matchSuccess') {
-                // 配对成功：正向反馈（轻量版 known）
-                const wasHinted = state.hintedWordIds.has(word.wordId);
-                if (!wasHinted) {
-                    updated.consecutiveCorrect = (mem.consecutiveCorrect || 0) + 1;
-                }
-                updated.correctCount = (mem.correctCount || 0) + 1;
-                updated.familiarity = Math.min(5, mem.familiarity + 1);
-                const dayIntervals = [1, 3, 7, 14, 30, 60, 90];
-                const idx = Math.min(Math.max(updated.consecutiveCorrect - 1, 0), dayIntervals.length - 1);
-                updated.nextReview = now + dayIntervals[idx] * DAY;
-                updated.status = updated.familiarity >= 4 ? 'mastered' : 'learning';
-            } else if (type === 'matchFail') {
-                // 配对失败：轻微负向反馈
-                updated.consecutiveCorrect = 0;
-                updated.wrongCount = (mem.wrongCount || 0) + 1;
-                updated.familiarity = Math.max(0, mem.familiarity - 1);
-                updated.nextReview = now + 5 * MINUTE;
-                updated.status = 'lapsed';
-            } else if (type === 'timeout') {
-                // 超时未配对：视为需要复习
-                updated.consecutiveCorrect = 0;
-                updated.wrongCount = (mem.wrongCount || 0) + 1;
-                updated.lapseCount = (mem.lapseCount || 0) + 1;
-                updated.familiarity = Math.max(0, mem.familiarity - 1);
-                updated.nextReview = now + 1 * MINUTE;
-                updated.status = 'lapsed';
-            }
-
-            state.pendingMemoryUpdates.set(word.wordId, updated);
-            word.memoryData = updated;
+        function calcGameDuration(pairCount) {
+            return Math.max(20, Math.min(90, pairCount * 8));
         }
 
         function buildGameCards() {
@@ -14519,7 +14646,7 @@
                 state.gameMaxCombo = Math.max(state.gameMaxCombo, state.gameCombo);
                 const points = 10 + (state.gameCombo - 1) * 5;
                 state.gameScore += points;
-                state.gameTimeLeft = Math.min(GAME_DURATION, state.gameTimeLeft + 2);
+                state.gameTimeLeft += 2;
                 state.gameMatchedPairs++;
                 state.gameCoinsEarned += 2;
                 SFX.matchSuccess();
@@ -14530,11 +14657,17 @@
                 if (state.gameCombo >= 2) showComboPopup(state.gameCombo);
                 if (state.gameCombo >= 5) showMegaCombo(state.gameCombo);
 
-                // 配对成功：更新两个词的记忆数据
+                // 配对成功：统一调用 MemorySystem.rate
                 const word1 = state.currentWords[first.card.pairId];
                 const word2 = state.currentWords[second.card.pairId];
-                if (word1) applyGameMemoryFeedback(word1, 'matchSuccess');
-                if (word2 && word2.wordId !== word1.wordId) applyGameMemoryFeedback(word2, 'matchSuccess');
+                if (word1) {
+                    const mem1 = MemorySystem.rate(word1, 'matchSuccess', { wasHinted: state.hintedWordIds.has(word1.wordId) });
+                    recordRoundResult(word1, 'matchSuccess', mem1);
+                }
+                if (word2 && word2.wordId !== word1.wordId) {
+                    const mem2 = MemorySystem.rate(word2, 'matchSuccess', { wasHinted: state.hintedWordIds.has(word2.wordId) });
+                    recordRoundResult(word2, 'matchSuccess', mem2);
+                }
 
                 if (state.gameMatchedPairs >= state.currentWords.length) {
                     setTimeout(() => endGame('cleared'), 420);
@@ -14547,11 +14680,23 @@
                 shakeCards(first.el, second.el);
                 updateGameHUD(true);
 
-                // 配对失败：更新两个词的记忆数据
+                // 配对失败：统一调用 MemorySystem.rate
                 const word1 = state.currentWords[first.card.pairId];
                 const word2 = state.currentWords[second.card.pairId];
-                if (word1) applyGameMemoryFeedback(word1, 'matchFail');
-                if (word2 && word2.wordId !== word1.wordId) applyGameMemoryFeedback(word2, 'matchFail');
+                if (word1) {
+                    const mem1 = MemorySystem.rate(word1, 'matchFail');
+                    recordRoundResult(word1, 'matchFail', mem1);
+                    if (!state.sessionReviewQueue.some(w => w.wordId === word1.wordId)) {
+                        state.sessionReviewQueue.push(word1);
+                    }
+                }
+                if (word2 && word2.wordId !== word1.wordId) {
+                    const mem2 = MemorySystem.rate(word2, 'matchFail');
+                    recordRoundResult(word2, 'matchFail', mem2);
+                    if (!state.sessionReviewQueue.some(w => w.wordId === word2.wordId)) {
+                        state.sessionReviewQueue.push(word2);
+                    }
+                }
             }
             clearSelection();
             state.gameMatchLock = false;
@@ -14625,7 +14770,7 @@
             }
 
             const timerBar = document.getElementById('timerBar');
-            const pct = Math.max(0, (state.gameTimeLeft / GAME_DURATION) * 100);
+            const pct = Math.max(0, (state.gameTimeLeft / state.gameMaxTime) * 100);
             timerBar.style.width = `${pct}%`;
             timerBar.classList.toggle('warning', state.gameTimeLeft <= 10);
             timerHudEl.classList.toggle('danger', state.gameTimeLeft <= 10);
@@ -14701,7 +14846,7 @@
             progress.timeBonuses--;
             saveProgress();
             SFX.timeBonus();
-            state.gameTimeLeft = Math.min(GAME_DURATION, state.gameTimeLeft + 10);
+            state.gameTimeLeft = Math.min(state.gameMaxTime, state.gameTimeLeft + 10);
             updateGameHUD(true);
             shopToast('⏱️ 时间 +10 秒');
             updateGameItemsBar();
@@ -14796,7 +14941,7 @@
                 SFX.timeup();
             }
 
-            // 超时：未匹配完的词视为需要复习
+            // 超时：未匹配完的词视为需要复习，直接调统一接口
             if (reason === 'timeout') {
                 const matchedPairIds = new Set();
                 document.querySelectorAll('.match-card.matched').forEach(el => {
@@ -14804,17 +14949,13 @@
                 });
                 state.currentWords.forEach((word, index) => {
                     if (!matchedPairIds.has(index)) {
-                        applyGameMemoryFeedback(word, 'timeout');
+                        const mem = MemorySystem.rate(word, 'matchTimeout');
+                        recordRoundResult(word, 'matchTimeout', mem);
+                        if (!state.sessionReviewQueue.some(w => w.wordId === word.wordId)) {
+                            state.sessionReviewQueue.push(word);
+                        }
                     }
                 });
-            }
-
-            // 批量写入本轮游戏过程中积累的记忆数据
-            if (state.pendingMemoryUpdates && state.pendingMemoryUpdates.size > 0) {
-                for (const [wordId, mem] of state.pendingMemoryUpdates) {
-                    MemorySystem.saveWordMemory(wordId, mem);
-                }
-                state.pendingMemoryUpdates.clear();
             }
 
             // 累加本轮数据到多轮总计
@@ -14873,7 +15014,27 @@
         }
 
         function ratingLabel(rating) {
-            return rating === 'known' ? '认识' : rating === 'fuzzy' ? '模糊' : '不认识';
+            const labels = {
+                known: '认识', fuzzy: '模糊', unknown: '不认识',
+                matchSuccess: '配对成功', matchFail: '配对失败', matchTimeout: '超时'
+            };
+            return labels[rating] || rating;
+        }
+
+        function gameIcon(outcome) {
+            const icons = { matchSuccess: '✓', matchFail: '✗', matchTimeout: '⏱' };
+            return icons[outcome] || '';
+        }
+
+        function formatNextReview(ts) {
+            if (!ts) return '';
+            const diff = ts - Date.now();
+            const min = Math.round(diff / 60000);
+            if (min < 60) return `${min}分钟后`;
+            const hr = Math.round(min / 60);
+            if (hr < 24) return `${hr}小时后`;
+            const day = Math.round(hr / 24);
+            return `${day}天后`;
         }
 
         function showCompletionSummary(gameResult) {
@@ -14911,12 +15072,19 @@
                 list.innerHTML = '<div class="rating-row"><span>今日任务已全部完成，休息一下吧！</span></div>';
                 if (!gameResult) SFX.taskComplete();
             } else {
-                list.innerHTML = results.map(r => `
+                list.innerHTML = results.map(r => {
+                    const gameOutcomes = (r.outcomes || []).filter(o => o.startsWith('match'));
+                    const gameIcons = gameOutcomes.map(o => `<span class="game-icon ${o}">${gameIcon(o)}</span>`).join(' ');
+                    const reviewInfo = r.nextReview ? `<span class="next-review">${formatNextReview(r.nextReview)}</span>` : '';
+                    return `
                     <div class="rating-row">
                         <span><strong>${r.en}</strong> ${r.cn}</span>
                         <span class="rating-badge ${r.rating}">${ratingLabel(r.rating)}</span>
+                        ${gameIcons ? `<span class="game-icons">${gameIcons}</span>` : ''}
+                        ${reviewInfo}
                     </div>
-                `).join('');
+                    `;
+                }).join('');
                 if (!gameResult) SFX.victory();
             }
 
@@ -15134,7 +15302,7 @@
             state.gameAttempts = 0;
             state.gameCorrectAttempts = 0;
             state.gameCoinsEarned = 0;
-            state.gameTimeLeft = GAME_DURATION;
+            state.gameTimeLeft = state.gameMaxTime;
             state.gameMatchedPairs = 0;
             state.gameSelected = [];
             state.gameCards = [];
