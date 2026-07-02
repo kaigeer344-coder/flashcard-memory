@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星巴克灯光设计文档 · 中英翻译</title>
+    <style>
+        :root {
+            --primary: #00704a;
+            --primary-dark: #005a3a;
+            --text: #333;
+            --muted: #666;
+            --bg: #f8f9fa;
+            --card: #fff;
+            --border: #e8e8e8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 48px 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px 16px 64px;
+        }
+        .page-section {
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            margin-bottom: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .page-header {
+            background: #f1f8f5;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-number {
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .page-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        .page-body {
+            padding: 24px;
+        }
+        .page-image {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .bilingual-block {
+            background: #fafafa;
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .bilingual-block p {
+            margin: 6px 0;
+        }
+        .bilingual-block strong {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        .plain-text {
+            margin: 8px 0;
+            padding: 8px 0;
+            color: var(--text);
+        }
+        .empty-note {
+            color: var(--muted);
+            font-style: italic;
+            text-align: center;
+            padding: 32px;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 24px;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+        @media (max-width: 600px) {
+            header { padding: 32px 16px; }
+            .container { padding: 16px 12px 48px; }
+            .page-body { padding: 16px; }
+            .page-header { padding: 12px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>星巴克灯光设计文档 · 中英翻译</h1>
+        <p>来源：星巴克PDF-1-30_compressed.pdf | 处理：EasyOCR 识别 + Google Translate 英译中</p>
+        <p>本文档为扫描件 OCR 结果，中英混合处以双语对照呈现，内容仅供参考</p>
+    </header>
+    <div class="container">
+
+        <section class="page-section" id="page-1">
+            <div class="page-header">
+                <div class="page-number">1</div>
+                <div class="page-title">第 1 页</div>
+            </div>
+            <div class="page-body">
+                <img src="images/page_001.jpg" alt="第 1 页" class="page-image" loading="lazy">
+                <p class="plain-text">TM</p>
+                <p class="plain-text">寻找星巴克灯光的最佳配方</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：THE BEST LIGHTING DESIGN FOR STARBUCKS</p>
+                    <p><strong>译文</strong>：星巴克最佳灯光设计</p>
+                </div>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">6'87'4旨</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-2">
+            <div class="page-header">
+                <div class="page-number">2</div>
+                <div class="page-title">第 2 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">咖啡触碰到我们的</p>
+                <p class="plain-text">从来都不仅仅是味蕾</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-3">
+            <div class="page-header">
+                <div class="page-number">3</div>
+                <div class="page-title">第 3 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">光 ,也从来都不只是为了看见</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-4">
+            <div class="page-header">
+                <div class="page-number">4</div>
+                <div class="page-title">第 4 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">光 ,可以演绎不同版本的空间情感</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：AB</p>
+                    <p><strong>译文</strong>：AB</p>
+                </div>
+                <p class="plain-text">0@2曷鼠</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：he e Wegels</p>
+                    <p><strong>译文</strong>：韦格斯</p>
+                </div>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+                <p class="plain-text">COFFEE ;</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-5">
+            <div class="page-header">
+                <div class="page-number">5</div>
+                <div class="page-title">第 5 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">什么样光 ,才是属于星巴克的版本 ?</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-6">
+            <div class="page-header">
+                <div class="page-number">6</div>
+                <div class="page-title">第 6 页</div>
+            </div>
+            <div class="page-body">
+                <img src="images/page_006.jpg" alt="第 6 页" class="page-image" loading="lazy">
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：CONTENTS</p>
+                    <p><strong>译文</strong>：内容</p>
+                </div>
+                <p class="plain-text">诉求分析</p>
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">设计探索</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：REQUIREMENT INVESTIGATION CHALLENGE</p>
+                    <p><strong>译文</strong>：需求调查挑战</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-7">
+            <div class="page-header">
+                <div class="page-number">7</div>
+                <div class="page-title">第 7 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">诉求分析</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：REQUIREMENT</p>
+                    <p><strong>译文</strong>：要求</p>
+                </div>
+                <p class="plain-text">星巴克需要什么样的灯光?</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-8">
+            <div class="page-header">
+                <div class="page-number">8</div>
+                <div class="page-title">第 8 页</div>
+            </div>
+            <div class="page-body">
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：WHAT</p>
+                    <p><strong>译文</strong>：什么</p>
+                </div>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：THE</p>
+                    <p><strong>译文</strong>：这</p>
+                </div>
+                <p class="plain-text">STARBUCKS?</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-9">
+            <div class="page-header">
+                <div class="page-number">9</div>
+                <div class="page-title">第 9 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">诉求分析</p>
+                <p class="plain-text">品牌特性</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：STARBUCRSI TASTING FASHION RELANING WORKING CHATTING TTTCC OTU TLTTC TLTTC TLTTC CONNECI TOGEIK NEIGHBC ITS HooDs SELF-PORTRLIT MODERN-UFE EVERTTHING</p>
+                    <p><strong>译文</strong>：STARBUCRSI 品尝时尚 重新规划 工作 聊天 TTTCC OTU TLTTC TLTTC TLTTC CONNECI TOGEIK NEIGHBC ITS HooDs 自画像 现代 UFE 一切</p>
+                </div>
+                <p class="plain-text">5STCC</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：TLTSTC</p>
+                    <p><strong>译文</strong>：TLTSTC</p>
+                </div>
+                <p class="plain-text">2TC</p>
+                <p class="plain-text">WEGO</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-10">
+            <div class="page-header">
+                <div class="page-number">10</div>
+                <div class="page-title">第 10 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">STARBUCKS</p>
+                <p class="plain-text">EVERYTHING。。</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-11">
+            <div class="page-header">
+                <div class="page-number">11</div>
+                <div class="page-title">第 11 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">诉求分析</p>
+                <p class="plain-text">品牌特性</p>
+                <p class="plain-text">STMRBUCL5</p>
+                <p class="plain-text">北京大栅栏店</p>
+                <p class="plain-text">杭州嘉里中心店</p>
+                <p class="plain-text">成都远洋太古里旗舰店</p>
+                <p class="plain-text">杭州断桥店</p>
+                <p class="plain-text">海烘焙工坊</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-12">
+            <div class="page-header">
+                <div class="page-number">12</div>
+                <div class="page-title">第 12 页</div>
+            </div>
+            <div class="page-body">
+                <img src="images/page_012.jpg" alt="第 12 页" class="page-image" loading="lazy">
+                <p class="plain-text">诉求分析</p>
+                <p class="plain-text">品牌特性</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：Delivering an Increasingly Premiumized Starbucks Experience Expand and Elevate Global Store Portfolio Food Princi Preored Onste Roostey Prinsi Centrol Kitchen</p>
+                    <p><strong>译文</strong>：提供日益优质的星巴克体验 扩大和提升全球门店组合 Food Princi Preored Onste Roostey Prinsi Centrol Kitchen</p>
+                </div>
+                <p class="plain-text">Starbucks</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：Reserve Stores</p>
+                    <p><strong>译文</strong>：储备商店</p>
+                </div>
+                <p class="plain-text">Pmnci。</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：Starbucks Coffee</p>
+                    <p><strong>译文</strong>：星巴克咖啡</p>
+                </div>
+                <p class="plain-text">lo Boulonge。</p>
+                <p class="plain-text">耳前星巳充的门店结构由高到低包括:</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：Reserve Bors</p>
+                    <p><strong>译文</strong>：储备博尔斯</p>
+                </div>
+                <p class="plain-text">SIorbUCK。</p>
+                <p class="plain-text">烘焙工坊及臻选品鉴馆 (Roastery)</p>
+                <p class="plain-text">Lo Bovlonge;</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：Starbucks Caffee</p>
+                    <p><strong>译文</strong>：星巴克咖啡</p>
+                </div>
+                <p class="plain-text">褒选咖啡门店</p>
+                <p class="plain-text">(Rogoro Storosi</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：Srorouchs Stores With Heserve Preserce</p>
+                    <p><strong>译文</strong>：拥有 Heserve Preserce 的 Srorouchs 商店</p>
+                </div>
+                <p class="plain-text">囊选体验吧</p>
+                <p class="plain-text">(RosoroBars)</p>
+                <p class="plain-text">提供臻选咖啡的门店</p>
+                <p class="plain-text">(Stores Wth Resere Presence)</p>
+                <p class="plain-text">普通门告</p>
+                <p class="plain-text">(Coro Stores」</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：Storbucks Colfee Core Stores</p>
+                    <p><strong>译文</strong>：Storbucks Colfee 核心店</p>
+                </div>
+                <p class="plain-text">同时星巴克也在尝试诸如符来速。便利店。流动咖啡车等新型门店。</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-13">
+            <div class="page-header">
+                <div class="page-number">13</div>
+                <div class="page-title">第 13 页</div>
+            </div>
+            <div class="page-body">
+                <img src="images/page_013.jpg" alt="第 13 页" class="page-image" loading="lazy">
+                <p class="plain-text">诉求分析</p>
+                <p class="plain-text">照明需求层次分析</p>
+                <p class="plain-text">理念先进</p>
+                <p class="plain-text">战略需求</p>
+                <p class="plain-text">设计引领</p>
+                <p class="plain-text">设计前卫</p>
+                <p class="plain-text">行业领袖</p>
+                <p class="plain-text">城市地标</p>
+                <p class="plain-text">策略需求</p>
+                <p class="plain-text">时尚创意</p>
+                <p class="plain-text">文化融入</p>
+                <p class="plain-text">设计创新</p>
+                <p class="plain-text">品牌形象</p>
+                <p class="plain-text">连锁品牌</p>
+                <p class="plain-text">营销需求</p>
+                <p class="plain-text">品牌识别</p>
+                <p class="plain-text">文化呈现</p>
+                <p class="plain-text">主题零售店</p>
+                <p class="plain-text">经营需求</p>
+                <p class="plain-text">销售促进</p>
+                <p class="plain-text">吸引关注</p>
+                <p class="plain-text">商品展示</p>
+                <p class="plain-text">咖啡店</p>
+                <p class="plain-text">基本需求</p>
+                <p class="plain-text">空间体验</p>
+                <p class="plain-text">氛围营造</p>
+                <p class="plain-text">行为关照</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-14">
+            <div class="page-header">
+                <div class="page-number">14</div>
+                <div class="page-title">第 14 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">诉求分析</p>
+                <p class="plain-text">基本需求分析</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：OR</p>
+                    <p><strong>译文</strong>：或者</p>
+                </div>
+                <p class="plain-text">放松</p>
+                <p class="plain-text">交流</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-15">
+            <div class="page-header">
+                <div class="page-number">15</div>
+                <div class="page-title">第 15 页</div>
+            </div>
+            <div class="page-body">
+                <img src="images/page_015.jpg" alt="第 15 页" class="page-image" loading="lazy">
+                <p class="plain-text">诉求分析</p>
+                <p class="plain-text">基本需求分析</p>
+                <p class="plain-text">无眩光刺激</p>
+                <p class="plain-text">光色纯正</p>
+                <p class="plain-text">生理舒适</p>
+                <p class="plain-text">放松</p>
+                <p class="plain-text">交流</p>
+                <p class="plain-text">肤色自然</p>
+                <p class="plain-text">明暗对比适宜</p>
+                <p class="plain-text">显色性佳</p>
+                <p class="plain-text">舒适感</p>
+                <p class="plain-text">面部表情</p>
+                <p class="plain-text">温暖柔和</p>
+                <p class="plain-text">无强烈阴影</p>
+                <p class="plain-text">心理舒适</p>
+                <p class="plain-text">立体完整</p>
+                <p class="plain-text">场景美感</p>
+                <p class="plain-text">无强曝光点</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-16">
+            <div class="page-header">
+                <div class="page-number">16</div>
+                <div class="page-title">第 16 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：INVESTIGATION</p>
+                    <p><strong>译文</strong>：调查</p>
+                </div>
+                <p class="plain-text">星巴克目前的灯光还存在哪些问题?</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-17">
+            <div class="page-header">
+                <div class="page-number">17</div>
+                <div class="page-title">第 17 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">调研店铺</p>
+                <p class="plain-text">旗舰店</p>
+                <p class="plain-text">臻选店</p>
+                <p class="plain-text">普通店</p>
+                <p class="plain-text">迪士尼店</p>
+                <p class="plain-text">思南公馆店</p>
+                <p class="plain-text">万象城店</p>
+                <p class="plain-text">总部大楼店</p>
+                <p class="plain-text">漕河泾普邈店</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：TARAUCS COFFE</p>
+                    <p><strong>译文</strong>：塔劳斯咖啡</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-18">
+            <div class="page-header">
+                <div class="page-number">18</div>
+                <div class="page-title">第 18 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">灯光体验评价</p>
+                <p class="plain-text">舒适</p>
+                <p class="plain-text">舒适</p>
+                <p class="plain-text">安全</p>
+                <p class="plain-text">空间特色</p>
+                <p class="plain-text">安全</p>
+                <p class="plain-text">美观</p>
+                <p class="plain-text">商品展示</p>
+                <p class="plain-text">品牌文化</p>
+                <p class="plain-text">美观</p>
+                <p class="plain-text">品牌文化</p>
+                <p class="plain-text">空间特色</p>
+                <p class="plain-text">商品展示</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-19">
+            <div class="page-header">
+                <div class="page-number">19</div>
+                <div class="page-title">第 19 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">照明问题分析维度</p>
+                <p class="plain-text">照明表达主次是否合理 ?</p>
+                <p class="plain-text">设计逻辑</p>
+                <p class="plain-text">是否违背照明设计的原理 ?</p>
+                <p class="plain-text">设计原因</p>
+                <p class="plain-text">照明方式选择是否合理</p>
+                <p class="plain-text">照明手法</p>
+                <p class="plain-text">灯具点位是否恰当 ?</p>
+                <p class="plain-text">灯具的类型及参数选择是否恰当 ?</p>
+                <p class="plain-text">灯具形式</p>
+                <p class="plain-text">外观形式是否和谐</p>
+                <p class="plain-text">问题分析</p>
+                <p class="plain-text">器具原因</p>
+                <p class="plain-text">灯具的控制性能是否理想 ?</p>
+                <p class="plain-text">性能品质</p>
+                <p class="plain-text">光色品质是否优良 ?</p>
+                <p class="plain-text">灯光重点投射是否精准 ?</p>
+                <p class="plain-text">调光对焦</p>
+                <p class="plain-text">同类型表达是否完整-致 ?</p>
+                <p class="plain-text">实施原因</p>
+                <p class="plain-text">照明的安装施工是否到位 ?</p>
+                <p class="plain-text">施工品质</p>
+                <p class="plain-text">与其相关的装饰节点施工是否理想 ?</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-20">
+            <div class="page-header">
+                <div class="page-number">20</div>
+                <div class="page-title">第 20 页</div>
+            </div>
+            <div class="page-body">
+                <img src="images/page_020.jpg" alt="第 20 页" class="page-image" loading="lazy">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">迪士尼旗舰店</p>
+                <p class="plain-text">C =旦夫三</p>
+                <p class="plain-text">亏鬟</p>
+                <p class="plain-text">59三</p>
+                <p class="plain-text">昏弩错</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：TA</p>
+                    <p><strong>译文</strong>：TA</p>
+                </div>
+                <p class="plain-text">川菥箱</p>
+                <p class="plain-text">-5</p>
+                <p class="plain-text">;u尼t</p>
+                <p class="plain-text">爪?</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：SS</p>
+                    <p><strong>译文</strong>：SS</p>
+                </div>
+                <p class="plain-text">汩直氇</p>
+                <p class="plain-text">F5讧</p>
+                <p class="plain-text">~ 5</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-21">
+            <div class="page-header">
+                <div class="page-number">21</div>
+                <div class="page-title">第 21 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">迪士尼旗舰店</p>
+                <p class="plain-text">店铺门面</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：TOIETHER</p>
+                    <p><strong>译文</strong>：托伊瑟</p>
+                </div>
+                <p class="plain-text">店铺内部缺乏立面和顶部亮度</p>
+                <p class="plain-text">从外部看过去整个店铺内部都是黑暗的</p>
+                <p class="plain-text">形成-个</p>
+                <p class="plain-text">'黑洞"</p>
+                <p class="plain-text">影响顾客进店过程的情绪。</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-22">
+            <div class="page-header">
+                <div class="page-number">22</div>
+                <div class="page-title">第 22 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">迪士尼旗舰店</p>
+                <p class="plain-text">吧台及其背景文化墙</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：UNITY</p>
+                    <p><strong>译文</strong>：统一</p>
+                </div>
+                <p class="plain-text">4CUP</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：MOMENT COFFEE IS TOGETHI</p>
+                    <p><strong>译文</strong>：咖啡时刻</p>
+                </div>
+                <p class="plain-text">店铺内部立面使用黑色的饰面</p>
+                <p class="plain-text">且末采用针对性的洗墙照明</p>
+                <p class="plain-text">未能形成明亮吸引人的视觉面。</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-23">
+            <div class="page-header">
+                <div class="page-number">23</div>
+                <div class="page-title">第 23 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">迪士尼旗舰店</p>
+                <p class="plain-text">楼梯及其壁面</p>
+                <p class="plain-text">暗藏的颗粒状洗墙灯光束角不理想</p>
+                <p class="plain-text">难以使金属质感的立面呈现较好的状态;而立面上雕刻的文化元素</p>
+                <p class="plain-text">也难以传达给顾客。</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-24">
+            <div class="page-header">
+                <div class="page-number">24</div>
+                <div class="page-title">第 24 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">迪士尼旗舰店</p>
+                <p class="plain-text">二层核心座位区眩光解析</p>
+                <p class="plain-text">对顶部装饰物泛光的射灯的安装方式</p>
+                <p class="plain-text">会对人眼产生强烈瞅光</p>
+                <p class="plain-text">且对特色天花的呈现也效果不佳。</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-25">
+            <div class="page-header">
+                <div class="page-number">25</div>
+                <div class="page-title">第 25 页</div>
+            </div>
+            <div class="page-body">
+                <img src="images/page_025.jpg" alt="第 25 页" class="page-image" loading="lazy">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">迪士尼旗舰店</p>
+                <p class="plain-text">二层核心座傩区</p>
+                <p class="plain-text">砭-厚</p>
+                <p class="plain-text">46闪10>瑙攻</p>
+                <p class="plain-text">即使使用了蜂窝片作为防眩手段</p>
+                <p class="plain-text">二层休息区的每</p>
+                <p class="plain-text">处都能感受到强烈的眩光</p>
+                <p class="plain-text">可以采用A-1和A-2两种方案来改善眩光的问题。</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-26">
+            <div class="page-header">
+                <div class="page-number">26</div>
+                <div class="page-title">第 26 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">迪士尼旗舰店</p>
+                <p class="plain-text">二层核心座位区特色夭花</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：A CUP OlE</p>
+                    <p><strong>译文</strong>：一杯OLE</p>
+                </div>
+                <p class="plain-text">天花间接灯带效果和品质都不佳</p>
+                <p class="plain-text">导致呈现出颗粒感</p>
+                <p class="plain-text">破坏了特色天花的整体感与协调性。</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：UNIT</p>
+                    <p><strong>译文</strong>：单元</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-27">
+            <div class="page-header">
+                <div class="page-number">27</div>
+                <div class="page-title">第 27 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">迪士尼旗舰店</p>
+                <p class="plain-text">二层核心座位区特色天花解析</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：CONTTIOT</p>
+                    <p><strong>译文</strong>：康蒂奥特</p>
+                </div>
+                <p class="plain-text">ATs拓</p>
+                <p class="plain-text">1元癍</p>
+                <p class="plain-text">天花功能射灯不规则的调角外露</p>
+                <p class="plain-text">破坏天花的整体美感</p>
+                <p class="plain-text">可使用内藏式可调角灯具</p>
+                <p class="plain-text">保障天花整洁性和美观度 ;</p>
+                <p class="plain-text">灯带则可以将光源深藏</p>
+                <p class="plain-text">并配合亚克力均扩散的方式</p>
+                <p class="plain-text">消隐金属饰面反射出的光源影像。</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+                <p class="plain-text">1PN</p>
+                <div class="bilingual-block">
+                    <p><strong>原文</strong>：TAC</p>
+                    <p><strong>译文</strong>：TAC</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-28">
+            <div class="page-header">
+                <div class="page-number">28</div>
+                <div class="page-title">第 28 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">迪士尼旗舰店</p>
+                <p class="plain-text">二层咖啡文化墙</p>
+                <p class="plain-text">这面由星巴克杯子拼凑成的图案十分巧妙</p>
+                <p class="plain-text">也是店铺文化呈现的核心亮点</p>
+                <p class="plain-text">但是却是被周围的灯光抢去了风头。</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-29">
+            <div class="page-header">
+                <div class="page-number">29</div>
+                <div class="page-title">第 29 页</div>
+            </div>
+            <div class="page-body">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">迪士尼旗舰店</p>
+                <p class="plain-text">一层商品柜</p>
+                <p class="plain-text">受自然光的影响</p>
+                <p class="plain-text">加上自身层板照明糟糕</p>
+                <p class="plain-text">商品整体显得黯淡无生机</p>
+                <p class="plain-text">虽迪士尼小镇客流众多</p>
+                <p class="plain-text">但因展现效果不佳 ,商品少有被关注</p>
+                <p class="plain-text">从而影响销售的几率。</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-30">
+            <div class="page-header">
+                <div class="page-number">30</div>
+                <div class="page-title">第 30 页</div>
+            </div>
+            <div class="page-body">
+                <img src="images/page_030.jpg" alt="第 30 页" class="page-image" loading="lazy">
+                <p class="plain-text">现状调研</p>
+                <p class="plain-text">迪士尼旗舰店灯光体验评价</p>
+                <p class="plain-text">舒适</p>
+                <p class="plain-text">舒适</p>
+                <p class="plain-text">安全</p>
+                <p class="plain-text">空间特色</p>
+                <p class="plain-text">安全</p>
+                <p class="plain-text">美观</p>
+                <p class="plain-text">商品展示</p>
+                <p class="plain-text">品牌文化</p>
+                <p class="plain-text">美观</p>
+                <p class="plain-text">品牌文化</p>
+                <p class="plain-text">空间特色</p>
+                <p class="plain-text">商品展示</p>
+                <p class="plain-text">WEGO</p>
+                <p class="plain-text">{:!'e</p>
+            </div>
+        </section>
+    </div>
+    <footer>
+        <p>本页面由 EasyOCR + Google Translate 自动生成，仅供学习参考</p>
+    </footer>
+</body>
+</html>
