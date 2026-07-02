@@ -30,10 +30,11 @@ jobs:
       # 准备只含网站文件的临时目录，避免上传 .git / .github
       - name: 准备部署目录
         run: |
-          mkdir -p _deploy/assets
+          mkdir -p _deploy/assets _deploy/data
           cp index.html _deploy/
           cp 闪卡记忆.html _deploy/
           cp -r assets/* _deploy/assets/
+          cp -r data/* _deploy/data/
 
       - name: 部署静态网站
         env:
