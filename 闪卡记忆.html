@@ -1868,6 +1868,30 @@
         .level-btn { position: relative; }
 
         /* === 单词本页面 === */
+        .wordbook-level-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .wordbook-level-btn {
+            padding: 10px 4px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            background: var(--surface);
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--muted);
+            cursor: pointer;
+            text-align: center;
+            transition: all 140ms ease;
+        }
+        .wordbook-level-btn.active {
+            color: #fff;
+            background: var(--primary);
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 0 var(--primary-dark);
+        }
         .wordbook-filter {
             display: flex;
             gap: 8px;
@@ -2228,10 +2252,8 @@
 
         <!-- 单词本页 -->
         <div class="screen settings-screen" id="wordbookScreen">
-            <div class="settings-subheader">
-                <button class="settings-back" onclick="switchTab('home')">‹</button>
-                <h2 id="wordbookTitle">单词本</h2>
-            </div>
+            <div class="stats-title">单词本</div>
+            <div class="wordbook-level-selector" id="wordbookLevelSelector"></div>
             <div class="wordbook-filter">
                 <button class="wordbook-filter-btn active" data-sort="frequency" onclick="sortWordbook('frequency')">按词频</button>
                 <button class="wordbook-filter-btn" data-sort="az" onclick="sortWordbook('az')">A-Z</button>
@@ -2314,6 +2336,10 @@
             <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
                 <span class="nav-icon">🏠</span>
                 <span class="nav-label">首页</span>
+            </button>
+            <button class="nav-item" data-tab="wordbook" onclick="switchTab('wordbook')">
+                <span class="nav-icon">📖</span>
+                <span class="nav-label">单词本</span>
             </button>
             <button class="nav-item" data-tab="stats" onclick="switchTab('stats')">
                 <span class="nav-icon">📊</span>
@@ -3979,6 +4005,9 @@
             });
             if (tab === 'home') {
                 showScreen('startScreen');
+            } else if (tab === 'wordbook') {
+                renderWordbookScreen();
+                showScreen('wordbookScreen');
             } else if (tab === 'stats') {
                 renderStatsScreen();
                 showScreen('statsScreen');
@@ -5271,19 +5300,36 @@
         // === 单词本功能 ===
         let wordbookState = { level: 'cet4', sort: 'frequency', page: 0, pageSize: 200 };
 
-        const LEVEL_NAMES = { cet4: '四级词汇', cet6: '六级词汇', toefl: '托福词汇', gre: 'GRE词汇' };
+        const LEVEL_NAMES = { cet4: '四级', cet6: '六级', toefl: '托福', gre: 'GRE' };
+
+        function renderWordbookScreen() {
+            const selector = document.getElementById('wordbookLevelSelector');
+            selector.innerHTML = Object.keys(LEVEL_NAMES).map(lv =>
+                `<button class="wordbook-level-btn ${lv === wordbookState.level ? 'active' : ''}" onclick="selectWordbookLevel('${lv}')">${LEVEL_NAMES[lv]}</button>`
+            ).join('');
+            renderWordbook();
+        }
+
+        function selectWordbookLevel(level) {
+            SFX.click();
+            wordbookState.level = level;
+            wordbookState.sort = 'frequency';
+            wordbookState.page = 0;
+            document.querySelectorAll('.wordbook-level-btn').forEach(b => {
+                b.classList.toggle('active', b.textContent.trim() === LEVEL_NAMES[level]);
+            });
+            document.querySelectorAll('.wordbook-filter-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.sort === 'frequency');
+            });
+            renderWordbook();
+        }
 
         function openWordbook(level) {
             SFX.click();
             wordbookState.level = level;
             wordbookState.sort = 'frequency';
             wordbookState.page = 0;
-            document.querySelectorAll('.wordbook-filter-btn').forEach(b => {
-                b.classList.toggle('active', b.dataset.sort === 'frequency');
-            });
-            document.getElementById('wordbookTitle').textContent = LEVEL_NAMES[level] || '单词本';
-            renderWordbook();
-            showScreen('wordbookScreen');
+            switchTab('wordbook');
         }
 
         function sortWordbook(sort) {
