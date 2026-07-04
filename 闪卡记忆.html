@@ -1843,28 +1843,6 @@
         }
 
         /* === 单词本入口按钮 === */
-        .wordbook-entry {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid var(--border);
-            background: #fff;
-            font-size: 14px;
-            line-height: 1;
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-            z-index: 2;
-            transition: transform 120ms ease, background 120ms ease;
-        }
-        .wordbook-entry:active { transform: scale(0.85); }
-        .level-btn.selected .wordbook-entry {
-            border-color: #fff;
-            background: rgba(255,255,255,0.25);
-        }
         .level-btn { position: relative; }
 
         /* === 单词本页面 === */
@@ -1999,25 +1977,21 @@
         <div class="screen start-screen active" id="startScreen">
             <div class="level-selector">
                 <div class="level-btn selected" data-level="cet4" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
-                    <button class="wordbook-entry" onclick="event.stopPropagation();openWordbook('cet4')" title="查看单词本">📖</button>
                     <div class="level-icon"><img src="assets/icon-cet4.png" alt=""></div>
                     <div class="level-name">四级词汇</div>
                     <div class="level-desc">基础必备</div>
                 </div>
                 <div class="level-btn" data-level="cet6" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
-                    <button class="wordbook-entry" onclick="event.stopPropagation();openWordbook('cet6')" title="查看单词本">📖</button>
                     <div class="level-icon"><img src="assets/icon-cet6.png" alt=""></div>
                     <div class="level-name">六级词汇</div>
                     <div class="level-desc">进阶提升</div>
                 </div>
                 <div class="level-btn" data-level="toefl" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
-                    <button class="wordbook-entry" onclick="event.stopPropagation();openWordbook('toefl')" title="查看单词本">📖</button>
                     <div class="level-icon"><img src="assets/icon-toefl.png" alt=""></div>
                     <div class="level-name">托福词汇</div>
                     <div class="level-desc">留学必备</div>
                 </div>
                 <div class="level-btn" data-level="gre" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
-                    <button class="wordbook-entry" onclick="event.stopPropagation();openWordbook('gre')" title="查看单词本">📖</button>
                     <div class="level-icon"><img src="assets/icon-gre.png" alt=""></div>
                     <div class="level-name">GRE词汇</div>
                     <div class="level-desc">挑战高难</div>
@@ -5322,14 +5296,6 @@
                 b.classList.toggle('active', b.dataset.sort === 'frequency');
             });
             renderWordbook();
-        }
-
-        function openWordbook(level) {
-            SFX.click();
-            wordbookState.level = level;
-            wordbookState.sort = 'frequency';
-            wordbookState.page = 0;
-            switchTab('wordbook');
         }
 
         function sortWordbook(sort) {
