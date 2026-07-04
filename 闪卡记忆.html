@@ -1558,6 +1558,7 @@
             100% { transform: rotateY(0deg) scale(1); }
         }
         .flashcard .meaning { transition: opacity 0.3s ease 0.12s; }
+        .flashcard.resetting .meaning { opacity: 0; transition: none; }
 
         /* ===== 卡片消除星光 ===== */
         .sparkle {
@@ -1840,6 +1841,124 @@
             border-radius: 999px;
             min-width: 16px; text-align: center;
         }
+
+        /* === 单词本入口按钮 === */
+        .wordbook-entry {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: #fff;
+            font-size: 14px;
+            line-height: 1;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            z-index: 2;
+            transition: transform 120ms ease, background 120ms ease;
+        }
+        .wordbook-entry:active { transform: scale(0.85); }
+        .level-btn.selected .wordbook-entry {
+            border-color: #fff;
+            background: rgba(255,255,255,0.25);
+        }
+        .level-btn { position: relative; }
+
+        /* === 单词本页面 === */
+        .wordbook-filter {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .wordbook-filter-btn {
+            flex: 1;
+            padding: 10px 4px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            background: var(--surface);
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--muted);
+            cursor: pointer;
+            text-align: center;
+            transition: all 140ms ease;
+        }
+        .wordbook-filter-btn.active {
+            color: #fff;
+            background: var(--secondary);
+            border-color: var(--secondary-dark);
+            box-shadow: 0 4px 0 var(--secondary-dark);
+        }
+        .wordbook-summary {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .wordbook-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .wordbook-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            background: var(--surface);
+            box-shadow: 0 3px 0 #e5e5e5;
+        }
+        .wordbook-mastery {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .mastery-new { background: #ccc; }
+        .mastery-learning { background: var(--accent); }
+        .mastery-mastered { background: var(--primary); }
+        .mastery-lapsed { background: var(--danger); }
+        .wordbook-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .wordbook-word {
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .wordbook-phonetic {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 400;
+        }
+        .wordbook-cn {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .wordbook-stats {
+            text-align: right;
+            flex-shrink: 0;
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+        .wordbook-stats .review-count {
+            font-weight: 800;
+            color: var(--dark);
+        }
     </style>
 </head>
 <body>
@@ -1856,21 +1975,25 @@
         <div class="screen start-screen active" id="startScreen">
             <div class="level-selector">
                 <div class="level-btn selected" data-level="cet4" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
+                    <button class="wordbook-entry" onclick="event.stopPropagation();openWordbook('cet4')" title="查看单词本">📖</button>
                     <div class="level-icon"><img src="assets/icon-cet4.png" alt=""></div>
                     <div class="level-name">四级词汇</div>
                     <div class="level-desc">基础必备</div>
                 </div>
                 <div class="level-btn" data-level="cet6" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
+                    <button class="wordbook-entry" onclick="event.stopPropagation();openWordbook('cet6')" title="查看单词本">📖</button>
                     <div class="level-icon"><img src="assets/icon-cet6.png" alt=""></div>
                     <div class="level-name">六级词汇</div>
                     <div class="level-desc">进阶提升</div>
                 </div>
                 <div class="level-btn" data-level="toefl" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
+                    <button class="wordbook-entry" onclick="event.stopPropagation();openWordbook('toefl')" title="查看单词本">📖</button>
                     <div class="level-icon"><img src="assets/icon-toefl.png" alt=""></div>
                     <div class="level-name">托福词汇</div>
                     <div class="level-desc">留学必备</div>
                 </div>
                 <div class="level-btn" data-level="gre" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
+                    <button class="wordbook-entry" onclick="event.stopPropagation();openWordbook('gre')" title="查看单词本">📖</button>
                     <div class="level-icon"><img src="assets/icon-gre.png" alt=""></div>
                     <div class="level-name">GRE词汇</div>
                     <div class="level-desc">挑战高难</div>
@@ -2101,6 +2224,21 @@
                 </div>
                 <div class="setting-tip">每组学习完成后进入连连看游戏复习，建议 5-15 个</div>
             </div>
+        </div>
+
+        <!-- 单词本页 -->
+        <div class="screen settings-screen" id="wordbookScreen">
+            <div class="settings-subheader">
+                <button class="settings-back" onclick="switchTab('home')">‹</button>
+                <h2 id="wordbookTitle">单词本</h2>
+            </div>
+            <div class="wordbook-filter">
+                <button class="wordbook-filter-btn active" data-sort="frequency" onclick="sortWordbook('frequency')">按词频</button>
+                <button class="wordbook-filter-btn" data-sort="az" onclick="sortWordbook('az')">A-Z</button>
+                <button class="wordbook-filter-btn" data-sort="mastery" onclick="sortWordbook('mastery')">按掌握度</button>
+            </div>
+            <div class="wordbook-summary" id="wordbookSummary"></div>
+            <div class="wordbook-list" id="wordbookList"></div>
         </div>
 
         <!-- 会员中心页 -->
@@ -4280,11 +4418,14 @@
         function showLearningCard() {
             const word = state.currentWords[state.learningIndex];
             SFX.learningCard();
+            const card = document.getElementById('flashcard');
+            card.classList.add('resetting');
+            card.classList.remove('flipped', 'flip-anim');
+            void card.offsetWidth;
             document.getElementById('cardWord').textContent = word.en;
             document.getElementById('cardPhonetic').textContent = word.phonetic;
             document.getElementById('cardMeaning').textContent = getDisplayMeanings(word);
-            const card = document.getElementById('flashcard');
-            card.classList.remove('flipped', 'flip-anim');
+            requestAnimationFrame(() => card.classList.remove('resetting'));
 
             const mem = word.memoryData || MemorySystem.getMemoryForWord(state.level, word, word.sourceIndex);
             const familiarityLabels = ['新词', '陌生', '模糊', '熟悉', '掌握', '熟练'];
@@ -4310,6 +4451,7 @@
 
         function flipCard() {
             const card = document.getElementById('flashcard');
+            card.classList.remove('resetting');
             card.classList.toggle('flipped');
             card.classList.remove('flip-anim');
             void card.offsetWidth;
@@ -5124,6 +5266,104 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // === 单词本功能 ===
+        let wordbookState = { level: 'cet4', sort: 'frequency', page: 0, pageSize: 200 };
+
+        const LEVEL_NAMES = { cet4: '四级词汇', cet6: '六级词汇', toefl: '托福词汇', gre: 'GRE词汇' };
+
+        function openWordbook(level) {
+            SFX.click();
+            wordbookState.level = level;
+            wordbookState.sort = 'frequency';
+            wordbookState.page = 0;
+            document.querySelectorAll('.wordbook-filter-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.sort === 'frequency');
+            });
+            document.getElementById('wordbookTitle').textContent = LEVEL_NAMES[level] || '单词本';
+            renderWordbook();
+            showScreen('wordbookScreen');
+        }
+
+        function sortWordbook(sort) {
+            SFX.click();
+            wordbookState.sort = sort;
+            wordbookState.page = 0;
+            document.querySelectorAll('.wordbook-filter-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.sort === sort);
+            });
+            renderWordbook();
+        }
+
+        let wordbookAllItems = [];
+
+        function renderWordbook() {
+            const level = wordbookState.level;
+            const words = wordDB[level] || [];
+            const sort = wordbookState.sort;
+
+            wordbookAllItems = words.map((w, i) => {
+                const mem = MemorySystem.getMemoryForWord(level, w, i);
+                return { word: w, index: i, mem };
+            });
+
+            if (sort === 'az') {
+                wordbookAllItems.sort((a, b) => a.word.en.localeCompare(b.word.en));
+            } else if (sort === 'mastery') {
+                const order = { lapsed: 0, learning: 1, new: 2, mastered: 3 };
+                wordbookAllItems.sort((a, b) => (order[a.mem.status] || 2) - (order[b.mem.status] || 2) || a.mem.reviewCount - b.mem.reviewCount);
+            }
+
+            const mastered = wordbookAllItems.filter(i => i.mem.status === 'mastered').length;
+            const learning = wordbookAllItems.filter(i => i.mem.status === 'learning' || i.mem.status === 'lapsed').length;
+            const newCount = wordbookAllItems.filter(i => i.mem.status === 'new').length;
+
+            document.getElementById('wordbookSummary').textContent =
+                `共 ${wordbookAllItems.length} 词 · 已掌握 ${mastered} · 学习中 ${learning} · 未学 ${newCount}`;
+
+            renderWordbookPage();
+        }
+
+        function renderWordbookPage() {
+            const start = 0;
+            const end = (wordbookState.page + 1) * wordbookState.pageSize;
+            const visible = wordbookAllItems.slice(start, end);
+            const hasMore = end < wordbookAllItems.length;
+
+            const masteryClass = { new: 'mastery-new', learning: 'mastery-learning', mastered: 'mastery-mastered', lapsed: 'mastery-lapsed' };
+            const masteryLabel = { new: '未学', learning: '学习中', mastered: '已掌握', lapsed: '需复习' };
+
+            const html = visible.map(item => {
+                const m = item.mem;
+                const w = item.word;
+                const phonetic = w.phonetic ? `<span class="wordbook-phonetic">${w.phonetic}</span>` : '';
+                const cn = (w.cn || '').replace(/'/g, '&#39;').replace(/</g, '&lt;');
+                return `
+                    <div class="wordbook-item">
+                        <div class="wordbook-mastery ${masteryClass[m.status] || 'mastery-new'}"></div>
+                        <div class="wordbook-info">
+                            <div class="wordbook-word">${w.en} ${phonetic}</div>
+                            <div class="wordbook-cn">${cn}</div>
+                        </div>
+                        <div class="wordbook-stats">
+                            <div class="review-count">${m.reviewCount}次</div>
+                            <div>${masteryLabel[m.status] || '未学'}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const loadMoreHtml = hasMore
+                ? `<button class="btn-secondary" style="margin-top:12px;" onclick="loadMoreWordbook()">加载更多（剩余 ${wordbookAllItems.length - end} 词）</button>`
+                : (wordbookAllItems.length > wordbookState.pageSize ? '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px;">已显示全部</div>' : '');
+
+            document.getElementById('wordbookList').innerHTML = html + loadMoreHtml;
+        }
+
+        function loadMoreWordbook() {
+            wordbookState.page++;
+            renderWordbookPage();
         }
 
         function clearLearningData() {
