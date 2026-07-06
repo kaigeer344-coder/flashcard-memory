@@ -74,8 +74,8 @@
             font-weight: 900;
         }
         .game-header h1 img {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             object-fit: contain;
             display: block;
         }
@@ -95,6 +95,19 @@
         .stat-item.stat-coins,
         .stat-item.stat-gems { min-width: 64px; }
         .stat-item.stat-new-words { min-width: 68px; }
+        .ui-icon {
+            width: 1.35em;
+            height: 1.35em;
+            object-fit: contain;
+            display: inline-block;
+            vertical-align: -0.28em;
+        }
+        .header-stat-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 5px;
+            vertical-align: -9px;
+        }
         .level-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -127,6 +140,11 @@
             cursor: pointer;
             transition: transform 120ms ease, background 160ms ease;
             flex-shrink: 0;
+        }
+        .header-settings-btn img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
         }
         .header-settings-btn:active { transform: scale(0.92); }
         .screen {
@@ -769,7 +787,24 @@
         }
         .nav-item:active { transform: scale(0.94); }
         .nav-item.active { color: var(--primary); }
-        .nav-icon { font-size: 22px; line-height: 1; }
+        .nav-icon {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            line-height: 1;
+        }
+        .nav-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: saturate(0.82);
+            transition: filter 160ms ease, transform 160ms ease;
+        }
+        .nav-item.active .nav-icon img {
+            filter: saturate(1.08);
+            transform: translateY(-1px);
+        }
         .nav-label { font-size: 11px; font-weight: 800; line-height: 1.1; }
         .stats-screen, .settings-screen { padding-bottom: 90px; }
 
@@ -901,6 +936,13 @@
             box-shadow: var(--shadow-neutral);
         }
         .detail-icon { font-size: 24px; margin-bottom: 6px; }
+        .detail-icon img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
         .detail-value {
             font-size: 22px;
             font-weight: 1000;
@@ -934,6 +976,11 @@
             place-items: center;
             font-size: 36px;
             flex-shrink: 0;
+        }
+        .profile-avatar img {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
         }
         .profile-info { flex: 1; }
         .profile-level {
@@ -999,7 +1046,17 @@
             font-weight: 1000;
             box-shadow: var(--shadow-neutral);
         }
-        .settings-currency-icon { font-size: 22px; }
+        .settings-currency-icon {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+        }
+        .settings-currency-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
         .settings-menu {
             display: flex;
             flex-direction: column;
@@ -1022,7 +1079,18 @@
             transition: transform 120ms ease, border-color 160ms ease;
         }
         .settings-item:active { transform: scale(0.98); }
-        .settings-item-icon { font-size: 22px; }
+        .settings-item-icon {
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+        }
+        .settings-item-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
         .settings-item-text { flex: 1; text-align: left; }
         .settings-item-arrow { color: var(--muted); font-size: 20px; }
         .settings-item.danger {
@@ -1083,9 +1151,23 @@
             box-shadow: 0 6px 20px rgba(255, 165, 0, 0.25);
         }
         .vip-hero-icon {
-            font-size: 44px;
-            line-height: 1;
+            width: 64px;
+            height: 64px;
+            display: grid;
+            place-items: center;
             flex-shrink: 0;
+        }
+        .vip-hero-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .vip-inline-icon {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            vertical-align: -5px;
+            margin-right: 3px;
         }
         .vip-hero-text { flex: 1; }
         .vip-hero-title {
@@ -1629,7 +1711,18 @@
             from { transform: scale(0.7) translateY(20px); opacity: 0; }
             to { transform: scale(1) translateY(0); opacity: 1; }
         }
-        .streak-fire { font-size: 56px; line-height: 1; margin-bottom: 8px; }
+        .streak-fire {
+            width: 104px;
+            height: 104px;
+            margin: 0 auto 8px;
+            display: grid;
+            place-items: center;
+        }
+        .streak-fire img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
         .streak-title { font-size: 22px; font-weight: 1000; color: var(--dark); margin-bottom: 4px; }
         .streak-subtitle { font-size: 14px; color: var(--muted); font-weight: 700; margin-bottom: 18px; }
         .streak-days-row {
@@ -1689,7 +1782,18 @@
             text-align: center;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
         }
-        .onboard-emoji { font-size: 72px; line-height: 1; margin-bottom: 18px; }
+        .onboard-emoji {
+            width: 104px;
+            height: 104px;
+            margin: 0 auto 18px;
+            display: grid;
+            place-items: center;
+        }
+        .onboard-emoji img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
         .onboard-title { font-size: 24px; font-weight: 1000; color: var(--dark); margin-bottom: 10px; }
         .onboard-desc { font-size: 15px; color: var(--muted); font-weight: 600; line-height: 1.5; margin-bottom: 26px; min-height: 44px; }
         .onboard-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 22px; }
@@ -1763,6 +1867,13 @@
             flex: 1; text-align: center;
             font-size: 12px; font-weight: 800; color: var(--muted);
         }
+        .shop-balance-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            vertical-align: -5px;
+            margin-left: 3px;
+        }
         .shop-balance-value {
             font-size: 20px; font-weight: 1000; color: var(--primary-dark);
         }
@@ -1779,7 +1890,18 @@
             margin-bottom: 10px;
             box-shadow: 0 3px 0 #e5e5e5;
         }
-        .shop-item-icon { font-size: 30px; flex-shrink: 0; width: 40px; text-align: center; }
+        .shop-item-icon {
+            flex-shrink: 0;
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+        }
+        .shop-item-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
         .shop-item-info { flex: 1; min-width: 0; }
         .shop-item-name { font-size: 15px; font-weight: 900; color: var(--dark); }
         .shop-item-desc { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 2px; }
@@ -1802,6 +1924,13 @@
         .shop-buy-btn.coins { background: var(--accent); color: #fff; box-shadow: 0 3px 0 #e6b400; }
         .shop-buy-btn.gems { background: var(--secondary); color: #fff; box-shadow: 0 3px 0 var(--secondary-dark); }
         .shop-buy-btn:disabled { opacity: 0.4; box-shadow: none; cursor: not-allowed; }
+        .shop-price-icon {
+            width: 18px;
+            height: 18px;
+            margin-left: 3px;
+            object-fit: contain;
+            vertical-align: -4px;
+        }
         .shop-toast {
             position: fixed; bottom: 100px; left: 50%;
             transform: translateX(-50%);
@@ -1833,6 +1962,11 @@
         }
         .game-item-btn:active { transform: scale(0.92); }
         .game-item-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .game-item-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
         .game-item-count {
             background: var(--primary);
             color: #fff;
@@ -1967,10 +2101,10 @@
     <audio id="silentAudio" preload="auto" src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAAAAA==" style="display:none"></audio>
     <div class="game-container">
         <div class="game-header">
-            <h1><img src="assets/word-match-logo.png" alt="">闪卡记忆</h1>
+            <h1><img src="assets/generated-icons/app-logo.png" alt="">闪卡记忆</h1>
             <div class="header-actions">
-                <div class="stat-item stat-new-words" id="headerNewWords">📚 10</div>
-                <button class="header-settings-btn" onclick="switchTab('profile')" title="个人中心">👤</button>
+                <div class="stat-item stat-new-words" id="headerNewWords"><img class="header-stat-icon" src="assets/generated-icons/daily-words.png" alt="">10</div>
+                <button class="header-settings-btn" onclick="switchTab('profile')" title="个人中心"><img src="assets/generated-icons/nav-profile.png" alt=""></button>
             </div>
         </div>
 
@@ -2011,7 +2145,7 @@
                 <div class="order-toggle">
                     <span>顺序</span>
                     <button class="filter-tab" id="orderSeqBtn" onclick="setWordOrder('sequential')">A→Z</button>
-                    <button class="filter-tab active" id="orderRandBtn" onclick="setWordOrder('random')">🔀 乱序</button>
+                    <button class="filter-tab active" id="orderRandBtn" onclick="setWordOrder('random')"><img class="ui-icon" src="assets/generated-icons/item-shuffle.png" alt=""> 乱序</button>
                 </div>
                 <div class="time-estimate" id="timeEstimate">
                     词库共 <span id="totalWordsCount">100</span> 词，剩余词数约需 <strong id="daysEstimate">4</strong> 天学完
@@ -2030,7 +2164,7 @@
             <div class="flashcard" id="flashcard" onclick="flipCard()">
                 <div class="word" id="cardWord"></div>
                 <div class="phonetic" id="cardPhonetic"></div>
-                <button class="pronounce-btn" onclick="event.stopPropagation(); pronounceWord(document.getElementById('cardWord').textContent)" title="听发音">🔊</button>
+                <button class="pronounce-btn" onclick="event.stopPropagation(); pronounceWord(document.getElementById('cardWord').textContent)" title="听发音"><img class="ui-icon" src="assets/generated-icons/pronunciation.png" alt=""></button>
                 <div class="meaning" id="cardMeaning"></div>
             </div>
             <div class="learning-btns">
@@ -2063,13 +2197,13 @@
             </div>
             <div class="game-items-bar" id="gameItemsBar">
                 <button class="game-item-btn" id="useHintBtn" onclick="useHint()" title="提示一对配对">
-                    💡 <span class="game-item-count" id="hintCount">0</span>
+                    <img class="game-item-icon" src="assets/generated-icons/item-hint.png" alt=""> <span class="game-item-count" id="hintCount">0</span>
                 </button>
                 <button class="game-item-btn" id="useTimeBonusBtn" onclick="useTimeBonus()" title="增加10秒">
-                    ⏱️ <span class="game-item-count" id="timeBonusCount">0</span>
+                    <img class="game-item-icon" src="assets/generated-icons/item-time-bonus.png" alt=""> <span class="game-item-count" id="timeBonusCount">0</span>
                 </button>
                 <button class="game-item-btn" id="useShuffleBtn" onclick="useShuffle()" title="重新洗牌">
-                    🔄 <span class="game-item-count" id="shuffleCount">0</span>
+                    <img class="game-item-icon" src="assets/generated-icons/item-shuffle.png" alt=""> <span class="game-item-count" id="shuffleCount">0</span>
                 </button>
             </div>
             <div class="game-board" id="gameBoard"></div>
@@ -2086,7 +2220,7 @@
                 <div id="completionList"></div>
             </div>
             <div class="completion-btns">
-                <button class="btn-home" onclick="switchTab('home')">🏠 返回首页</button>
+                <button class="btn-home" onclick="switchTab('home')"><img class="ui-icon" src="assets/generated-icons/nav-home.png" alt=""> 返回首页</button>
             </div>
         </div>
 
@@ -2120,22 +2254,22 @@
             </div>
             <div class="stats-detail-grid">
                 <div class="detail-card">
-                    <div class="detail-icon">📚</div>
+                    <div class="detail-icon"><img src="assets/generated-icons/daily-words.png" alt=""></div>
                     <div class="detail-value" id="statsDueReview">0</div>
                     <div class="detail-label">今日待复习</div>
                 </div>
                 <div class="detail-card">
-                    <div class="detail-icon">🎯</div>
+                    <div class="detail-icon"><img src="assets/generated-icons/nav-stats.png" alt=""></div>
                     <div class="detail-value" id="statsHistoryAccuracy">0%</div>
                     <div class="detail-label">历史正确率</div>
                 </div>
                 <div class="detail-card">
-                    <div class="detail-icon">🔥</div>
+                    <div class="detail-icon"><img src="assets/generated-icons/vip-crown.png" alt=""></div>
                     <div class="detail-value" id="statsMaxCombo">0</div>
                     <div class="detail-label">最高连击</div>
                 </div>
                 <div class="detail-card">
-                    <div class="detail-icon">🪙</div>
+                    <div class="detail-icon"><img src="assets/generated-icons/coin.png" alt=""></div>
                     <div class="detail-value" id="statsTotalCoins">0</div>
                     <div class="detail-label">累计金币</div>
                 </div>
@@ -2146,7 +2280,7 @@
         <!-- 个人中心主页 -->
         <div class="screen settings-screen" id="profileScreen">
             <div class="profile-card">
-                <div class="profile-avatar">👤</div>
+                <div class="profile-avatar"><img src="assets/generated-icons/nav-profile.png" alt=""></div>
                 <div class="profile-info">
                     <div class="profile-level" id="profileLevelTitle">新手上路</div>
                     <div class="profile-level-badge" id="profileLevelBadge">Lv.1</div>
@@ -2163,41 +2297,41 @@
             </div>
             <div class="settings-currency-row">
                 <div class="settings-currency">
-                    <span class="settings-currency-icon">🪙</span>
+                    <span class="settings-currency-icon"><img src="assets/generated-icons/coin.png" alt=""></span>
                     <span id="profileCoins">0</span>
                 </div>
                 <div class="settings-currency">
-                    <span class="settings-currency-icon">💎</span>
+                    <span class="settings-currency-icon"><img src="assets/generated-icons/gem.png" alt=""></span>
                     <span id="profileGems">0</span>
                 </div>
             </div>
             <div class="settings-currency-row">
                 <div class="settings-currency">
-                    <span class="settings-currency-icon">💡</span>
+                    <span class="settings-currency-icon"><img src="assets/generated-icons/item-hint.png" alt=""></span>
                     <span id="profileHints">0</span>
                 </div>
                 <div class="settings-currency">
-                    <span class="settings-currency-icon">⏱️</span>
+                    <span class="settings-currency-icon"><img src="assets/generated-icons/item-time-bonus.png" alt=""></span>
                     <span id="profileTimeBonuses">0</span>
                 </div>
                 <div class="settings-currency">
-                    <span class="settings-currency-icon">🔄</span>
+                    <span class="settings-currency-icon"><img src="assets/generated-icons/item-shuffle.png" alt=""></span>
                     <span id="profileShuffles">0</span>
                 </div>
             </div>
             <div class="settings-menu">
                 <button class="settings-item" onclick="openShop()">
-                    <span class="settings-item-icon">🏪</span>
+                    <span class="settings-item-icon"><img src="assets/generated-icons/shop.png" alt=""></span>
                     <span class="settings-item-text">打开商店</span>
                     <span class="settings-item-arrow">›</span>
                 </button>
                 <button class="settings-item" onclick="switchTab('settings')">
-                    <span class="settings-item-icon">⚙️</span>
+                    <span class="settings-item-icon"><img src="assets/generated-icons/settings.png" alt=""></span>
                     <span class="settings-item-text">设置</span>
                     <span class="settings-item-arrow">›</span>
                 </button>
                 <button class="settings-item danger" onclick="clearLearningData()">
-                    <span class="settings-item-icon">🗑️</span>
+                    <span class="settings-item-icon"><img src="assets/generated-icons/delete.png" alt=""></span>
                     <span class="settings-item-text">清除学习数据</span>
                     <span class="settings-item-arrow">›</span>
                 </button>
@@ -2246,7 +2380,7 @@
 
             <!-- 顶部会员卡片区（动态） -->
             <div class="vip-hero" id="vipHero">
-                <div class="vip-hero-icon">👑</div>
+                <div class="vip-hero-icon"><img src="assets/generated-icons/vip-crown.png" alt=""></div>
                 <div class="vip-hero-text">
                     <div class="vip-hero-title" id="vipHeroTitle">开通会员</div>
                     <div class="vip-hero-sub" id="vipHeroSub">解锁全部词库 · 享无限道具</div>
@@ -2260,7 +2394,7 @@
                     <div class="vip-benefit-header">
                         <div class="vip-benefit-name">功能</div>
                         <div class="vip-benefit-col">免费版</div>
-                        <div class="vip-benefit-col vip-benefit-col-vip">👑 会员版</div>
+                        <div class="vip-benefit-col vip-benefit-col-vip"><img class="vip-inline-icon" src="assets/generated-icons/vip-crown.png" alt="">会员版</div>
                     </div>
                     <div class="vip-benefit-row">
                         <div class="vip-benefit-name">词库范围</div>
@@ -2308,19 +2442,19 @@
 
         <nav class="bottom-nav" id="bottomNav">
             <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
-                <span class="nav-icon">🏠</span>
+                <span class="nav-icon"><img src="assets/generated-icons/nav-home.png" alt=""></span>
                 <span class="nav-label">首页</span>
             </button>
             <button class="nav-item" data-tab="wordbook" onclick="switchTab('wordbook')">
-                <span class="nav-icon">📖</span>
+                <span class="nav-icon"><img src="assets/generated-icons/nav-wordbook.png" alt=""></span>
                 <span class="nav-label">单词本</span>
             </button>
             <button class="nav-item" data-tab="stats" onclick="switchTab('stats')">
-                <span class="nav-icon">📊</span>
+                <span class="nav-icon"><img src="assets/generated-icons/nav-stats.png" alt=""></span>
                 <span class="nav-label">统计</span>
             </button>
             <button class="nav-item" data-tab="profile" onclick="switchTab('profile')">
-                <span class="nav-icon">👤</span>
+                <span class="nav-icon"><img src="assets/generated-icons/nav-profile.png" alt=""></span>
                 <span class="nav-label">我的</span>
             </button>
         </nav>
@@ -2332,7 +2466,7 @@
     <!-- 每日连胜奖励弹窗 -->
     <div class="streak-overlay" id="streakOverlay">
         <div class="streak-card">
-            <div class="streak-fire" id="streakFire">🔥</div>
+            <div class="streak-fire" id="streakFire"><img src="assets/generated-icons/streak-flame.png" alt=""></div>
             <div class="streak-title" id="streakTitle">连续学习 1 天</div>
             <div class="streak-subtitle" id="streakSubtitle">坚持就是胜利！</div>
             <div class="streak-days-row" id="streakDaysRow"></div>
@@ -2344,7 +2478,7 @@
     <!-- 新手引导层 -->
     <div class="onboard-overlay" id="onboardOverlay">
         <div class="onboard-card">
-            <div class="onboard-emoji" id="onboardEmoji">🎓</div>
+            <div class="onboard-emoji" id="onboardEmoji"><img src="assets/generated-icons/onboard-graduation.png" alt=""></div>
             <div class="onboard-title" id="onboardTitle">欢迎来到闪卡记忆</div>
             <div class="onboard-desc" id="onboardDesc">用闪卡科学背单词，每天进步一点点</div>
             <div class="onboard-dots" id="onboardDots"></div>
@@ -2357,17 +2491,17 @@
     <div class="shop-overlay" id="shopOverlay">
         <div class="shop-card">
             <div class="shop-header">
-                <div class="shop-title">🏪 商店</div>
+                <div class="shop-title"><img class="ui-icon" src="assets/generated-icons/shop.png" alt=""> 商店</div>
                 <button class="shop-close" onclick="closeShop()">✕</button>
             </div>
             <div class="shop-balance">
                 <div class="shop-balance-item">
                     <div class="shop-balance-value" id="shopCoins">0</div>
-                    金币 🪙
+                    金币 <img class="shop-balance-icon" src="assets/generated-icons/coin.png" alt="">
                 </div>
                 <div class="shop-balance-item">
                     <div class="shop-balance-value" id="shopGems">0</div>
-                    宝石 💎
+                    宝石 <img class="shop-balance-icon" src="assets/generated-icons/gem.png" alt="">
                 </div>
             </div>
             <div class="shop-section-label">游戏道具</div>
@@ -3010,6 +3144,32 @@
         const STUDY_DAYS_KEY = 'wordmatch_study_days';
         const STREAK_KEY = 'wordmatch_streak';
         const ONBOARDING_KEY = 'wordmatch_onboarded';
+        const ICON_PATHS = {
+            appLogo: 'assets/generated-icons/app-logo.png',
+            home: 'assets/generated-icons/nav-home.png',
+            wordbook: 'assets/generated-icons/nav-wordbook.png',
+            stats: 'assets/generated-icons/nav-stats.png',
+            profile: 'assets/generated-icons/nav-profile.png',
+            dailyWords: 'assets/generated-icons/daily-words.png',
+            pronunciation: 'assets/generated-icons/pronunciation.png',
+            shop: 'assets/generated-icons/shop.png',
+            settings: 'assets/generated-icons/settings.png',
+            delete: 'assets/generated-icons/delete.png',
+            vip: 'assets/generated-icons/vip-crown.png',
+            hint: 'assets/generated-icons/item-hint.png',
+            timeBonus: 'assets/generated-icons/item-time-bonus.png',
+            shuffle: 'assets/generated-icons/item-shuffle.png',
+            coin: 'assets/generated-icons/coin.png',
+            gem: 'assets/generated-icons/gem.png',
+            onboardGraduation: 'assets/generated-icons/onboard-graduation.png',
+            achievement: 'assets/generated-icons/achievement-trophy.png',
+            streakFlame: 'assets/generated-icons/streak-flame.png',
+            rewardSparkle: 'assets/generated-icons/reward-sparkle.png'
+        };
+
+        function iconImg(name, className = 'ui-icon') {
+            return `<img class="${className}" src="${ICON_PATHS[name]}" alt="">`;
+        }
 
         // ===== 每日连胜系统 =====
         function getStreakData() {
@@ -3077,8 +3237,8 @@
                 30: '月度达人，向你致敬！'
             };
             document.getElementById('streakSubtitle').textContent = subtitles[reward.milestone] || '坚持就是胜利！';
-            const fire = count >= 30 ? '🏆' : count >= 7 ? '🔥' : '✨';
-            document.getElementById('streakFire').textContent = fire;
+            const streakIcon = count >= 30 ? 'achievement' : count >= 7 ? 'streakFlame' : 'rewardSparkle';
+            document.getElementById('streakFire').innerHTML = iconImg(streakIcon, 'streak-icon-img');
 
             // 连胜天数圆点（显示最近7天 + 里程碑）
             const showDays = Math.min(Math.max(count, 7), 7);
@@ -3092,8 +3252,8 @@
             daysRow.innerHTML = dotsHtml;
 
             const rewardBox = document.getElementById('streakRewardBox');
-            let rewardHtml = `<div class="streak-reward-item"><span>🪙</span><span>+${reward.coins}</span></div>`;
-            if (reward.gems > 0) rewardHtml += `<div class="streak-reward-item"><span>💎</span><span>+${reward.gems}</span></div>`;
+            let rewardHtml = `<div class="streak-reward-item"><span>${iconImg('coin')}</span><span>+${reward.coins}</span></div>`;
+            if (reward.gems > 0) rewardHtml += `<div class="streak-reward-item"><span>${iconImg('gem')}</span><span>+${reward.gems}</span></div>`;
             rewardBox.innerHTML = rewardHtml;
 
             // 暂存奖励到 dataset
@@ -3120,13 +3280,13 @@
 
         // ===== 商店 =====
         const SHOP_ITEMS = [
-            { id: 'hints', icon: '💡', name: '提示道具', desc: '配对游戏中高亮一对可配对的卡片', price: 10, currency: 'coins' },
-            { id: 'timeBonuses', icon: '⏱️', name: '时间加成', desc: '增加 10 秒倒计时', price: 15, currency: 'coins' },
-            { id: 'shuffles', icon: '🔄', name: '重新洗牌', desc: '重新打乱所有未配对的卡片', price: 8, currency: 'coins' }
+            { id: 'hints', icon: 'hint', name: '提示道具', desc: '配对游戏中高亮一对可配对的卡片', price: 10, currency: 'coins' },
+            { id: 'timeBonuses', icon: 'timeBonus', name: '时间加成', desc: '增加 10 秒倒计时', price: 15, currency: 'coins' },
+            { id: 'shuffles', icon: 'shuffle', name: '重新洗牌', desc: '重新打乱所有未配对的卡片', price: 8, currency: 'coins' }
         ];
         const SHOP_EXCHANGES = [
-            { id: 'coins2gems', icon: '💎', name: '金币换宝石', desc: '100 金币 → 1 宝石', price: 100, currency: 'coins', give: { gems: 1 } },
-            { id: 'gems2coins', icon: '🪙', name: '宝石换金币', desc: '1 宝石 → 50 金币', price: 1, currency: 'gems', give: { coins: 50 } }
+            { id: 'coins2gems', icon: 'gem', name: '金币换宝石', desc: '100 金币 → 1 宝石', price: 100, currency: 'coins', give: { gems: 1 } },
+            { id: 'gems2coins', icon: 'coin', name: '宝石换金币', desc: '1 宝石 → 50 金币', price: 1, currency: 'gems', give: { coins: 50 } }
         ];
 
         function openShop() {
@@ -3150,14 +3310,14 @@
                 const canAfford = progress[item.currency] >= item.price;
                 return `
                     <div class="shop-item">
-                        <div class="shop-item-icon">${item.icon}</div>
+                        <div class="shop-item-icon">${iconImg(item.icon, 'shop-item-img')}</div>
                         <div class="shop-item-info">
                             <div class="shop-item-name">${item.name}</div>
                             <div class="shop-item-desc">${item.desc}</div>
                             <div class="shop-item-count">拥有 ${count}</div>
                         </div>
                         <button class="shop-buy-btn ${item.currency}" ${canAfford ? '' : 'disabled'} onclick="buyShopItem('${item.id}')">
-                            ${item.price} ${item.currency === 'coins' ? '🪙' : '💎'}
+                            ${item.price} ${iconImg(item.currency === 'coins' ? 'coin' : 'gem', 'shop-price-icon')}
                         </button>
                     </div>
                 `;
@@ -3168,7 +3328,7 @@
                 const canAfford = progress[ex.currency] >= ex.price;
                 return `
                     <div class="shop-item">
-                        <div class="shop-item-icon">${ex.icon}</div>
+                        <div class="shop-item-icon">${iconImg(ex.icon, 'shop-item-img')}</div>
                         <div class="shop-item-info">
                             <div class="shop-item-name">${ex.name}</div>
                             <div class="shop-item-desc">${ex.desc}</div>
@@ -3225,9 +3385,9 @@
 
         // ===== 新手引导 =====
         const ONBOARD_PAGES = [
-            { emoji: '🎓', title: '欢迎来到闪卡记忆', desc: '用闪卡科学背单词，每天进步一点点' },
-            { emoji: '🃏', title: '先学闪卡，再玩消除游戏', desc: '学完一组卡片后，进入配对游戏巩固记忆' },
-            { emoji: '🏆', title: '完成任务获得金币和等级', desc: '坚持学习，解锁更高等级和丰厚奖励' }
+            { icon: 'onboardGraduation', title: '欢迎来到闪卡记忆', desc: '用闪卡科学背单词，每天进步一点点' },
+            { icon: 'appLogo', title: '先学闪卡，再玩消除游戏', desc: '学完一组卡片后，进入配对游戏巩固记忆' },
+            { icon: 'achievement', title: '完成任务获得金币和等级', desc: '坚持学习，解锁更高等级和丰厚奖励' }
         ];
         let onboardIndex = 0;
 
@@ -3239,7 +3399,7 @@
 
         function renderOnboardingPage() {
             const page = ONBOARD_PAGES[onboardIndex];
-            document.getElementById('onboardEmoji').textContent = page.emoji;
+            document.getElementById('onboardEmoji').innerHTML = iconImg(page.icon, 'onboard-icon-img');
             document.getElementById('onboardTitle').textContent = page.title;
             document.getElementById('onboardDesc').textContent = page.desc;
             const dots = document.getElementById('onboardDots');
@@ -3468,13 +3628,73 @@
             }
         }
 
+        let preferredEnglishVoice = null;
+
+        function scoreEnglishVoice(voice) {
+            const name = voice.name.toLowerCase();
+            const lang = voice.lang.toLowerCase().replace('_', '-');
+            let score = 0;
+            if (lang === 'en-us') score += 35;
+            else if (lang.startsWith('en-us')) score += 30;
+            else if (lang === 'en-gb') score += 18;
+            else if (lang.startsWith('en')) score += 10;
+            if (voice.localService) score += 8;
+
+            const premiumHints = [
+                ['samantha', 30], ['alex', 28], ['daniel', 26], ['karen', 20],
+                ['google us english', 30], ['google uk english', 22],
+                ['microsoft aria', 30], ['microsoft jenny', 28], ['microsoft guy', 24],
+                ['natural', 18], ['enhanced', 16], ['premium', 16], ['siri', 12]
+            ];
+            premiumHints.forEach(([hint, value]) => {
+                if (name.includes(hint)) score += value;
+            });
+
+            const noveltyHints = ['bells', 'boing', 'bubbles', 'cellos', 'hysterical', 'pipe organ', 'trinoids', 'whisper', 'zarvox'];
+            noveltyHints.forEach((hint) => {
+                if (name.includes(hint)) score -= 80;
+            });
+            if (name.includes('compact')) score -= 12;
+            return score;
+        }
+
+        function pickPreferredEnglishVoice() {
+            if (!window.speechSynthesis) return null;
+            const voices = window.speechSynthesis.getVoices();
+            const englishVoices = voices.filter((voice) =>
+                /^en[-_]/i.test(voice.lang) || voice.name.toLowerCase().includes('english')
+            );
+            if (!englishVoices.length) return null;
+            return englishVoices
+                .map((voice) => ({ voice, score: scoreEnglishVoice(voice) }))
+                .sort((a, b) => b.score - a.score)[0].voice;
+        }
+
+        function refreshPreferredEnglishVoice() {
+            preferredEnglishVoice = pickPreferredEnglishVoice();
+        }
+
+        if (window.speechSynthesis) {
+            refreshPreferredEnglishVoice();
+            if (typeof window.speechSynthesis.addEventListener === 'function') {
+                window.speechSynthesis.addEventListener('voiceschanged', refreshPreferredEnglishVoice);
+            } else {
+                window.speechSynthesis.onvoiceschanged = refreshPreferredEnglishVoice;
+            }
+        }
+
         function pronounceWord(word) {
             if (!window.speechSynthesis) return;
+            const text = String(word || '').replace(/[^A-Za-z'\-\s]/g, '').trim();
+            if (!text) return;
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(word);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.85;
-            utterance.pitch = 1;
+            if (!preferredEnglishVoice) refreshPreferredEnglishVoice();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = preferredEnglishVoice?.lang || 'en-US';
+            utterance.voice = preferredEnglishVoice;
+            utterance.rate = 0.78;
+            utterance.pitch = 0.95;
+            utterance.volume = 1;
             window.speechSynthesis.speak(utterance);
         }
 
@@ -4257,7 +4477,7 @@
         function renderHeaderStats() {
             // 刷新顶部新词数显示
             const newWordsEl = document.getElementById('headerNewWords');
-            if (newWordsEl) newWordsEl.textContent = `📚 ${state.dailyNewWords}`;
+            if (newWordsEl) newWordsEl.innerHTML = `${iconImg('dailyWords', 'header-stat-icon')}${state.dailyNewWords}`;
 
             // 若我的/设置页打开，也刷新
             const profileScreen = document.getElementById('profileScreen');
@@ -4864,7 +5084,7 @@
             SFX.timeBonus();
             state.gameTimeLeft = Math.min(state.gameMaxTime, state.gameTimeLeft + 10);
             updateGameHUD(true);
-            shopToast('⏱️ 时间 +10 秒');
+            shopToast('时间 +10 秒');
             updateGameItemsBar();
         }
 
@@ -5244,7 +5464,7 @@
             const heroSub = document.getElementById('vipHeroSub');
             if (isVip()) {
                 hero.classList.add('activated');
-                heroTitle.textContent = '👑 会员尊享';
+                heroTitle.innerHTML = `${iconImg('vip', 'vip-inline-icon')}会员尊享`;
                 heroSub.textContent = `套餐：${getVipPlanName()} · 到期：${getVipExpireDate()}`;
             } else {
                 hero.classList.remove('activated');
