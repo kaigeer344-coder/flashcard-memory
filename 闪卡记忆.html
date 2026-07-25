@@ -2518,12 +2518,18 @@
     <script src="data/cet6.js"></script>
     <script src="data/toefl.js"></script>
     <script src="data/gre.js"></script>
+    <script src="data/kaoyan.js"></script>
+    <script src="data/ielts.js"></script>
+    <script src="data/basic-stoplist.js"></script>
+    <script src="data/exam-frequency.js"></script>
     <script>
         const wordDB = {
             cet4: window.CET4_WORDS || [],
             cet6: window.CET6_WORDS || [],
             toefl: window.TOEFL_WORDS || [],
-            gre: window.GRE_WORDS || []
+            gre: window.GRE_WORDS || [],
+            kaoyan: window.KAOYAN_WORDS || [],
+            ielts: window.IELTS_WORDS || []
         };
 
         const extraMeanings = {
@@ -5669,7 +5675,871 @@
             clearTimeout(megaComboTimeout);
         }
 
+        // ============================================================
+        // LearningSystem V2.0 — 双模式学习系统
+        // 模式管理 + 冲刺计划 + 自由学习 + 计划生成 + 进度跟踪 + 考后留存
+        // 数据持久化到 localStorage,与现有 MemorySystem 共享单词记忆
+        // ============================================================
+
+        const LearningSystem = (function () {
+            // ---------- localStorage 键 ----------
+            const SETTINGS_KEY = 'wordmatch_settings';
+            const ROLES_KEY = 'wordmatch_roles';
+            const GLOBAL_STATS_KEY = 'wordmatch_global_stats';
+            const DAILY_PLAN_PREFIX = 'wordmatch_role_plan_';
+            const VERSION_KEY = 'wordmatch_learning_version';
+            const CURRENT_VERSION = '2';
+
+            // ---------- 考试类型配置 ----------
+            // 时间分层取词策略(基于策划文档 2.3 节)
+            const EXAM_TYPES = {
+                cet4: { name: '四级', wordBank: 'cet4', defaultDays: 30, totalWords: 4500, color: '#58cc02' },
+                cet6: { name: '六级', wordBank: 'cet6', defaultDays: 35, totalWords: 5500, color: '#1cb0f6' },
+                kaoyan: { name: '考研', wordBank: 'kaoyan', defaultDays: 60, totalWords: 5500, color: '#ffc800' },
+                ielts: { name: '雅思', wordBank: 'ielts', defaultDays: 60, totalWords: 6000, color: '#ce82ff' },
+                toefl: { name: '托福', wordBank: 'toefl', defaultDays: 60, totalWords: 5000, color: '#ff4b4b' },
+                gre: { name: 'GRE', wordBank: 'gre', defaultDays: 90, totalWords: 6500, color: '#ff8c42' }
+            };
+
+            // ---------- 缓存 ----------
+            let _settings = null;
+            let _roles = null;
+            let _globalStats = null;
+            let _todayPlanCache = null;
+            let _todayPlanCacheDate = null;
+
+            // ---------- 默认值 ----------
+            const DEFAULT_SETTINGS = {
+                mode: null,                    // 'sprint' | 'free' | null(未选择模式)
+                activeRoleId: null,            // 冲刺模式激活的计划ID
+                activeBookId: 'cet4',           // 自由模式激活的词书ID
+                dailyTarget: 20,               // 自由模式每日词数
+                defaultView: 'core',            // 'core' | 'all'
+                showContribution: true,
+                reminder: {
+                    dailyEnabled: true,
+                    dailyTime: '20:00',
+                    reviewEnabled: true,
+                    examCountdown: true,
+                    streakProtection: true
+                },
+                audio: {
+                    autoPlay: true,
+                    speed: 'normal',
+                    accent: 'us',
+                    volume: 0.8
+                },
+                theme: 'default',              // 'default' | 'dark' | 'auto'
+                fontSize: 'standard'            // 'small' | 'standard' | 'large'
+            };
+
+            const DEFAULT_GLOBAL_STATS = {
+                totalStudyDays: 0,
+                totalLearnedWords: 0,
+                totalMasteredWords: 0,
+                currentStreak: 0,
+                longestStreak: 0,
+                totalStudySeconds: 0,
+                joinedAt: null,
+                progressCache: {}
+            };
+
+            // ---------- 工具函数 ----------
+            function _safeParse(stored, fallback) {
+                if (!stored) return fallback;
+                try { return JSON.parse(stored); } catch (e) { return fallback; }
+            }
+
+            function _safeSet(key, value) {
+                try { localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value)); } catch (e) {}
+            }
+
+            function _genId(prefix) {
+                return `${prefix || 'role'}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+            }
+
+            function _dateStr(ts) {
+                const d = ts ? new Date(ts) : new Date();
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                return `${y}-${m}-${dd}`;
+            }
+
+            function _daysBetween(dateStr1, dateStr2) {
+                const d1 = new Date(dateStr1);
+                const d2 = new Date(dateStr2);
+                return Math.round((d2 - d1) / (24 * 60 * 60 * 1000));
+            }
+
+            function _todayStr() { return _dateStr(Date.now()); }
+
+            // ---------- 极简词黑名单 ----------
+            function _isBasicWord(word) {
+                return window.BASIC_STOPLIST && typeof window.BASIC_STOPLIST.includes === 'function'
+                    ? window.BASIC_STOPLIST.includes(word)
+                    : false;
+            }
+
+            // ---------- 词频获取 ----------
+            // 兼容无 examFrequency 字段:用 difficulty 近似估算
+            function _getExamFrequency(word, examType) {
+                // 优先查 EXAM_FREQUENCY 真题词频表
+                if (window.EXAM_FREQUENCY && window.EXAM_FREQUENCY[examType] && window.EXAM_FREQUENCY[examType][word.en]) {
+                    return window.EXAM_FREQUENCY[examType][word.en];
+                }
+                // 降级:用 difficulty 近似(difficulty=1 高频,difficulty=3 低频)
+                const diff = Number(word.difficulty) || 1;
+                return Math.max(1, Math.round(40 / diff));
+            }
+
+            function _isCoreWord(word, examType) {
+                // 核心词 = 真题词频 Top 30%
+                const freq = _getExamFrequency(word, examType);
+                return freq >= 15;  // 经验阈值:15+ 视为高频核心词
+            }
+
+            function _belongsTo(word) {
+                const banks = [];
+                for (const level of Object.keys(wordDB)) {
+                    const list = wordDB[level];
+                    if (!Array.isArray(list)) continue;
+                    // 简单按 en 匹配(若 word.belongsTo 已存在则直接用)
+                    for (let i = 0; i < list.length; i++) {
+                        if (list[i].en === word.en) {
+                            banks.push(level);
+                            break;
+                        }
+                    }
+                }
+                return banks;
+            }
+
+            // ---------- 持久化:settings ----------
+            function _loadSettings() {
+                const stored = localStorage.getItem(SETTINGS_KEY);
+                const parsed = _safeParse(stored, null);
+                if (!parsed) return null;
+                // 合并默认值(向前兼容)
+                return Object.assign({}, DEFAULT_SETTINGS, parsed, {
+                    reminder: Object.assign({}, DEFAULT_SETTINGS.reminder, parsed.reminder || {}),
+                    audio: Object.assign({}, DEFAULT_SETTINGS.audio, parsed.audio || {})
+                });
+            }
+
+            function _saveSettings() {
+                if (!_settings) return;
+                _safeSet(SETTINGS_KEY, _settings);
+            }
+
+            // ---------- 持久化:roles ----------
+            function _loadRoles() {
+                const stored = localStorage.getItem(ROLES_KEY);
+                const parsed = _safeParse(stored, null);
+                return Array.isArray(parsed) ? parsed : [];
+            }
+
+            function _saveRoles() {
+                if (!_roles) return;
+                _safeSet(ROLES_KEY, _roles);
+            }
+
+            // ---------- 持久化:globalStats ----------
+            function _loadGlobalStats() {
+                const stored = localStorage.getItem(GLOBAL_STATS_KEY);
+                const parsed = _safeParse(stored, null);
+                if (!parsed) return null;
+                return Object.assign({}, DEFAULT_GLOBAL_STATS, parsed, {
+                    progressCache: parsed.progressCache || {}
+                });
+            }
+
+            function _saveGlobalStats() {
+                if (!_globalStats) return;
+                _safeSet(GLOBAL_STATS_KEY, _globalStats);
+            }
+
+            // ---------- 持久化:daily plan ----------
+            function _dailyPlanKey(roleId, dateStr) {
+                return `${DAILY_PLAN_PREFIX}${roleId}_${dateStr}`;
+            }
+
+            function _loadDailyPlan(roleId, dateStr) {
+                const key = _dailyPlanKey(roleId, dateStr);
+                return _safeParse(localStorage.getItem(key), null);
+            }
+
+            function _saveDailyPlan(roleId, dateStr, plan) {
+                _safeSet(_dailyPlanKey(roleId, dateStr), plan);
+            }
+
+            // ---------- 迁移脚本 V2.0 ----------
+            function _migrate() {
+                const version = localStorage.getItem(VERSION_KEY);
+                if (version === CURRENT_VERSION) return false;
+                // V2.0:首次安装学习系统
+                if (!version) {
+                    _safeSet(VERSION_KEY, CURRENT_VERSION);
+                    _safeSet(SETTINGS_KEY, DEFAULT_SETTINGS);
+                    _safeSet(ROLES_KEY, []);
+                    _safeSet(GLOBAL_STATS_KEY, Object.assign({}, DEFAULT_GLOBAL_STATS, { joinedAt: Date.now() }));
+                    return true;
+                }
+                // 未来升级在此分支处理
+                _safeSet(VERSION_KEY, CURRENT_VERSION);
+                return true;
+            }
+
+            // ---------- 时间分层取词策略(策划 2.3) ----------
+            // 按剩余天数决定从价值排序池里取多少词
+            function _getSprintConfig(remainingDays) {
+                remainingDays = Math.max(1, Number(remainingDays) || 1);
+                if (remainingDays <= 7) {
+                    return { totalWords: 400, dailyNew: 70, stage: 1, label: '极限冲刺(7天内)' };
+                } else if (remainingDays <= 14) {
+                    return { totalWords: 500, dailyNew: 45, stage: 1, label: '核心冲刺(8-14天)' };
+                } else if (remainingDays <= 21) {
+                    return { totalWords: 700, dailyNew: 40, stage: 2, label: '完整一二档(15-21天)' };
+                } else if (remainingDays <= 28) {
+                    return { totalWords: 900, dailyNew: 35, stage: 2, label: '5%核心词全部(22-28天)' };
+                } else {
+                    return { totalWords: 1500, dailyNew: 25, stage: 3, label: '长线覆盖(>28天)' };
+                }
+            }
+
+            // ---------- 计划生成引擎 ----------
+            // 基于时间分层策略 + 真题词频排序,生成冲刺计划的目标词池
+            function _generateWordPool(examType, totalTargetWords) {
+                const bank = wordDB[examType] || [];
+                // 过滤极简词
+                const candidates = bank.filter(w => !_isBasicWord(w.en));
+                // 按词频降序排序(高频在前)
+                candidates.sort((a, b) => _getExamFrequency(b, examType) - _getExamFrequency(a, examType));
+                // 取前 N 个
+                return candidates.slice(0, totalTargetWords).map((w, idx) => ({
+                    wordId: `${examType}_${idx}_${w.en}`,
+                    en: w.en,
+                    cn: w.cn,
+                    phonetic: w.phonetic,
+                    difficulty: w.difficulty,
+                    examFrequency: _getExamFrequency(w, examType),
+                    isCore: _isCoreWord(w, examType),
+                    belongsTo: _belongsTo(w),
+                    indexInBank: idx
+                }));
+            }
+
+            // ---------- 公开 API ----------
+            const api = {
+                // ===== 模式管理 =====
+                getCurrentMode() {
+                    if (!_settings) this.load();
+                    return _settings.mode;
+                },
+
+                isOnboarded() {
+                    if (!_settings) this.load();
+                    return _settings.mode !== null;
+                },
+
+                switchMode(newMode) {
+                    if (!_settings) this.load();
+                    if (newMode !== 'sprint' && newMode !== 'free') {
+                        throw new Error(`Invalid mode: ${newMode}`);
+                    }
+                    const oldMode = _settings.mode;
+                    _settings.mode = newMode;
+                    // 切换时清空今日计划缓存
+                    _todayPlanCache = null;
+                    _todayPlanCacheDate = null;
+                    _saveSettings();
+                    return { oldMode, newMode };
+                },
+
+                getSettings() {
+                    if (!_settings) this.load();
+                    return Object.assign({}, _settings);  // 返回副本
+                },
+
+                updateSettings(patch) {
+                    if (!_settings) this.load();
+                    _settings = Object.assign({}, _settings, patch);
+                    _saveSettings();
+                    return this.getSettings();
+                },
+
+                // ===== 冲刺计划管理 =====
+                createSprintPlan(examType, examDate, dailyWords) {
+                    if (!_settings) this.load();
+                    if (!_roles) _roles = _loadRoles();
+                    if (!EXAM_TYPES[examType]) throw new Error(`Unknown exam type: ${examType}`);
+                    const startDate = _todayStr();
+                    const planDays = Math.max(1, _daysBetween(startDate, examDate));
+                    const config = _getSprintConfig(planDays);
+                    const dailyNew = Math.max(5, Math.min(80, Number(dailyWords) || config.dailyNew));
+                    const totalTarget = config.totalWords;
+                    const wordPool = _generateWordPool(examType, totalTarget);
+                    const plan = {
+                        id: _genId('role'),
+                        type: examType,
+                        name: `${EXAM_TYPES[examType].name}冲刺`,
+                        status: 'active',
+                        createdAt: Date.now(),
+                        startDate: startDate,
+                        examDate: examDate,
+                        countdownDays: planDays,
+                        planDays: planDays,
+                        dailyNewWords: dailyNew,
+                        currentDay: 1,
+                        completedDays: [],
+                        stage: config.stage,
+                        stageLabel: config.label,
+                        totalTargetWords: totalTarget,
+                        plan: {
+                            version: 1,
+                            generatedAt: Date.now(),
+                            totalTargetWords: totalTarget,
+                            stage: config.stage,
+                            wordPool: wordPool.map(w => ({ wordId: w.wordId, en: w.en, indexInBank: w.indexInBank })),
+                            progress: {
+                                learnedWordIds: [],
+                                masteredCount: 0,
+                                totalLearnedSeconds: 0,
+                                lastStudyDate: null,
+                                streakDays: 0
+                            }
+                        },
+                        postExam: {
+                            completed: false,
+                            completedAt: null,
+                            consolidationStarted: false,
+                            nextGoalSuggested: null
+                        }
+                    };
+                    _roles.push(plan);
+                    _settings.activeRoleId = plan.id;
+                    _saveRoles();
+                    _saveSettings();
+                    return plan;
+                },
+
+                getSprintPlan(planId) {
+                    if (!_roles) _roles = _loadRoles();
+                    return _roles.find(r => r.id === planId) || null;
+                },
+
+                getAllPlans() {
+                    if (!_roles) _roles = _loadRoles();
+                    return _roles.slice();
+                },
+
+                getActivePlan() {
+                    if (!_settings) this.load();
+                    if (!_settings.activeRoleId) return null;
+                    return this.getSprintPlan(_settings.activeRoleId);
+                },
+
+                modifyExamDate(planId, newDate) {
+                    if (!_roles) _roles = _loadRoles();
+                    const plan = _roles.find(r => r.id === planId);
+                    if (!plan) throw new Error(`Plan not found: ${planId}`);
+                    plan.examDate = newDate;
+                    plan.planDays = Math.max(1, _daysBetween(plan.startDate, newDate));
+                    plan.countdownDays = plan.planDays;
+                    // 重新计算阶段
+                    const config = _getSprintConfig(plan.planDays);
+                    plan.stage = config.stage;
+                    plan.stageLabel = config.label;
+                    _saveRoles();
+                    return plan;
+                },
+
+                adjustDailyWords(planId, newCount) {
+                    if (!_roles) _roles = _loadRoles();
+                    const plan = _roles.find(r => r.id === planId);
+                    if (!plan) throw new Error(`Plan not found: ${planId}`);
+                    plan.dailyNewWords = Math.max(5, Math.min(80, Number(newCount) || 20));
+                    _saveRoles();
+                    return plan;
+                },
+
+                regeneratePlan(planId) {
+                    if (!_roles) _roles = _loadRoles();
+                    const plan = _roles.find(r => r.id === planId);
+                    if (!plan) throw new Error(`Plan not found: ${planId}`);
+                    const config = _getSprintConfig(plan.planDays);
+                    const wordPool = _generateWordPool(plan.type, config.totalWords);
+                    plan.stage = config.stage;
+                    plan.stageLabel = config.label;
+                    plan.totalTargetWords = config.totalWords;
+                    plan.plan = {
+                        version: plan.plan.version + 1,
+                        generatedAt: Date.now(),
+                        totalTargetWords: config.totalWords,
+                        stage: config.stage,
+                        wordPool: wordPool.map(w => ({ wordId: w.wordId, en: w.en, indexInBank: w.indexInBank })),
+                        progress: {
+                            learnedWordIds: [],
+                            masteredCount: 0,
+                            totalLearnedSeconds: 0,
+                            lastStudyDate: null,
+                            streakDays: 0
+                        }
+                    };
+                    plan.completedDays = [];
+                    plan.currentDay = 1;
+                    _saveRoles();
+                    return plan;
+                },
+
+                endSprintPlan(planId) {
+                    if (!_roles) _roles = _loadRoles();
+                    const plan = _roles.find(r => r.id === planId);
+                    if (!plan) return null;
+                    plan.status = 'completed';
+                    if (_settings.activeRoleId === planId) {
+                        _settings.activeRoleId = null;
+                    }
+                    _saveRoles();
+                    _saveSettings();
+                    return plan;
+                },
+
+                archivePlan(planId) {
+                    if (!_roles) _roles = _loadRoles();
+                    const plan = _roles.find(r => r.id === planId);
+                    if (!plan) return null;
+                    plan.status = 'archived';
+                    if (_settings.activeRoleId === planId) {
+                        _settings.activeRoleId = null;
+                    }
+                    _saveRoles();
+                    _saveSettings();
+                    return plan;
+                },
+
+                pausePlan(planId) {
+                    if (!_roles) _roles = _loadRoles();
+                    const plan = _roles.find(r => r.id === planId);
+                    if (!plan) return null;
+                    plan.status = 'paused';
+                    _saveRoles();
+                    return plan;
+                },
+
+                resumePlan(planId) {
+                    if (!_roles) _roles = _loadRoles();
+                    const plan = _roles.find(r => r.id === planId);
+                    if (!plan) return null;
+                    plan.status = 'active';
+                    if (_settings.activeRoleId !== planId) {
+                        _settings.activeRoleId = planId;
+                    }
+                    _saveRoles();
+                    _saveSettings();
+                    return plan;
+                },
+
+                // ===== 自由学习管理 =====
+                setFreeBook(bookId) {
+                    if (!_settings) this.load();
+                    if (!wordDB[bookId]) throw new Error(`Unknown book: ${bookId}`);
+                    _settings.activeBookId = bookId;
+                    _todayPlanCache = null;
+                    _todayPlanCacheDate = null;
+                    _saveSettings();
+                    return _settings;
+                },
+
+                setFreeDailyTarget(count) {
+                    if (!_settings) this.load();
+                    _settings.dailyTarget = Math.max(5, Math.min(80, Number(count) || 20));
+                    _todayPlanCache = null;
+                    _todayPlanCacheDate = null;
+                    _saveSettings();
+                    return _settings;
+                },
+
+                // ===== 计划生成 =====
+                // 生成今日学习队列(冲刺模式按 plan.wordPool,自由模式按词书顺序)
+                generateTodayQueue() {
+                    const today = _todayStr();
+                    if (_todayPlanCache && _todayPlanCacheDate === today) {
+                        return _todayPlanCache;
+                    }
+                    if (!_settings) this.load();
+                    let queue = [];
+                    let meta = { mode: _settings.mode, date: today };
+                    if (_settings.mode === 'sprint') {
+                        const plan = this.getActivePlan();
+                        if (!plan) {
+                            queue = [];
+                            meta.error = 'no_active_plan';
+                        } else {
+                            // 计算今日应学的词(已学的 + 待学的)
+                            const learnedSet = new Set(plan.plan.progress.learnedWordIds);
+                            const remaining = plan.plan.wordPool.filter(w => !learnedSet.has(w.wordId));
+                            // 今日目标:剩 / 剩余天数(但不超 dailyNewWords)
+                            const remainingDays = Math.max(1, plan.countdownDays - plan.completedDays.length);
+                            const todayTarget = Math.min(plan.dailyNewWords, Math.ceil(remaining.length / remainingDays));
+                            const todayNew = remaining.slice(0, todayTarget);
+                            // 加上需要复习的词(从已完成天数中抽取,简化为前一天的词)
+                            const reviewWords = [];
+                            if (plan.completedDays.length > 0) {
+                                // 简化策略:从前 30% 已学词中随机抽取 30% 作为复习
+                                const learnedPool = plan.plan.wordPool.filter(w => learnedSet.has(w.wordId));
+                                const reviewCount = Math.min(10, Math.floor(learnedPool.length * 0.3));
+                                for (let i = 0; i < reviewCount; i++) {
+                                    if (learnedPool.length === 0) break;
+                                    const idx = Math.floor(Math.random() * learnedPool.length);
+                                    reviewWords.push(learnedPool.splice(idx, 1)[0]);
+                                }
+                            }
+                            queue = [
+                                ...reviewWords.map(w => ({ ...w, type: 'review', priority: 2 })),
+                                ...todayNew.map(w => ({ ...w, type: 'new', priority: 3 }))
+                            ];
+                            meta.planId = plan.id;
+                            meta.currentDay = plan.currentDay;
+                            meta.newWordsToday = todayNew.length;
+                            meta.reviewWordsToday = reviewWords.length;
+                            meta.totalTargetWords = plan.totalTargetWords;
+                            meta.learnedCount = plan.plan.progress.learnedWordIds.length;
+                        }
+                    } else if (_settings.mode === 'free') {
+                        const bookId = _settings.activeBookId || 'cet4';
+                        const bank = wordDB[bookId] || [];
+                        const dailyTarget = _settings.dailyTarget || 20;
+                        // 自由模式:按顺序取词,过滤已学和极简词
+                        const newWords = [];
+                        for (let i = 0; i < bank.length && newWords.length < dailyTarget; i++) {
+                            const w = bank[i];
+                            if (_isBasicWord(w.en)) continue;
+                            const wordKey = `${bookId}_${i}_${w.en}`;
+                            const mem = MemorySystem.getMemoryForWord(bookId, w, i);
+                            if (mem.reviewCount === 0 || mem.status === 'new') {
+                                newWords.push({
+                                    wordId: wordKey,
+                                    en: w.en,
+                                    cn: w.cn,
+                                    phonetic: w.phonetic,
+                                    difficulty: w.difficulty,
+                                    examFrequency: _getExamFrequency(w, bookId),
+                                    isCore: _isCoreWord(w, bookId),
+                                    belongsTo: _belongsTo(w),
+                                    indexInBank: i,
+                                    type: 'new',
+                                    priority: 3
+                                });
+                            }
+                        }
+                        // 加上今日待复习的词
+                        const allWords = MemorySystem.getAllWords(bookId);
+                        const reviews = [];
+                        const now = Date.now();
+                        for (let i = 0; i < allWords.length && reviews.length < 15; i++) {
+                            const word = allWords[i];
+                            const mem = word.memoryData;
+                            if (mem.reviewCount > 0 && mem.status !== 'new' && mem.nextReview <= now) {
+                                reviews.push({
+                                    wordId: word.wordId,
+                                    en: word.en,
+                                    cn: word.cn,
+                                    phonetic: word.phonetic,
+                                    difficulty: word.difficulty,
+                                    type: 'review',
+                                    priority: 2
+                                });
+                            }
+                        }
+                        queue = [...reviews, ...newWords];
+                        meta.bookId = bookId;
+                        meta.newWordsToday = newWords.length;
+                        meta.reviewWordsToday = reviews.length;
+                        meta.dailyTarget = dailyTarget;
+                    }
+                    _todayPlanCache = queue;
+                    _todayPlanCacheDate = today;
+                    // 持久化今日计划
+                    if (_settings.mode) {
+                        const roleId = _settings.activeRoleId || `free_${_settings.activeBookId}`;
+                        const existing = _loadDailyPlan(roleId, today);
+                        if (!existing) {
+                            _saveDailyPlan(roleId, today, {
+                                roleId: roleId,
+                                date: today,
+                                status: 'in_progress',
+                                queue: queue.map(w => ({ wordId: w.wordId, en: w.en, type: w.type, priority: w.priority, completed: false, result: null })),
+                                newWordsToday: meta.newWordsToday || 0,
+                                reviewWordsToday: meta.reviewWordsToday || 0,
+                                completedCount: 0,
+                                startedAt: Date.now(),
+                                completedAt: null
+                            });
+                        }
+                    }
+                    return { queue, meta };
+                },
+
+                getTodayPlan() {
+                    const today = _todayStr();
+                    if (_todayPlanCache && _todayPlanCacheDate === today) {
+                        return _todayPlanCache;
+                    }
+                    return this.generateTodayQueue();
+                },
+
+                // ===== 进度跟踪 =====
+                recordProgress(wordId, result, level) {
+                    if (!_settings) this.load();
+                    if (!_globalStats) _globalStats = _loadGlobalStats();
+                    // 更新全局统计
+                    if (result === 'known' || result === 'matchSuccess') {
+                        _globalStats.totalLearnedWords++;
+                        // 若状态变 mastered(由 MemorySystem 判断),计入掌握
+                    }
+                    _saveGlobalStats();
+                    // 冲刺模式:同步计划进度
+                    if (_settings.mode === 'sprint' && _settings.activeRoleId) {
+                        if (!_roles) _roles = _loadRoles();
+                        const plan = _roles.find(r => r.id === _settings.activeRoleId);
+                        if (plan && plan.plan && plan.plan.progress) {
+                            if (!plan.plan.progress.learnedWordIds.includes(wordId)) {
+                                plan.plan.progress.learnedWordIds.push(wordId);
+                            }
+                            if (result === 'known' || result === 'matchSuccess') {
+                                plan.plan.progress.masteredCount = plan.plan.progress.learnedWordIds.length;
+                            }
+                            plan.plan.progress.lastStudyDate = _todayStr();
+                            _saveRoles();
+                        }
+                    }
+                    // 更新今日计划完成数
+                    if (_settings.activeRoleId) {
+                        const today = _todayStr();
+                        const dailyPlan = _loadDailyPlan(_settings.activeRoleId, today);
+                        if (dailyPlan && Array.isArray(dailyPlan.queue)) {
+                            const item = dailyPlan.queue.find(q => q.wordId === wordId);
+                            if (item && !item.completed) {
+                                item.completed = true;
+                                item.result = result;
+                                dailyPlan.completedCount = (dailyPlan.completedCount || 0) + 1;
+                                _saveDailyPlan(_settings.activeRoleId, today, dailyPlan);
+                            }
+                        }
+                    }
+                    return true;
+                },
+
+                markDayCompleted(roleId) {
+                    if (!_roles) _roles = _loadRoles();
+                    const plan = _roles.find(r => r.id === roleId);
+                    if (!plan) return null;
+                    const todayDayNum = plan.currentDay;
+                    if (!plan.completedDays.includes(todayDayNum)) {
+                        plan.completedDays.push(todayDayNum);
+                    }
+                    plan.currentDay = Math.min(plan.planDays, todayDayNum + 1);
+                    _saveRoles();
+                    return plan;
+                },
+
+                // ===== 进度阶梯计算 =====
+                calculateLadderProgress() {
+                    if (!_globalStats) _globalStats = _loadGlobalStats();
+                    const result = {};
+                    const levels = Object.keys(wordDB);
+                    for (const level of levels) {
+                        const allWords = wordDB[level] || [];
+                        // 核心词 = 真题词频 Top 30%
+                        const coreWords = allWords.filter(w => _isCoreWord(w, level));
+                        const coreTotal = coreWords.length || 1;
+                        const allTotal = allWords.length || 1;
+                        // 计算已学/已掌握
+                        let coreLearned = 0;
+                        let allLearned = 0;
+                        let coreMastered = 0;
+                        let allMastered = 0;
+                        // 使用 MemorySystem 缓存
+                        if (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords) {
+                            const memWords = MemorySystem.getAllWords(level);
+                            for (let i = 0; i < memWords.length; i++) {
+                                const mw = memWords[i];
+                                const mem = mw.memoryData;
+                                if (mem.reviewCount > 0) {
+                                    allLearned++;
+                                    const isCore = _isCoreWord(mw, level);
+                                    if (isCore) coreLearned++;
+                                    if (mem.status === 'mastered') {
+                                        allMastered++;
+                                        if (isCore) coreMastered++;
+                                    }
+                                }
+                            }
+                        }
+                        result[level] = {
+                            core: { learned: coreLearned, mastered: coreMastered, total: coreTotal },
+                            all: { learned: allLearned, mastered: allMastered, total: allTotal }
+                        };
+                    }
+                    // 计算跨词库贡献度
+                    // 例:四级词在六级词库中也存在,则四级已学词自动计入六级进度
+                    for (const targetLevel of levels) {
+                        const targetWords = wordDB[targetLevel] || [];
+                        let overlapLearned = 0;
+                        let overlapTotal = 0;
+                        for (const sourceLevel of levels) {
+                            if (sourceLevel === targetLevel) continue;
+                            const sourceWords = wordDB[sourceLevel] || [];
+                            // 统计 source 中已学且在 target 中存在的词数
+                            const sourceMemWords = (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords)
+                                ? MemorySystem.getAllWords(sourceLevel) : [];
+                            for (let i = 0; i < sourceMemWords.length; i++) {
+                                const mw = sourceMemWords[i];
+                                const mem = mw.memoryData;
+                                if (mem.reviewCount > 0) {
+                                    // 检查是否在 target 词库中
+                                    const inTarget = targetWords.some(tw => tw.en === mw.en);
+                                    if (inTarget) {
+                                        overlapLearned++;
+                                    }
+                                }
+                            }
+                            overlapTotal += sourceWords.filter(sw => targetWords.some(tw => tw.en === sw.en)).length;
+                        }
+                        result[targetLevel].contributionFromOthers = {
+                            learned: overlapLearned,
+                            totalOverlap: overlapTotal
+                        };
+                    }
+                    // 缓存
+                    _globalStats.progressCache = result;
+                    _saveGlobalStats();
+                    return result;
+                },
+
+                getGlobalStats() {
+                    if (!_globalStats) _globalStats = _loadGlobalStats();
+                    return Object.assign({}, _globalStats);
+                },
+
+                // ===== 考后留存 =====
+                handleExamCompleted(roleId) {
+                    if (!_roles) _roles = _loadRoles();
+                    const plan = _roles.find(r => r.id === roleId);
+                    if (!plan) return null;
+                    plan.status = 'completed';
+                    plan.postExam = plan.postExam || {};
+                    plan.postExam.completed = true;
+                    plan.postExam.completedAt = Date.now();
+                    if (_settings.activeRoleId === roleId) {
+                        _settings.activeRoleId = null;
+                    }
+                    _saveRoles();
+                    _saveSettings();
+                    return plan;
+                },
+
+                suggestNextGoal(roleId) {
+                    if (!_roles) _roles = _loadRoles();
+                    const plan = _roles.find(r => r.id === roleId);
+                    if (!plan) return null;
+                    // 基于当前考试类型推荐下一目标
+                    const nextGoalMap = {
+                        cet4: 'cet6',     // 四级 → 六级
+                        cet6: 'kaoyan',    // 六级 → 考研
+                        kaoyan: 'ielts',   // 考研 → 雅思(出国)
+                        ielts: 'toefl',
+                        toefl: 'gre',
+                        gre: null          // GRE 已是最高
+                    };
+                    const next = nextGoalMap[plan.type];
+                    if (next && plan.postExam) {
+                        plan.postExam.nextGoalSuggested = next;
+                        _saveRoles();
+                    }
+                    return next;
+                },
+
+                // ===== 持久化:加载/保存 =====
+                load() {
+                    _migrate();
+                    _settings = _loadSettings() || Object.assign({}, DEFAULT_SETTINGS);
+                    _roles = _loadRoles();
+                    _globalStats = _loadGlobalStats() || Object.assign({}, DEFAULT_GLOBAL_STATS, { joinedAt: Date.now() });
+                    return {
+                        settings: _settings,
+                        roles: _roles,
+                        globalStats: _globalStats
+                    };
+                },
+
+                save() {
+                    if (_settings) _saveSettings();
+                    if (_roles) _saveRoles();
+                    if (_globalStats) _saveGlobalStats();
+                },
+
+                // ===== 元信息 =====
+                getExamTypes() {
+                    return Object.assign({}, EXAM_TYPES);
+                },
+
+                getSprintConfig(remainingDays) {
+                    return _getSprintConfig(remainingDays);
+                },
+
+                getTodayStr() {
+                    return _todayStr();
+                },
+
+                // ===== 工具:词库信息 =====
+                getBookInfo(bookId) {
+                    const bank = wordDB[bookId] || [];
+                    const coreCount = bank.filter(w => _isCoreWord(w, bookId)).length;
+                    return {
+                        id: bookId,
+                        name: EXAM_TYPES[bookId] ? EXAM_TYPES[bookId].name : bookId,
+                        color: EXAM_TYPES[bookId] ? EXAM_TYPES[bookId].color : '#777777',
+                        totalWords: bank.length,
+                        coreWords: coreCount
+                    };
+                },
+
+                getAllBooksInfo() {
+                    return Object.keys(wordDB).map(id => this.getBookInfo(id));
+                },
+
+                // 重置所有 V2.0 数据(危险操作,需 UI 二次确认)
+                resetAllV2Data() {
+                    try {
+                        localStorage.removeItem(SETTINGS_KEY);
+                        localStorage.removeItem(ROLES_KEY);
+                        localStorage.removeItem(GLOBAL_STATS_KEY);
+                        localStorage.removeItem(VERSION_KEY);
+                        // 清除所有每日计划
+                        const toRemove = [];
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const key = localStorage.key(i);
+                            if (key && key.startsWith(DAILY_PLAN_PREFIX)) toRemove.push(key);
+                        }
+                        toRemove.forEach(k => localStorage.removeItem(k));
+                    } catch (e) {}
+                    _settings = null;
+                    _roles = null;
+                    _globalStats = null;
+                    _todayPlanCache = null;
+                    _todayPlanCacheDate = null;
+                    return this.load();
+                }
+            };
+
+            return api;
+        })();
+
         document.addEventListener('DOMContentLoaded', () => {
+            // V2.0 学习系统初始化
+            LearningSystem.load();
             loadWordOrder();
             loadDailyNewWords();
             loadWordsPerRound();
