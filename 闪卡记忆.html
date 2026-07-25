@@ -17,7 +17,7 @@
             --danger: #ff4b4b;
             --danger-dark: #d63535;
             --dark: #3c3c3c;
-            --muted: #777777;
+            --muted: #6f6f6f;
             --light: #f7f7f7;
             --surface: #ffffff;
             --border: #e5e5e5;
@@ -2687,7 +2687,7 @@
         .level-cell-status .lc-icon svg { width: 100%; height: 100%; }
         .level-cell-status.lc-done { color: var(--primary-dark); }
         .level-cell-status.lc-active { color: #c46900; }
-        .level-cell-status.lc-locked { color: #777777; } /* 对比度 5.4:1 on white */
+        .level-cell-status.lc-locked { color: #6f6f6f; } /* 对比度 5.4:1 on white */
 
         .level-cell.is-done {
             border-color: var(--primary);
@@ -2705,7 +2705,7 @@
             background: #f3f3f3;
             cursor: not-allowed;
         }
-        .level-cell.is-locked .level-cell-num { color: #999999; }
+        .level-cell.is-locked .level-cell-num { color: #8a8a8a; }
         .level-cell.is-locked:active { transform: none; box-shadow: var(--shadow-neutral); }
         .level-cell-current-tag {
             position: absolute;
@@ -3000,16 +3000,19 @@
         .preexam-hint-icon svg { width: 18px; height: 18px; }
         .preexam-hint-text { flex: 1; line-height: 1.4; }
         .preexam-hint-cta {
-            padding: 6px 12px;
+            min-height: 44px;
+            padding: 8px 14px;
             border-radius: 10px;
             background: var(--secondary);
             color: #fff;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 900;
             border: 0;
-            box-shadow: 0 3px 0 var(--secondary-dark);
+            box-shadow: 0 4px 0 var(--secondary-dark);
             cursor: pointer;
             flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
         }
         .preexam-hint-cta:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--secondary-dark); }
 
@@ -3116,6 +3119,218 @@
             cursor: pointer;
         }
         .nextgoal-close:active { background: var(--border); }
+
+        /* ===== V2.0 设置页(apple-design 审查落地) ===== */
+        .settings-v2-section {
+            margin: 0 16px 18px;
+            padding: 16px 18px;
+            border: 2px solid var(--border);
+            border-radius: 22px;
+            background: var(--surface);
+            box-shadow: var(--shadow-neutral);
+        }
+        .settings-v2-section-title {
+            font-size: 13px;
+            font-weight: 900;
+            color: var(--muted);
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .settings-v2-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            min-height: 44px;
+        }
+        .settings-v2-row:last-child { border-bottom: none; }
+        .settings-v2-row-label {
+            flex: 1;
+            min-width: 0;
+        }
+        .settings-v2-row-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+        .settings-v2-row-meta {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+        .settings-v2-toggle {
+            position: relative;
+            width: 52px;
+            height: 32px;
+            border-radius: 16px;
+            background: var(--border);
+            border: 6px solid transparent;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 180ms ease;
+            padding: 0;
+            /* HIG: 触控目标 ≥44pt。透明 border 扩展可点击热区到 44x44,背景 clip 不含 border */
+            background-clip: padding-box;
+            background-origin: padding-box;
+            margin: -6px -3px;
+        }
+        .settings-v2-toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.18);
+            transition: transform 180ms cubic-bezier(0.2,0.8,0.2,1);
+        }
+        .settings-v2-toggle.on { background: var(--primary); }
+        .settings-v2-toggle.on::after { transform: translateX(20px); }
+        .settings-v2-segmented {
+            display: inline-flex;
+            background: var(--border);
+            border-radius: 12px;
+            padding: 3px;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+        .settings-v2-seg-btn {
+            min-height: 38px;
+            padding: 6px 12px;
+            border: 0;
+            border-radius: 9px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 140ms ease;
+        }
+        .settings-v2-seg-btn.active {
+            background: var(--surface);
+            color: var(--dark);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        .settings-v2-input {
+            min-height: 44px;
+            padding: 0 12px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--dark);
+            font-family: inherit;
+        }
+        .settings-v2-link {
+            min-height: 44px;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+            color: var(--dark);
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-neutral);
+        }
+        .settings-v2-link:active { transform: translateY(2px); box-shadow: 0 3px 0 var(--border); }
+        .settings-v2-danger {
+            margin: 8px 16px 24px;
+            width: calc(100% - 32px);
+            min-height: 48px;
+            padding: 0 16px;
+            border: 2px solid var(--danger);
+            border-radius: 14px;
+            background: var(--surface);
+            color: var(--danger);
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--danger);
+        }
+        .settings-v2-danger:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--danger); }
+        .settings-v2-info {
+            margin: 8px 16px 24px;
+            padding: 14px 16px;
+            background: var(--primary-soft);
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            line-height: 1.5;
+        }
+        .settings-v2-confirm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 24px;
+            animation: ngFadeIn 200ms ease;
+        }
+        .settings-v2-confirm-overlay.show { display: flex; }
+        .settings-v2-confirm-card {
+            width: 100%;
+            max-width: 360px;
+            background: var(--surface);
+            border-radius: 22px;
+            padding: 22px 20px 18px;
+            text-align: center;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.24);
+            animation: badgePop 320ms cubic-bezier(0.2,1.4,0.4,1) both;
+        }
+        .settings-v2-confirm-title {
+            font-size: 17px;
+            font-weight: 900;
+            color: var(--dark);
+            margin-bottom: 6px;
+        }
+        .settings-v2-confirm-msg {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--muted);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        .settings-v2-confirm-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .settings-v2-confirm-actions button {
+            flex: 1;
+            min-height: 48px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            border: 0;
+        }
+        .settings-v2-confirm-cancel {
+            background: var(--border);
+            color: var(--dark);
+        }
+        .settings-v2-confirm-ok {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 4px 0 #c63030;
+        }
+        .settings-v2-confirm-ok:active { transform: translateY(3px); box-shadow: 0 1px 0 #c63030; }
+        @media (prefers-reduced-motion: reduce) {
+            .settings-v2-confirm-card { animation: none; }
+        }
 
         /* ===== 商店 ===== */
         .shop-overlay {
@@ -3648,7 +3863,7 @@
         <!-- 设置子页 -->
         <div class="screen settings-screen" id="settingsScreen">
             <div class="settings-subheader">
-                <button class="settings-back" onclick="switchTab('profile')">‹</button>
+                <button class="settings-back" onclick="switchTab('profile')" aria-label="返回">‹</button>
                 <h2>设置</h2>
             </div>
             <div class="word-count-section">
@@ -3663,6 +3878,8 @@
                 </div>
                 <div class="setting-tip">每组学习完成后进入连连看游戏复习，建议 5-15 个</div>
             </div>
+            <!-- V2.0 设置(由 renderSettingsScreen 动态渲染) -->
+            <div id="settingsV2Container"></div>
         </div>
 
         <!-- 单词本页 -->
@@ -7732,6 +7949,315 @@
         function renderSettingsScreen() {
             const numEl = document.getElementById('wordCountNum');
             if (numEl) numEl.textContent = state.wordsPerRound;
+            // V2.0 设置(apple-design 审查落地)
+            const v2El = document.getElementById('settingsV2Container');
+            if (!v2El) return;
+            try {
+                const settings = LearningSystem.getSettings();
+                const plan = LearningSystem.getActivePlan();
+                const examTypes = LearningSystem.getExamTypes();
+                const books = LearningSystem.getAllBooksInfo();
+
+                // 学习设置:模式切换
+                const modeHTML = `
+                    <div class="settings-v2-section">
+                        <div class="settings-v2-section-title">学习设置</div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">学习模式</div>
+                                <div class="settings-v2-row-meta">切换后进度保留,可随时切回</div>
+                            </div>
+                            <div class="settings-v2-segmented" role="tablist">
+                                <button class="settings-v2-seg-btn ${settings.mode === 'free' ? 'active' : ''}" onclick="settingsChangeMode('free')" role="tab" aria-selected="${settings.mode === 'free'}">自由</button>
+                                <button class="settings-v2-seg-btn ${settings.mode === 'sprint' ? 'active' : ''}" onclick="settingsChangeMode('sprint')" role="tab" aria-selected="${settings.mode === 'sprint'}">冲刺</button>
+                            </div>
+                        </div>`;
+
+                // 模式特定配置
+                let modeSpecificHTML = '';
+                if (settings.mode === 'sprint' && plan) {
+                    const remainDays = Math.max(0, Math.ceil((new Date(plan.examDate) - new Date()) / 86400000));
+                    modeSpecificHTML = `
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">考试日期</div>
+                                <div class="settings-v2-row-meta">${plan.name} · 还剩 ${remainDays} 天</div>
+                            </div>
+                            <input type="date" class="settings-v2-input" value="${plan.examDate}" onchange="settingsChangeExamDate('${plan.id}', this.value)" aria-label="修改考试日期">
+                        </div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">每日新词</div>
+                                <div class="settings-v2-row-meta">当前 ${plan.dailyNewWords} 词/天</div>
+                            </div>
+                            <div class="settings-v2-segmented">
+                                <button class="settings-v2-seg-btn ${plan.dailyNewWords === 20 ? 'active' : ''}" onclick="settingsChangeDailyWords(${20})">20</button>
+                                <button class="settings-v2-seg-btn ${plan.dailyNewWords === 35 ? 'active' : ''}" onclick="settingsChangeDailyWords(${35})">35</button>
+                                <button class="settings-v2-seg-btn ${plan.dailyNewWords === 50 ? 'active' : ''}" onclick="settingsChangeDailyWords(${50})">50</button>
+                            </div>
+                        </div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">查看学习地图</div>
+                                <div class="settings-v2-row-meta">第 ${plan.currentDay} / ${plan.planDays} 天</div>
+                            </div>
+                            <button class="settings-v2-link" onclick="enterPlanDetail()">查看</button>
+                        </div>`;
+                } else if (settings.mode === 'free') {
+                    const bookInfo = LearningSystem.getBookInfo(settings.activeBookId);
+                    modeSpecificHTML = `
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">当前词书</div>
+                                <div class="settings-v2-row-meta">${bookInfo.name} · ${bookInfo.totalWords} 词</div>
+                            </div>
+                            <select class="settings-v2-input" onchange="settingsChangeBook(this.value)" aria-label="切换词书">
+                                ${books.map(b => `<option value="${b.id}" ${b.id === settings.activeBookId ? 'selected' : ''}>${b.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">每日目标</div>
+                                <div class="settings-v2-row-meta">当前 ${settings.dailyTarget} 词/天</div>
+                            </div>
+                            <div class="settings-v2-segmented">
+                                <button class="settings-v2-seg-btn ${settings.dailyTarget === 10 ? 'active' : ''}" onclick="settingsChangeDailyTarget(${10})">10</button>
+                                <button class="settings-v2-seg-btn ${settings.dailyTarget === 20 ? 'active' : ''}" onclick="settingsChangeDailyTarget(${20})">20</button>
+                                <button class="settings-v2-seg-btn ${settings.dailyTarget === 30 ? 'active' : ''}" onclick="settingsChangeDailyTarget(${30})">30</button>
+                                <button class="settings-v2-seg-btn ${settings.dailyTarget === 50 ? 'active' : ''}" onclick="settingsChangeDailyTarget(${50})">50</button>
+                            </div>
+                        </div>`;
+                }
+
+                // 显示设置
+                const displayHTML = `
+                    <div class="settings-v2-section">
+                        <div class="settings-v2-section-title">显示设置</div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">进度阶梯默认视图</div>
+                                <div class="settings-v2-row-meta">首页打开时显示的视图</div>
+                            </div>
+                            <div class="settings-v2-segmented">
+                                <button class="settings-v2-seg-btn ${settings.defaultView === 'core' ? 'active' : ''}" onclick="settingsChangeView('core')">核心</button>
+                                <button class="settings-v2-seg-btn ${settings.defaultView === 'all' ? 'active' : ''}" onclick="settingsChangeView('all')">全部</button>
+                            </div>
+                        </div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">显示跨词库贡献度</div>
+                                <div class="settings-v2-row-meta">展示其他词库已学贡献</div>
+                            </div>
+                            <button class="settings-v2-toggle ${settings.showContribution ? 'on' : ''}" onclick="settingsToggleContribution()" role="switch" aria-checked="${settings.showContribution}" aria-label="显示跨词库贡献度"></button>
+                        </div>
+                    </div>`;
+
+                // 数据管理
+                const dataHTML = `
+                    <div class="settings-v2-section">
+                        <div class="settings-v2-section-title">数据管理</div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">学习统计</div>
+                                <div class="settings-v2-row-meta">查看累计学习数据</div>
+                            </div>
+                            <button class="settings-v2-link" onclick="switchTab('stats')">查看</button>
+                        </div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">单词本</div>
+                                <div class="settings-v2-row-meta">浏览所有单词</div>
+                            </div>
+                            <button class="settings-v2-link" onclick="switchTab('wordbook')">浏览</button>
+                        </div>
+                    </div>
+                    <button class="settings-v2-danger" onclick="confirmResetV2Data()">重置 V2.0 学习数据</button>
+                    <div class="settings-v2-info">重置将清除:学习模式、冲刺计划、累计统计。FSRS 单词记忆数据(传统模式)不受影响。</div>`;
+
+                // 关于
+                const aboutHTML = `
+                    <div class="settings-v2-section">
+                        <div class="settings-v2-section-title">关于</div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">版本</div>
+                                <div class="settings-v2-row-meta">闪卡记忆 V2.0 · 双模式学习系统</div>
+                            </div>
+                        </div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">使用帮助</div>
+                                <div class="settings-v2-row-meta">查看学习流程和快捷键</div>
+                            </div>
+                            <button class="settings-v2-link" onclick="showHelpInfo()">查看</button>
+                        </div>
+                    </div>`;
+
+                v2El.innerHTML = `${modeHTML}${modeSpecificHTML}</div>${displayHTML}${dataHTML}${aboutHTML}`;
+            } catch (e) {
+                console.error('renderSettingsScreen V2 失败:', e);
+            }
+        }
+
+        // === V2.0 设置页交互函数 ===
+        function settingsChangeMode(mode) {
+            SFX.click();
+            try {
+                if (mode === 'sprint') {
+                    const plan = LearningSystem.getActivePlan();
+                    if (!plan) {
+                        // 没有冲刺计划:跳到 onboarding 配置冲刺
+                        showToast('请先在首页完成冲刺配置', 'warning');
+                        return;
+                    }
+                    LearningSystem.updateSettings({ mode: 'sprint', activeRoleId: plan.id });
+                } else {
+                    LearningSystem.updateSettings({ mode: 'free', activeRoleId: null, activeBookId: LearningSystem.getSettings().activeBookId || 'cet4' });
+                }
+                renderSettingsScreen();
+                renderStartScreenV2();
+                showToast(`已切换到 ${mode === 'sprint' ? '考试冲刺' : '自由学习'} 模式`, 'success');
+            } catch (e) {
+                console.error('settingsChangeMode 失败:', e);
+                showToast('切换失败', 'warning');
+            }
+        }
+
+        function settingsChangeExamDate(planId, newDate) {
+            SFX.click();
+            if (!newDate) return;
+            try {
+                LearningSystem.modifyExamDate(planId, newDate);
+                renderSettingsScreen();
+                renderStartScreenV2();
+                showToast('已更新考试日期', 'success');
+            } catch (e) {
+                console.error('settingsChangeExamDate 失败:', e);
+                showToast('更新失败', 'warning');
+            }
+        }
+
+        function settingsChangeDailyWords(num) {
+            SFX.click();
+            try {
+                const plan = LearningSystem.getActivePlan();
+                if (!plan) return;
+                // 修改 plan.dailyNewWords(没有专门 API,通过内部更新)
+                plan.dailyNewWords = num;
+                LearningSystem.modifyExamDate(plan.id, plan.examDate); // 触发保存
+                renderSettingsScreen();
+                showToast(`已设置每日 ${num} 新词`, 'success');
+            } catch (e) {
+                console.error('settingsChangeDailyWords 失败:', e);
+                showToast('更新失败', 'warning');
+            }
+        }
+
+        function settingsChangeBook(bookId) {
+            SFX.click();
+            try {
+                LearningSystem.updateSettings({ activeBookId: bookId });
+                renderSettingsScreen();
+                renderStartScreenV2();
+                showToast(`已切换到 ${LearningSystem.getBookInfo(bookId).name}`, 'success');
+            } catch (e) {
+                console.error('settingsChangeBook 失败:', e);
+                showToast('切换失败', 'warning');
+            }
+        }
+
+        function settingsChangeDailyTarget(num) {
+            SFX.click();
+            try {
+                LearningSystem.updateSettings({ dailyTarget: num });
+                renderSettingsScreen();
+                renderStartScreenV2();
+                showToast(`已设置每日 ${num} 词`, 'success');
+            } catch (e) {
+                console.error('settingsChangeDailyTarget 失败:', e);
+                showToast('更新失败', 'warning');
+            }
+        }
+
+        function settingsChangeView(view) {
+            SFX.click();
+            try {
+                LearningSystem.updateSettings({ defaultView: view });
+                renderSettingsScreen();
+                renderStartScreenV2();
+            } catch (e) {
+                console.error('settingsChangeView 失败:', e);
+            }
+        }
+
+        function settingsToggleContribution() {
+            SFX.click();
+            try {
+                const cur = LearningSystem.getSettings().showContribution;
+                LearningSystem.updateSettings({ showContribution: !cur });
+                renderSettingsScreen();
+                renderStartScreenV2();
+            } catch (e) {
+                console.error('settingsToggleContribution 失败:', e);
+            }
+        }
+
+        function confirmResetV2Data() {
+            SFX.click();
+            showV2Confirm('重置 V2.0 学习数据', '此操作将清除所有学习模式、冲刺计划和累计统计,且无法恢复。确定继续吗?', () => {
+                try {
+                    LearningSystem.resetAllV2Data();
+                    renderSettingsScreen();
+                    renderStartScreenV2();
+                    showToast('已重置 V2.0 数据', 'success');
+                } catch (e) {
+                    console.error('resetAllV2Data 失败:', e);
+                    showToast('重置失败', 'warning');
+                }
+            });
+        }
+
+        function showV2Confirm(title, msg, onOk) {
+            let overlay = document.getElementById('v2ConfirmOverlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'v2ConfirmOverlay';
+                overlay.className = 'settings-v2-confirm-overlay';
+                overlay.innerHTML = `
+                    <div class="settings-v2-confirm-card" role="alertdialog" aria-label="${title}">
+                        <div class="settings-v2-confirm-title" id="v2ConfirmTitle"></div>
+                        <div class="settings-v2-confirm-msg" id="v2ConfirmMsg"></div>
+                        <div class="settings-v2-confirm-actions">
+                            <button class="settings-v2-confirm-cancel" onclick="hideV2Confirm()">取消</button>
+                            <button class="settings-v2-confirm-ok" id="v2ConfirmOk">确定</button>
+                        </div>
+                    </div>`;
+                document.body.appendChild(overlay);
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) hideV2Confirm();
+                });
+            }
+            document.getElementById('v2ConfirmTitle').textContent = title;
+            document.getElementById('v2ConfirmMsg').textContent = msg;
+            const okBtn = document.getElementById('v2ConfirmOk');
+            // 替换为新按钮以清除旧事件监听
+            const newOk = okBtn.cloneNode(true);
+            okBtn.parentNode.replaceChild(newOk, okBtn);
+            newOk.addEventListener('click', () => {
+                hideV2Confirm();
+                if (typeof onOk === 'function') onOk();
+            });
+            overlay.classList.add('show');
+        }
+
+        function hideV2Confirm() {
+            const overlay = document.getElementById('v2ConfirmOverlay');
+            if (overlay) overlay.classList.remove('show');
+        }
+
+        function showHelpInfo() {
+            SFX.click();
+            showToast('帮助:选词书→每日学新词→连连看巩固→FSRS 复习', 'success');
         }
 
         // 渲染会员中心页：顶部卡片 + 套餐列表
