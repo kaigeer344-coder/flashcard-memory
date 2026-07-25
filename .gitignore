@@ -1,2 +1,12 @@
 .DS_Store
 _test_flashcard.py
+
+# 本地运行文件
+.server-logs/
+.tunnel-url.txt
+keep-server-alive.sh
+
+# IDE 内部文件
+.serena/
+.workbuddy/
+.trae/
