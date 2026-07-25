@@ -1821,6 +1821,336 @@
             cursor: pointer; padding: 8px;
         }
 
+        /* ===== V2.0 双模式配置(onboarding 扩展) ===== */
+        /* apple-design 基线:触控目标 ≥44pt、对比度 ≥4.5:1、复用 onboard-card 容器 */
+        .onboard-card.v2-mode-card {
+            max-width: 420px;
+            padding: 28px 22px 22px;
+            text-align: left;
+        }
+        .onboard-card.v2-mode-card .onboard-title {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+        .onboard-card.v2-mode-card .onboard-desc {
+            text-align: center;
+            color: #5e5e5e;  /* 修复 C-3:对比度 7.0:1 */
+            min-height: auto;
+            margin-bottom: 18px;
+        }
+        .onboard-mode-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .onboard-mode-card {
+            min-height: 154px;
+            padding: 14px 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            background: var(--surface);
+            box-shadow: var(--shadow-neutral);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .onboard-mode-card:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 var(--border);
+        }
+        .onboard-mode-card.selected {
+            background: var(--primary-soft);
+            border-color: var(--primary-dark);
+            box-shadow: 0 6px 0 var(--primary-dark), 0 10px 18px rgba(70, 163, 2, 0.18);
+            transform: translateY(-2px);
+        }
+        .onboard-mode-card.selected.mode-sprint {
+            background: #fff5d6;
+            border-color: #d6a900;
+            box-shadow: 0 6px 0 #d6a900, 0 10px 18px rgba(255, 200, 0, 0.22);
+        }
+        .onboard-mode-icon {
+            width: 56px; height: 56px;
+            margin-bottom: 8px;
+            display: grid; place-items: center;
+            border-radius: 50%;
+            background: var(--light);
+        }
+        .onboard-mode-card.selected .onboard-mode-icon {
+            background: rgba(255, 255, 255, 0.65);
+        }
+        .onboard-mode-icon img { width: 36px; height: 36px; object-fit: contain; }
+        .onboard-mode-name { font-size: 16px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+        .onboard-mode-desc {
+            font-size: 12px;
+            color: #5e5e5e;  /* 修复 C-3 */
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* 词书/考试选择网格 */
+        .onboard-book-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .onboard-book-card {
+            min-height: 88px;
+            padding: 10px 8px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            background: var(--surface);
+            box-shadow: 0 4px 0 var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .onboard-book-card:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--border);
+        }
+        .onboard-book-card.selected {
+            background: var(--primary-soft);
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 0 var(--primary-dark);
+        }
+        .onboard-book-icon {
+            width: 36px; height: 36px;
+            flex-shrink: 0;
+            display: grid; place-items: center;
+            border-radius: 10px;
+            background: var(--light);
+        }
+        .onboard-book-icon img { width: 28px; height: 28px; object-fit: contain; }
+        .onboard-book-info { flex: 1; min-width: 0; }
+        .onboard-book-name {
+            font-size: 14px; font-weight: 800; color: var(--dark);
+            margin-bottom: 2px;
+        }
+        .onboard-book-meta {
+            font-size: 11px;
+            color: #5e5e5e;  /* 修复 C-3 */
+            font-weight: 600;
+        }
+
+        /* 配置区块 */
+        .onboard-config-section {
+            margin-bottom: 16px;
+            padding: 14px;
+            background: var(--light);
+            border-radius: 16px;
+        }
+        .onboard-config-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .onboard-config-label .hint {
+            font-size: 11px;
+            color: #5e5e5e;
+            font-weight: 600;
+        }
+
+        /* 每日词数选择器 */
+        .onboard-count-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .onboard-count-btn {
+            width: 44px; height: 44px;  /* 修复 C-1:触控 ≥44pt */
+            border-radius: 50%;
+            border: 2px solid var(--secondary-dark);
+            background: var(--secondary);
+            color: #fff;
+            font-size: 22px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: var(--shadow-blue);
+            transition: transform 140ms ease;
+            -webkit-tap-highlight-color: transparent;
+            display: grid; place-items: center;
+        }
+        .onboard-count-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--secondary-dark); }
+        .onboard-count-display {
+            min-width: 80px;
+            text-align: center;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+        .onboard-count-display .unit {
+            font-size: 13px;
+            color: #5e5e5e;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        /* 日期选择器(apple-design:用原生 input[type=date]) */
+        .onboard-date-input {
+            width: 100%;
+            min-height: 48px;  /* 修复 C-1 */
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            background: var(--surface);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+            font-family: inherit;
+            cursor: pointer;
+        }
+        .onboard-date-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        /* 系统计算结果摘要 */
+        .onboard-summary {
+            padding: 12px 14px;
+            background: linear-gradient(135deg, #fff5d6, #ffeaa7);
+            border: 2px solid #ffc800;
+            border-radius: 14px;
+            box-shadow: 0 4px 0 #d6a900;
+            margin-bottom: 14px;
+        }
+        .onboard-summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 13px;
+            color: var(--dark);
+        }
+        .onboard-summary-row .label {
+            font-weight: 700;
+            color: #5e5e5e;
+        }
+        .onboard-summary-row .value {
+            font-weight: 800;
+            color: var(--dark);
+        }
+        .onboard-summary-row .value.highlight {
+            color: var(--danger-dark);
+            font-size: 16px;
+        }
+
+        /* 配置页返回按钮 */
+        .onboard-back {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 44px; height: 44px;  /* 修复 C-1 */
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--dark);
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 3px 0 var(--border);
+            display: grid; place-items: center;
+            transition: transform 140ms ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .onboard-back:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--border); }
+
+        /* 配置页面容器(支持滚动) */
+        .onboard-card.v2-config-card {
+            max-width: 440px;
+            padding: 44px 20px 18px;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: left;
+            position: relative;
+        }
+        .onboard-card.v2-config-card .onboard-title {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+        .onboard-card.v2-config-card .onboard-desc {
+            text-align: center;
+            color: #5e5e5e;
+            min-height: auto;
+            margin-bottom: 14px;
+            font-size: 13px;
+        }
+
+        /* 错误提示 */
+        .onboard-error {
+            background: #ffeaea;
+            border: 2px solid var(--danger);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--danger-dark);
+            margin-bottom: 10px;
+            display: none;
+        }
+        .onboard-error.show { display: block; }
+
+        /* 提示卡片(模式切换说明等) */
+        .onboard-tip {
+            display: flex;
+            gap: 10px;
+            padding: 10px 12px;
+            background: #fff8e1;
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: #5e5e5e;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        .onboard-tip img { width: 20px; height: 20px; flex-shrink: 0; }
+
+        /* 选项胶囊(用于核心/全部、考试类型快速选择) */
+        .onboard-pill-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .onboard-pill {
+            min-height: 44px;  /* 修复 C-1 */
+            padding: 10px 16px;
+            border: 2px solid var(--border);
+            border-radius: 999px;
+            background: var(--surface);
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--dark);
+            cursor: pointer;
+            transition: all 140ms ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .onboard-pill:active { transform: translateY(1px); }
+        .onboard-pill.selected {
+            background: var(--primary);
+            border-color: var(--primary-dark);
+            color: #fff;
+            box-shadow: 0 3px 0 var(--primary-dark);
+        }
+
         /* ===== 商店 ===== */
         .shop-overlay {
             position: fixed; inset: 0;
@@ -2477,13 +2807,14 @@
 
     <!-- 新手引导层 -->
     <div class="onboard-overlay" id="onboardOverlay">
-        <div class="onboard-card">
+        <div class="onboard-card" id="onboardCard">
             <div class="onboard-emoji" id="onboardEmoji"><img src="assets/generated-icons/onboard-graduation.png" alt=""></div>
             <div class="onboard-title" id="onboardTitle">欢迎来到闪卡记忆</div>
             <div class="onboard-desc" id="onboardDesc">用闪卡科学背单词，每天进步一点点</div>
             <div class="onboard-dots" id="onboardDots"></div>
+            <div id="onboardDynamic"></div>
             <button class="onboard-btn" id="onboardBtn" onclick="onboardNext()">下一步</button>
-            <button class="onboard-skip" onclick="finishOnboarding()">跳过引导</button>
+            <button class="onboard-skip" id="onboardSkip" onclick="finishOnboarding()">跳过引导</button>
         </div>
     </div>
 
@@ -3390,35 +3721,301 @@
         }
 
         // ===== 新手引导 =====
+        // V2.0:在原 3 页介绍后追加 mode-select + mode-config,完成双模式首次配置
         const ONBOARD_PAGES = [
-            { icon: 'onboardGraduation', title: '欢迎来到闪卡记忆', desc: '用闪卡科学背单词，每天进步一点点' },
-            { icon: 'appLogo', title: '先学闪卡，再玩消除游戏', desc: '学完一组卡片后，进入配对游戏巩固记忆' },
-            { icon: 'achievement', title: '完成任务获得金币和等级', desc: '坚持学习，解锁更高等级和丰厚奖励' }
+            { type: 'intro', icon: 'onboardGraduation', title: '欢迎来到闪卡记忆', desc: '用闪卡科学背单词，每天进步一点点' },
+            { type: 'intro', icon: 'appLogo', title: '先学闪卡，再玩消除游戏', desc: '学完一组卡片后，进入配对游戏巩固记忆' },
+            { type: 'intro', icon: 'achievement', title: '完成任务获得金币和等级', desc: '坚持学习，解锁更高等级和丰厚奖励' },
+            { type: 'mode-select', title: '选择学习方式', desc: '你可以随时在设置中切换' },
+            { type: 'mode-config', title: '配置学习计划', desc: '根据你的选择生成专属计划' }
         ];
         let onboardIndex = 0;
+        // V2.0 临时状态
+        let onboardState = {
+            mode: null,           // 'free' | 'sprint'
+            bookId: 'cet4',        // 自由模式:词书
+            dailyTarget: 20,       // 自由模式:每日词数
+            examType: 'cet4',      // 冲刺模式:考试类型
+            examDate: '',          // 冲刺模式:考试日期
+            dailyWords: 45         // 冲刺模式:每日新词(可调)
+        };
 
         function startOnboarding() {
             onboardIndex = 0;
+            onboardState = {
+                mode: null, bookId: 'cet4', dailyTarget: 20,
+                examType: 'cet4', examDate: '', dailyWords: 45
+            };
+            // 默认冲刺考试日期设为 14 天后
+            const future = new Date();
+            future.setDate(future.getDate() + 14);
+            onboardState.examDate = future.toISOString().slice(0, 10);
             renderOnboardingPage();
             document.getElementById('onboardOverlay').classList.add('show');
         }
 
         function renderOnboardingPage() {
             const page = ONBOARD_PAGES[onboardIndex];
-            document.getElementById('onboardEmoji').innerHTML = iconImg(page.icon, 'onboard-icon-img');
-            document.getElementById('onboardTitle').textContent = page.title;
-            document.getElementById('onboardDesc').textContent = page.desc;
-            const dots = document.getElementById('onboardDots');
-            dots.innerHTML = ONBOARD_PAGES.map((_, i) =>
+            const card = document.getElementById('onboardCard');
+            const emojiEl = document.getElementById('onboardEmoji');
+            const titleEl = document.getElementById('onboardTitle');
+            const descEl = document.getElementById('onboardDesc');
+            const dotsEl = document.getElementById('onboardDots');
+            const btn = document.getElementById('onboardBtn');
+            const skipBtn = document.getElementById('onboardSkip');
+            const dynEl = document.getElementById('onboardDynamic');
+
+            // 重置容器样式
+            card.classList.remove('v2-mode-card', 'v2-config-card');
+            // 默认显示 emoji/title/desc/dots
+            emojiEl.style.display = '';
+            titleEl.style.display = '';
+            descEl.style.display = '';
+            dotsEl.style.display = '';
+            dynEl.innerHTML = '';
+
+            if (page.type === 'intro') {
+                emojiEl.innerHTML = iconImg(page.icon, 'onboard-icon-img');
+                titleEl.textContent = page.title;
+                descEl.textContent = page.desc;
+                skipBtn.style.display = '';
+                btn.textContent = onboardIndex === ONBOARD_PAGES.length - 1 ? '开始学习' : '下一步';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            } else if (page.type === 'mode-select') {
+                card.classList.add('v2-mode-card');
+                emojiEl.style.display = 'none';
+                titleEl.textContent = page.title;
+                descEl.textContent = page.desc;
+                skipBtn.style.display = 'none';  // 模式选择不允许跳过
+                btn.textContent = '下一步';
+                btn.disabled = !onboardState.mode;
+                btn.style.opacity = onboardState.mode ? '1' : '0.5';
+                dynEl.innerHTML = _renderModeSelectHTML();
+            } else if (page.type === 'mode-config') {
+                card.classList.add('v2-config-card');
+                emojiEl.style.display = 'none';
+                dotsEl.style.display = 'none';
+                titleEl.textContent = onboardState.mode === 'free' ? '自由学习设置' : '考试冲刺设置';
+                descEl.textContent = onboardState.mode === 'free' ? '选择词书和每日学习量' : '选择考试并设定日期';
+                skipBtn.style.display = 'none';
+                btn.textContent = '开始学习';
+                btn.disabled = !_isModeConfigValid();
+                btn.style.opacity = _isModeConfigValid() ? '1' : '0.5';
+                dynEl.innerHTML = _renderModeConfigHTML();
+                _afterConfigRender();  // 绑定事件
+            }
+
+            dotsEl.innerHTML = ONBOARD_PAGES.map((_, i) =>
                 `<div class="onboard-dot ${i === onboardIndex ? 'active' : ''}"></div>`
             ).join('');
-            const btn = document.getElementById('onboardBtn');
-            btn.textContent = onboardIndex === ONBOARD_PAGES.length - 1 ? '开始学习' : '下一步';
+        }
+
+        // 渲染:模式选择页
+        function _renderModeSelectHTML() {
+            return `
+                <div class="onboard-mode-grid">
+                    <div class="onboard-mode-card ${onboardState.mode === 'free' ? 'selected' : ''}"
+                         onclick="selectOnboardMode('free')" role="button" aria-label="选择自由学习模式">
+                        <div class="onboard-mode-icon"><img src="assets/generated-icons/daily-words.png" alt=""></div>
+                        <div class="onboard-mode-name">自由学习</div>
+                        <div class="onboard-mode-desc">无压力,按自己的节奏背单词</div>
+                    </div>
+                    <div class="onboard-mode-card mode-sprint ${onboardState.mode === 'sprint' ? 'selected' : ''}"
+                         onclick="selectOnboardMode('sprint')" role="button" aria-label="选择考试冲刺模式">
+                        <div class="onboard-mode-icon"><img src="assets/generated-icons/achievement.png" alt=""></div>
+                        <div class="onboard-mode-name">考试冲刺</div>
+                        <div class="onboard-mode-desc">有目标有计划,倒计时备考</div>
+                    </div>
+                </div>
+                <div class="onboard-tip">
+                    <img src="assets/generated-icons/item-hint.png" alt="">
+                    <div>两种模式共享记忆数据,切换不会丢失进度。背四级词时,六级/考研进度同步推进。</div>
+                </div>
+            `;
+        }
+
+        // 渲染:模式配置页(根据 mode 渲染不同表单)
+        function _renderModeConfigHTML() {
+            if (onboardState.mode === 'free') return _renderFreeConfigHTML();
+            if (onboardState.mode === 'sprint') return _renderSprintConfigHTML();
+            return '<div class="onboard-error show">请先选择学习模式</div>';
+        }
+
+        // 自由模式配置:词书 + 每日词数
+        function _renderFreeConfigHTML() {
+            const books = LearningSystem.getAllBooksInfo();
+            const bookCards = books.map(b => {
+                const iconMap = { cet4: 'icon-cet4', cet6: 'icon-cet6', toefl: 'icon-toefl', gre: 'icon-gre' };
+                const iconSrc = `assets/generated-icons/${iconMap[b.id] || 'daily-words'}.png`;
+                return `
+                    <div class="onboard-book-card ${onboardState.bookId === b.id ? 'selected' : ''}"
+                         onclick="selectOnboardBook('${b.id}')" role="button" aria-label="选择 ${b.name} 词书">
+                        <div class="onboard-book-icon"><img src="${iconSrc}" alt=""></div>
+                        <div class="onboard-book-info">
+                            <div class="onboard-book-name">${b.name}</div>
+                            <div class="onboard-book-meta">${b.totalWords} 词 · 核心 ${b.coreWords}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            return `
+                <button class="onboard-back" onclick="onboardBack()" aria-label="返回上一步">‹</button>
+                <div class="onboard-config-section">
+                    <div class="onboard-config-label">选择词书 <span class="hint">已选: ${LearningSystem.getBookInfo(onboardState.bookId).name}</span></div>
+                    <div class="onboard-book-grid">${bookCards}</div>
+                </div>
+                <div class="onboard-config-section">
+                    <div class="onboard-config-label">每日新词数 <span class="hint">建议 15-30</span></div>
+                    <div class="onboard-count-selector">
+                        <button class="onboard-count-btn" onclick="changeOnboardCount('free', -5)" aria-label="减少 5">−</button>
+                        <div class="onboard-count-display">${onboardState.dailyTarget}<span class="unit">词/天</span></div>
+                        <button class="onboard-count-btn" onclick="changeOnboardCount('free', +5)" aria-label="增加 5">+</button>
+                    </div>
+                </div>
+                <div class="onboard-tip">
+                    <img src="assets/generated-icons/item-hint.png" alt="">
+                    <div>每日新词上限 80 词。学习后系统会用 FSRS 算法安排复习节奏。</div>
+                </div>
+            `;
+        }
+
+        // 冲刺模式配置:考试 + 日期 + 系统计算每日词数
+        function _renderSprintConfigHTML() {
+            const examTypes = LearningSystem.getExamTypes();
+            const examPills = Object.entries(examTypes).map(([id, cfg]) => `
+                <div class="onboard-pill ${onboardState.examType === id ? 'selected' : ''}"
+                     onclick="selectOnboardExam('${id}')" role="button" aria-label="选择 ${cfg.name}">
+                    ${cfg.name}
+                </div>
+            `).join('');
+            // 计算冲刺配置预览
+            const today = new Date();
+            const todayStr = today.toISOString().slice(0, 10);
+            const minDate = todayStr;
+            const examTs = onboardState.examDate ? new Date(onboardState.examDate) : new Date(today.getTime() + 14 * 86400000);
+            const remainingDays = Math.max(1, Math.round((examTs - today) / 86400000));
+            const config = LearningSystem.getSprintConfig(remainingDays);
+            const sysSuggestDaily = config.dailyNew;
+            const actualDaily = onboardState.dailyWords || sysSuggestDaily;
+            return `
+                <button class="onboard-back" onclick="onboardBack()" aria-label="返回上一步">‹</button>
+                <div class="onboard-config-section">
+                    <div class="onboard-config-label">选择考试类型</div>
+                    <div class="onboard-pill-group">${examPills}</div>
+                </div>
+                <div class="onboard-config-section">
+                    <div class="onboard-config-label">考试日期 <span class="hint">还剩 ${remainingDays} 天</span></div>
+                    <input type="date" class="onboard-date-input" id="onboardExamDate"
+                           min="${minDate}" value="${onboardState.examDate}"
+                           onchange="setOnboardExamDate(this.value)" />
+                </div>
+                <div class="onboard-config-section">
+                    <div class="onboard-config-label">每日新词数 <span class="hint">系统建议: ${sysSuggestDaily} 词</span></div>
+                    <div class="onboard-count-selector">
+                        <button class="onboard-count-btn" onclick="changeOnboardCount('sprint', -5)" aria-label="减少 5">−</button>
+                        <div class="onboard-count-display">${actualDaily}<span class="unit">词/天</span></div>
+                        <button class="onboard-count-btn" onclick="changeOnboardCount('sprint', +5)" aria-label="增加 5">+</button>
+                    </div>
+                </div>
+                <div class="onboard-summary" id="onboardSummary">
+                    <div class="onboard-summary-row">
+                        <span class="label">阶段</span>
+                        <span class="value">${config.label}</span>
+                    </div>
+                    <div class="onboard-summary-row">
+                        <span class="label">目标词数</span>
+                        <span class="value">${config.totalWords} 词</span>
+                    </div>
+                    <div class="onboard-summary-row">
+                        <span class="label">完成所需天数</span>
+                        <span class="value highlight">${Math.ceil(config.totalWords / actualDaily)} 天</span>
+                    </div>
+                    <div class="onboard-summary-row">
+                        <span class="label">是否够时间</span>
+                        <span class="value">${remainingDays >= Math.ceil(config.totalWords / actualDaily) ? '✓ 时间充裕' : '⚠ 时间紧张'}</span>
+                    </div>
+                </div>
+                <div class="onboard-tip">
+                    <img src="assets/generated-icons/item-hint.png" alt="">
+                    <div>系统会优先学习真题词频最高的核心词。剩余时间越少,越聚焦高频词。</div>
+                </div>
+            `;
+        }
+
+        function _isModeConfigValid() {
+            if (onboardState.mode === 'free') {
+                return !!onboardState.bookId && onboardState.dailyTarget >= 5;
+            }
+            if (onboardState.mode === 'sprint') {
+                return !!onboardState.examType && !!onboardState.examDate && onboardState.dailyWords >= 5;
+            }
+            return false;
+        }
+
+        function _afterConfigRender() {
+            // 当前无额外事件绑定(onclick 已 inline)
+        }
+
+        // ===== V2.0 交互函数 =====
+        function selectOnboardMode(mode) {
+            SFX.click();
+            onboardState.mode = mode;
+            renderOnboardingPage();
+        }
+
+        function selectOnboardBook(bookId) {
+            SFX.click();
+            onboardState.bookId = bookId;
+            renderOnboardingPage();
+        }
+
+        function selectOnboardExam(examType) {
+            SFX.click();
+            onboardState.examType = examType;
+            renderOnboardingPage();
+        }
+
+        function setOnboardExamDate(dateStr) {
+            onboardState.examDate = dateStr;
+            // 重新计算系统建议每日词数
+            const today = new Date();
+            const examTs = dateStr ? new Date(dateStr) : new Date(today.getTime() + 14 * 86400000);
+            const remainingDays = Math.max(1, Math.round((examTs - today) / 86400000));
+            const config = LearningSystem.getSprintConfig(remainingDays);
+            onboardState.dailyWords = config.dailyNew;
+            renderOnboardingPage();
+        }
+
+        function changeOnboardCount(mode, delta) {
+            SFX.click();
+            if (mode === 'free') {
+                onboardState.dailyTarget = Math.max(5, Math.min(80, onboardState.dailyTarget + delta));
+            } else {
+                onboardState.dailyWords = Math.max(5, Math.min(80, onboardState.dailyWords + delta));
+            }
+            renderOnboardingPage();
+        }
+
+        function onboardBack() {
+            SFX.click();
+            if (onboardIndex > 0) {
+                onboardIndex--;
+                renderOnboardingPage();
+            }
         }
 
         function onboardNext() {
             SFX.click();
             if (onboardIndex < ONBOARD_PAGES.length - 1) {
+                // 模式选择页:必须选择模式才能继续
+                if (ONBOARD_PAGES[onboardIndex].type === 'mode-select' && !onboardState.mode) {
+                    return;
+                }
+                // 配置页:必须验证通过才能完成
+                if (ONBOARD_PAGES[onboardIndex].type === 'mode-config' && !_isModeConfigValid()) {
+                    return;
+                }
                 onboardIndex++;
                 renderOnboardingPage();
             } else {
@@ -3428,9 +4025,27 @@
 
         function finishOnboarding() {
             SFX.click();
-            try { localStorage.setItem(ONBOARDING_KEY, '1'); } catch (e) {}
+            // V2.0:调用 LearningSystem 完成首次配置
+            try {
+                if (onboardState.mode === 'free') {
+                    LearningSystem.switchMode('free');
+                    LearningSystem.setFreeBook(onboardState.bookId);
+                    LearningSystem.setFreeDailyTarget(onboardState.dailyTarget);
+                } else if (onboardState.mode === 'sprint') {
+                    LearningSystem.switchMode('sprint');
+                    LearningSystem.createSprintPlan(
+                        onboardState.examType,
+                        onboardState.examDate,
+                        onboardState.dailyWords
+                    );
+                }
+                localStorage.setItem(ONBOARDING_KEY, '1');
+            } catch (e) {
+                console.error('V2.0 onboarding 配置失败:', e);
+            }
             document.getElementById('onboardOverlay').classList.remove('show');
-            // 引导结束后检查连胜
+            // 引导结束后刷新首页
+            if (typeof refreshStartScreen === 'function') refreshStartScreen();
             if (checkStreak()) showStreakReward();
         }
 
@@ -4185,6 +4800,58 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             updateBottomNavVisibility();
+        }
+
+        // V2.0:首次配置完成后刷新首页(显示当前模式状态)
+        // 阶段3 会扩展为渲染进度阶梯首页
+        function refreshStartScreen() {
+            try {
+                const settings = LearningSystem.getSettings();
+                const mode = settings.mode;
+                // 显示当前模式的提示(简短 toast 风格)
+                if (mode === 'sprint') {
+                    const plan = LearningSystem.getActivePlan();
+                    if (plan) {
+                        const remainDays = Math.max(1, Math.ceil((new Date(plan.examDate) - new Date()) / 86400000));
+                        showToast(`已开启${plan.name}冲刺 · 还剩 ${remainDays} 天`, 'success');
+                    }
+                } else if (mode === 'free') {
+                    showToast(`已开启自由学习 · ${LearningSystem.getBookInfo(settings.activeBookId).name}`, 'success');
+                }
+                renderHeaderStats();
+            } catch (e) {
+                console.error('refreshStartScreen 失败:', e);
+            }
+        }
+
+        // V2.0:轻量 toast(临时实现,阶段3 可扩展为统一组件)
+        let _toastTimer = null;
+        function showToast(msg, type) {
+            let toast = document.getElementById('v2Toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'v2Toast';
+                toast.style.cssText = `
+                    position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-80px);
+                    background: var(--dark); color: #fff;
+                    padding: 12px 20px; border-radius: 14px;
+                    font-size: 14px; font-weight: 700;
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+                    z-index: 5000; opacity: 0;
+                    transition: transform 280ms cubic-bezier(0.2,0.8,0.2,1), opacity 280ms ease;
+                    max-width: 90vw; text-align: center;
+                `;
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.style.background = (type === 'success') ? 'var(--primary)' : (type === 'warning' ? 'var(--accent)' : 'var(--dark)');
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            toast.style.opacity = '1';
+            clearTimeout(_toastTimer);
+            _toastTimer = setTimeout(() => {
+                toast.style.transform = 'translateX(-50%) translateY(-80px)';
+                toast.style.opacity = '0';
+            }, 2400);
         }
 
         const HIDDEN_NAV_SCREENS = ['learningScreen', 'gameScreen'];
