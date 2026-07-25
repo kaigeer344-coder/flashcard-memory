@@ -2871,6 +2871,252 @@
             cursor: pointer;
         }
 
+        /* ===== V2.0 考后留存(apple-design 审查落地) ===== */
+        .postexam-card {
+            margin: 14px 16px 16px;
+            padding: 22px 20px 18px;
+            border-radius: 26px;
+            background: linear-gradient(160deg, #fff8e0 0%, #ffe9b8 100%);
+            border: 2px solid var(--accent);
+            box-shadow: 0 8px 0 #c79500;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .postexam-badge {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #5a3d00;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 6px 0 #c79500, inset 0 -3px 0 rgba(0,0,0,0.08);
+            animation: badgePop 520ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
+        }
+        .postexam-badge svg { width: 40px; height: 40px; }
+        @keyframes badgePop {
+            0% { transform: scale(0.4) rotate(-12deg); opacity: 0; }
+            60% { transform: scale(1.12) rotate(4deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+        .postexam-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: #5a3d00;
+            line-height: 1.3;
+        }
+        .postexam-sub {
+            margin-top: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #7a5a1a;
+        }
+        .postexam-stats {
+            margin: 14px 0 4px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .postexam-stat {
+            padding: 10px 4px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 14px;
+            text-align: center;
+        }
+        .postexam-stat-num {
+            font-size: 20px;
+            font-weight: 900;
+            color: #5a3d00;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .postexam-stat-label {
+            margin-top: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            color: #7a5a1a;
+        }
+        .postexam-actions {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .postexam-btn {
+            min-height: 48px;
+            padding: 0 16px;
+            border: 0;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: transform 120ms ease, box-shadow 120ms ease;
+        }
+        .postexam-btn:active { transform: translateY(3px); }
+        .postexam-btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 5px 0 var(--primary-dark);
+        }
+        .postexam-btn-primary:active { box-shadow: 0 2px 0 var(--primary-dark); }
+        .postexam-btn-secondary {
+            background: var(--surface);
+            color: var(--dark);
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 0 var(--border);
+        }
+        .postexam-btn-secondary:active { box-shadow: 0 2px 0 var(--border); }
+
+        /* 考前预埋下一目标 */
+        .preexam-hint {
+            margin: 0 16px 12px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: #eef5ff;
+            border: 2px dashed var(--secondary);
+            color: var(--secondary-dark);
+            font-size: 13px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .preexam-hint-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--secondary);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+        .preexam-hint-icon svg { width: 18px; height: 18px; }
+        .preexam-hint-text { flex: 1; line-height: 1.4; }
+        .preexam-hint-cta {
+            padding: 6px 12px;
+            border-radius: 10px;
+            background: var(--secondary);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 900;
+            border: 0;
+            box-shadow: 0 3px 0 var(--secondary-dark);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .preexam-hint-cta:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--secondary-dark); }
+
+        /* 下一目标选择弹层 */
+        .nextgoal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 100;
+            animation: ngFadeIn 200ms ease;
+        }
+        .nextgoal-overlay.show { display: flex; }
+        @keyframes ngFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .nextgoal-sheet {
+            width: 100%;
+            max-width: 520px;
+            background: var(--bg);
+            border-radius: 24px 24px 0 0;
+            padding: 18px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+            box-shadow: 0 -8px 24px rgba(0,0,0,0.18);
+            animation: ngSlideUp 280ms cubic-bezier(0.2,0.8,0.2,1);
+        }
+        @keyframes ngSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @media (prefers-reduced-motion: reduce) {
+            .nextgoal-overlay, .nextgoal-sheet, .postexam-badge { animation: none; }
+        }
+        .nextgoal-handle {
+            width: 40px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border);
+            margin: 0 auto 14px;
+        }
+        .nextgoal-title {
+            font-size: 17px;
+            font-weight: 900;
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .nextgoal-sub {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--muted);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .nextgoal-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .nextgoal-option {
+            min-height: 64px;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            background: var(--surface);
+            box-shadow: var(--shadow-neutral);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 120ms ease, border-color 120ms ease;
+            text-align: left;
+        }
+        .nextgoal-option:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--border); }
+        .nextgoal-option-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            color: #fff;
+            font-weight: 900;
+            font-size: 14px;
+        }
+        .nextgoal-option-info { flex: 1; min-width: 0; }
+        .nextgoal-option-name { font-size: 15px; font-weight: 900; color: var(--dark); }
+        .nextgoal-option-meta { font-size: 12px; font-weight: 700; color: var(--muted); margin-top: 2px; }
+        .nextgoal-option-recommended {
+            padding: 4px 8px;
+            border-radius: 8px;
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            font-size: 10px;
+            font-weight: 900;
+        }
+        .nextgoal-close {
+            margin-top: 14px;
+            width: 100%;
+            min-height: 48px;
+            padding: 0 16px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            background: var(--surface);
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .nextgoal-close:active { background: var(--border); }
+
         /* ===== 商店 ===== */
         .shop-overlay {
             position: fixed; inset: 0;
@@ -5603,6 +5849,11 @@
                 } else {
                     const remainDays = Math.max(0, Math.ceil((new Date(plan.examDate) - new Date()) / 86400000));
                     const examCfg = examTypes[plan.type] || {};
+                    // 判断考试是否已过(考试日期 < 今天)
+                    const _today = new Date(); _today.setHours(0,0,0,0);
+                    const _exam = new Date(plan.examDate); _exam.setHours(0,0,0,0);
+                    const examPassed = _exam < _today;
+                    const postExam = plan.postExam || { completed: false };
                     headerHTML = `
                         <div class="v2-mode-header mode-sprint">
                             <div>
@@ -5610,16 +5861,73 @@
                                     <img src="assets/generated-icons/${iconMap[plan.type] || 'achievement'}.png" alt="">
                                     ${plan.name}
                                 </div>
-                                <div class="v2-mode-sub">第 ${plan.currentDay} 天 / 共 ${plan.planDays} 天 · ${plan.stageLabel}</div>
+                                <div class="v2-mode-sub">${examPassed ? '考试已结束 · 整理心情,继续前行' : `第 ${plan.currentDay} 天 / 共 ${plan.planDays} 天 · ${plan.stageLabel}`}</div>
                             </div>
                             <div class="v2-countdown">
-                                <span class="v2-countdown-num">${remainDays}</span>
-                                <span class="v2-countdown-unit">天</span>
+                                <span class="v2-countdown-num">${examPassed ? '完' : remainDays}</span>
+                                <span class="v2-countdown-unit">${examPassed ? '成' : '天'}</span>
                             </div>
                         </div>`;
-                    // 今日任务卡
-                    const meta = _safeGetTodayMeta();
-                    todayHTML = `
+                    if (examPassed && !postExam.completed) {
+                        // 考后过渡卡(替换今日任务卡)
+                        const learned = (plan.plan.progress.learnedWordIds || []).length;
+                        const target = plan.totalTargetWords || 500;
+                        const coverage = Math.min(100, Math.round((learned / target) * 100));
+                        const retention = 82; // 占位:实际由巩固计划复习结果计算
+                        todayHTML = `
+                            <div class="postexam-card" role="region" aria-label="考试完成庆祝">
+                                <div class="postexam-badge" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M8 21h8"></path><path d="M12 17v4"></path>
+                                        <path d="M7 4h10v5a5 5 0 0 1-10 0V4z"></path>
+                                        <path d="M17 4h2a2 2 0 0 1 2 2v1a3 3 0 0 1-3 3"></path>
+                                        <path d="M7 4H5a2 2 0 0 0-2 2v1a3 3 0 0 0 3 3"></path>
+                                    </svg>
+                                </div>
+                                <div class="postexam-title">考试完成!为你的坚持鼓掌</div>
+                                <div class="postexam-sub">已掌握 ${learned} 核心词,覆盖约 ${coverage}% 考点</div>
+                                <div class="postexam-stats">
+                                    <div class="postexam-stat">
+                                        <div class="postexam-stat-num">${learned}</div>
+                                        <div class="postexam-stat-label">已学词数</div>
+                                    </div>
+                                    <div class="postexam-stat">
+                                        <div class="postexam-stat-num">${coverage}%</div>
+                                        <div class="postexam-stat-label">考点覆盖</div>
+                                    </div>
+                                    <div class="postexam-stat">
+                                        <div class="postexam-stat-num">${retention}%</div>
+                                        <div class="postexam-stat-label">预估留存</div>
+                                    </div>
+                                </div>
+                                <div class="postexam-actions">
+                                    <button class="postexam-btn postexam-btn-primary" onclick="startConsolidation('${plan.id}')" ontouchstart="unlockAudio()">
+                                        开始 7 天巩固计划
+                                    </button>
+                                    <button class="postexam-btn postexam-btn-secondary" onclick="showNextGoalSheet('${plan.id}')" ontouchstart="unlockAudio()">
+                                        查看下一个目标
+                                    </button>
+                                    <button class="postexam-btn postexam-btn-secondary" onclick="markPostExamDone('${plan.id}')">
+                                        稍后再说
+                                    </button>
+                                </div>
+                            </div>`;
+                    } else {
+                        // 考前预埋(考前 3 天)
+                        let preExamHTML = '';
+                        if (remainDays > 0 && remainDays <= 3 && !postExam.completed) {
+                            preExamHTML = `
+                                <div class="preexam-hint" role="status">
+                                    <div class="preexam-hint-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    </div>
+                                    <div class="preexam-hint-text">距考试仅 ${remainDays} 天 · 考完后你的下一步?</div>
+                                    <button class="preexam-hint-cta" onclick="showNextGoalSheet('${plan.id}')">预看</button>
+                                </div>`;
+                        }
+                        // 今日任务卡
+                        const meta = _safeGetTodayMeta();
+                        todayHTML = `${preExamHTML}
                         <div class="v2-today-card">
                             <div class="v2-today-head">
                                 <div>
@@ -5646,6 +5954,7 @@
                                 </div>
                             </div>
                         </div>`;
+                    }
                 }
             } else if (mode === 'free') {
                 const bookInfo = LearningSystem.getBookInfo(settings.activeBookId);
@@ -5981,6 +6290,130 @@
             const cur = document.querySelector('.level-cell.is-active');
             if (cur && cur.scrollIntoView) {
                 try { cur.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
+            }
+        }
+
+        // === V2.0 考后留存(apple-design 审查落地) ===
+        // 下一目标选择弹层(动态创建,避免污染 HTML)
+        let _nextGoalPlanId = null;
+        function showNextGoalSheet(planId) {
+            SFX.click();
+            unlockAudio();
+            _nextGoalPlanId = planId;
+            const plan = LearningSystem.getActivePlan() || (planId && LearningSystem.getSprintPlan(planId));
+            if (!plan) return;
+            // 推荐下一目标
+            const suggested = LearningSystem.suggestNextGoal(planId);
+            const examTypes = LearningSystem.getExamTypes();
+            // 候选列表:推荐 + 自由学习 + 其他考试
+            const allGoals = [
+                { id: 'cet4', name: '四级', color: '#58cc02', meta: '4500 词' },
+                { id: 'cet6', name: '六级', color: '#1cb0f6', meta: '5500 词' },
+                { id: 'kaoyan', name: '考研', color: '#ffc800', meta: '5500 词' },
+                { id: 'ielts', name: '雅思', color: '#ce82ff', meta: '6000 词' },
+                { id: 'toefl', name: '托福', color: '#ff4b4b', meta: '5000 词' },
+                { id: 'gre', name: 'GRE', color: '#ff8c42', meta: '6500 词' },
+                { id: 'free', name: '自由学习', color: '#777777', meta: '按自己节奏' }
+            ];
+            // 排除当前考试类型
+            const candidates = allGoals.filter(g => g.id !== plan.type);
+            const optionsHTML = candidates.map(g => {
+                const isRecommended = (g.id === suggested);
+                return `
+                    <button class="nextgoal-option" onclick="acceptNextGoal('${g.id}')" role="button" aria-label="选择 ${g.name}">
+                        <div class="nextgoal-option-icon" style="background:${g.color}">${g.name.charAt(0)}</div>
+                        <div class="nextgoal-option-info">
+                            <div class="nextgoal-option-name">${g.name}</div>
+                            <div class="nextgoal-option-meta">${g.meta}</div>
+                        </div>
+                        ${isRecommended ? '<div class="nextgoal-option-recommended">推荐</div>' : ''}
+                    </button>`;
+            }).join('');
+
+            let overlay = document.getElementById('nextGoalOverlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'nextGoalOverlay';
+                overlay.className = 'nextgoal-overlay';
+                overlay.innerHTML = `
+                    <div class="nextgoal-sheet" role="dialog" aria-label="选择下一个目标">
+                        <div class="nextgoal-handle" aria-hidden="true"></div>
+                        <div class="nextgoal-title">你的下一个目标?</div>
+                        <div class="nextgoal-sub">考完不是终点,而是新起点</div>
+                        <div class="nextgoal-options" id="nextGoalOptions"></div>
+                        <button class="nextgoal-close" onclick="closeNextGoalSheet()">稍后再说</button>
+                    </div>`;
+                document.body.appendChild(overlay);
+                // 点击遮罩关闭
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) closeNextGoalSheet();
+                });
+            }
+            document.getElementById('nextGoalOptions').innerHTML = optionsHTML;
+            overlay.classList.add('show');
+        }
+
+        function closeNextGoalSheet() {
+            SFX.click();
+            const overlay = document.getElementById('nextGoalOverlay');
+            if (overlay) overlay.classList.remove('show');
+        }
+
+        function acceptNextGoal(goalId) {
+            SFX.click();
+            const planId = _nextGoalPlanId;
+            try {
+                if (planId) {
+                    // 标记当前 plan 考后已完成
+                    LearningSystem.handleExamCompleted(planId);
+                }
+                if (goalId === 'free') {
+                    // 切到自由学习模式
+                    LearningSystem.updateSettings({ mode: 'free', activeRoleId: null, activeBookId: LearningSystem.getSettings().activeBookId || 'cet4' });
+                    showToast('已切换到自由学习模式', 'success');
+                } else {
+                    // 创建新的冲刺计划(14 天后考试,可后续调整)
+                    const future = new Date(Date.now() + 30 * 86400000);
+                    const futureStr = future.toISOString().slice(0, 10);
+                    const newPlan = LearningSystem.createSprintPlan(goalId, futureStr, 30);
+                    LearningSystem.updateSettings({ mode: 'sprint', activeRoleId: newPlan.id });
+                    showToast(`已创建 ${newPlan.name} 冲刺计划,请在设置中调整日期`, 'success');
+                }
+                closeNextGoalSheet();
+                renderStartScreenV2();
+            } catch (e) {
+                console.error('acceptNextGoal 失败:', e);
+                showToast('切换失败,请重试', 'warning');
+            }
+        }
+
+        function startConsolidation(planId) {
+            SFX.click();
+            unlockAudio();
+            try {
+                // 标记考后完成,切到自由学习模式(继续复习该词库)
+                const plan = LearningSystem.getSprintPlan(planId);
+                const bookId = plan ? plan.type : 'cet4';
+                LearningSystem.handleExamCompleted(planId);
+                LearningSystem.updateSettings({ mode: 'free', activeRoleId: null, activeBookId: bookId, dailyTarget: 15 });
+                showToast('已进入巩固模式 · 每日 15 词复习', 'success');
+                renderStartScreenV2();
+            } catch (e) {
+                console.error('startConsolidation 失败:', e);
+                showToast('启动巩固计划失败', 'warning');
+            }
+        }
+
+        function markPostExamDone(planId) {
+            SFX.click();
+            try {
+                // 仅标记完成,不切换模式
+                LearningSystem.handleExamCompleted(planId);
+                showToast('已记录考后状态', 'success');
+                renderStartScreenV2();
+            } catch (e) {
+                console.error('markPostExamDone 失败:', e);
+                showToast('操作失败', 'warning');
             }
         }
 
