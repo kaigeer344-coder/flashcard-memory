@@ -2151,6 +2151,726 @@
             box-shadow: 0 3px 0 var(--primary-dark);
         }
 
+        /* ===== V2.0 进度阶梯首页 ===== */
+        /* apple-design 基线:触控 ≥44pt、对比度 ≥4.5:1、复用 .level-btn/.word-count-section/.btn-primary */
+        .v2-ladder {
+            padding: 4px 0 8px;
+            animation: duoScreenIn 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .v2-mode-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding: 14px 16px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow-neutral);
+        }
+        .v2-mode-header.mode-sprint {
+            background: linear-gradient(135deg, #fff5d6, #ffeaa7);
+            border-color: #ffc800;
+            box-shadow: 0 5px 0 #d6a900;
+        }
+        .v2-mode-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+        .v2-mode-title img { width: 28px; height: 28px; }
+        .v2-mode-sub {
+            font-size: 12px;
+            color: #5e5e5e;  /* 修复 C-3 */
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .v2-countdown {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            padding: 6px 12px;
+            background: var(--danger);
+            border-radius: 999px;
+            box-shadow: 0 3px 0 var(--danger-dark);
+        }
+        .v2-countdown-num {
+            font-size: 18px;
+            font-weight: 900;
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+        }
+        .v2-countdown-unit {
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* 视图切换器(核心/全部) */
+        .v2-view-toggle {
+            display: flex;
+            background: var(--light);
+            padding: 4px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+        }
+        .v2-view-toggle-btn {
+            flex: 1;
+            min-height: 44px;  /* 修复 C-1 */
+            border: 0;
+            background: transparent;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #5e5e5e;  /* 修复 C-3 */
+            cursor: pointer;
+            transition: all 160ms ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .v2-view-toggle-btn.active {
+            background: var(--surface);
+            color: var(--dark);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 进度阶梯卡片 */
+        .v2-ladder-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .v2-ladder-card {
+            padding: 14px 16px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow-neutral);
+        }
+        .v2-ladder-card.current {
+            border-color: var(--primary-dark);
+            background: linear-gradient(135deg, #f4fff0, #ffffff);
+            box-shadow: 0 5px 0 var(--primary-dark), 0 8px 16px rgba(70, 163, 2, 0.12);
+        }
+        .v2-ladder-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .v2-ladder-icon {
+            width: 36px; height: 36px;
+            display: grid; place-items: center;
+            border-radius: 10px;
+            background: var(--light);
+            flex-shrink: 0;
+        }
+        .v2-ladder-icon img { width: 28px; height: 28px; object-fit: contain; }
+        .v2-ladder-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--dark);
+            flex: 1;
+        }
+        .v2-ladder-current-tag {
+            padding: 3px 8px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            border-radius: 999px;
+            box-shadow: 0 2px 0 var(--primary-dark);
+        }
+        .v2-ladder-progress {
+            height: 14px;
+            background: var(--light);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 8px;
+        }
+        .v2-ladder-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 999px;
+            transition: width 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+        }
+        .v2-ladder-progress-fill.style-blue {
+            background: linear-gradient(90deg, var(--secondary), #6ad1ff);
+        }
+        .v2-ladder-progress-fill.style-yellow {
+            background: linear-gradient(90deg, var(--accent), #ffd966);
+        }
+        .v2-ladder-progress-fill.style-purple {
+            background: linear-gradient(90deg, #ce82ff, #e0a8ff);
+        }
+        .v2-ladder-progress-fill.style-red {
+            background: linear-gradient(90deg, var(--danger), #ff8181);
+        }
+        .v2-ladder-progress-fill.style-orange {
+            background: linear-gradient(90deg, #ff8c42, #ffb380);
+        }
+        .v2-ladder-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #5e5e5e;  /* 修复 C-3 */
+            font-weight: 700;
+        }
+        .v2-ladder-meta .pct {
+            font-size: 14px;
+            color: var(--dark);
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+        .v2-ladder-contribution {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--border);
+            font-size: 11px;
+            color: #5e5e5e;  /* 修复 C-3 */
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        .v2-ladder-contribution .contrib-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .v2-ladder-contribution .contrib-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .v2-ladder-contribution .contrib-label {
+            flex: 1;
+        }
+        .v2-ladder-contribution .contrib-val {
+            font-weight: 800;
+            color: var(--dark);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* 今日任务卡 */
+        .v2-today-card {
+            padding: 16px;
+            background: var(--surface);
+            border: 2px solid var(--primary-dark);
+            border-radius: 20px;
+            box-shadow: 0 6px 0 var(--primary-dark), 0 10px 18px rgba(70, 163, 2, 0.18);
+            margin-bottom: 14px;
+        }
+        .v2-today-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .v2-today-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+        .v2-today-day {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 3px 10px;
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            font-size: 11px;
+            font-weight: 800;
+            border-radius: 999px;
+        }
+        .v2-today-map-btn {
+            min-width: 44px;
+            min-height: 44px;
+            padding: 0 12px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            background: var(--surface);
+            color: var(--dark);
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: var(--shadow-neutral);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 120ms ease, box-shadow 120ms ease;
+        }
+        .v2-today-map-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 var(--border);
+        }
+        .v2-today-map-btn img { width: 18px; height: 18px; }
+        .v2-today-stats {
+            display: flex;
+            gap: 8px;
+        }
+        .v2-today-stat {
+            flex: 1;
+            padding: 10px 8px;
+            background: var(--light);
+            border-radius: 12px;
+            text-align: center;
+        }
+        .v2-today-stat-num {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--dark);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .v2-today-stat-label {
+            font-size: 11px;
+            color: #5e5e5e;  /* 修复 C-3 */
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        /* 累计统计条 */
+        .v2-cumulative {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px;
+            background: var(--light);
+            border-radius: 14px;
+            margin-bottom: 14px;
+        }
+        .v2-cumulative-item {
+            text-align: center;
+        }
+        .v2-cumulative-num {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--dark);
+            font-variant-numeric: tabular-nums;
+        }
+        .v2-cumulative-label {
+            font-size: 11px;
+            color: #5e5e5e;  /* 修复 C-3 */
+            font-weight: 700;
+            margin-top: 2px;
+        }
+        .v2-cumulative-divider {
+            width: 1px;
+            background: var(--border);
+        }
+
+        /* V2.0 首页底部 CTA */
+        .v2-start-btn {
+            width: 100%;
+            min-height: 56px;  /* 修复 C-1:大触控目标 */
+            border-radius: 18px;
+            background: var(--primary);
+            color: #fff;
+            border: 0;
+            box-shadow: 0 6px 0 var(--primary-dark), 0 12px 20px rgba(70, 163, 2, 0.25);
+            font-size: 18px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 140ms ease, box-shadow 140ms ease;
+            -webkit-tap-highlight-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .v2-start-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 var(--primary-dark);
+        }
+        .v2-start-btn img { width: 22px; height: 22px; }
+
+        /* 隐藏 V1 入口当 V2 模式已激活 */
+        .start-screen.v2-active .level-selector,
+        .start-screen.v2-active .word-count-section,
+        .start-screen.v2-active > .btn-primary {
+            display: none;
+        }
+        .start-screen.v2-active {
+            padding-top: 8px;
+        }
+        /* 当 V2 未激活时,隐藏 V2 阶梯 */
+        .v2-ladder-empty {
+            display: none;
+        }
+
+        /* ===== V2.0 计划详情页(关卡地图) apple-design 审查落地 ===== */
+        .plan-detail-screen {
+            padding: 0 0 88px;
+        }
+        .plan-detail-bar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 14px;
+            background: var(--bg);
+            border-bottom: 2px solid var(--border);
+        }
+        .plan-back-btn {
+            min-width: 44px;
+            min-height: 44px;
+            padding: 0 10px;
+            border: 0;
+            background: transparent;
+            color: var(--secondary);
+            font-size: 22px;
+            font-weight: 900;
+            cursor: pointer;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 140ms ease;
+        }
+        .plan-back-btn:active { background: rgba(28,176,246,0.12); }
+        .plan-back-title {
+            font-size: 17px;
+            font-weight: 900;
+            color: var(--dark);
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .plan-hero {
+            margin: 14px 16px 18px;
+            padding: 18px 18px 16px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--shadow-neutral);
+        }
+        .plan-hero-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+        .plan-hero-info { flex: 1; min-width: 0; }
+        .plan-hero-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .plan-hero-title img { width: 24px; height: 24px; }
+        .plan-hero-sub {
+            margin-top: 4px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+        .plan-countdown {
+            min-width: 72px;
+            padding: 8px 12px;
+            border-radius: 16px;
+            background: var(--accent);
+            color: #5a3d00;
+            text-align: center;
+            box-shadow: 0 4px 0 #c79500;
+        }
+        .plan-countdown-num {
+            font-size: 24px;
+            font-weight: 900;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .plan-countdown-unit { font-size: 12px; font-weight: 800; }
+        .plan-progress-meta {
+            margin-top: 14px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--muted);
+        }
+        .plan-progress-bar {
+            flex: 1;
+            height: 10px;
+            border-radius: 6px;
+            background: var(--border);
+            overflow: hidden;
+        }
+        .plan-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 6px;
+            transition: width 320ms cubic-bezier(0.2,0.8,0.2,1);
+        }
+
+        .plan-section-title {
+            margin: 4px 18px 10px;
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .plan-section-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .level-map {
+            margin: 0 14px 8px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .level-cell {
+            position: relative;
+            min-height: 88px;
+            padding: 12px 12px 10px;
+            border: 2px solid var(--border);
+            border-radius: 18px;
+            background: var(--surface);
+            box-shadow: var(--shadow-neutral);
+            cursor: pointer;
+            transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .level-cell:active {
+            transform: translateY(2px);
+            box-shadow: 0 4px 0 var(--border);
+        }
+        .level-cell-day {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+        }
+        .level-cell-num {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--dark);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .level-cell-status {
+            margin-top: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .level-cell-status .lc-icon {
+            width: 14px;
+            height: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .level-cell-status .lc-icon svg { width: 100%; height: 100%; }
+        .level-cell-status.lc-done { color: var(--primary-dark); }
+        .level-cell-status.lc-active { color: #c46900; }
+        .level-cell-status.lc-locked { color: #777777; } /* 对比度 5.4:1 on white */
+
+        .level-cell.is-done {
+            border-color: var(--primary);
+            background: #f5ffef;
+        }
+        .level-cell.is-done .level-cell-num { color: var(--primary-dark); }
+        .level-cell.is-active {
+            border-color: var(--accent);
+            background: #fff8e0;
+            box-shadow: 0 6px 0 #c79500;
+        }
+        .level-cell.is-active .level-cell-num { color: #c46900; }
+        .level-cell.is-locked {
+            opacity: 0.92;
+            background: #f3f3f3;
+            cursor: not-allowed;
+        }
+        .level-cell.is-locked .level-cell-num { color: #999999; }
+        .level-cell.is-locked:active { transform: none; box-shadow: var(--shadow-neutral); }
+        .level-cell-current-tag {
+            position: absolute;
+            top: -8px;
+            right: 10px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            background: var(--accent);
+            color: #5a3d00;
+            font-size: 10px;
+            font-weight: 900;
+            box-shadow: 0 3px 0 #c79500;
+        }
+        .level-cell-pulse {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 0 0 rgba(255,200,0,0.6);
+            animation: lcPulse 1.6s infinite;
+        }
+        @keyframes lcPulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,200,0,0.6); }
+            70% { box-shadow: 0 0 0 10px rgba(255,200,0,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,200,0,0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .level-cell-pulse { animation: none; }
+            .level-cell { transition: none; }
+        }
+
+        .plan-today-card {
+            margin: 16px 16px 14px;
+            padding: 16px;
+            border: 2px solid var(--primary);
+            border-radius: 22px;
+            background: #f7fff2;
+            box-shadow: 0 6px 0 var(--primary-dark);
+        }
+        .plan-today-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .plan-today-title { font-size: 15px; font-weight: 900; color: var(--dark); }
+        .plan-today-day {
+            padding: 4px 10px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+        }
+        .plan-today-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .plan-today-stat {
+            text-align: center;
+            padding: 10px 4px;
+            background: var(--surface);
+            border-radius: 14px;
+            border: 2px solid var(--border);
+        }
+        .plan-today-stat-num {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--dark);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .plan-today-stat-label {
+            margin-top: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--muted);
+        }
+
+        .plan-action-bar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+            background: var(--bg);
+            border-top: 2px solid var(--border);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 20;
+        }
+        .plan-action-primary {
+            flex: 1;
+            min-height: 56px;
+            padding: 0 20px;
+            border: 0;
+            border-radius: 18px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 900;
+            box-shadow: 0 6px 0 var(--primary-dark);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 120ms ease, box-shadow 120ms ease;
+        }
+        .plan-action-primary:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 var(--primary-dark);
+        }
+        .plan-action-primary img { width: 20px; height: 20px; }
+        .plan-action-secondary {
+            min-width: 56px;
+            min-height: 56px;
+            padding: 0 14px;
+            border: 2px solid var(--border);
+            border-radius: 18px;
+            background: var(--surface);
+            color: var(--dark);
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: var(--shadow-neutral);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .plan-action-secondary:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 var(--border);
+        }
+        .plan-empty {
+            margin: 40px 24px;
+            padding: 24px;
+            border-radius: 22px;
+            background: var(--surface);
+            border: 2px dashed var(--border);
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .plan-empty-cta {
+            margin-top: 12px;
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 14px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 900;
+            border: 0;
+            box-shadow: 0 4px 0 var(--primary-dark);
+            cursor: pointer;
+        }
+
         /* ===== 商店 ===== */
         .shop-overlay {
             position: fixed; inset: 0;
@@ -2439,6 +3159,8 @@
         </div>
 
         <div class="screen start-screen active" id="startScreen">
+            <!-- V2.0 进度阶梯首页(由 renderStartScreenV2 动态渲染) -->
+            <div id="v2Ladder" class="v2-ladder-empty"></div>
             <div class="level-selector">
                 <div class="level-btn selected" data-level="cet4" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
                     <div class="level-icon"><img src="assets/icon-cet4.png" alt=""></div>
@@ -2484,6 +3206,15 @@
             </div>
 
             <button class="btn-primary" ontouchstart="unlockAudio()" onclick="startTodayTask()">开始今日任务</button>
+        </div>
+
+        <!-- V2.0 计划详情页(关卡地图) apple-design 审查落地 -->
+        <div class="screen plan-detail-screen" id="planDetailScreen">
+            <div class="plan-detail-bar">
+                <button class="plan-back-btn" onclick="exitPlanDetail()" aria-label="返回首页">&lsaquo;</button>
+                <div class="plan-back-title" id="planDetailTitle">计划详情</div>
+            </div>
+            <div id="planDetailBody"></div>
         </div>
 
         <div class="screen learning-screen" id="learningScreen">
@@ -4803,24 +5534,453 @@
         }
 
         // V2.0:首次配置完成后刷新首页(显示当前模式状态)
-        // 阶段3 会扩展为渲染进度阶梯首页
+        // 阶段3 扩展为渲染进度阶梯首页
         function refreshStartScreen() {
+            renderStartScreenV2();
+        }
+
+        // V2.0 进度阶梯首页渲染
+        let _v2View = 'core';  // 'core' | 'all'
+        function renderStartScreenV2() {
+            const v2El = document.getElementById('v2Ladder');
+            const startScreen = document.getElementById('startScreen');
+            if (!v2El || !startScreen) return;
             try {
                 const settings = LearningSystem.getSettings();
                 const mode = settings.mode;
-                // 显示当前模式的提示(简短 toast 风格)
-                if (mode === 'sprint') {
-                    const plan = LearningSystem.getActivePlan();
-                    if (plan) {
-                        const remainDays = Math.max(1, Math.ceil((new Date(plan.examDate) - new Date()) / 86400000));
-                        showToast(`已开启${plan.name}冲刺 · 还剩 ${remainDays} 天`, 'success');
-                    }
-                } else if (mode === 'free') {
-                    showToast(`已开启自由学习 · ${LearningSystem.getBookInfo(settings.activeBookId).name}`, 'success');
+                if (!mode) {
+                    // 未配置模式:显示 V1 首页
+                    startScreen.classList.remove('v2-active');
+                    v2El.className = 'v2-ladder-empty';
+                    v2El.innerHTML = '';
+                    return;
                 }
+                // 已配置:显示 V2 阶梯首页,隐藏 V1
+                startScreen.classList.add('v2-active');
+                v2El.className = 'v2-ladder';
+                // 读取用户上次保存的视图偏好
+                _v2View = settings.defaultView === 'all' ? 'all' : 'core';
+                v2El.innerHTML = _renderV2LadderHTML(settings, mode);
                 renderHeaderStats();
             } catch (e) {
-                console.error('refreshStartScreen 失败:', e);
+                console.error('renderStartScreenV2 失败:', e);
+            }
+        }
+
+        // 安全获取今日队列 meta(避免 generateTodayQueue 报错)
+        function _safeGetTodayMeta() {
+            try {
+                const r = LearningSystem.generateTodayQueue();
+                return (r && r.meta) ? r.meta : {};
+            } catch (e) {
+                console.error('generateTodayQueue 失败:', e);
+                return {};
+            }
+        }
+
+        function _renderV2LadderHTML(settings, mode) {
+            const ladder = LearningSystem.calculateLadderProgress();
+            const stats = LearningSystem.getGlobalStats();
+            const books = LearningSystem.getAllBooksInfo();
+            const examTypes = LearningSystem.getExamTypes();
+            const iconMap = {
+                cet4: 'icon-cet4', cet6: 'icon-cet6', toefl: 'icon-toefl',
+                gre: 'icon-gre', kaoyan: 'daily-words', ielts: 'achievement'
+            };
+            // 头部:模式标题 + 倒计时(冲刺)/今日目标(自由)
+            let headerHTML = '';
+            let todayHTML = '';
+            if (mode === 'sprint') {
+                const plan = LearningSystem.getActivePlan();
+                if (!plan) {
+                    headerHTML = `
+                        <div class="v2-mode-header mode-sprint">
+                            <div>
+                                <div class="v2-mode-title"><img src="assets/generated-icons/achievement.png" alt="">考试冲刺</div>
+                                <div class="v2-mode-sub">尚未创建冲刺计划,请在设置中创建</div>
+                            </div>
+                        </div>`;
+                } else {
+                    const remainDays = Math.max(0, Math.ceil((new Date(plan.examDate) - new Date()) / 86400000));
+                    const examCfg = examTypes[plan.type] || {};
+                    headerHTML = `
+                        <div class="v2-mode-header mode-sprint">
+                            <div>
+                                <div class="v2-mode-title">
+                                    <img src="assets/generated-icons/${iconMap[plan.type] || 'achievement'}.png" alt="">
+                                    ${plan.name}
+                                </div>
+                                <div class="v2-mode-sub">第 ${plan.currentDay} 天 / 共 ${plan.planDays} 天 · ${plan.stageLabel}</div>
+                            </div>
+                            <div class="v2-countdown">
+                                <span class="v2-countdown-num">${remainDays}</span>
+                                <span class="v2-countdown-unit">天</span>
+                            </div>
+                        </div>`;
+                    // 今日任务卡
+                    const meta = _safeGetTodayMeta();
+                    todayHTML = `
+                        <div class="v2-today-card">
+                            <div class="v2-today-head">
+                                <div>
+                                    <div class="v2-today-title">今日任务</div>
+                                    <div class="v2-today-day">Day ${plan.currentDay}</div>
+                                </div>
+                                <button class="v2-today-map-btn" onclick="enterPlanDetail()" aria-label="查看学习地图">
+                                    <img src="assets/generated-icons/level-map.png" alt="" onerror="this.style.display='none'">
+                                    <span>学习地图</span>
+                                </button>
+                            </div>
+                            <div class="v2-today-stats">
+                                <div class="v2-today-stat">
+                                    <div class="v2-today-stat-num">${meta.newWordsToday || 0}</div>
+                                    <div class="v2-today-stat-label">新词</div>
+                                </div>
+                                <div class="v2-today-stat">
+                                    <div class="v2-today-stat-num">${meta.reviewWordsToday || 0}</div>
+                                    <div class="v2-today-stat-label">复习</div>
+                                </div>
+                                <div class="v2-today-stat">
+                                    <div class="v2-today-stat-num">${plan.plan.progress.learnedWordIds.length}</div>
+                                    <div class="v2-today-stat-label">已学</div>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            } else if (mode === 'free') {
+                const bookInfo = LearningSystem.getBookInfo(settings.activeBookId);
+                headerHTML = `
+                    <div class="v2-mode-header">
+                        <div>
+                            <div class="v2-mode-title">
+                                <img src="assets/generated-icons/${iconMap[settings.activeBookId] || 'daily-words'}.png" alt="">
+                                自由学习 · ${bookInfo.name}
+                            </div>
+                            <div class="v2-mode-sub">每日目标 ${settings.dailyTarget} 词 · 核心词 ${bookInfo.coreWords}</div>
+                        </div>
+                    </div>`;
+                // 今日任务卡
+                const meta = _safeGetTodayMeta();
+                todayHTML = `
+                    <div class="v2-today-card">
+                        <div class="v2-today-head">
+                            <div class="v2-today-title">今日任务</div>
+                            <div class="v2-today-day">目标 ${settings.dailyTarget} 词</div>
+                        </div>
+                        <div class="v2-today-stats">
+                            <div class="v2-today-stat">
+                                <div class="v2-today-stat-num">${meta.newWordsToday || 0}</div>
+                                <div class="v2-today-stat-label">新词</div>
+                            </div>
+                            <div class="v2-today-stat">
+                                <div class="v2-today-stat-num">${meta.reviewWordsToday || 0}</div>
+                                <div class="v2-today-stat-label">复习</div>
+                            </div>
+                            <div class="v2-today-stat">
+                                <div class="v2-today-stat-num">${stats.totalLearnedWords}</div>
+                                <div class="v2-today-stat-label">累计</div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            // 视图切换
+            const toggleHTML = `
+                <div class="v2-view-toggle" role="tablist">
+                    <button class="v2-view-toggle-btn ${_v2View === 'core' ? 'active' : ''}"
+                            onclick="switchV2View('core')" role="tab" aria-selected="${_v2View === 'core'}">核心词</button>
+                    <button class="v2-view-toggle-btn ${_v2View === 'all' ? 'active' : ''}"
+                            onclick="switchV2View('all')" role="tab" aria-selected="${_v2View === 'all'}">全部词</button>
+                </div>`;
+
+            // 进度阶梯卡片列表
+            const styleMap = {
+                cet4: '', cet6: 'style-blue', toefl: 'style-red', gre: 'style-orange',
+                kaoyan: 'style-yellow', ielts: 'style-purple'
+            };
+            const currentBookId = mode === 'free' ? settings.activeBookId : (LearningSystem.getActivePlan()?.type);
+            const ladderCards = books.map(b => {
+                const prog = ladder[b.id] || { core: { learned: 0, total: 1 }, all: { learned: 0, total: 1 }, contributionFromOthers: { learned: 0, totalOverlap: 0 } };
+                const target = _v2View === 'core' ? prog.core : prog.all;
+                const total = target.total || 1;
+                const learned = target.learned || 0;
+                const pct = Math.round((learned / total) * 100);
+                const isCurrent = b.id === currentBookId;
+                // 跨词库贡献度(只显示全部视图)
+                let contribHTML = '';
+                if (settings.showContribution && prog.contributionFromOthers) {
+                    const c = prog.contributionFromOthers;
+                    if (c.learned > 0) {
+                        contribHTML = `
+                            <div class="v2-ladder-contribution">
+                                <div>跨词库贡献:</div>
+                                <div class="contrib-row">
+                                    <div class="contrib-dot" style="background:${b.color}"></div>
+                                    <div class="contrib-label">来自其他词库已学</div>
+                                    <div class="contrib-val">+${c.learned}</div>
+                                </div>
+                            </div>`;
+                    }
+                }
+                return `
+                    <div class="v2-ladder-card ${isCurrent ? 'current' : ''}">
+                        <div class="v2-ladder-head">
+                            <div class="v2-ladder-icon"><img src="assets/generated-icons/${iconMap[b.id] || 'daily-words'}.png" alt=""></div>
+                            <div class="v2-ladder-name">${b.name}${_v2View === 'core' ? '核心' : '全部'}</div>
+                            ${isCurrent ? '<div class="v2-ladder-current-tag">当前</div>' : ''}
+                        </div>
+                        <div class="v2-ladder-progress">
+                            <div class="v2-ladder-progress-fill ${styleMap[b.id] || ''}" style="width: ${pct}%"></div>
+                        </div>
+                        <div class="v2-ladder-meta">
+                            <span>${learned} / ${total} 词</span>
+                            <span class="pct">${pct}%</span>
+                        </div>
+                        ${contribHTML}
+                    </div>`;
+            }).join('');
+
+            // 累计统计条
+            const cumulativeHTML = `
+                <div class="v2-cumulative">
+                    <div class="v2-cumulative-item">
+                        <div class="v2-cumulative-num">${stats.totalStudyDays || getStudyDays()}</div>
+                        <div class="v2-cumulative-label">累计学习天数</div>
+                    </div>
+                    <div class="v2-cumulative-divider"></div>
+                    <div class="v2-cumulative-item">
+                        <div class="v2-cumulative-num">${stats.totalLearnedWords}</div>
+                        <div class="v2-cumulative-label">总学习词数</div>
+                    </div>
+                    <div class="v2-cumulative-divider"></div>
+                    <div class="v2-cumulative-item">
+                        <div class="v2-cumulative-num">${stats.currentStreak}</div>
+                        <div class="v2-cumulative-label">连续天数</div>
+                    </div>
+                </div>`;
+
+            // 开始今日任务按钮
+            const startBtnHTML = `
+                <button class="v2-start-btn" onclick="startV2TodayTask()" ontouchstart="unlockAudio()">
+                    <img src="assets/generated-icons/daily-words.png" alt="">
+                    开始今日任务
+                </button>`;
+
+            return `${headerHTML}${toggleHTML}${todayHTML}<div class="v2-ladder-list">${ladderCards}</div>${cumulativeHTML}${startBtnHTML}`;
+        }
+
+        function switchV2View(view) {
+            SFX.click();
+            _v2View = view;
+            try {
+                LearningSystem.updateSettings({ defaultView: view });
+            } catch (e) { console.error('switchV2View 保存失败:', e); }
+            renderStartScreenV2();
+        }
+
+        function startV2TodayTask() {
+            SFX.click();
+            unlockAudio();
+            try {
+                const settings = LearningSystem.getSettings();
+                if (settings.mode === 'sprint') {
+                    const plan = LearningSystem.getActivePlan();
+                    if (!plan) {
+                        showToast('请先在设置中创建冲刺计划', 'warning');
+                        return;
+                    }
+                }
+                // 调用现有的 startTodayTask,但用 V2 队列
+                startTodayTask();
+            } catch (e) {
+                console.error('startV2TodayTask 失败:', e);
+                showToast('启动任务失败,请重试', 'warning');
+            }
+        }
+
+        // === V2.0 计划详情页(关卡地图) ===
+        // 状态 SVG 图标(替代 emoji,确保跨平台一致)
+        const _PLAN_ICONS = {
+            done: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+            active: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2c-1.5 3 1 5 1 8 0 2.5-2 4-4 4-1.5 0-3-1-3-3 0-1 0-2 1-3-2 1-4 3.5-4 7 0 4 3 7 7 7s7-3 7-7c0-4-2-7-5-9z"/></svg>',
+            lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>'
+        };
+
+        function enterPlanDetail() {
+            SFX.click();
+            renderPlanDetail();
+            showScreen('planDetailScreen');
+            // 滚动到当前天(apple-design:减少滚动寻找成本)
+            setTimeout(() => {
+                const cur = document.querySelector('.level-cell.is-active');
+                if (cur && cur.scrollIntoView) {
+                    try { cur.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
+                }
+            }, 80);
+        }
+
+        function exitPlanDetail() {
+            SFX.click();
+            renderStartScreenV2();
+            showScreen('startScreen');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderPlanDetail() {
+            const bodyEl = document.getElementById('planDetailBody');
+            const titleEl = document.getElementById('planDetailTitle');
+            if (!bodyEl || !titleEl) return;
+
+            const settings = LearningSystem.getSettings();
+            const plan = LearningSystem.getActivePlan();
+
+            if (settings.mode !== 'sprint' || !plan) {
+                titleEl.textContent = '计划详情';
+                bodyEl.innerHTML = `
+                    <div class="plan-empty">
+                        当前不是冲刺模式,或尚未创建计划
+                        <br>
+                        <button class="plan-empty-cta" onclick="exitPlanDetail()">返回首页</button>
+                    </div>`;
+                return;
+            }
+
+            titleEl.textContent = `${plan.name} · 学习地图`;
+
+            const remainDays = Math.max(0, Math.ceil((new Date(plan.examDate) - new Date()) / 86400000));
+            const meta = _safeGetTodayMeta();
+            const newToday = meta.newWordsToday || 0;
+            const reviewToday = meta.reviewWordsToday || 0;
+            const estMin = Math.max(5, Math.round((newToday + reviewToday) * 0.6));
+
+            const completed = plan.completedDays || [];
+            const total = plan.planDays || 1;
+            const current = plan.currentDay || 1;
+            const doneCount = completed.length;
+            const pct = Math.min(100, Math.round((doneCount / total) * 100));
+
+            const iconMap = { cet4: 'icon-cet4', cet6: 'icon-cet6', toefl: 'icon-toefl', gre: 'icon-gre', kaoyan: 'daily-words', ielts: 'achievement' };
+            const iconUrl = `assets/generated-icons/${iconMap[plan.type] || 'achievement'}.png`;
+
+            // 关卡卡片(apple-design:状态用 SVG + 文字标签双轨呈现,触控 ≥44pt)
+            const cells = [];
+            for (let day = 1; day <= total; day++) {
+                let stateCls = 'is-locked', stateLabel = '未解锁', stateIcon = _PLAN_ICONS.lock, statusCls = 'lc-locked';
+                let clickable = false;
+                if (completed.includes(day)) {
+                    stateCls = 'is-done'; stateLabel = '已完成'; stateIcon = _PLAN_ICONS.done; statusCls = 'lc-done';
+                    clickable = true;
+                } else if (day === current) {
+                    stateCls = 'is-active'; stateLabel = '进行中'; stateIcon = _PLAN_ICONS.active; statusCls = 'lc-active';
+                    clickable = true;
+                } else if (day < current) {
+                    // 容错:跳过的天按已完成处理
+                    stateCls = 'is-done'; stateLabel = '已完成'; stateIcon = _PLAN_ICONS.done; statusCls = 'lc-done';
+                    clickable = true;
+                }
+                const isCurrent = (day === current);
+                cells.push(`
+                    <div class="level-cell ${stateCls}" ${clickable ? `onclick="clickPlanLevel(${day})" role="button" tabindex="0"` : 'aria-disabled="true"'} aria-label="Day ${day} ${stateLabel}">
+                        ${isCurrent ? '<div class="level-cell-current-tag">今天</div><div class="level-cell-pulse"></div>' : ''}
+                        <div class="level-cell-day">DAY</div>
+                        <div class="level-cell-num">${day}</div>
+                        <div class="level-cell-status ${statusCls}">
+                            <span class="lc-icon">${stateIcon}</span>
+                            <span>${stateLabel}</span>
+                        </div>
+                    </div>`);
+            }
+
+            bodyEl.innerHTML = `
+                <div class="plan-hero">
+                    <div class="plan-hero-row">
+                        <div class="plan-hero-info">
+                            <div class="plan-hero-title">
+                                <img src="${iconUrl}" alt="">
+                                ${plan.name}
+                            </div>
+                            <div class="plan-hero-sub">${plan.stageLabel} · 每日 ${plan.dailyNewWords} 新词</div>
+                        </div>
+                        <div class="plan-countdown" aria-label="距考试 ${remainDays} 天">
+                            <div class="plan-countdown-num">${remainDays}</div>
+                            <div class="plan-countdown-unit">天</div>
+                        </div>
+                    </div>
+                    <div class="plan-progress-meta">
+                        <span>${doneCount}/${total} 天</span>
+                        <div class="plan-progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><div class="plan-progress-fill" style="width:${pct}%"></div></div>
+                        <span>${pct}%</span>
+                    </div>
+                </div>
+
+                <div class="plan-section-title">学习地图</div>
+                <div class="level-map">${cells.join('')}</div>
+
+                <div class="plan-section-title" style="margin-top:18px">今日任务</div>
+                <div class="plan-today-card">
+                    <div class="plan-today-head">
+                        <div class="plan-today-title">Day ${current} 任务</div>
+                        <div class="plan-today-day">进行中</div>
+                    </div>
+                    <div class="plan-today-stats">
+                        <div class="plan-today-stat">
+                            <div class="plan-today-stat-num">${newToday}</div>
+                            <div class="plan-today-stat-label">新词</div>
+                        </div>
+                        <div class="plan-today-stat">
+                            <div class="plan-today-stat-num">${reviewToday}</div>
+                            <div class="plan-today-stat-label">复习</div>
+                        </div>
+                        <div class="plan-today-stat">
+                            <div class="plan-today-stat-num">~${estMin}</div>
+                            <div class="plan-today-stat-label">预计分钟</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="plan-action-bar">
+                    <button class="plan-action-primary" onclick="startFromPlanDetail()" ontouchstart="unlockAudio()">
+                        <img src="assets/generated-icons/daily-words.png" alt="">
+                        开始 Day ${current}
+                    </button>
+                    <button class="plan-action-secondary" onclick="jumpToToday()" aria-label="回到今天">今天</button>
+                </div>
+            `;
+        }
+
+        function clickPlanLevel(day) {
+            SFX.click();
+            const plan = LearningSystem.getActivePlan();
+            if (!plan) return;
+            const completed = plan.completedDays || [];
+            if (!completed.includes(day) && day !== plan.currentDay) {
+                showToast('未解锁,请先完成前面的关卡', 'warning');
+                return;
+            }
+            if (day !== plan.currentDay) {
+                showToast(`Day ${day} 已完成`, 'success');
+                return;
+            }
+            // 当前天:直接进入学习
+            startFromPlanDetail();
+        }
+
+        function startFromPlanDetail() {
+            SFX.click();
+            unlockAudio();
+            try {
+                startTodayTask();
+            } catch (e) {
+                console.error('startFromPlanDetail 失败:', e);
+                showToast('启动任务失败,请重试', 'warning');
+            }
+        }
+
+        function jumpToToday() {
+            SFX.click();
+            const cur = document.querySelector('.level-cell.is-active');
+            if (cur && cur.scrollIntoView) {
+                try { cur.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
             }
         }
 
@@ -4854,7 +6014,7 @@
             }, 2400);
         }
 
-        const HIDDEN_NAV_SCREENS = ['learningScreen', 'gameScreen'];
+        const HIDDEN_NAV_SCREENS = ['learningScreen', 'gameScreen', 'planDetailScreen'];
         function updateBottomNavVisibility() {
             const bottomNav = document.getElementById('bottomNav');
             const activeScreen = document.querySelector('.screen.active');
@@ -6006,6 +7166,18 @@
                     progress.coins += coinsEarned;
                     saveProgress();
                     SFX.coin();
+                }
+                // V2.0:冲刺模式标记当天完成并推进 currentDay(apple-design:学习完成有可感知反馈)
+                try {
+                    const settings = LearningSystem.getSettings();
+                    if (settings.mode === 'sprint' && settings.activeRoleId) {
+                        const plan = LearningSystem.getActivePlan();
+                        if (plan && !(plan.completedDays || []).includes(plan.currentDay)) {
+                            LearningSystem.markDayCompleted(settings.activeRoleId);
+                        }
+                    }
+                } catch (e) {
+                    console.error('markDayCompleted 失败:', e);
                 }
             }
 
@@ -7222,6 +8394,12 @@
             requestAnimationFrame(() => {
                 setTimeout(updateEstimate, 0);
             });
+            // V2.0:已配置模式时渲染进度阶梯首页
+            try {
+                if (LearningSystem.isOnboarded()) {
+                    renderStartScreenV2();
+                }
+            } catch (e) { console.error('renderStartScreenV2 init 失败:', e); }
             // 启动流程：新手引导 -> 连胜奖励
             if (!isOnboarded()) {
                 startOnboarding();
