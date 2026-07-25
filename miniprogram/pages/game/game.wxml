@@ -1,0 +1,60 @@
+<!-- pages/game/game.wxml -->
+<view class="container" wx:if="{{!finished}}">
+
+  <!-- 顶部状态栏 -->
+  <view class="game-header">
+    <view class="game-stat">
+      <text class="stat-label">得分</text>
+      <text class="stat-value">{{score}}</text>
+    </view>
+    <view class="game-stat">
+      <text class="stat-label">连击</text>
+      <text class="stat-value">{{combo}}x</text>
+    </view>
+    <view class="game-stat">
+      <text class="stat-label">时间</text>
+      <text class="stat-value {{timeLeft <= 10 ? 'danger' : ''}}">{{timeLeft}}s</text>
+    </view>
+    <view class="game-stat">
+      <text class="stat-label">进度</text>
+      <text class="stat-value">{{matchedCount}}/{{totalPairs}}</text>
+    </view>
+  </view>
+
+  <!-- 卡片网格 -->
+  <view class="card-grid">
+    <view
+      wx:for="{{cards}}"
+      wx:key="id"
+      class="game-card {{item.selected ? 'selected' : ''}} {{item.matched ? 'matched' : ''}} {{item.type === 'en' ? 'card-en' : 'card-cn'}}"
+      data-id="{{item.id}}"
+      bindtap="onCardTap"
+    >
+      <text class="card-text">{{item.text}}</text>
+    </view>
+  </view>
+
+</view>
+
+<!-- 完成页 -->
+<view class="container" wx:else>
+  <view class="finish-card">
+    <view class="finish-icon">{{matchedCount >= totalPairs ? '🎉' : '⏰'}}</view>
+    <view class="finish-title">{{matchedCount >= totalPairs ? '全部配对完成！' : '时间到！'}}</view>
+    <view class="finish-stats">
+      <view class="finish-stat-item">
+        <text class="finish-stat-value">{{score}}</text>
+        <text class="finish-stat-label">得分</text>
+      </view>
+      <view class="finish-stat-item">
+        <text class="finish-stat-value">{{maxCombo}}x</text>
+        <text class="finish-stat-label">最高连击</text>
+      </view>
+      <view class="finish-stat-item">
+        <text class="finish-stat-value">{{matchedCount}}/{{totalPairs}}</text>
+        <text class="finish-stat-label">配对数</text>
+      </view>
+    </view>
+    <button class="btn-primary" bindtap="onNextGroup">继续学习</button>
+  </view>
+</view>

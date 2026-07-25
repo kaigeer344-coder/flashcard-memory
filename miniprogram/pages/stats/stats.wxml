@@ -1,0 +1,57 @@
+<!-- pages/stats/stats.wxml -->
+<view class="container">
+
+  <view class="header">
+    <view class="header-title">📊 学习统计</view>
+  </view>
+
+  <!-- 总览卡片 -->
+  <view class="card overview-card">
+    <view class="overview-item">
+      <view class="overview-value">{{totalScore}}</view>
+      <view class="overview-label">总积分</view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{studyDays}}</view>
+      <view class="overview-label">学习天数</view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{streak}}</view>
+      <view class="overview-label">连续天数</view>
+    </view>
+  </view>
+
+  <!-- 虚拟资产 -->
+  <view class="card asset-card">
+    <view class="asset-item">
+      <text class="asset-icon">🪙</text>
+      <text class="asset-value">{{coins}}</text>
+      <text class="asset-label">金币</text>
+    </view>
+    <view class="asset-item">
+      <text class="asset-icon">💎</text>
+      <text class="asset-value">{{gems}}</text>
+      <text class="asset-label">宝石</text>
+    </view>
+  </view>
+
+  <!-- 词库掌握情况 -->
+  <view class="section-title">词库掌握</view>
+  <view class="card">
+    <view wx:for="{{levelStats}}" wx:key="level" class="level-stat-row">
+      <view class="level-stat-header">
+        <text class="level-stat-name">{{item.name}}</text>
+        <text class="level-stat-rate">{{item.rate}}%</text>
+      </view>
+      <view class="level-stat-bar">
+        <view class="level-stat-fill" style="width: {{item.rate}}%"></view>
+      </view>
+      <view class="level-stat-detail">
+        已学 {{item.learned}} / {{item.total}} · 已掌握 {{item.mastered}} · 学习中 {{item.learning}}
+      </view>
+    </view>
+  </view>
+
+  <button class="btn-primary" bindtap="onGoHome">开始学习</button>
+
+</view>

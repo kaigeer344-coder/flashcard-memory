@@ -1,0 +1,31 @@
+<view class="container">
+  <view class="subheader">
+    <view class="back-btn" bindtap="onBack">‹</view>
+    <view class="subheader-title">会员中心</view>
+  </view>
+  <view class="vip-hero {{isVip ? 'activated' : ''}}">
+    <view class="vip-hero-icon">👑</view>
+    <view class="vip-hero-text">
+      <view class="vip-hero-title">{{isVip ? '会员尊享' : '开通会员'}}</view>
+      <view class="vip-hero-sub">{{isVip ? vipPlanName + ' · 到期 ' + vipExpireDate : '解锁全部词库 · 享无限道具'}}</view>
+    </view>
+  </view>
+  <view class="section-title">会员权益</view>
+  <view class="card benefits-card">
+    <view class="benefit-row"><text>词库范围</text><text class="benefit-val">托福 / GRE 全解锁</text></view>
+    <view class="benefit-row"><text>每日新词</text><text class="benefit-val">50 个/天</text></view>
+    <view class="benefit-row"><text>连连看道具</text><text class="benefit-val">无限使用</text></view>
+    <view class="benefit-row"><text>学习统计</text><text class="benefit-val">完整数据</text></view>
+  </view>
+  <view class="section-title">选择套餐</view>
+  <view class="plans-grid">
+    <view wx:for="{{plans}}" wx:key="id" class="plan-card {{item.featured ? 'featured' : ''}}" data-id="{{item.id}}" bindtap="onOpenPay">
+      <view wx:if="{{item.label}}" class="plan-label">{{item.label}}</view>
+      <view class="plan-name">{{item.name}}</view>
+      <view class="plan-price"><text class="currency">¥</text>{{item.price}}</view>
+      <view class="plan-unit">{{item.unit}}</view>
+      <view class="plan-cta">{{isVip ? '续费' : '立即开通'}}</view>
+    </view>
+  </view>
+  <view class="vip-footer">Demo 环境 · 不接入真实支付</view>
+</view>

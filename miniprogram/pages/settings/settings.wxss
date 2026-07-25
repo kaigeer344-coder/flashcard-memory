@@ -1,0 +1,15 @@
+.subheader { display: flex; align-items: center; padding: 10px 0 16px; }
+.back-btn { width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #4CAF50; }
+.subheader-title { flex: 1; text-align: center; font-size: 18px; font-weight: 800; margin-right: 36px; }
+.word-count-card { padding: 18px 16px; }
+.word-count-selector { display: flex; align-items: center; justify-content: center; gap: 24px; margin-bottom: 10px; }
+.count-btn { width: 40px; height: 40px; border-radius: 50%; background: #F5F7FA; color: #4CAF50; font-size: 22px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 2px solid #E8F5E9; }
+.count-display { display: flex; align-items: baseline; gap: 4px; }
+.count-number { font-size: 28px; font-weight: 800; }
+.count-unit { font-size: 12px; color: #888; }
+.tip { text-align: center; font-size: 11px; color: #888; }
+.menu-item { display: flex; align-items: center; padding: 14px 4px; }
+.menu-item.danger .menu-text { color: #E53935; }
+.menu-icon { font-size: 20px; margin-right: 12px; }
+.menu-text { flex: 1; font-size: 15px; }
+.menu-arrow { color: #ccc; font-size: 18px; }

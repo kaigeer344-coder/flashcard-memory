@@ -1,0 +1,9 @@
+{
+  "desc": "闪卡记忆小程序 sitemap 配置",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

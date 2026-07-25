@@ -1,0 +1,58 @@
+<!-- pages/home/home.wxml - 首页 -->
+<view class="container">
+
+  <!-- 顶部标题区 -->
+  <view class="header">
+    <view class="header-title">📚 闪卡记忆</view>
+    <view class="header-sub">用闪卡科学背单词，每天进步一点点</view>
+  </view>
+
+  <!-- 词库选择 -->
+  <view class="section-title">选择词库</view>
+  <view class="level-grid">
+    <view
+      wx:for="{{levels}}"
+      wx:key="id"
+      class="level-card {{selectedLevel === item.id ? 'selected' : ''}} {{item.vipOnly ? 'vip-locked' : ''}} {{item.vipOnly && isVip ? 'unlocked' : ''}}"
+      data-level="{{item.id}}"
+      bindtap="onSelectLevel"
+    >
+      <view wx:if="{{item.vipOnly}}" class="vip-badge">{{isVip ? '✓ VIP' : '👑 VIP'}}</view>
+      <view class="level-icon">{{item.icon}}</view>
+      <view class="level-name">{{item.name}}</view>
+      <view class="level-desc">{{item.desc}}</view>
+    </view>
+  </view>
+
+  <!-- 今日学习新词数 -->
+  <view class="section-title">今日学习新词数</view>
+  <view class="card word-count-card">
+    <view class="word-count-selector">
+      <view class="count-btn" data-delta="-1" bindtap="onDailyWordsChange">−</view>
+      <view class="count-display">
+        <text class="count-number">{{dailyNewWords}}</text>
+        <text class="count-unit">个/天</text>
+      </view>
+      <view class="count-btn" data-delta="1" bindtap="onDailyWordsChange">+</view>
+    </view>
+    <view class="word-count-tip">
+      非会员上限 20 个/天{{isVip ? ' · 会员上限 50 个/天' : ' · 开通会员可提升至 50 个'}}
+    </view>
+  </view>
+
+  <!-- 顺序/乱序 -->
+  <view class="section-title">学习顺序</view>
+  <view class="card order-card">
+    <view class="order-btn {{wordOrder === 'sequential' ? 'active' : ''}}" data-order="sequential" bindtap="onOrderChange">顺序</view>
+    <view class="order-btn {{wordOrder === 'random' ? 'active' : ''}}" data-order="random" bindtap="onOrderChange">乱序</view>
+  </view>
+
+  <!-- 预估 -->
+  <view class="estimate-box">
+    <text>预估 {{estimateGroups}} 组 · 约 {{estimateMinutes}} 分钟</text>
+  </view>
+
+  <!-- 开始按钮 -->
+  <button class="btn-primary start-btn" bindtap="onStartTask">开始今日任务</button>
+
+</view>

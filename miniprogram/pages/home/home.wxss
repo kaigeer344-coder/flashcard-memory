@@ -1,0 +1,155 @@
+/* pages/home/home.wxss - 首页样式 */
+
+/* ===== 顶部标题区 ===== */
+.header {
+  text-align: center;
+  padding: 20px 0 16px;
+}
+.header-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1A1A1A;
+}
+.header-sub {
+  font-size: 13px;
+  color: #888;
+  margin-top: 4px;
+}
+
+/* ===== 词库选择网格 ===== */
+.level-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.level-card {
+  position: relative;
+  background: #fff;
+  border: 2px solid #E0E0E0;
+  border-radius: 16px;
+  padding: 18px 10px 14px;
+  text-align: center;
+  overflow: hidden;
+  transition: all 140ms ease;
+}
+.level-card.selected {
+  border-color: #4CAF50;
+  background: #F5FBF0;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+  transform: translateY(-2px);
+}
+.level-card.vip-locked:not(.unlocked) {
+  opacity: 0.92;
+}
+.vip-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+.level-card.unlocked .vip-badge {
+  background: linear-gradient(135deg, #6B8E23 0%, #556B2F 100%);
+}
+.level-icon {
+  font-size: 36px;
+  margin-bottom: 6px;
+}
+.level-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 2px;
+}
+.level-desc {
+  font-size: 11px;
+  color: #888;
+}
+
+/* ===== 今日新词数 ===== */
+.word-count-card {
+  padding: 18px 16px;
+}
+.word-count-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 10px;
+}
+.count-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #F5F7FA;
+  color: #4CAF50;
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #E8F5E9;
+}
+.count-btn:active {
+  background: #E8F5E9;
+  transform: scale(0.95);
+}
+.count-display {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.count-number {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1A1A1A;
+}
+.count-unit {
+  font-size: 12px;
+  color: #888;
+}
+.word-count-tip {
+  text-align: center;
+  font-size: 11px;
+  color: #888;
+}
+
+/* ===== 顺序/乱序 ===== */
+.order-card {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+}
+.order-btn {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #888;
+  background: #fff;
+}
+.order-btn.active {
+  background: #4CAF50;
+  color: #fff;
+}
+
+/* ===== 预估 ===== */
+.estimate-box {
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+  margin: 14px 0;
+}
+
+/* ===== 开始按钮 ===== */
+.start-btn {
+  margin-top: 8px;
+}

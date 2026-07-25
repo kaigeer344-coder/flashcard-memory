@@ -1,0 +1,68 @@
+/* app.wxss - 全局样式 */
+
+/* ===== 色彩变量（小程序不支持 CSS 变量，用 class 复用） ===== */
+page {
+  --primary: #4CAF50;
+  --primary-dark: #357A38;
+  --primary-soft: #E8F5E9;
+  --secondary: #FFC107;
+  --surface: #FFFFFF;
+  --light: #F5F7FA;
+  --border: #E0E0E0;
+  --muted: #888888;
+  --dark: #1A1A1A;
+  --danger: #E53935;
+
+  background: #F5F7FA;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  color: #1A1A1A;
+  font-size: 14px;
+}
+
+/* ===== 通用容器 ===== */
+.container {
+  padding: 16px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ===== 通用按钮 ===== */
+.btn-primary {
+  width: 100%;
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 4px 0 #357A38;
+}
+.btn-primary:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #357A38;
+}
+
+/* ===== 卡片 ===== */
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 14px;
+}
+
+/* ===== 标题 ===== */
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #888;
+  margin-bottom: 10px;
+  margin-top: 6px;
+}
+
+/* ===== 文字辅助 ===== */
+.text-muted { color: #888; font-size: 12px; }
+.text-danger { color: #E53935; }
+.text-primary { color: #4CAF50; }

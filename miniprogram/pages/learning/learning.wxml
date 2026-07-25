@@ -1,0 +1,59 @@
+<!-- pages/learning/learning.wxml -->
+<view class="container" wx:if="{{!finished}}">
+
+  <!-- 进度条 -->
+  <view class="progress-section">
+    <view class="progress-text">第 {{groupIndex + 1}} 组（共 {{totalGroups}} 组）· {{wordIndex + 1}}/{{groupTotal}}</view>
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{(wordIndex + 1) * 100 / groupTotal}}%"></view>
+    </view>
+  </view>
+
+  <!-- 闪卡 -->
+  <view class="flashcard-wrapper" bindtap="onFlipCard">
+    <view class="flashcard {{isFlipped ? 'flipped' : ''}}">
+      <!-- 正面：英文 + 音标 -->
+      <view class="card-face card-front">
+        <view class="word-en">{{currentWord.en}}</view>
+        <view class="word-phonetic" wx:if="{{currentWord.phonetic}}">{{currentWord.phonetic}}</view>
+        <view class="card-tip">点击查看中文</view>
+      </view>
+      <!-- 反面：中文 -->
+      <view class="card-face card-back">
+        <view class="word-cn">{{currentWord.cn}}</view>
+        <view class="word-en-small">{{currentWord.en}}</view>
+        <view class="card-tip">记得吗？</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 发音按钮 -->
+  <view class="speak-btn" catchtap="onSpeak">🔊 发音</view>
+
+  <!-- 评分按钮 -->
+  <view class="rate-buttons">
+    <view class="rate-btn rate-unknown" data-rating="unknown" catchtap="onRate">
+      <view class="rate-icon">😕</view>
+      <view class="rate-text">不认识</view>
+    </view>
+    <view class="rate-btn rate-fuzzy" data-rating="fuzzy" catchtap="onRate">
+      <view class="rate-icon">😐</view>
+      <view class="rate-text">模糊</view>
+    </view>
+    <view class="rate-btn rate-known" data-rating="known" catchtap="onRate">
+      <view class="rate-icon">😊</view>
+      <view class="rate-text">认识</view>
+    </view>
+  </view>
+
+</view>
+
+<!-- 完成页 -->
+<view class="container" wx:else>
+  <view class="finish-card">
+    <view class="finish-icon">🎉</view>
+    <view class="finish-title">今日学习完成！</view>
+    <view class="finish-sub">已学习 {{todayQueue.length}} 个单词</view>
+    <button class="btn-primary" bindtap="onFinish">返回首页</button>
+  </view>
+</view>

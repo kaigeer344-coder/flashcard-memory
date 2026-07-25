@@ -1,0 +1,111 @@
+/* pages/game/game.wxss */
+
+/* ===== 顶部状态栏 ===== */
+.game-header {
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.game-stat {
+  text-align: center;
+}
+.stat-label {
+  display: block;
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #4CAF50;
+}
+.stat-value.danger {
+  color: #E53935;
+}
+
+/* ===== 卡片网格 ===== */
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.game-card {
+  background: #fff;
+  border: 2px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 16px 8px;
+  text-align: center;
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease;
+}
+.game-card.card-en {
+  border-left: 4px solid #4CAF50;
+}
+.game-card.card-cn {
+  border-left: 4px solid #FFC107;
+}
+.game-card.selected {
+  background: #E8F5E9;
+  border-color: #4CAF50;
+  transform: scale(0.96);
+  box-shadow: 0 4px 12px rgba(76,175,80,0.3);
+}
+.game-card.matched {
+  background: #F5F5F5;
+  opacity: 0.3;
+  pointer-events: none;
+}
+.card-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A1A1A;
+  word-break: break-all;
+}
+
+/* ===== 完成页 ===== */
+.finish-card {
+  text-align: center;
+  padding: 40px 20px;
+}
+.finish-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+.finish-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1A1A1A;
+  margin-bottom: 24px;
+}
+.finish-stats {
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.finish-stat-item {
+  text-align: center;
+}
+.finish-stat-value {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  color: #4CAF50;
+}
+.finish-stat-label {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
