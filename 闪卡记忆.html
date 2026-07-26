@@ -8505,6 +8505,13 @@
             let _globalStats = null;
             let _todayPlanCache = null;
             let _todayPlanCacheDate = null;
+            // 进度阶梯计算缓存(性能优化:避免 O(N²×M²) 重算)
+            let _ladderCache = null;
+            let _ladderCacheFingerprint = null;
+            // 预构建的 en → Set<level> 索引(避免每次 .some() 线性查找)
+            let _levelEnSetsCache = null;
+            let _levelCoreSetsCache = null;
+            let _levelEnSetsVersion = 0;
 
             // ---------- 默认值 ----------
             const DEFAULT_SETTINGS = {
@@ -8599,15 +8606,27 @@
 
             function _belongsTo(word) {
                 const banks = [];
-                for (const level of Object.keys(wordDB)) {
-                    const list = wordDB[level];
-                    if (!Array.isArray(list)) continue;
-                    // 简单按 en 匹配(若 word.belongsTo 已存在则直接用)
-                    for (let i = 0; i < list.length; i++) {
-                        if (list[i].en === word.en) {
-                            banks.push(level);
-                            break;
+                const en = word.en;
+                // 性能优化:用预构建 Set O(1) 替代线性扫描 O(N)
+                if (!_levelEnSetsCache) {
+                    _levelEnSetsCache = {};
+                    _levelCoreSetsCache = {};
+                    for (const level of Object.keys(wordDB)) {
+                        const list = wordDB[level] || [];
+                        const set = new Set();
+                        const coreSet = new Set();
+                        for (let i = 0; i < list.length; i++) {
+                            const w = list[i];
+                            set.add(w.en);
+                            if (_isCoreWord(w, level)) coreSet.add(w.en);
                         }
+                        _levelEnSetsCache[level] = set;
+                        _levelCoreSetsCache[level] = coreSet;
+                    }
+                }
+                for (const level of Object.keys(wordDB)) {
+                    if (_levelEnSetsCache[level] && _levelEnSetsCache[level].has(en)) {
+                        banks.push(level);
                     }
                 }
                 return banks;
@@ -9145,20 +9164,63 @@
                 // ===== 进度阶梯计算 =====
                 calculateLadderProgress() {
                     if (!_globalStats) _globalStats = _loadGlobalStats();
-                    const result = {};
                     const levels = Object.keys(wordDB);
+
+                    // === 性能优化 1: 预构建 en Set 索引,避免嵌套 .some() ===
+                    // 检查 wordDB 是否变化(版本号 + 总词数双指纹)
+                    const currentVersion = (wordDB.__version || 0) + '_' + levels.length + '_' + levels.map(l => (wordDB[l] || []).length).join(',');
+                    if (!_levelEnSetsCache || _levelEnSetsVersion !== currentVersion) {
+                        _levelEnSetsCache = {};
+                        _levelCoreSetsCache = {};
+                        for (const level of levels) {
+                            const words = wordDB[level] || [];
+                            const set = new Set();
+                            const coreSet = new Set();
+                            for (let i = 0; i < words.length; i++) {
+                                const w = words[i];
+                                set.add(w.en);
+                                if (_isCoreWord(w, level)) coreSet.add(w.en);
+                            }
+                            _levelEnSetsCache[level] = set;
+                            _levelCoreSetsCache[level] = coreSet;
+                        }
+                        _levelEnSetsVersion = currentVersion;
+                        // 词库结构变化,清空进度缓存
+                        _ladderCache = null;
+                        _ladderCacheFingerprint = null;
+                    }
+
+                    // === 性能优化 2: reviewCount 指纹缓存,无变化直接返回 ===
+                    let fingerprint = '';
                     for (const level of levels) {
-                        const allWords = wordDB[level] || [];
-                        // 核心词 = 真题词频 Top 30%
-                        const coreWords = allWords.filter(w => _isCoreWord(w, level));
-                        const coreTotal = coreWords.length || 1;
-                        const allTotal = allWords.length || 1;
-                        // 计算已学/已掌握
-                        let coreLearned = 0;
-                        let allLearned = 0;
-                        let coreMastered = 0;
-                        let allMastered = 0;
-                        // 使用 MemorySystem 缓存
+                        const memWords = (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords)
+                            ? MemorySystem.getAllWords(level) : [];
+                        let reviewedCount = 0;
+                        let masteredCount = 0;
+                        for (let i = 0; i < memWords.length; i++) {
+                            const m = memWords[i].memoryData;
+                            if (m.reviewCount > 0) {
+                                reviewedCount++;
+                                if (m.status === 'mastered') masteredCount++;
+                            }
+                        }
+                        fingerprint += level + ':' + reviewedCount + ':' + masteredCount + '|';
+                    }
+                    if (_ladderCache && _ladderCacheFingerprint === fingerprint) {
+                        return _ladderCache;
+                    }
+                    _ladderCacheFingerprint = fingerprint;
+
+                    // === 性能优化 3: 用 Set.has() O(1) 替代 .some() O(N) 查找 ===
+                    const result = {};
+                    for (const level of levels) {
+                        const set = _levelEnSetsCache[level];
+                        const coreSet = _levelCoreSetsCache[level];
+                        const allTotal = set.size || 1;
+                        const coreTotal = coreSet.size || 1;
+                        let coreLearned = 0, allLearned = 0;
+                        let coreMastered = 0, allMastered = 0;
+
                         if (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords) {
                             const memWords = MemorySystem.getAllWords(level);
                             for (let i = 0; i < memWords.length; i++) {
@@ -9166,53 +9228,56 @@
                                 const mem = mw.memoryData;
                                 if (mem.reviewCount > 0) {
                                     allLearned++;
-                                    const isCore = _isCoreWord(mw, level);
-                                    if (isCore) coreLearned++;
+                                    if (coreSet.has(mw.en)) coreLearned++;
                                     if (mem.status === 'mastered') {
                                         allMastered++;
-                                        if (isCore) coreMastered++;
+                                        if (coreSet.has(mw.en)) coreMastered++;
                                     }
                                 }
                             }
                         }
                         result[level] = {
                             core: { learned: coreLearned, mastered: coreMastered, total: coreTotal },
-                            all: { learned: allLearned, mastered: allMastered, total: allTotal }
+                            all: { learned: allLearned, mastered: allMastered, total: allTotal },
+                            contributionFromOthers: { learned: 0, totalOverlap: 0 }
                         };
                     }
-                    // 计算跨词库贡献度
-                    // 例:四级词在六级词库中也存在,则四级已学词自动计入六级进度
-                    for (const targetLevel of levels) {
-                        const targetWords = wordDB[targetLevel] || [];
-                        let overlapLearned = 0;
-                        let overlapTotal = 0;
-                        for (const sourceLevel of levels) {
-                            if (sourceLevel === targetLevel) continue;
-                            const sourceWords = wordDB[sourceLevel] || [];
-                            // 统计 source 中已学且在 target 中存在的词数
-                            const sourceMemWords = (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords)
-                                ? MemorySystem.getAllWords(sourceLevel) : [];
-                            for (let i = 0; i < sourceMemWords.length; i++) {
-                                const mw = sourceMemWords[i];
-                                const mem = mw.memoryData;
-                                if (mem.reviewCount > 0) {
-                                    // 检查是否在 target 词库中
-                                    const inTarget = targetWords.some(tw => tw.en === mw.en);
-                                    if (inTarget) {
-                                        overlapLearned++;
+
+                    // === 性能优化 4: 跨词库贡献度 — 一次遍历替代 N²×M² 嵌套 ===
+                    // 第一遍: 算 totalOverlap(每个 source 词分配到所属的 target 词库)
+                    for (const sourceLevel of levels) {
+                        const sourceWords = wordDB[sourceLevel] || [];
+                        for (let i = 0; i < sourceWords.length; i++) {
+                            const en = sourceWords[i].en;
+                            for (const targetLevel of levels) {
+                                if (targetLevel === sourceLevel) continue;
+                                if (_levelEnSetsCache[targetLevel].has(en)) {
+                                    result[targetLevel].contributionFromOthers.totalOverlap++;
+                                }
+                            }
+                        }
+                    }
+                    // 第二遍: 算 overlapLearned(只遍历已学词,避免遍历全部)
+                    for (const sourceLevel of levels) {
+                        if (typeof MemorySystem === 'undefined' || !MemorySystem.getAllWords) continue;
+                        const sourceMemWords = MemorySystem.getAllWords(sourceLevel);
+                        for (let i = 0; i < sourceMemWords.length; i++) {
+                            const mw = sourceMemWords[i];
+                            const mem = mw.memoryData;
+                            if (mem.reviewCount > 0) {
+                                for (const targetLevel of levels) {
+                                    if (targetLevel === sourceLevel) continue;
+                                    if (_levelEnSetsCache[targetLevel].has(mw.en)) {
+                                        result[targetLevel].contributionFromOthers.learned++;
                                     }
                                 }
                             }
-                            overlapTotal += sourceWords.filter(sw => targetWords.some(tw => tw.en === sw.en)).length;
                         }
-                        result[targetLevel].contributionFromOthers = {
-                            learned: overlapLearned,
-                            totalOverlap: overlapTotal
-                        };
                     }
-                    // 缓存
+
+                    // === 性能优化 5: 不写 localStorage(进度缓存只在内存),避免阻塞主线程 ===
+                    _ladderCache = result;
                     _globalStats.progressCache = result;
-                    _saveGlobalStats();
                     return result;
                 },
 
