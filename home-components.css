@@ -356,17 +356,22 @@
     border-radius: 50%;
     z-index: 0;
 }
-/* CSS 生成云朵装饰 */
+/* CSS 生成顶部白云装饰 */
+.hp-vp-clouds {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
 .hp-vp-cloud {
     position: absolute;
-    top: 56px;
-    right: 22px;
-    width: 52px;
-    height: 22px;
     background: #fff;
     border-radius: 999px;
-    opacity: 0.65;
-    z-index: 1;
+    opacity: 0.72;
     box-shadow: 0 2px 8px rgba(88, 204, 2, 0.08);
 }
 .hp-vp-cloud::before,
@@ -376,17 +381,61 @@
     background: #fff;
     border-radius: 50%;
 }
-.hp-vp-cloud::before {
-    width: 22px;
+.hp-vp-cloud-1 {
+    top: 52px;
+    right: 24px;
+    width: 56px;
     height: 22px;
-    top: -9px;
+}
+.hp-vp-cloud-1::before {
+    width: 24px;
+    height: 24px;
+    top: -10px;
     left: 8px;
 }
-.hp-vp-cloud::after {
-    width: 16px;
-    height: 16px;
-    top: -5px;
+.hp-vp-cloud-1::after {
+    width: 18px;
+    height: 18px;
+    top: -6px;
     right: 10px;
+}
+.hp-vp-cloud-2 {
+    top: 74px;
+    left: 18px;
+    width: 42px;
+    height: 16px;
+    opacity: 0.55;
+}
+.hp-vp-cloud-2::before {
+    width: 18px;
+    height: 18px;
+    top: -8px;
+    left: 6px;
+}
+.hp-vp-cloud-2::after {
+    width: 14px;
+    height: 14px;
+    top: -5px;
+    right: 7px;
+}
+.hp-vp-cloud-3 {
+    top: 44px;
+    left: 50%;
+    width: 34px;
+    height: 13px;
+    opacity: 0.42;
+}
+.hp-vp-cloud-3::before {
+    width: 15px;
+    height: 15px;
+    top: -7px;
+    left: 5px;
+}
+.hp-vp-cloud-3::after {
+    width: 11px;
+    height: 11px;
+    top: -4px;
+    right: 5px;
 }
 /* CSS 生成左右叶片装饰 */
 .hp-vp-bush-left,
@@ -444,7 +493,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    position: relative;
     cursor: pointer;
     transition: transform 120ms ease;
 }
@@ -452,7 +500,7 @@
 .hp-vp-column:active .hp-vp-pillar { filter: brightness(0.96); }
 .hp-vp-bubble {
     position: absolute;
-    top: -26px;
+    top: -24px;
     left: 50%;
     transform: translateX(-50%);
     background: var(--column-color, var(--hp-green));
@@ -490,6 +538,9 @@
     box-sizing: border-box;
     transform: translateZ(0);
 }
+.hp-vp-topper .hp-vp-bubble {
+    top: -22px;
+}
 .hp-vp-topper img {
     width: 100%;
     height: 100%;
@@ -503,10 +554,11 @@
     width: 100%;
     max-width: 44px;
     border-radius: 999px 999px 12px 12px;
-    background: var(--column-color, var(--hp-green));
+    background: linear-gradient(180deg, #E8EAED 0%, #D1D5DB 100%);
     position: relative;
     transition: height 300ms cubic-bezier(0.2,0.8,0.2,1);
-    box-shadow: inset 5px 0 10px rgba(255,255,255,0.32), inset -5px 0 10px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08);
+    box-shadow: inset 5px 0 10px rgba(255,255,255,0.35), inset -5px 0 10px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
     z-index: 2;
 }
 .hp-vp-pillar::after {
@@ -517,8 +569,9 @@
     right: 0;
     bottom: 0;
     border-radius: 999px 999px 12px 12px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0.08) 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.06) 100%);
     pointer-events: none;
+    z-index: 4;
 }
 .hp-vp-pillar-top {
     position: absolute;
@@ -527,20 +580,54 @@
     right: 0;
     height: 14px;
     border-radius: 50%;
-    background: var(--column-color, var(--hp-green));
-    opacity: 0.95;
+    background: linear-gradient(180deg, #F2F4F6 0%, #D9DDE2 100%);
+    opacity: 0.98;
+    box-shadow: inset 2px 0 4px rgba(255,255,255,0.4), inset -2px 0 4px rgba(0,0,0,0.1);
+    z-index: 3;
+}
+/* 彩色进度填充 */
+.hp-vp-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 999px 999px 0 0;
+    transition: height 400ms cubic-bezier(0.2,0.8,0.2,1);
+    box-shadow: inset 5px 0 10px rgba(255,255,255,0.28), inset -5px 0 10px rgba(0,0,0,0.12);
+    z-index: 2;
+}
+.hp-vp-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 999px 999px 0 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.06) 100%);
+    pointer-events: none;
+}
+.hp-vp-fill-top {
+    position: absolute;
+    top: -7px;
+    left: 0;
+    right: 0;
+    height: 14px;
+    border-radius: 50%;
+    opacity: 0.98;
     box-shadow: inset 2px 0 4px rgba(255,255,255,0.35), inset -2px 0 4px rgba(0,0,0,0.12);
+    z-index: 3;
 }
 .hp-vp-badge {
     position: absolute;
-    top: 26px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     width: 24px;
     height: 28px;
     display: grid;
     place-items: center;
-    z-index: 4;
+    z-index: 5;
 }
 .hp-vp-badge::before {
     content: '';

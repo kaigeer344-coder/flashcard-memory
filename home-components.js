@@ -25,6 +25,16 @@
         gre: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>`
     };
 
+    // 各词库固定视觉高度（按难度从 CET4 到 GRE 递增）
+    const LEVEL_HEIGHTS = {
+        cet4: 86,
+        cet6: 104,
+        kaoyan: 122,
+        ielts: 140,
+        toefl: 158,
+        gre: 176
+    };
+
     const TASK_ICON_SVGS = {
         newWords: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`,
         review: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>`,
@@ -125,22 +135,30 @@
     };
 
     // ===== VocabularyProgressColumn 单个词库进度柱 =====
-    window.renderVocabularyProgressColumn = function(item, maxVisualHeight, minVisualHeight) {
+    window.renderVocabularyProgressColumn = function(item) {
         const progress = Math.max(0, Math.min(1, item.progress || 0));
         const pctText = Math.round(progress * 100) + '%';
-        const visualHeight = minVisualHeight + progress * (maxVisualHeight - minVisualHeight);
+        // 固定总高度按难度递增；填充高度按进度比例
+        const totalHeight = LEVEL_HEIGHTS[item.id] || 120;
+        const fillHeight = Math.max(2, Math.round(totalHeight * progress));
+        const iconKey = item.id === 'kaoyan' ? 'postgraduate' : item.id;
         const iconHTML = item.icon
             ? `<img src="${item.icon}" alt="" onerror="this.style.display='none';this.parentElement.querySelector('svg').style.display='block'">` +
-              `<svg style="display:none">${LEVEL_ICON_SVGS[item.id] || LEVEL_ICON_SVGS.cet4}</svg>`
-            : `<svg>${LEVEL_ICON_SVGS[item.id] || LEVEL_ICON_SVGS.cet4}</svg>`;
+              `<svg style="display:none">${LEVEL_ICON_SVGS[iconKey] || LEVEL_ICON_SVGS.cet4}</svg>`
+            : `<svg>${LEVEL_ICON_SVGS[iconKey] || LEVEL_ICON_SVGS.cet4}</svg>`;
         const badgeHTML = `<div class="hp-vp-badge">${TASK_ICON_SVGS.star}</div>`;
         return `
             <div class="hp-vp-column" style="--column-color:${item.color}" onclick="onProgressColumnClick && onProgressColumnClick('${item.id}')">
-                <div class="hp-vp-bubble">${pctText}</div>
-                <div class="hp-vp-topper">${iconHTML}</div>
-                <div class="hp-vp-pillar" style="height:${visualHeight}px">
+                <div class="hp-vp-topper">
+                    <div class="hp-vp-bubble">${pctText}</div>
+                    ${iconHTML}
+                </div>
+                <div class="hp-vp-pillar" style="height:${totalHeight}px">
                     <div class="hp-vp-pillar-top"></div>
                     <div class="hp-vp-pillar-face"></div>
+                    <div class="hp-vp-fill" style="height:${fillHeight}px;background:${item.color}">
+                        <div class="hp-vp-fill-top" style="background:${item.color}"></div>
+                    </div>
                     ${badgeHTML}
                 </div>
                 <div class="hp-vp-label">${item.name}</div>
@@ -149,16 +167,18 @@
 
     // ===== VocabularyProgressCard 各词库进度主卡片 =====
     window.renderVocabularyProgressCard = function(data) {
-        const maxH = 180;
-        const minH = 36;
-        const columnsHTML = (data.items || []).map(item => renderVocabularyProgressColumn(item, maxH, minH)).join('');
+        const columnsHTML = (data.items || []).map(item => renderVocabularyProgressColumn(item)).join('');
         return `
             <div class="hp-vp-card">
                 <div class="hp-vp-header">
                     <span class="hp-vp-title">${data.title}</span>
                     <button class="hp-vp-map-btn" onclick="onEnterMapClick && onEnterMapClick(event)">进入地图 ›</button>
                 </div>
-                <div class="hp-vp-cloud" aria-hidden="true"></div>
+                <div class="hp-vp-clouds" aria-hidden="true">
+                    <div class="hp-vp-cloud hp-vp-cloud-1"></div>
+                    <div class="hp-vp-cloud hp-vp-cloud-2"></div>
+                    <div class="hp-vp-cloud hp-vp-cloud-3"></div>
+                </div>
                 <div class="hp-vp-bush-left" aria-hidden="true"></div>
                 <div class="hp-vp-bush-right" aria-hidden="true"></div>
                 <div class="hp-vp-stage">
