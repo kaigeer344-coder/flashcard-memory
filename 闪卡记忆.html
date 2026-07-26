@@ -4271,6 +4271,7 @@
             LEGACY_PREFIX: 'wordmem_',
             _memoryCache: null,
             _allWordsCache: {},
+            _wordIdIndex: null, // wordId → word 对象索引(性能优化:saveWordMemory 用 O(1) 替代 .find() O(N))
             _statsCache: {},
             _keySet: null,
             _migrated: false,
@@ -4430,11 +4431,20 @@
                 this._memoryCache.set(fullKey, normalized);
                 this._keySet.add(fullKey);
                 this._statsCache = {};
-                for (const level in this._allWordsCache) {
-                    const cachedWords = this._allWordsCache[level];
-                    const word = cachedWords.find(w => w.wordId === wordKey);
-                    if (word) {
-                        word.memoryData = normalized;
+                // 性能优化:用 wordId 索引 O(1) 替代 .find() O(N),避免 6 词库 × 4500 词线性扫描
+                if (this._wordIdIndex && this._wordIdIndex.has(wordKey)) {
+                    this._wordIdIndex.get(wordKey).memoryData = normalized;
+                } else {
+                    // 兜底:索引未构建时降级为遍历(仅首次保存未访问过的词库)
+                    for (const level in this._allWordsCache) {
+                        const cachedWords = this._allWordsCache[level];
+                        const word = cachedWords.find(w => w.wordId === wordKey);
+                        if (word) {
+                            word.memoryData = normalized;
+                            if (!this._wordIdIndex) this._wordIdIndex = new Map();
+                            this._wordIdIndex.set(wordKey, word);
+                            break;
+                        }
                     }
                 }
                 try {
@@ -4595,6 +4605,14 @@
                 this._preloadAllMemory();
                 const words = wordDB[level].map((word, index) => this.hydrateWord(level, word, index));
                 this._allWordsCache[level] = words;
+                // 性能优化:同步构建 wordId → word 索引,saveWordMemory 用 O(1) 查找
+                if (!this._wordIdIndex) this._wordIdIndex = new Map();
+                for (let i = 0; i < words.length; i++) {
+                    const w = words[i];
+                    if (w.wordId && !this._wordIdIndex.has(w.wordId)) {
+                        this._wordIdIndex.set(w.wordId, w);
+                    }
+                }
                 return words;
             },
 
@@ -8414,6 +8432,7 @@
                 keysToRemove.forEach(key => localStorage.removeItem(key));
                 MemorySystem._memoryCache = new Map();
                 MemorySystem._allWordsCache = {};
+                MemorySystem._wordIdIndex = null;
                 MemorySystem._statsCache = {};
                 MemorySystem._keySet = null;
                 MemorySystem._allMemoryPreloaded = false;
@@ -9418,12 +9437,12 @@
             requestAnimationFrame(() => {
                 setTimeout(updateEstimate, 0);
             });
-            // V2.0:已配置模式时渲染进度阶梯首页
-            try {
-                if (LearningSystem.isOnboarded()) {
-                    renderStartScreenV2();
-                }
-            } catch (e) { console.error('renderStartScreenV2 init 失败:', e); }
+            // V2.0:已配置模式时渲染进度阶梯首页(异步执行,不阻塞首屏绘制)
+            if (LearningSystem.isOnboarded()) {
+                requestAnimationFrame(() => {
+                    try { renderStartScreenV2(); } catch (e) { console.error('renderStartScreenV2 init 失败:', e); }
+                });
+            }
             // 启动流程：新手引导 -> 连胜奖励
             if (!isOnboarded()) {
                 startOnboarding();
