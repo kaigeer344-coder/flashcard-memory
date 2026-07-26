@@ -1,0 +1,623 @@
+/* ===== 闪卡记忆 - 新版首页组件样式 ===== */
+/* 风格：清新、明亮、轻度游戏化 */
+
+:root {
+    --hp-green: #58cc02;
+    --hp-green-dark: #247A15;
+    --hp-bg: #F3FCEB;
+    --hp-text: #252525;
+    --hp-muted: #6F6F6F;
+    --hp-border: #CDE8BC;
+    --hp-card-border: #E5E5E5;
+    --hp-orange: #ff4b4b;
+    --hp-blue: #1cb0f6;
+    --hp-yellow: #ffc800;
+    --hp-purple: #8A5CF6;
+    --hp-red: #FF6262;
+    --hp-grey: #AEB5BC;
+}
+
+/* 页面容器(由 JS 注入到 startScreen) */
+.hp-page {
+    min-height: 100%;
+    padding-bottom: 100px;
+    background: linear-gradient(180deg, #F3FCEB 0%, #F7FDF3 60%, #F3FCEB 100%);
+}
+
+/* ===== 1. HomeHeader 绿色品牌顶部区域 ===== */
+.hp-header {
+    background: var(--hp-green);
+    padding: calc(12px + env(safe-area-inset-top)) 16px 18px;
+    min-height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    box-sizing: border-box;
+}
+.hp-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+}
+.hp-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.hp-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.hp-logo img { width: 36px; height: 36px; object-fit: contain; }
+.hp-logo svg { width: 30px; height: 30px; color: var(--hp-green); }
+.hp-brand-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+.hp-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.hp-energy {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: #fff;
+    border-radius: 16px;
+    width: 88px;
+    height: 44px;
+    padding: 0 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    flex-shrink: 0;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.hp-energy:active { transform: scale(0.96); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.hp-energy svg { width: 20px; height: 20px; color: var(--hp-yellow); flex-shrink: 0; }
+.hp-energy span {
+    font-size: 17px;
+    font-weight: 900;
+    color: var(--hp-text);
+    font-variant-numeric: tabular-nums;
+}
+.hp-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: transform 120ms ease;
+}
+.hp-avatar:active { transform: scale(0.92); }
+.hp-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.hp-avatar svg { width: 24px; height: 24px; color: var(--hp-green); }
+
+/* ===== 2. CourseTaskCard 四级冲刺与今日任务合并卡片 ===== */
+.hp-ct-card {
+    margin: 16px 16px 0;
+    background: #fff;
+    border-radius: 28px;
+    padding: 18px;
+    box-shadow: 0 8px 0 #e5e5e5;
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.hp-ct-card:active { transform: translateY(4px); box-shadow: 0 4px 0 #e5e5e5; }
+.hp-ct-left {
+    flex: 0 0 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.hp-ct-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.hp-ct-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--hp-text);
+    line-height: 1.1;
+}
+.hp-ct-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #E8F9E0;
+    color: var(--hp-green-dark);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+.hp-ct-meta {
+    font-size: 15px;
+    color: var(--hp-muted);
+    margin-bottom: 14px;
+}
+.hp-ct-meta strong {
+    color: var(--hp-orange);
+    font-weight: 800;
+}
+.hp-ct-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.hp-ct-track {
+    flex: 1;
+    height: 10px;
+    background: #E5E5E5;
+    border-radius: 5px;
+    overflow: hidden;
+    min-width: 0;
+}
+.hp-ct-fill {
+    height: 100%;
+    background: var(--hp-green);
+    border-radius: 5px;
+    transition: width 300ms cubic-bezier(0.2,0.8,0.2,1);
+}
+.hp-ct-pct {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--hp-green-dark);
+    flex-shrink: 0;
+}
+.hp-ct-divider {
+    width: 1px;
+    background: var(--hp-card-border);
+    margin: 2px 0;
+}
+.hp-ct-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+}
+.hp-ct-right-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--hp-text);
+    margin-bottom: 10px;
+}
+.hp-ct-task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.hp-ct-task-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--hp-muted);
+}
+.hp-ct-task-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+.hp-ct-task-item.new svg { color: var(--hp-green); }
+.hp-ct-task-item.review svg { color: var(--hp-blue); }
+.hp-ct-task-item.time svg { color: var(--hp-yellow); }
+.hp-ct-task-item b {
+    font-size: 15px;
+    font-weight: 900;
+    margin-right: 3px;
+}
+.hp-ct-task-item.new b { color: var(--hp-green); }
+.hp-ct-task-item.review b { color: var(--hp-blue); }
+.hp-ct-task-item.time b { color: var(--hp-orange); }
+.hp-ct-reward {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--hp-card-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.hp-ct-reward-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--hp-muted);
+}
+.hp-ct-reward-left svg { width: 18px; height: 18px; color: var(--hp-yellow); }
+.hp-ct-reward-left b {
+    color: var(--hp-orange);
+    font-weight: 900;
+}
+.hp-ct-reward img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+.hp-ct-reward svg.gift-fallback {
+    width: 28px;
+    height: 28px;
+    color: var(--hp-yellow);
+}
+
+/* ===== 3. VocabularyProgressCard 各词库进度主卡片 ===== */
+.hp-vp-card {
+    margin: 16px 16px 0;
+    background: #fff;
+    border-radius: 28px;
+    padding: 18px 14px 16px;
+    box-shadow: 0 8px 0 #e5e5e5;
+    position: relative;
+    overflow: hidden;
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+}
+.hp-vp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 2;
+}
+.hp-vp-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--hp-text);
+}
+.hp-vp-map-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #E8F9E0;
+    color: var(--hp-green-dark);
+    font-size: 12px;
+    font-weight: 800;
+    padding: 8px 12px;
+    min-height: 32px;
+    border-radius: 999px;
+    border: 0;
+    cursor: pointer;
+    transition: transform 120ms ease, background 160ms ease;
+}
+.hp-vp-map-btn:active { transform: scale(0.96); background: #D4F0C7; }
+.hp-vp-stage {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 240px;
+}
+.hp-vp-base {
+    position: absolute;
+    bottom: 4px;
+    left: 3%;
+    right: 3%;
+    height: 16px;
+    background: linear-gradient(180deg, #F9F6F0 0%, #EDE8DE 100%);
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+    z-index: 1;
+}
+.hp-vp-chart {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 6px;
+    position: relative;
+    z-index: 2;
+    padding: 28px 4px 10px;
+    min-height: 240px;
+}
+/* 装饰背景 */
+.hp-vp-card::before {
+    content: '';
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    height: 90px;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+    z-index: 0;
+}
+.hp-vp-cloud {
+    position: absolute;
+    top: 56px;
+    right: 18px;
+    width: 56px;
+    height: 32px;
+    opacity: 0.5;
+    z-index: 1;
+}
+.hp-vp-bush-left,
+.hp-vp-bush-right {
+    position: absolute;
+    bottom: 0;
+    width: 72px;
+    height: 44px;
+    opacity: 0.5;
+    z-index: 1;
+}
+.hp-vp-bush-left { left: -6px; }
+.hp-vp-bush-right { right: -6px; }
+.hp-vp-column {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    cursor: pointer;
+    transition: transform 120ms ease;
+}
+.hp-vp-column:active { transform: scale(0.96); }
+.hp-vp-column:active .hp-vp-pillar { filter: brightness(0.96); }
+.hp-vp-bubble {
+    position: absolute;
+    top: -26px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--column-color, var(--hp-green));
+    color: #fff;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 4px 7px;
+    border-radius: 10px;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    z-index: 5;
+}
+.hp-vp-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px 5px 0;
+    border-style: solid;
+    border-color: var(--column-color, var(--hp-green)) transparent transparent transparent;
+}
+.hp-vp-topper {
+    width: 34px;
+    height: 34px;
+    margin-bottom: 2px;
+    display: grid;
+    place-items: center;
+    position: relative;
+    z-index: 4;
+}
+.hp-vp-topper img { width: 100%; height: 100%; object-fit: contain; }
+.hp-vp-topper svg { width: 26px; height: 26px; color: var(--column-color, var(--hp-green)); }
+.hp-vp-pillar {
+    width: 100%;
+    max-width: 44px;
+    border-radius: 999px 999px 12px 12px;
+    background: var(--column-color, var(--hp-green));
+    position: relative;
+    transition: height 300ms cubic-bezier(0.2,0.8,0.2,1);
+    box-shadow: inset 5px 0 10px rgba(255,255,255,0.32), inset -5px 0 10px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08);
+    z-index: 2;
+}
+.hp-vp-pillar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 999px 999px 12px 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0.08) 100%);
+    pointer-events: none;
+}
+.hp-vp-pillar-top {
+    position: absolute;
+    top: -7px;
+    left: 0;
+    right: 0;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--column-color, var(--hp-green));
+    opacity: 0.95;
+    box-shadow: inset 2px 0 4px rgba(255,255,255,0.35), inset -2px 0 4px rgba(0,0,0,0.12);
+}
+.hp-vp-badge {
+    position: absolute;
+    top: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    z-index: 4;
+}
+.hp-vp-badge::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.55);
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.8), 0 1px 3px rgba(0,0,0,0.12);
+    clip-path: polygon(50% 0%, 100% 12%, 100% 62%, 50% 100%, 0% 62%, 0% 12%);
+    border-radius: 3px 3px 6px 6px;
+}
+.hp-vp-badge svg {
+    width: 14px;
+    height: 14px;
+    color: #FFD84D;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.25));
+}
+.hp-vp-label {
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--hp-text);
+    text-align: center;
+    position: relative;
+    z-index: 3;
+}
+
+/* ===== 4. StudyStatsCard 学习统计卡片 ===== */
+.hp-ss-card {
+    margin: 16px 16px 0;
+    background: #fff;
+    border-radius: 28px;
+    padding: 18px 10px;
+    box-shadow: 0 8px 0 #e5e5e5;
+    display: flex;
+    align-items: stretch;
+}
+.hp-ss-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    padding: 0 4px;
+    position: relative;
+}
+.hp-ss-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 10%;
+    height: 80%;
+    width: 1px;
+    background: var(--hp-card-border);
+}
+.hp-ss-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+}
+.hp-ss-icon svg { width: 20px; height: 20px; }
+.hp-ss-item.streak .hp-ss-icon { background: #FFF4E5; }
+.hp-ss-item.streak .hp-ss-icon svg { color: var(--hp-orange); }
+.hp-ss-item.learned .hp-ss-icon { background: #E8F9E0; }
+.hp-ss-item.learned .hp-ss-icon svg { color: var(--hp-green); }
+.hp-ss-item.goal .hp-ss-icon { background: #E8F6FF; }
+.hp-ss-item.goal .hp-ss-icon svg { color: var(--hp-blue); }
+.hp-ss-label {
+    font-size: 12px;
+    color: var(--hp-muted);
+    font-weight: 600;
+}
+.hp-ss-value {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--hp-text);
+    line-height: 1;
+}
+.hp-ss-tip {
+    font-size: 11px;
+    color: var(--hp-green-dark);
+    font-weight: 700;
+}
+
+/* ===== 5. BottomNavigation 底部导航栏 ===== */
+.hp-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 520px;
+    background: #fff;
+    border-radius: 28px 28px 0 0;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    z-index: 100;
+}
+.hp-nav-item {
+    flex: 1;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: none;
+    border: 0;
+    padding: 4px;
+    color: var(--hp-muted);
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    position: relative;
+    transition: color 160ms ease, transform 120ms ease;
+}
+.hp-nav-item:active { transform: scale(0.94); opacity: 0.8; }
+.hp-nav-item svg { width: 24px; height: 24px; }
+.hp-nav-item.active { color: var(--hp-green); }
+.hp-nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background: var(--hp-green);
+    border-radius: 2px;
+}
+
+/* ===== 响应式适配 ===== */
+@media (max-width: 380px) {
+    .hp-ct-card { padding: 14px; gap: 10px; }
+    .hp-ct-left { flex: 0 0 58%; }
+    .hp-ct-title { font-size: 17px; }
+    .hp-ct-meta { font-size: 13px; }
+    .hp-ct-right-title { font-size: 13px; }
+    .hp-ct-task-item { font-size: 11px; }
+    .hp-vp-title { font-size: 16px; }
+    .hp-vp-chart { gap: 4px; }
+    .hp-vp-topper { width: 26px; height: 26px; }
+    .hp-vp-label { font-size: 10px; }
+    .hp-vp-bubble { font-size: 10px; padding: 2px 5px; }
+    .hp-ss-value { font-size: 18px; }
+    .hp-ss-label { font-size: 11px; }
+}
+
+@media (min-width: 420px) {
+    .hp-ct-card { padding: 20px; gap: 18px; }
+    .hp-vp-card { padding: 20px 18px 18px; }
+    .hp-vp-chart { gap: 10px; }
+    .hp-vp-topper { width: 36px; height: 36px; }
+    .hp-vp-label { font-size: 13px; }
+}
