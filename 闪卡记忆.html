@@ -9443,8 +9443,10 @@
                     try { renderStartScreenV2(); } catch (e) { console.error('renderStartScreenV2 init 失败:', e); }
                 });
             }
-            // 启动流程：新手引导 -> 连胜奖励
-            if (!isOnboarded()) {
+            // 启动流程：V2 onboarding 优先级最高
+            // 修复:老用户 ONBOARDING_KEY='1' 但 V2 mode 未配置时,仍强制启动 V2 onboarding
+            // (避免卡在中间状态:V1 首页显示但 V2 入口缺失)
+            if (!LearningSystem.isOnboarded()) {
                 startOnboarding();
             } else if (checkStreak()) {
                 showStreakReward();
