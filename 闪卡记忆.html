@@ -9420,6 +9420,17 @@
         })();
 
         document.addEventListener('DOMContentLoaded', () => {
+            // URL 参数 ?reset-v2=1 一键重置 V2 配置(保留 FSRS 单词记忆数据)
+            // 用法:浏览器访问 闪卡记忆.html?reset-v2=1 即可重新进入 V2 onboarding
+            // 必须最先执行,清空后再重定向,避免 onboarding 重复弹出
+            if (new URLSearchParams(location.search).get('reset-v2') === '1') {
+                try {
+                    localStorage.removeItem('wordmatch_settings');
+                    localStorage.removeItem('wordmatch_onboarded');
+                    location.replace(location.pathname);  // 干净重定向,去掉 query 参数
+                    return;  // 终止后续逻辑,等待重定向
+                } catch (e) { console.warn('reset-v2 失败:', e); }
+            }
             // V2.0 学习系统初始化
             LearningSystem.load();
             loadWordOrder();
