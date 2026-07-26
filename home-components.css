@@ -27,8 +27,8 @@
 /* ===== 1. HomeHeader 绿色品牌顶部区域 ===== */
 .hp-header {
     background: var(--hp-green);
-    padding: calc(12px + env(safe-area-inset-top)) 16px 18px;
-    min-height: 110px;
+    padding: calc(10px + env(safe-area-inset-top)) 14px 14px;
+    min-height: 96px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -45,55 +45,55 @@
 .hp-header-left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 .hp-logo {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: #fff;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: transparent;
     display: grid;
     place-items: center;
     overflow: hidden;
     flex-shrink: 0;
 }
-.hp-logo img { width: 36px; height: 36px; object-fit: contain; }
-.hp-logo svg { width: 30px; height: 30px; color: var(--hp-green); }
+.hp-logo img { width: 38px; height: 38px; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); }
+.hp-logo svg { width: 28px; height: 28px; color: #fff; }
 .hp-brand-name {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
     color: #fff;
     line-height: 1;
 }
 .hp-header-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 .hp-energy {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 5px;
     background: #fff;
-    border-radius: 16px;
-    width: 88px;
-    height: 44px;
-    padding: 0 12px;
+    border-radius: 14px;
+    width: 74px;
+    height: 40px;
+    padding: 0 10px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     flex-shrink: 0;
     transition: transform 120ms ease, box-shadow 120ms ease;
 }
 .hp-energy:active { transform: scale(0.96); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-.hp-energy svg { width: 20px; height: 20px; color: var(--hp-yellow); flex-shrink: 0; }
+.hp-energy svg { width: 18px; height: 18px; color: var(--hp-yellow); flex-shrink: 0; }
 .hp-energy span {
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 900;
     color: var(--hp-text);
     font-variant-numeric: tabular-nums;
 }
 .hp-avatar {
-    width: 46px;
-    height: 46px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     border: 2px solid #fff;
     background: #fff;
@@ -106,35 +106,35 @@
 }
 .hp-avatar:active { transform: scale(0.92); }
 .hp-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.hp-avatar svg { width: 24px; height: 24px; color: var(--hp-green); }
+.hp-avatar svg { width: 22px; height: 22px; color: var(--hp-green); }
 
 /* ===== 2. CourseTaskCard 四级冲刺与今日任务合并卡片 ===== */
 .hp-ct-card {
     margin: 16px 16px 0;
     background: #fff;
     border-radius: 28px;
-    padding: 18px;
+    padding: 16px;
     box-shadow: 0 8px 0 #e5e5e5;
     display: flex;
     align-items: stretch;
-    gap: 14px;
+    gap: 12px;
     transition: transform 120ms ease, box-shadow 120ms ease;
 }
 .hp-ct-card:active { transform: translateY(4px); box-shadow: 0 4px 0 #e5e5e5; }
 .hp-ct-left {
-    flex: 0 0 60%;
+    flex: 0 0 58%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 10px;
 }
 .hp-ct-head {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 10px;
 }
 .hp-ct-title {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
     color: var(--hp-text);
     line-height: 1.1;
@@ -152,9 +152,9 @@
     flex-shrink: 0;
 }
 .hp-ct-meta {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--hp-muted);
-    margin-bottom: 14px;
+    line-height: 1.5;
 }
 .hp-ct-meta strong {
     color: var(--hp-orange);
@@ -164,6 +164,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-top: auto;
 }
 .hp-ct-track {
     flex: 1;
@@ -194,19 +195,19 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 10px;
     min-width: 0;
 }
 .hp-ct-right-title {
     font-size: 15px;
     font-weight: 800;
     color: var(--hp-text);
-    margin-bottom: 10px;
 }
 .hp-ct-task-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 .hp-ct-task-item {
     display: flex;
@@ -232,8 +233,8 @@
 .hp-ct-task-item.review b { color: var(--hp-blue); }
 .hp-ct-task-item.time b { color: var(--hp-orange); }
 .hp-ct-reward {
-    margin-top: 12px;
-    padding-top: 10px;
+    margin-top: auto;
+    padding-top: 8px;
     border-top: 1px dashed var(--hp-card-border);
     display: flex;
     align-items: center;
@@ -470,13 +471,18 @@
     width: 34px;
     height: 34px;
     margin-bottom: 2px;
+    padding: 4px;
+    border-radius: 50%;
+    background: #fff;
     display: grid;
     place-items: center;
     position: relative;
     z-index: 4;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-sizing: border-box;
 }
 .hp-vp-topper img { width: 100%; height: 100%; object-fit: contain; }
-.hp-vp-topper svg { width: 26px; height: 26px; color: var(--column-color, var(--hp-green)); }
+.hp-vp-topper svg { width: 22px; height: 22px; color: var(--column-color, var(--hp-green)); }
 .hp-vp-pillar {
     width: 100%;
     max-width: 44px;
