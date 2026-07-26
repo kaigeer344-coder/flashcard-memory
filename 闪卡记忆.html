@@ -2237,124 +2237,145 @@
         }
 
         /* 进度阶梯卡片 */
-        .v2-ladder-list {
+        /* === 进度阶梯柱形图(按难度递增的阶梯效果) === */
+        .v2-ladder-chart {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .v2-ladder-card {
-            padding: 14px 16px;
+            align-items: flex-end;
+            gap: 6px;
+            padding: 28px 10px 14px;
             background: var(--surface);
             border: 2px solid var(--border);
-            border-radius: 18px;
+            border-radius: 20px;
             box-shadow: var(--shadow-neutral);
+            margin-bottom: 16px;
+            min-height: 220px;
+            position: relative;
+            overflow: hidden;
         }
-        .v2-ladder-card.current {
-            border-color: var(--primary-dark);
-            background: linear-gradient(135deg, #f4fff0, #ffffff);
-            box-shadow: 0 5px 0 var(--primary-dark), 0 8px 16px rgba(70, 163, 2, 0.12);
+        /* 阶梯底部基线 */
+        .v2-ladder-chart::before {
+            content: '';
+            position: absolute;
+            left: 10px; right: 10px;
+            bottom: 38px;
+            height: 2px;
+            background: var(--border);
+            border-radius: 1px;
+            z-index: 0;
         }
-        .v2-ladder-head {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-        .v2-ladder-icon {
-            width: 36px; height: 36px;
-            display: grid; place-items: center;
-            border-radius: 10px;
-            background: var(--light);
-            flex-shrink: 0;
-        }
-        .v2-ladder-icon img { width: 28px; height: 28px; object-fit: contain; }
-        .v2-ladder-name {
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--dark);
+        .v2-ladder-bar {
             flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+            z-index: 1;
         }
-        .v2-ladder-current-tag {
-            padding: 3px 8px;
+        .v2-ladder-bar:active { transform: scale(0.95); }
+        /* "你在这里" 标记 */
+        .v2-ladder-bar-marker {
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
             background: var(--primary);
             color: #fff;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 800;
+            padding: 3px 7px;
             border-radius: 999px;
             box-shadow: 0 2px 0 var(--primary-dark);
+            white-space: nowrap;
+            z-index: 3;
+            animation: bounce-soft 1.6s ease-in-out infinite;
         }
-        .v2-ladder-progress {
-            height: 14px;
+        @keyframes bounce-soft {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-3px); }
+        }
+        .v2-ladder-bar-pct {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 5px;
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+        /* 柱子轨道(背景) */
+        .v2-ladder-bar-track {
+            width: 100%;
             background: var(--light);
-            border-radius: 999px;
+            border-radius: 10px 10px 4px 4px;
             overflow: hidden;
             position: relative;
-            margin-bottom: 8px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            transition: box-shadow 200ms;
         }
-        .v2-ladder-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 999px;
-            transition: width 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
-            position: relative;
+        /* 柱子填充(已学部分) */
+        .v2-ladder-bar-fill {
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            transition: height 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+            border-radius: 0 0 4px 4px;
         }
-        .v2-ladder-progress-fill.style-blue {
-            background: linear-gradient(90deg, var(--secondary), #6ad1ff);
+        /* 柱子内的光泽 */
+        .v2-ladder-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 30%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.25), transparent);
+            border-radius: 0 0 4px 4px;
         }
-        .v2-ladder-progress-fill.style-yellow {
-            background: linear-gradient(90deg, var(--accent), #ffd966);
+        /* 当前词库高亮 */
+        .v2-ladder-bar.current .v2-ladder-bar-track {
+            box-shadow: 0 0 0 3px var(--primary), 0 4px 12px rgba(88,204,2,0.25), inset 0 2px 4px rgba(0,0,0,0.06);
         }
-        .v2-ladder-progress-fill.style-purple {
-            background: linear-gradient(90deg, #ce82ff, #e0a8ff);
+        .v2-ladder-bar.current .v2-ladder-bar-pct {
+            color: var(--primary-dark);
+            font-size: 13px;
         }
-        .v2-ladder-progress-fill.style-red {
-            background: linear-gradient(90deg, var(--danger), #ff8181);
-        }
-        .v2-ladder-progress-fill.style-orange {
-            background: linear-gradient(90deg, #ff8c42, #ffb380);
-        }
-        .v2-ladder-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: #5e5e5e;  /* 修复 C-3 */
+        /* 词库名 */
+        .v2-ladder-bar-name {
+            font-size: 10px;
             font-weight: 700;
+            color: #6f6f6f;
+            margin-top: 6px;
+            text-align: center;
+            line-height: 1.2;
         }
-        .v2-ladder-meta .pct {
-            font-size: 14px;
+        .v2-ladder-bar.current .v2-ladder-bar-name {
             color: var(--dark);
             font-weight: 800;
-            font-variant-numeric: tabular-nums;
-        }
-        .v2-ladder-contribution {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px dashed var(--border);
             font-size: 11px;
-            color: #5e5e5e;  /* 修复 C-3 */
+        }
+        /* 已学/总数(小字) */
+        .v2-ladder-bar-count {
+            font-size: 9px;
+            color: #9a9a9a;
             font-weight: 600;
-            line-height: 1.5;
-        }
-        .v2-ladder-contribution .contrib-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 4px;
-        }
-        .v2-ladder-contribution .contrib-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-        .v2-ladder-contribution .contrib-label {
-            flex: 1;
-        }
-        .v2-ladder-contribution .contrib-val {
-            font-weight: 800;
-            color: var(--dark);
+            margin-top: 2px;
             font-variant-numeric: tabular-nums;
+        }
+        /* 跨词库贡献提示(悬浮在柱子上方) */
+        .v2-ladder-bar-contrib {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(28, 176, 246, 0.12);
+            color: #1cb0f6;
+            font-size: 8px;
+            font-weight: 800;
+            padding: 2px 5px;
+            border-radius: 6px;
+            margin-bottom: 2px;
+            white-space: nowrap;
         }
 
         /* 今日任务卡 */
@@ -6399,50 +6420,45 @@
                             onclick="switchV2View('all')" role="tab" aria-selected="${_v2View === 'all'}">全部词</button>
                 </div>`;
 
-            // 进度阶梯卡片列表
-            const styleMap = {
-                cet4: '', cet6: 'style-blue', toefl: 'style-red', gre: 'style-orange',
-                kaoyan: 'style-yellow', ielts: 'style-purple'
+            // 进度阶梯柱形图(按难度从左到右递增,柱子内填充进度)
+            const difficultyOrder = ['cet4', 'cet6', 'kaoyan', 'ielts', 'toefl', 'gre'];
+            const heightMap = {
+                cet4: 70, cet6: 88, kaoyan: 106, ielts: 122, toefl: 138, gre: 154
             };
             const currentBookId = mode === 'free' ? settings.activeBookId : (LearningSystem.getActivePlan()?.type);
-            const ladderCards = books.map(b => {
+            const sortedBooks = difficultyOrder
+                .map(id => books.find(b => b.id === id))
+                .filter(Boolean);
+
+            const ladderBars = sortedBooks.map(b => {
                 const prog = ladder[b.id] || { core: { learned: 0, total: 1 }, all: { learned: 0, total: 1 }, contributionFromOthers: { learned: 0, totalOverlap: 0 } };
                 const target = _v2View === 'core' ? prog.core : prog.all;
                 const total = target.total || 1;
                 const learned = target.learned || 0;
                 const pct = Math.round((learned / total) * 100);
                 const isCurrent = b.id === currentBookId;
-                // 跨词库贡献度(只显示全部视图)
+                const barHeight = heightMap[b.id] || 70;
+                const fillHeight = Math.max(2, Math.round(barHeight * (pct / 100)));
+                // 跨词库贡献提示
                 let contribHTML = '';
-                if (settings.showContribution && prog.contributionFromOthers) {
-                    const c = prog.contributionFromOthers;
-                    if (c.learned > 0) {
-                        contribHTML = `
-                            <div class="v2-ladder-contribution">
-                                <div>跨词库贡献:</div>
-                                <div class="contrib-row">
-                                    <div class="contrib-dot" style="background:${b.color}"></div>
-                                    <div class="contrib-label">来自其他词库已学</div>
-                                    <div class="contrib-val">+${c.learned}</div>
-                                </div>
-                            </div>`;
-                    }
+                if (settings.showContribution && prog.contributionFromOthers && prog.contributionFromOthers.learned > 0) {
+                    contribHTML = `<div class="v2-ladder-bar-contrib">+${prog.contributionFromOthers.learned}</div>`;
                 }
                 return `
-                    <div class="v2-ladder-card ${isCurrent ? 'current' : ''}">
-                        <div class="v2-ladder-head">
-                            <div class="v2-ladder-icon"><img src="assets/generated-icons/${iconMap[b.id] || 'daily-words'}.png" alt=""></div>
-                            <div class="v2-ladder-name">${b.name}${_v2View === 'core' ? '核心' : '全部'}</div>
-                            ${isCurrent ? '<div class="v2-ladder-current-tag">当前</div>' : ''}
-                        </div>
-                        <div class="v2-ladder-progress">
-                            <div class="v2-ladder-progress-fill ${styleMap[b.id] || ''}" style="width: ${pct}%"></div>
-                        </div>
-                        <div class="v2-ladder-meta">
-                            <span>${learned} / ${total} 词</span>
-                            <span class="pct">${pct}%</span>
-                        </div>
+                    <div class="v2-ladder-bar ${isCurrent ? 'current' : ''}"
+                         onclick="selectLadderBar('${b.id}')"
+                         role="button"
+                         tabindex="0"
+                         aria-label="${b.name} ${pct}% 已学,共 ${learned} 词">
+                        ${isCurrent ? '<div class="v2-ladder-bar-marker">你在这里</div>' : ''}
                         ${contribHTML}
+                        <div class="v2-ladder-bar-pct">${pct}%</div>
+                        <div class="v2-ladder-bar-track" style="height: ${barHeight}px;">
+                            <div class="v2-ladder-bar-fill"
+                                 style="height: ${fillHeight}px; background: ${b.color};"></div>
+                        </div>
+                        <div class="v2-ladder-bar-name">${b.name}</div>
+                        <div class="v2-ladder-bar-count">${learned}/${total > 999 ? (total/1000).toFixed(1)+'k' : total}</div>
                     </div>`;
             }).join('');
 
@@ -6472,7 +6488,7 @@
                     开始今日任务
                 </button>`;
 
-            return `${headerHTML}${toggleHTML}${todayHTML}<div class="v2-ladder-list">${ladderCards}</div>${cumulativeHTML}${startBtnHTML}`;
+            return `${headerHTML}${toggleHTML}${todayHTML}<div class="v2-ladder-chart" role="region" aria-label="词库进度阶梯">${ladderBars}</div>${cumulativeHTML}${startBtnHTML}`;
         }
 
         function switchV2View(view) {
@@ -6482,6 +6498,31 @@
                 LearningSystem.updateSettings({ defaultView: view });
             } catch (e) { console.error('switchV2View 保存失败:', e); }
             renderStartScreenV2();
+        }
+
+        // 点击进度阶梯柱子:自由模式切换词书,冲刺模式提示
+        function selectLadderBar(bookId) {
+            SFX.click();
+            try {
+                const settings = LearningSystem.getSettings();
+                if (settings.mode === 'free') {
+                    // 自由模式:直接切换当前词书
+                    LearningSystem.setFreeBook(bookId);
+                    showToast(`已切换到 ${LearningSystem.getBookInfo(bookId).name}`, 'success');
+                    renderStartScreenV2();
+                } else {
+                    // 冲刺模式:提示当前在冲刺哪个考试
+                    const plan = LearningSystem.getActivePlan();
+                    if (plan && plan.type === bookId) {
+                        showToast(`正在冲刺 ${plan.name}`, 'info');
+                    } else {
+                        const bookInfo = LearningSystem.getBookInfo(bookId);
+                        showToast(`${bookInfo.name}:可在设置中切换学习模式`, 'info');
+                    }
+                }
+            } catch (e) {
+                console.error('selectLadderBar 失败:', e);
+            }
         }
 
         function startV2TodayTask() {
