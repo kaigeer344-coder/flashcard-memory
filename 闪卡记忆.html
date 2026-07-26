@@ -9393,7 +9393,9 @@
                     _ladderCacheFingerprint = fingerprint;
 
                     // === 性能优化 3: 用 Set.has() O(1) 替代 .some() O(N) 查找 ===
+                    // 产品需求:进度互通 — 背四级词时,六级/考研进度同步推进(去重)
                     const result = {};
+                    const learnedEnSets = {};  // 每个词库已学词的 en Set(去重用)
                     for (const level of levels) {
                         const set = _levelEnSetsCache[level];
                         const coreSet = _levelCoreSetsCache[level];
@@ -9401,13 +9403,15 @@
                         const coreTotal = coreSet.size || 1;
                         let coreLearned = 0, allLearned = 0;
                         let coreMastered = 0, allMastered = 0;
+                        const learnedEnSet = new Set();  // 该词库已学词的 en(去重)
 
                         if (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords) {
                             const memWords = MemorySystem.getAllWords(level);
                             for (let i = 0; i < memWords.length; i++) {
                                 const mw = memWords[i];
                                 const mem = mw.memoryData;
-                                if (mem.reviewCount > 0) {
+                                if (mem.reviewCount > 0 && !learnedEnSet.has(mw.en)) {
+                                    learnedEnSet.add(mw.en);
                                     allLearned++;
                                     if (coreSet.has(mw.en)) coreLearned++;
                                     if (mem.status === 'mastered') {
@@ -9422,9 +9426,10 @@
                             all: { learned: allLearned, mastered: allMastered, total: allTotal },
                             contributionFromOthers: { learned: 0, totalOverlap: 0 }
                         };
+                        learnedEnSets[level] = learnedEnSet;
                     }
 
-                    // === 性能优化 4: 跨词库贡献度 — 一次遍历替代 N²×M² 嵌套 ===
+                    // === 跨词库贡献度:一次遍历替代 N²×M² 嵌套 ===
                     // 第一遍: 算 totalOverlap(每个 source 词分配到所属的 target 词库)
                     for (const sourceLevel of levels) {
                         const sourceWords = wordDB[sourceLevel] || [];
@@ -9438,7 +9443,8 @@
                             }
                         }
                     }
-                    // 第二遍: 算 overlapLearned(只遍历已学词,避免遍历全部)
+                    // 第二遍: 算 overlapLearned + 并入进度(去重)
+                    // 进度互通:其他词库已学的词,如果当前词库也存在且还没学过,计入当前词库进度
                     for (const sourceLevel of levels) {
                         if (typeof MemorySystem === 'undefined' || !MemorySystem.getAllWords) continue;
                         const sourceMemWords = MemorySystem.getAllWords(sourceLevel);
@@ -9448,8 +9454,19 @@
                             if (mem.reviewCount > 0) {
                                 for (const targetLevel of levels) {
                                     if (targetLevel === sourceLevel) continue;
-                                    if (_levelEnSetsCache[targetLevel].has(mw.en)) {
+                                    if (_levelEnSetsCache[targetLevel].has(mw.en) && !learnedEnSets[targetLevel].has(mw.en)) {
+                                        // 去重:加入已学 Set,避免重复计算
+                                        learnedEnSets[targetLevel].add(mw.en);
+                                        result[targetLevel].all.learned++;
                                         result[targetLevel].contributionFromOthers.learned++;
+                                        // 核心词也算
+                                        if (_levelCoreSetsCache[targetLevel].has(mw.en)) {
+                                            result[targetLevel].core.learned++;
+                                            if (mem.status === 'mastered') {
+                                                result[targetLevel].all.mastered++;
+                                                result[targetLevel].core.mastered++;
+                                            }
+                                        }
                                     }
                                 }
                             }
