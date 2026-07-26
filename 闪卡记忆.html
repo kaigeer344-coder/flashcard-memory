@@ -2762,13 +2762,12 @@
             border-radius: 2px;
         }
 
-        /* === LearningMap 学习地图组件(两排蛇形路线) === */
+        /* === LearningMap 学习地图组件(Duolingo 风格) === */
         .lm-card {
-            margin: 14px 14px 20px;
-            background: linear-gradient(180deg, #e8f5e3 0%, #d4ebcc 100%);
-            border: 1.5px solid #b8d8a8;
-            border-radius: 20px;
-            box-shadow: 0 3px 8px rgba(88, 204, 2, 0.08);
+            margin: 14px 16px 20px;
+            background: #fff;
+            border-radius: 28px;
+            box-shadow: 0 8px 0 #e5e5e5;
             overflow: hidden;
         }
         /* 顶部标题 */
@@ -2776,62 +2775,64 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 11px 14px 6px;
+            padding: 14px 16px 10px;
         }
         .lm-title {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 14px;
+            gap: 8px;
+            font-size: 18px;
             font-weight: 900;
             color: var(--dark);
         }
-        .lm-title svg { width: 18px; height: 18px; color: var(--primary); }
+        .lm-title svg { width: 22px; height: 22px; color: var(--primary); }
         .lm-rules-btn {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 5px 10px;
-            background: rgba(255,255,255,0.7);
-            border: 1.5px solid #b8d8a8;
+            padding: 7px 12px;
+            min-height: 32px;
+            background: #E8F9E0;
+            border: 0;
             border-radius: 999px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 800;
-            color: var(--muted);
+            color: var(--green-dark);
             cursor: pointer;
-            transition: transform 120ms ease;
+            transition: transform 120ms ease, background 160ms ease;
         }
-        .lm-rules-btn:active { transform: scale(0.95); }
-        /* 地图区域(宽高比 1.6:1) */
+        .lm-rules-btn:active { transform: scale(0.95); background: #D4F0C7; }
+        /* 地图区域(宽高比 1.5:1) */
         .lm-map {
             position: relative;
             width: 100%;
-            aspect-ratio: 1.6 / 1;
+            aspect-ratio: 1.5 / 1;
             overflow: hidden;
+            background: linear-gradient(180deg, #F3FCEB 0%, #E8F5E0 100%);
         }
         .lm-map-bg {
             position: absolute;
             inset: 0;
-            background: url('assets/03_学习地图背景_无路径无节点.png') center / cover no-repeat;
-            filter: saturate(0.5) brightness(1.05);
-            opacity: 0.45;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 35%),
+                radial-gradient(circle at 80% 30%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 30%),
+                radial-gradient(circle at 60% 75%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 30%);
             pointer-events: none;
             z-index: 0;
         }
         .lm-sign {
             position: absolute;
-            top: 8px;
-            left: 10px;
+            top: 10px;
+            left: 12px;
             z-index: 4;
-            padding: 3px 9px;
-            background: linear-gradient(180deg, #c98f4e 0%, #b07a3f 100%);
-            border: 1.5px solid #8a5f2d;
-            border-radius: 7px;
-            color: #fff8ec;
-            font-size: 10px;
+            padding: 5px 11px;
+            background: var(--primary);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 11px;
             font-weight: 900;
             letter-spacing: 1px;
-            box-shadow: 0 2px 0 #8a5f2d;
+            box-shadow: 0 4px 0 var(--primary-dark);
             transform: rotate(-3deg);
             pointer-events: none;
         }
@@ -2843,15 +2844,16 @@
             height: 100%;
             pointer-events: none;
             z-index: 1;
+            filter: drop-shadow(0 2px 0 rgba(0,0,0,0.06));
         }
         .lm-paths path {
             fill: none;
-            stroke-width: 3;
             stroke-linecap: round;
             stroke-linejoin: round;
         }
-        .lm-path-done { stroke: var(--primary); }
-        .lm-path-locked { stroke: #c5c5c5; stroke-dasharray: 5 4; }
+        .lm-path-done { stroke: var(--primary); stroke-width: 10; }
+        .lm-path-current { stroke: var(--accent); stroke-width: 10; }
+        .lm-path-locked { stroke: #E0E0E0; stroke-width: 10; stroke-dasharray: 6 5; }
         /* 节点层(百分比坐标定位) */
         .lm-nodes {
             position: absolute;
@@ -2867,50 +2869,78 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
+            gap: 5px;
         }
         .lm-node:active { transform: translate(-50%, -50%) scale(0.92); }
         .lm-node-circle {
-            width: 42px;
-            height: 42px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             display: grid;
             place-items: center;
             position: relative;
+            box-sizing: border-box;
+            border: 3px solid #fff;
         }
         .lm-node-num {
-            font-size: 15px;
+            font-size: 17px;
             font-weight: 900;
             color: #fff;
             line-height: 1;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
         }
         .lm-node-check, .lm-node-lock {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             display: none;
-            color: #fff;
         }
         .lm-node-check svg, .lm-node-lock svg { width: 100%; height: 100%; }
         /* 已完成(绿色 + 白对勾) */
         .lm-node.is-done .lm-node-circle {
             background: var(--primary);
-            box-shadow: 0 3px 0 var(--primary-dark), 0 3px 8px rgba(88,204,2,0.2);
+            box-shadow: 0 5px 0 var(--primary-dark), 0 5px 12px rgba(88,204,2,0.25);
         }
         .lm-node.is-done .lm-node-num { display: none; }
-        .lm-node.is-done .lm-node-check { display: block; }
-        /* 当前(黄色 + 略大 + 光圈) */
+        .lm-node.is-done .lm-node-check { display: block; color: #fff; }
+        /* 当前(黄色 + 脉冲动画) */
         .lm-node.is-active .lm-node-circle {
-            width: 50px;
-            height: 50px;
+            width: 56px;
+            height: 56px;
             background: var(--accent);
-            box-shadow: 0 0 0 4px rgba(255,200,0,0.25), 0 4px 0 #c79500, 0 4px 10px rgba(255,200,0,0.3);
+            box-shadow: 0 5px 0 #c79500, 0 6px 16px rgba(255,200,0,0.35);
+            animation: lm-node-bounce 1.6s ease-in-out infinite;
         }
-        .lm-node.is-active .lm-node-num { font-size: 18px; }
+        .lm-node.is-active .lm-node-num { font-size: 22px; }
+        .lm-node.is-active::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.45;
+            animation: lm-pulse-ring 1.6s ease-out infinite;
+            z-index: -1;
+        }
+        @keyframes lm-pulse-ring {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.45; }
+            100% { transform: translate(-50%, -50%) scale(1.7); opacity: 0; }
+        }
+        @keyframes lm-node-bounce {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-4px); }
+        }
         /* 锁定(灰色 + 锁图标) */
         .lm-node.is-locked .lm-node-circle {
             background: #e5e5e5;
-            box-shadow: 0 3px 0 #b8b8b8;
+            box-shadow: 0 4px 0 #b8b8b8;
             cursor: not-allowed;
         }
         .lm-node.is-locked .lm-node-num { display: none; }
@@ -2919,61 +2949,62 @@
         .lm-node.is-special .lm-node-circle {
             background: transparent;
             box-shadow: none;
-            width: 50px;
-            height: 50px;
+            border: 0;
+            width: 56px;
+            height: 56px;
         }
         .lm-node-special-img {
-            width: 50px;
-            height: 50px;
+            width: 56px;
+            height: 56px;
             object-fit: contain;
-            filter: drop-shadow(0 3px 4px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.18));
         }
         .lm-node.is-special.is-locked .lm-node-special-img {
-            filter: drop-shadow(0 3px 4px rgba(0,0,0,0.15)) grayscale(1) opacity(0.55);
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.12)) grayscale(1) opacity(0.5);
         }
         /* "你在这里"标记 */
         .lm-node-marker {
             position: absolute;
-            top: -18px;
+            top: -22px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--accent);
             color: #5a3d00;
-            font-size: 8px;
+            font-size: 10px;
             font-weight: 900;
-            padding: 2px 7px;
+            padding: 3px 9px;
             border-radius: 999px;
-            box-shadow: 0 2px 0 #c79500;
+            box-shadow: 0 3px 0 #c79500;
             white-space: nowrap;
             z-index: 3;
         }
         .lm-node-label {
-            font-size: 9px;
-            font-weight: 800;
+            font-size: 11px;
+            font-weight: 900;
             color: #4a5a3a;
             white-space: nowrap;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.7);
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
         }
         /* 底部图例 */
         .lm-legend {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
             align-items: center;
-            padding: 8px 8px 11px;
-            gap: 3px;
-            flex-wrap: nowrap;
+            padding: 12px 10px 14px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         .lm-legend-item {
             display: flex;
             align-items: center;
-            gap: 4px;
-            font-size: 9px;
-            font-weight: 700;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 800;
             color: var(--muted);
         }
         .lm-legend-dot {
-            width: 11px;
-            height: 11px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             flex-shrink: 0;
         }
@@ -2981,28 +3012,29 @@
         .lm-legend-dot.is-active { background: var(--accent); }
         .lm-legend-dot.is-locked { background: #e5e5e5; border: 1.5px solid #c0c0c0; box-sizing: border-box; }
         .lm-legend-icon {
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             object-fit: contain;
             flex-shrink: 0;
         }
         @media (prefers-reduced-motion: reduce) {
-            .lm-node { transition: none; }
+            .lm-node, .lm-node.is-active .lm-node-circle, .lm-node.is-active::before { animation: none; }
             .lm-node:active { transform: translate(-50%, -50%); }
         }
-        /* 窄屏适配(360px-380px) */
-        @media (max-width: 380px) {
-            .lm-node-circle { width: 36px; height: 36px; }
-            .lm-node.is-active .lm-node-circle { width: 42px; height: 42px; }
-            .lm-node-num { font-size: 13px; }
-            .lm-node.is-active .lm-node-num { font-size: 15px; }
-            .lm-node-check, .lm-node-lock { width: 18px; height: 18px; }
-            .lm-node.is-special .lm-node-circle { width: 42px; height: 42px; }
-            .lm-node-special-img { width: 42px; height: 42px; }
-            .lm-legend-item { font-size: 8px; gap: 3px; }
-            .lm-legend-dot { width: 9px; height: 9px; }
-            .lm-legend-icon { width: 12px; height: 12px; }
-            .lm-node-label { font-size: 8px; }
+        /* 窄屏适配(360px-390px) */
+        @media (max-width: 390px) {
+            .lm-node-circle { width: 40px; height: 40px; border-width: 2px; }
+            .lm-node.is-active .lm-node-circle { width: 48px; height: 48px; }
+            .lm-node-num { font-size: 14px; }
+            .lm-node.is-active .lm-node-num { font-size: 18px; }
+            .lm-node-check, .lm-node-lock { width: 20px; height: 20px; }
+            .lm-node.is-special .lm-node-circle { width: 48px; height: 48px; }
+            .lm-node-special-img { width: 48px; height: 48px; }
+            .lm-legend { gap: 8px; }
+            .lm-legend-item { font-size: 10px; gap: 4px; }
+            .lm-legend-dot { width: 10px; height: 10px; }
+            .lm-legend-icon { width: 14px; height: 14px; }
+            .lm-node-label { font-size: 10px; }
         }
 
         /* ===== TodayTaskCard 今日任务卡组件 ===== */
@@ -7549,9 +7581,11 @@
             }
 
             // SVG 路径(viewBox 0 0 100 62,对应节点 top%:28%→y=17.36, 72%→y=44.64)
-            // 已完成段:Day1→Day7 水平 + 右侧转弯 + Day8
-            // 未完成段:Day8→Day14 水平
-            const pathDone = "M 7.14,17.36 L 21.43,17.36 L 35.71,17.36 L 50,17.36 L 64.29,17.36 L 78.57,17.36 L 92.86,17.36 Q 100,31 92.86,44.64";
+            // 已完成段:Day1→Day7 水平
+            // 当前段:Day7→Day8 转弯曲线
+            // 未解锁段:Day8→Day14 水平
+            const pathDone = "M 7.14,17.36 L 21.43,17.36 L 35.71,17.36 L 50,17.36 L 64.29,17.36 L 78.57,17.36 L 92.86,17.36";
+            const pathCurrent = "M 92.86,17.36 Q 100,31 92.86,44.64";
             const pathLocked = "M 92.86,44.64 L 78.57,44.64 L 64.29,44.64 L 50,44.64 L 35.71,44.64 L 21.43,44.64 L 7.14,44.64";
 
             // 生成节点 HTML
@@ -7603,6 +7637,7 @@
                         <div class="lm-sign">记忆森林</div>
                         <svg class="lm-paths" viewBox="0 0 100 62" preserveAspectRatio="none">
                             <path class="lm-path-done" d="${pathDone}" vector-effect="non-scaling-stroke"/>
+                            <path class="lm-path-current" d="${pathCurrent}" vector-effect="non-scaling-stroke"/>
                             <path class="lm-path-locked" d="${pathLocked}" vector-effect="non-scaling-stroke"/>
                         </svg>
                         <div class="lm-nodes">${nodesHTML}</div>
