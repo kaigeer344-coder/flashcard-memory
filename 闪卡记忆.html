@@ -2869,6 +2869,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            width: 64px;
             gap: 5px;
         }
         .lm-node:active { transform: translate(-50%, -50%) scale(0.92); }
@@ -2934,8 +2936,8 @@
             100% { transform: translate(-50%, -50%) scale(1.7); opacity: 0; }
         }
         @keyframes lm-node-bounce {
-            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-            50% { transform: translate(-50%, -50%) translateY(-4px); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
         }
         /* 锁定(灰色 + 锁图标) */
         .lm-node.is-locked .lm-node-circle {
