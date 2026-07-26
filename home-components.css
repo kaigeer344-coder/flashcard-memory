@@ -347,26 +347,87 @@
     border-radius: 50%;
     z-index: 0;
 }
+/* CSS 生成云朵装饰 */
 .hp-vp-cloud {
     position: absolute;
     top: 56px;
-    right: 18px;
-    width: 56px;
-    height: 32px;
-    opacity: 0.5;
+    right: 22px;
+    width: 52px;
+    height: 22px;
+    background: #fff;
+    border-radius: 999px;
+    opacity: 0.65;
     z-index: 1;
+    box-shadow: 0 2px 8px rgba(88, 204, 2, 0.08);
 }
+.hp-vp-cloud::before,
+.hp-vp-cloud::after {
+    content: '';
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+}
+.hp-vp-cloud::before {
+    width: 22px;
+    height: 22px;
+    top: -9px;
+    left: 8px;
+}
+.hp-vp-cloud::after {
+    width: 16px;
+    height: 16px;
+    top: -5px;
+    right: 10px;
+}
+/* CSS 生成左右叶片装饰 */
 .hp-vp-bush-left,
 .hp-vp-bush-right {
     position: absolute;
-    bottom: 0;
-    width: 72px;
-    height: 44px;
-    opacity: 0.5;
+    bottom: 8px;
+    width: 54px;
+    height: 34px;
     z-index: 1;
 }
-.hp-vp-bush-left { left: -6px; }
-.hp-vp-bush-right { right: -6px; }
+.hp-vp-bush-left { left: 4px; }
+.hp-vp-bush-right { right: 4px; }
+.hp-vp-bush-left::before,
+.hp-vp-bush-left::after,
+.hp-vp-bush-right::before,
+.hp-vp-bush-right::after {
+    content: '';
+    position: absolute;
+    border-radius: 50% 50% 0 50%;
+    background: #A8D96C;
+    opacity: 0.55;
+}
+.hp-vp-bush-left::before {
+    width: 26px;
+    height: 26px;
+    bottom: 0;
+    left: 0;
+    transform: rotate(-15deg);
+}
+.hp-vp-bush-left::after {
+    width: 18px;
+    height: 18px;
+    bottom: 2px;
+    left: 18px;
+    transform: rotate(-30deg);
+}
+.hp-vp-bush-right::before {
+    width: 26px;
+    height: 26px;
+    bottom: 0;
+    right: 0;
+    transform: rotate(15deg) scaleX(-1);
+}
+.hp-vp-bush-right::after {
+    width: 18px;
+    height: 18px;
+    bottom: 2px;
+    right: 18px;
+    transform: rotate(30deg) scaleX(-1);
+}
 .hp-vp-column {
     flex: 1;
     min-width: 0;

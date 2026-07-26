@@ -152,16 +152,15 @@
         const maxH = 180;
         const minH = 36;
         const columnsHTML = (data.items || []).map(item => renderVocabularyProgressColumn(item, maxH, minH)).join('');
-        const cloudHTML = imgOrPlaceholder(HOME_ASSETS.cloud, 'hp-vp-cloud', '', '');
-        const bushLeftHTML = imgOrPlaceholder(HOME_ASSETS.bushLeft, 'hp-vp-bush-left', '', '');
-        const bushRightHTML = imgOrPlaceholder(HOME_ASSETS.bushRight, 'hp-vp-bush-right', '', '');
         return `
             <div class="hp-vp-card">
                 <div class="hp-vp-header">
                     <span class="hp-vp-title">${data.title}</span>
                     <button class="hp-vp-map-btn" onclick="onEnterMapClick && onEnterMapClick(event)">进入地图 ›</button>
                 </div>
-                ${cloudHTML}${bushLeftHTML}${bushRightHTML}
+                <div class="hp-vp-cloud" aria-hidden="true"></div>
+                <div class="hp-vp-bush-left" aria-hidden="true"></div>
+                <div class="hp-vp-bush-right" aria-hidden="true"></div>
                 <div class="hp-vp-stage">
                     <div class="hp-vp-base"></div>
                     <div class="hp-vp-chart">${columnsHTML}</div>
