@@ -285,9 +285,14 @@
                 <div class="hp-lt-body">
                     <div class="hp-lt-steps">${stepHTML}</div>
                     <div class="hp-lt-stats">
-                        <div class="hp-lt-stat">
-                            <span class="hp-lt-stat-label">已完成</span>
-                            <div class="hp-lt-stat-row"><span class="hp-lt-stat-value">${totalLearned}</span><span class="hp-lt-stat-unit">词</span></div>
+                        <div class="hp-lt-stat-group">
+                            <div class="hp-lt-stat-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                            </div>
+                            <div class="hp-lt-stat">
+                                <span class="hp-lt-stat-label">已完成</span>
+                                <div class="hp-lt-stat-row"><span class="hp-lt-stat-value">${totalLearned}</span><span class="hp-lt-stat-unit">词</span></div>
+                            </div>
                         </div>
                         <div class="hp-lt-divider"></div>
                         <div class="hp-lt-stat">

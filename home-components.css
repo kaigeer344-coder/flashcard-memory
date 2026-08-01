@@ -851,10 +851,10 @@
 .hp-lt-arrow svg { width: 18px; height: 18px; display: block; }
 .hp-lt-body {
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 12px;
-    min-height: 150px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    min-height: 0;
 }
 .hp-lt-steps {
     display: flex;
@@ -907,44 +907,82 @@
 }
 .hp-lt-stats {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    gap: 0;
+    padding: 16px 18px;
+    background: #F8FBF6;
+    border-radius: 18px;
+    border: 1px solid rgba(34, 185, 24, 0.08);
     flex-shrink: 0;
-    min-width: 90px;
 }
+.hp-lt-stat-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+.hp-lt-stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #E6F8DE;
+    color: #32C522;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+.hp-lt-stat-icon svg { width: 22px; height: 22px; display: block; }
 .hp-lt-stat {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    align-items: flex-start;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
 }
 .hp-lt-stat-label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
-    color: #858995;
+    color: #7F838D;
     line-height: 1;
+    text-align: left;
 }
 .hp-lt-stat-row {
     display: flex;
     align-items: baseline;
-    gap: 3px;
+    gap: 4px;
+    text-align: left;
 }
 .hp-lt-stat-value {
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 24px;
+    font-weight: 800;
     color: #171A20;
     line-height: 1;
 }
 .hp-lt-stat-unit {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
-    color: #858995;
+    color: #7F838D;
     line-height: 1;
 }
-.hp-lt-stat-remain { color: #8B5CF6; }
+.hp-lt-stat-remain { color: #32C522; }
 .hp-lt-divider {
-    height: 1px;
-    background: rgba(139, 92, 246, 0.15);
-    margin: 2px 0;
+    width: 1px;
+    align-self: center;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
+    margin: 0 16px;
+}
+@media (max-width: 374px) {
+    .hp-lt-stats { padding: 14px 14px; }
+    .hp-lt-stat-group { gap: 12px; }
+    .hp-lt-stat-icon { width: 36px; height: 36px; }
+    .hp-lt-stat-icon svg { width: 20px; height: 20px; }
+    .hp-lt-stat-value { font-size: 20px; }
+    .hp-lt-stat-label { font-size: 12px; }
+    .hp-lt-divider { height: 38px; margin: 0 10px; }
 }
 
 /* ===== 6. StartTaskButton 开始今日任务大按钮 ===== */
