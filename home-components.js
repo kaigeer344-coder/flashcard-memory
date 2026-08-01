@@ -1,4 +1,4 @@
-// ===== 闪卡记忆 - 新版首页组件 =====
+// ===== 闪卡记忆 - 新版首页组件（多邻国体验系统）=====
 // 所有组件返回 HTML 字符串，数据由参数传入
 
 (function() {
@@ -7,7 +7,13 @@
     // 统一资源路径配置
     const HOME_ASSETS = {
         logo: 'assets/home/logo.png',
-        avatarPlaceholder: 'assets/home/avatar-placeholder.png',
+        avatar: 'assets/characters/cici-avatar.png',
+        mascot: 'assets/characters/cici-default.png',
+        mascotOpen: 'assets/characters/cici-blink-open.png',
+        mascotClose: 'assets/characters/cici-blink-close.png',
+        mascotUrgent: 'assets/characters/cici-urgent.png',
+        mascotConfident: 'assets/characters/cici-confident.png',
+        mascotCalm: 'assets/characters/cici-calm.png',
         badgeShield: 'assets/progress/badge-shield.png',
         cloud: 'assets/progress/cloud.png',
         bushLeft: 'assets/progress/bush-left.png',
@@ -21,18 +27,16 @@
         cet6: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>`,
         postgraduate: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`,
         ielts: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`,
-        toefl: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"></path><path d="M13 2l9 10-9 10"></path></svg>`,
-        gre: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>`
+        toefl: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"></path><path d="M13 2l9 10-9 10"></path></svg>`
     };
 
-    // 各词库固定视觉高度（按难度从 CET4 到 GRE 递增）
+    // 各词库固定视觉高度（按难度从 CET4 到 TOEFL 递增）
     const LEVEL_HEIGHTS = {
         cet4: 86,
         cet6: 104,
         kaoyan: 122,
         ielts: 140,
-        toefl: 158,
-        gre: 176
+        toefl: 158
     };
 
     const TASK_ICON_SVGS = {
@@ -51,8 +55,46 @@
         home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>`,
         wordbook: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`,
         stats: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
-        profile: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`
+        profile: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`,
+        trophy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path></svg>`
     };
+
+    // Cici 占位 SVG（绿色小鸟，会眨眼 + 翅膀）
+    const CICI_PLACEHOLDER = `
+        <div class="cici-stage">
+            <div class="cici-sparkle cici-sparkle-1"></div>
+            <div class="cici-sparkle cici-sparkle-2"></div>
+            <div class="cici-sparkle cici-sparkle-3"></div>
+            <div class="cici-sparkle cici-sparkle-4"></div>
+            <div class="cici-placeholder">
+                <div class="cici-body">
+                    <div class="cici-tuft"></div>
+                    <div class="cici-wing cici-wing-left"></div>
+                    <div class="cici-wing cici-wing-right"></div>
+                    <div class="cici-eye cici-eye-left"></div>
+                    <div class="cici-eye cici-eye-right"></div>
+                    <div class="cici-blush cici-blush-left"></div>
+                    <div class="cici-blush cici-blush-right"></div>
+                    <div class="cici-beak"></div>
+                    <div class="cici-belly"></div>
+                </div>
+                <div class="cici-foot cici-foot-left"></div>
+                <div class="cici-foot cici-foot-right"></div>
+            </div>
+            <div class="cici-podium"></div>
+        </div>
+    `;
+
+    // 鼓励语库
+    const ENCOURAGEMENTS = [
+        "今天也见面啦！",
+        "单词不会辜负你",
+        "冲完这关，给你比个心",
+        "Cici 今天比昨天更喜欢你",
+        "每天 5 分钟，怪兽变宠物",
+        "你已经走在很多人前面了",
+        "Cici 信你！"
+    ];
 
     // 安全图片，加载失败显示占位 div
     function imgOrPlaceholder(src, className, alt, fallbackSvg) {
@@ -61,6 +103,29 @@
             ? `<img class="${className}" src="${src}" alt="${alt || ''}" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">` +
               `<div class="${className} hp-img-fallback" style="display:none;place-items:center;background:#f5f5f5">${fallback}</div>`
             : `<div class="${className} hp-img-fallback" style="display:grid;place-items:center;background:#f5f5f5">${fallback}</div>`;
+    }
+
+    // 根据进度返回鼓励文案
+    function getProgressCopy(pct) {
+        if (pct === 0) return "第一天出发，已经赢过昨天的自己";
+        if (pct <= 25) return "起步不错，Cici 开始认真了";
+        if (pct <= 50) return "过半啦！继续保持这个节奏";
+        if (pct <= 75) return "后程发力，你比想象中更强";
+        if (pct < 100) return "最后一口气，冲完就庆祝！";
+        return "完成了！Cici 要给你举高高";
+    }
+
+    // 根据剩余天数返回角色变体路径
+    function getMascotByDays(remainDays) {
+        if (remainDays < 7) return HOME_ASSETS.mascotUrgent;
+        if (remainDays <= 30) return HOME_ASSETS.mascotConfident;
+        return HOME_ASSETS.mascotCalm;
+    }
+
+    // 随机获取鼓励语
+    function getRandomEncouragement(seed) {
+        const idx = (seed || Math.floor(Math.random() * 1000)) % ENCOURAGEMENTS.length;
+        return ENCOURAGEMENTS[idx];
     }
 
     // ===== EnergyBadge 能量胶囊 =====
@@ -72,86 +137,192 @@
             </div>`;
     };
 
-    // ===== HomeHeader 绿色品牌顶部区域 =====
+    // ===== HomeHeader 顶部导航栏（白色背景新版）=====
     window.renderHomeHeader = function(data) {
         const logoHTML = imgOrPlaceholder(data.logoAsset || HOME_ASSETS.logo, 'hp-logo', 'Logo', TASK_ICON_SVGS.logo);
-        const avatarHTML = imgOrPlaceholder(data.avatarAsset || HOME_ASSETS.avatarPlaceholder, 'hp-avatar', '头像', TASK_ICON_SVGS.avatar);
         return `
             <div class="hp-header">
                 <div class="hp-header-left">
                     ${logoHTML}
-                    <span class="hp-brand-name">${data.brandName || '闪卡记忆'}</span>
+                    <span class="hp-brand-name">闪卡记忆</span>
                 </div>
                 <div class="hp-header-right">
-                    ${renderEnergyBadge(data.energy || 0)}
-                    <div onclick="onHomeAvatarClick && onHomeAvatarClick()" role="button" aria-label="用户">${avatarHTML}</div>
+                    <button class="hp-energy-badge" onclick="onPressEnergy && onPressEnergy()" ontouchstart="unlockAudio && unlockAudio()" aria-label="能量 ${data.energy || 0}">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="#FFC928"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>
+                        <span>${data.energy || 0}</span>
+                    </button>
+                    <button class="hp-star-btn" onclick="onPressStar && onPressStar()" ontouchstart="unlockAudio && unlockAudio()" aria-label="收藏">
+                        <svg viewBox="0 0 24 24" width="26" height="26" fill="#31C51F"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </button>
                 </div>
             </div>`;
     };
 
-    // ===== TaskSummary 今日任务摘要(用于合并卡片右侧) =====
-    window.renderTaskSummary = function(data) {
-        const giftHTML = data.giftAsset
-            ? `<img src="${data.giftAsset}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">` +
-              `<svg class="gift-fallback" style="display:none">${TASK_ICON_SVGS.gift}</svg>`
-            : `<svg class="gift-fallback">${TASK_ICON_SVGS.gift}</svg>`;
+    // ===== Cici 主角色区（仅保留形象和鼓励语）=====
+    window.renderCiciMascot = function(data) {
+        const remainDays = Math.max(0, data.totalDays - data.currentDay);
+        const mascotSrc = data.mascotAsset || getMascotByDays(remainDays);
+        const speech = data.speech || getRandomEncouragement(data.currentDay + data.totalDays);
         return `
-            <div class="hp-ct-right">
-                <div class="hp-ct-right-title">今日任务</div>
-                <div class="hp-ct-task-list">
-                    <div class="hp-ct-task-item new">${TASK_ICON_SVGS.newWords}<b>${data.newWords}</b>新词</div>
-                    <div class="hp-ct-task-item review">${TASK_ICON_SVGS.review}<b>${data.reviewWords}</b>复习</div>
-                    <div class="hp-ct-task-item time">${TASK_ICON_SVGS.time}<b>${data.estimatedMinutes}</b>预计分钟</div>
+            <div class="hp-cici-zone" onclick="onCiciClick && onCiciClick()">
+                <div class="hp-cici-speech">
+                    <div class="hp-cici-speech-main">${speech}</div>
                 </div>
-                <div class="hp-ct-reward">
-                    <div class="hp-ct-reward-left">${TASK_ICON_SVGS.gift}奖励 <b>${data.rewardXp} XP</b></div>
-                    ${giftHTML}
+                <div class="hp-cici-character">
+                    ${imgOrPlaceholder(mascotSrc, 'hp-cici-img', 'Cici', CICI_PLACEHOLDER)}
                 </div>
+                <div class="hp-cici-shadow"></div>
             </div>`;
     };
 
-    // ===== CourseTaskCard 四级冲刺与今日任务合并卡片 =====
-    window.renderCourseTaskCard = function(data) {
+    // ===== SprintProgressCard 冲刺进度卡片（新版）=====
+    window.renderSprintProgressCard = function(data) {
         const pct = Math.round((data.progress || 0) * 100);
         const remainDays = Math.max(0, data.totalDays - data.currentDay);
         return `
-            <div class="hp-ct-card" onclick="onCourseTaskCardClick && onCourseTaskCardClick()">
-                <div class="hp-ct-left">
-                    <div>
-                        <div class="hp-ct-head">
-                            <span class="hp-ct-title">${data.courseTitle}</span>
-                            <span class="hp-ct-tag">${data.tagIcon || ''} ${data.tagLabel}</span>
+            <div class="hp-sp-section">
+                <div class="hp-sp-card" onclick="onCourseTaskCardClick && onCourseTaskCardClick()">
+                    <div class="hp-sp-left">
+                        <h2 class="hp-sp-title">
+                            还剩 <strong class="hp-sp-day-num">${remainDays}</strong> 天，
+                            <span class="hp-sp-brand">Cici</span> 陪你一起冲！
+                        </h2>
+                        <div class="hp-sp-tag">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="#FF5B35"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                            <span>${data.tagLabel || '极限冲刺'}</span>
                         </div>
-                        <div class="hp-ct-meta">Day ${data.currentDay} / ${data.totalDays}<br>剩余 <strong>${remainDays}</strong> 天</div>
-                    </div>
-                    <div class="hp-ct-progress">
-                        <div class="hp-ct-track"><div class="hp-ct-fill" style="width:${pct}%"></div></div>
-                        <span class="hp-ct-pct">${pct}%</span>
+                        <div class="hp-sp-day">Day ${data.currentDay} / ${data.totalDays}</div>
+                        <div class="hp-sp-progress">
+                            <div class="hp-sp-track">
+                                <div class="hp-sp-fill" style="width:${pct}%"></div>
+                            </div>
+                            <span class="hp-sp-pct">${pct}%</span>
+                        </div>
                     </div>
                 </div>
-                <div class="hp-ct-divider"></div>
-                ${renderTaskSummary(data.taskSummary)}
+                <div class="hp-sp-mascot">
+                    ${imgOrPlaceholder('assets/characters/cici-mascot.svg?v=6.1', 'hp-sp-cici', 'Cici', CICI_PLACEHOLDER)}
+                    <svg class="hp-sp-star hp-sp-star-1" viewBox="0 0 24 24" width="14" height="14" fill="#FFD84D"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="hp-sp-star hp-sp-star-2" viewBox="0 0 24 24" width="10" height="10" fill="#FFD84D"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="hp-sp-star hp-sp-star-3" viewBox="0 0 24 24" width="12" height="12" fill="#FFD84D"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
             </div>`;
+    };
+
+    // ===== DailyGoal 今日目标模块 =====
+    window.renderDailyGoal = function(data) {
+        const newWords = data.newWords || 0;
+        const reviewWords = data.reviewWords || 0;
+        return `
+            <div class="hp-daily-goal">
+                <h3 class="hp-dg-title">今日目标</h3>
+                <div class="hp-dg-content">
+                    <div class="hp-dg-item">
+                        <div class="hp-dg-icon hp-dg-icon-new">Aa</div>
+                        <div class="hp-dg-info">
+                            <span class="hp-dg-label">新词学习</span>
+                            <span class="hp-dg-value"><b>${newWords}</b> 个</span>
+                        </div>
+                    </div>
+                    <div class="hp-dg-item">
+                        <div class="hp-dg-icon hp-dg-icon-review">O</div>
+                        <div class="hp-dg-info">
+                            <span class="hp-dg-label">复习巩固</span>
+                            <span class="hp-dg-value"><b>${reviewWords}</b> 个</span>
+                        </div>
+                    </div>
+                    <button class="hp-dg-start" onclick="onStartTaskClick && onStartTaskClick()" ontouchstart="unlockAudio && unlockAudio()" aria-label="开始学习">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>
+                        <span>开始学习</span>
+                    </button>
+                </div>
+            </div>`;
+    };
+
+    // ===== BookProgress 词库学习进度（阶梯形式）=====
+    window.renderBookProgress = function(data) {
+        const items = (data && data.items) || [];
+        const totalMastered = items.reduce((sum, it) => sum + (it.total || 0), 0);
+        const totalLearned = items.reduce((sum, it) => sum + (it.learned || 0), 0);
+        const nextGoal = Math.min(totalMastered, Math.ceil((totalLearned + 1) / 1000) * 1000);
+        const remainToNext = Math.max(0, nextGoal - totalLearned);
+
+        const stepHTML = items.map((item, index) => {
+            const pct = Math.round((item.progress || 0) * 100);
+            const stepHeight = Math.max(8, Math.round((item.progress || 0) * 90));
+            const isLast = index === items.length - 1;
+            return `
+                <div class="hp-lt-step" style="--step-color:${item.color};--step-height:${stepHeight}px" onclick="onBookProgressClick && onBookProgressClick('${item.id}')">
+                    <span class="hp-lt-step-label">${item.name}</span>
+                    <span class="hp-lt-step-pct">${pct}%</span>
+                    ${isLast ? `<svg class="hp-lt-flag" viewBox="0 0 24 24" width="16" height="16" fill="#FFD84D"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>` : ''}
+                </div>`;
+        }).join('');
+
+        return `
+            <div class="hp-long-term">
+                <div class="hp-lt-header">
+                    <div class="hp-lt-title-wrap">
+                        <h3 class="hp-lt-title">我的学习进度</h3>
+                        <div class="hp-lt-mastered">
+                            <span class="hp-lt-mastered-label">掌握</span>
+                            <span class="hp-lt-mastered-value">${totalMastered}</span>
+                            <span class="hp-lt-mastered-unit">词</span>
+                        </div>
+                    </div>
+                    <button class="hp-lt-arrow" onclick="onViewAllBooksClick && onViewAllBooksClick()" aria-label="查看全部">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+                <div class="hp-lt-body">
+                    <div class="hp-lt-steps">${stepHTML}</div>
+                    <div class="hp-lt-stats">
+                        <div class="hp-lt-stat">
+                            <span class="hp-lt-stat-label">已完成</span>
+                            <div class="hp-lt-stat-row"><span class="hp-lt-stat-value">${totalLearned}</span><span class="hp-lt-stat-unit">词</span></div>
+                        </div>
+                        <div class="hp-lt-divider"></div>
+                        <div class="hp-lt-stat">
+                            <span class="hp-lt-stat-label">距离下一阶段</span>
+                            <div class="hp-lt-stat-row"><span class="hp-lt-stat-value hp-lt-stat-remain">${remainToNext}</span><span class="hp-lt-stat-unit hp-lt-stat-remain">词</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    };
+
+    // 辅助：hex 转 rgba
+    function hexToRgba(hex, alpha) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    // ===== StartTaskButton 开始今日任务大按钮 =====
+    window.renderStartTaskButton = function(data) {
+        const label = data.completed
+            ? '今日任务已完成 🎉'
+            : (data.label || `开始 ${data.dayLabel || '今日任务'}`);
+        return `
+            <button class="hp-start-btn ${data.completed ? 'is-completed' : ''}" onclick="onStartTaskClick && onStartTaskClick()" ontouchstart="unlockAudio && unlockAudio()">
+                <span class="hp-start-icon">${data.completed ? TASK_ICON_SVGS.star : TASK_ICON_SVGS.bolt}</span>
+                <span class="hp-start-label">${label}</span>
+            </button>`;
     };
 
     // ===== VocabularyProgressColumn 单个词库进度柱 =====
     window.renderVocabularyProgressColumn = function(item) {
         const progress = Math.max(0, Math.min(1, item.progress || 0));
         const pctText = Math.round(progress * 100) + '%';
-        // 固定总高度按难度递增；填充高度按进度比例
         const totalHeight = LEVEL_HEIGHTS[item.id] || 120;
         const fillHeight = Math.max(2, Math.round(totalHeight * progress));
-        const iconKey = item.id === 'kaoyan' ? 'postgraduate' : item.id;
-        const iconHTML = item.icon
-            ? `<img src="${item.icon}" alt="" onerror="this.style.display='none';this.parentElement.querySelector('svg').style.display='block'">` +
-              `<svg style="display:none">${LEVEL_ICON_SVGS[iconKey] || LEVEL_ICON_SVGS.cet4}</svg>`
-            : `<svg>${LEVEL_ICON_SVGS[iconKey] || LEVEL_ICON_SVGS.cet4}</svg>`;
         const badgeHTML = `<div class="hp-vp-badge">${TASK_ICON_SVGS.star}</div>`;
+        const isActive = item.isActive ? ' is-active' : '';
         return `
-            <div class="hp-vp-column" style="--column-color:${item.color}" onclick="onProgressColumnClick && onProgressColumnClick('${item.id}')">
+            <div class="hp-vp-column${isActive}" style="--column-color:${item.color}" onclick="onProgressColumnClick && onProgressColumnClick('${item.id}')">
                 <div class="hp-vp-topper">
                     <div class="hp-vp-bubble">${pctText}</div>
-                    ${iconHTML}
                 </div>
                 <div class="hp-vp-pillar" style="height:${totalHeight}px">
                     <div class="hp-vp-pillar-top"></div>
@@ -171,9 +342,13 @@
         return `
             <div class="hp-vp-card">
                 <div class="hp-vp-header">
-                    <span class="hp-vp-title">${data.title}</span>
-                    <button class="hp-vp-map-btn" onclick="onEnterMapClick && onEnterMapClick(event)">进入地图 ›</button>
+                    <div class="hp-vp-title-wrap">
+                        <span class="hp-vp-header-icon">${TASK_ICON_SVGS.trophy}</span>
+                        <span class="hp-vp-title">${data.title || '词汇金字塔'}</span>
+                    </div>
+                    <button class="hp-vp-map-btn" onclick="onEnterMapClick && onEnterMapClick(event)">去挑战 ›</button>
                 </div>
+                <div class="hp-vp-subtitle">每学一个词，多个词库一起涨</div>
                 <div class="hp-vp-clouds" aria-hidden="true">
                     <div class="hp-vp-cloud hp-vp-cloud-1"></div>
                     <div class="hp-vp-cloud hp-vp-cloud-2"></div>
@@ -188,28 +363,42 @@
             </div>`;
     };
 
-    // ===== StudyStatsCard 学习统计卡片 =====
-    window.renderStudyStatsCard = function(data) {
+    // ===== StudyStatsCapsules 学习统计胶囊 =====
+    window.renderStudyStatsCapsules = function(data) {
+        const remainGoal = Math.max(0, (data.goalTotal || 5) - (data.goalCurrent || 0));
+        const streakMsg = data.streak >= 3
+            ? `连续 ${data.streak} 天，火不要断！`
+            : (data.streak > 0 ? `连续 ${data.streak} 天，继续加油！` : '开始第一天，Cici 陪你');
+        const learnedMsg = data.learned >= 100
+            ? `${data.learned} 词，你已经是单词猎人了`
+            : `${data.learned} 词，积少成多`;
+        const goalMsg = remainGoal > 0
+            ? `本周 ${data.goalCurrent}/${data.goalTotal}，再来 ${remainGoal} 天就满星`
+            : '本周目标达成，太棒了！';
         return `
-            <div class="hp-ss-card">
-                <div class="hp-ss-item streak">
-                    <div class="hp-ss-icon">${TASK_ICON_SVGS.fire}</div>
-                    <div class="hp-ss-label">连续学习</div>
-                    <div class="hp-ss-value">${data.streak} 天</div>
-                    <div class="hp-ss-tip">${data.streakTip}</div>
+            <div class="hp-stats-zone">
+                <div class="hp-stats-title">
+                    <span class="hp-stats-title-icon">${TASK_ICON_SVGS.star}</span>
+                    <span>我的战绩</span>
                 </div>
-                <div class="hp-ss-item learned">
-                    <div class="hp-ss-icon">${TASK_ICON_SVGS.book}</div>
-                    <div class="hp-ss-label">已学单词</div>
-                    <div class="hp-ss-value">${data.learned} 词</div>
-                    <div class="hp-ss-tip">${data.learnedTip}</div>
+                <div class="hp-stats-capsules">
+                    <div class="hp-stats-cap">
+                        <div class="hp-stats-cap-icon fire">${TASK_ICON_SVGS.fire}</div>
+                        <div class="hp-stats-cap-value">${data.streak}<small>天</small></div>
+                        <div class="hp-stats-cap-label">连续学习</div>
+                    </div>
+                    <div class="hp-stats-cap">
+                        <div class="hp-stats-cap-icon book">${TASK_ICON_SVGS.book}</div>
+                        <div class="hp-stats-cap-value">${data.learned}<small>词</small></div>
+                        <div class="hp-stats-cap-label">已学单词</div>
+                    </div>
+                    <div class="hp-stats-cap">
+                        <div class="hp-stats-cap-icon target">${TASK_ICON_SVGS.target}</div>
+                        <div class="hp-stats-cap-value">${data.goalCurrent}<small>/${data.goalTotal}</small></div>
+                        <div class="hp-stats-cap-label">本周目标</div>
+                    </div>
                 </div>
-                <div class="hp-ss-item goal">
-                    <div class="hp-ss-icon">${TASK_ICON_SVGS.target}</div>
-                    <div class="hp-ss-label">本周目标</div>
-                    <div class="hp-ss-value">${data.goalCurrent} / ${data.goalTotal} 天</div>
-                    <div class="hp-ss-tip">${data.goalTip}</div>
-                </div>
+                <div class="hp-stats-footnote">${streakMsg}</div>
             </div>`;
     };
 
@@ -237,9 +426,21 @@
         return `
             <div class="hp-page">
                 ${renderHomeHeader(data.header)}
-                ${renderCourseTaskCard(data.courseTask)}
-                ${renderVocabularyProgressCard(data.vocabularyProgress)}
-                ${renderStudyStatsCard(data.studyStats)}
+                ${renderSprintProgressCard({
+                    ...data.courseTask,
+                    mascotAsset: data.courseTask.mascotAsset || HOME_ASSETS.mascot
+                })}
+                ${renderDailyGoal({
+                    newWords: data.courseTask.newWords,
+                    reviewWords: data.courseTask.reviewWords
+                })}
+                ${renderBookProgress(data.vocabularyProgress)}
+                ${renderStartTaskButton({
+                    dayLabel: `Day ${data.courseTask.currentDay}`,
+                    completed: data.courseTask.completed,
+                    newWords: data.courseTask.newWords,
+                    reviewWords: data.courseTask.reviewWords
+                })}
             </div>
             ${renderBottomNavigation(data.activeTab || 'home')}
         `;

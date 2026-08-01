@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>闪卡记忆</title>
-    <link rel="stylesheet" href="home-components.css?v=2.1">
+    <link rel="stylesheet" href="home-components.css?v=6.6">
     <style>
         :root {
             --primary: #58cc02;
@@ -162,7 +162,7 @@
             from { opacity: 0; transform: translateY(12px) scale(0.99); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .start-screen { text-align: center; padding: 16px 20px 24px; }
+        .start-screen { text-align: center; padding: 16px 0 24px; background: linear-gradient(180deg, #C8F0B4 0%, #FFFFFF 100%); }
         .logo {
             width: 128px;
             height: 128px;
@@ -4270,7 +4270,7 @@
         /* === 单词本页面 === */
         .wordbook-level-selector {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 8px;
             margin-bottom: 14px;
         }
@@ -4414,11 +4414,6 @@
                     <div class="level-icon"><img src="assets/icon-toefl.png" alt=""></div>
                     <div class="level-name">托福词汇</div>
                     <div class="level-desc">留学必备</div>
-                </div>
-                <div class="level-btn" data-level="gre" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
-                    <div class="level-icon"><img src="assets/icon-gre.png" alt=""></div>
-                    <div class="level-name">GRE词汇</div>
-                    <div class="level-desc">挑战高难</div>
                 </div>
             </div>
 
@@ -4816,18 +4811,16 @@
     <script src="data/cet4.js"></script>
     <script src="data/cet6.js"></script>
     <script src="data/toefl.js"></script>
-    <script src="data/gre.js"></script>
     <script src="data/kaoyan.js"></script>
     <script src="data/ielts.js"></script>
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
-    <script src="home-components.js?v=2.1"></script>
+    <script src="home-components.js?v=6.2"></script>
     <script>
         const wordDB = {
             cet4: window.CET4_WORDS || [],
             cet6: window.CET6_WORDS || [],
             toefl: window.TOEFL_WORDS || [],
-            gre: window.GRE_WORDS || [],
             kaoyan: window.KAOYAN_WORDS || [],
             ielts: window.IELTS_WORDS || []
         };
@@ -5833,7 +5826,7 @@
         function _renderFreeConfigHTML() {
             const books = LearningSystem.getAllBooksInfo();
             const bookCards = books.map(b => {
-                const iconMap = { cet4: 'assets/icon-cet4.png', cet6: 'assets/icon-cet6.png', toefl: 'assets/icon-toefl.png', gre: 'assets/icon-gre.png' };
+                const iconMap = { cet4: 'assets/icon-cet4.png', cet6: 'assets/icon-cet6.png', toefl: 'assets/icon-toefl.png' };
                 const iconSrc = iconMap[b.id] || 'assets/generated-icons/daily-words.png';
                 return `
                     <div class="onboard-book-card ${onboardState.bookId === b.id ? 'selected' : ''}"
@@ -7011,14 +7004,12 @@
                 { id: 'cet6', name: '六级', color: '#1CB0F6', icon: 'assets/progress/cet6-topper.png' },
                 { id: 'kaoyan', name: '考研', color: '#FFB020', icon: 'assets/progress/kaoyan-topper.png' },
                 { id: 'ielts', name: '雅思', color: '#8A5CF6', icon: 'assets/progress/ielts-topper.png' },
-                { id: 'toefl', name: '托福', color: '#FF6262', icon: 'assets/progress/toefl-topper.png' },
-                { id: 'gre', name: 'GRE', color: '#AEB5BC', icon: 'assets/progress/gre-topper.png' }
+                { id: 'toefl', name: '托福', color: '#FF6262', icon: 'assets/progress/toefl-topper.png' }
             ];
-            const vpItems = levelOrder.map(lvl => {
-                const lvlData = ladder[lvl.id];
-                const prog = lvlData ? (lvlData.core.total > 0 ? lvlData.core.learned / lvlData.core.total : 0) : 0;
-                return { ...lvl, progress: prog };
-            });
+
+
+            // 判断今日是否已完成（简化：如果新词和复习都为 0 但进度已到当天，认为已完成）
+            const completedToday = (newWords === 0 && reviewWords === 0 && currentDay > 1);
 
             return renderHomePage({
                 header: { brandName: '闪卡记忆', energy: 10 },
@@ -7029,34 +7020,158 @@
                     currentDay: currentDay,
                     totalDays: totalDays,
                     progress: progress,
-                    taskSummary: {
-                        newWords: newWords,
-                        reviewWords: reviewWords,
-                        estimatedMinutes: estimatedMinutes,
-                        rewardXp: rewardXp,
-                        giftAsset: 'assets/progress/gift-box.png'
-                    }
+                    newWords: newWords,
+                    reviewWords: reviewWords,
+                    estimatedMinutes: estimatedMinutes,
+                    rewardXp: rewardXp,
+                    completed: completedToday
                 },
-                vocabularyProgress: { title: '各词库进度', items: vpItems },
+                ciciSpeech: `还剩 ${Math.max(0, totalDays - currentDay)} 天，Cici 陪你一起冲！`,
+                vocabularyProgress: {
+                    title: '词汇金字塔',
+                    items: [
+                        { id: 'cet4', name: '四级', color: '#58CC02', learned: 2700, total: 4500, progress: 0.60 },
+                        { id: 'cet6', name: '六级', color: '#1CB0F6', learned: 2200, total: 5500, progress: 0.40 },
+                        { id: 'kaoyan', name: '考研', color: '#FFB020', learned: 1375, total: 5500, progress: 0.25 },
+                        { id: 'ielts', name: '雅思', color: '#8A5CF6', learned: 900, total: 6000, progress: 0.15 },
+                        { id: 'toefl', name: '托福', color: '#FF6262', learned: 500, total: 5000, progress: 0.10 }
+                    ]
+                },
                 studyStats: {
                     streak: stats.streakDays || 3,
-                    streakTip: '干得漂亮！',
                     learned: stats.totalLearned || 245,
-                    learnedTip: '继续保持！',
                     goalCurrent: stats.weeklyGoalCurrent || 2,
-                    goalTotal: stats.weeklyGoalTotal || 5,
-                    goalTip: '再接再厉！'
+                    goalTotal: stats.weeklyGoalTotal || 5
                 },
                 activeTab: 'home'
             });
         }
 
         // 新版首页交互回调
+        window.onPressEnergy = function() { SFX.click(); showToast('能量用于复习和提示', 'info'); };
+        window.onPressStar = function() { SFX.click(); showToast('收藏功能开发中', 'info'); };
         window.onHomeEnergyClick = function() { SFX.click(); showToast('能量用于复习和提示', 'info'); };
         window.onHomeAvatarClick = function() { SFX.click(); showToast('个人中心开发中', 'info'); };
+        window.onCiciClick = function() { SFX.click(); showToast('Cici：点击开始今日任务吧！', 'success'); };
+        window.onStartTaskClick = function() { SFX.click(); unlockAudio(); startV2TodayTask(); };
         window.onCourseTaskCardClick = function() { SFX.click(); enterPlanDetail(); };
         window.onProgressColumnClick = function(levelId) { SFX.click(); showToast(`${levelId} 进度互通中`, 'info'); };
+        window.onBookProgressClick = function(bookId) { SFX.click(); showToast(`${bookId} 词库详情开发中`, 'info'); };
+        window.onViewAllBooksClick = function() { SFX.click(); showToast('查看全部词库', 'info'); };
         window.onEnterMapClick = function(e) { if (e) e.stopPropagation(); SFX.click(); enterPlanDetail(); };
+
+        // 首页双页轮播控制（Cici 页 + 词汇金字塔页）
+        (function initHomeSlider() {
+            let currentIndex = 0;
+            let autoTimer = null;
+            let resumeTimer = null;
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let isDragging = false;
+
+            function getSlider() { return document.getElementById('hpHomeSlider'); }
+            function getTrack() { return document.getElementById('hpHomeSliderTrack'); }
+            function getDots() { return document.querySelectorAll('#hpHomeSliderDots .hp-slider-dot'); }
+
+            function goToSlide(index) {
+                const track = getTrack();
+                const dots = getDots();
+                const slider = getSlider();
+                if (!track || !slider) return;
+                currentIndex = Math.max(0, Math.min(1, index));
+                track.style.transform = `translateX(-${currentIndex * 50}%)`;
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+                pauseAuto();
+            }
+
+            function nextSlide() { goToSlide(currentIndex === 0 ? 1 : 0); }
+
+            function startAuto() {
+                stopAuto();
+                const slider = getSlider();
+                if (!slider) return;
+                const interval = parseInt(slider.dataset.auto || '3000', 10);
+                autoTimer = setInterval(nextSlide, interval);
+            }
+
+            function stopAuto() {
+                if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+                if (resumeTimer) { clearTimeout(resumeTimer); resumeTimer = null; }
+            }
+
+            function pauseAuto() {
+                if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+                if (resumeTimer) { clearTimeout(resumeTimer); }
+                resumeTimer = setTimeout(startAuto, 3000);
+            }
+
+            // 监听 DOM 渲染
+            const observer = new MutationObserver(function(mutations, obs) {
+                const slider = getSlider();
+                if (slider && !slider.dataset.sliderReady) {
+                    slider.dataset.sliderReady = '1';
+                    bindSliderEvents(slider);
+                    goToSlide(0);
+                    startAuto();
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+
+            function bindSliderEvents(slider) {
+                const track = getTrack();
+                if (!track) return;
+
+                track.addEventListener('touchstart', function(e) {
+                    const touch = e.touches[0];
+                    touchStartX = touch.clientX;
+                    touchStartY = touch.clientY;
+                    isDragging = true;
+                    pauseAuto();
+                }, { passive: true });
+
+                track.addEventListener('touchmove', function(e) {
+                    if (!isDragging) return;
+                    // 可在此添加实时拖动偏移
+                }, { passive: true });
+
+                track.addEventListener('touchend', function(e) {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    const touch = e.changedTouches[0];
+                    const dx = touch.clientX - touchStartX;
+                    const dy = touch.clientY - touchStartY;
+                    // 横向滑动超过 50px，且横向主导
+                    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+                        if (dx < 0 && currentIndex === 0) {
+                            goToSlide(1); // 左滑 → 词汇金字塔
+                        } else if (dx > 0 && currentIndex === 1) {
+                            goToSlide(0); // 右滑 → Cici
+                        }
+                    }
+                }, { passive: true });
+
+                // 点击指示点切换
+                const dots = getDots();
+                dots.forEach(dot => {
+                    dot.addEventListener('click', function() {
+                        const index = parseInt(this.dataset.index || '0', 10);
+                        goToSlide(index);
+                        pauseAuto();
+                    });
+                });
+
+                // 鼠标悬停暂停
+                slider.addEventListener('mouseenter', stopAuto);
+                slider.addEventListener('mouseleave', startAuto);
+            }
+
+            // 暴露全局方法供调试
+            window.homeSliderGo = goToSlide;
+            window.homeSliderPause = stopAuto;
+            window.homeSliderResume = startAuto;
+        })();
 
         // 安全获取今日队列 meta(避免 generateTodayQueue 报错)
         function _safeGetTodayMeta() {
@@ -9702,7 +9817,7 @@
         // === 单词本功能 ===
         let wordbookState = { level: 'cet4', sort: 'frequency', page: 0, pageSize: 200 };
 
-        const LEVEL_NAMES = { cet4: '四级', cet6: '六级', toefl: '托福', gre: 'GRE' };
+        const LEVEL_NAMES = { cet4: '四级', cet6: '六级', kaoyan: '考研', ielts: '雅思', toefl: '托福' };
 
         function renderWordbookScreen() {
             const selector = document.getElementById('wordbookLevelSelector');
