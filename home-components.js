@@ -137,14 +137,19 @@
             </div>`;
     };
 
-    // ===== HomeHeader 顶部导航栏（白色背景新版）=====
+    // ===== HomeHeader 顶部导航栏（品牌化新版）=====
     window.renderHomeHeader = function(data) {
         const logoHTML = imgOrPlaceholder(data.logoAsset || HOME_ASSETS.logo, 'hp-logo', 'Logo', TASK_ICON_SVGS.logo);
         return `
             <div class="hp-header">
                 <div class="hp-header-left">
-                    ${logoHTML}
-                    <span class="hp-brand-name">闪卡记忆</span>
+                    <div class="hp-logo-wrap">
+                        ${logoHTML}
+                    </div>
+                    <div class="hp-brand-text">
+                        <span class="hp-brand-name">闪卡记忆</span>
+                        <span class="hp-brand-subtitle">每日进步一点点</span>
+                    </div>
                 </div>
                 <div class="hp-header-right">
                     <button class="hp-energy-badge" onclick="onPressEnergy && onPressEnergy()" ontouchstart="unlockAudio && unlockAudio()" aria-label="能量 ${data.energy || 0}">
