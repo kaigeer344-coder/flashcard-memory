@@ -15,6 +15,18 @@
     --hp-purple: #8A5CF6;
     --hp-red: #FF6262;
     --hp-grey: #AEB5BC;
+
+    /* 今日目标卡片 */
+    --hp-dg-bg: #FDFDFD;
+    --hp-dg-shadow: 0 8px 24px rgba(34, 185, 24, 0.08);
+    --hp-dg-marker: #D6F58C;
+    --hp-dg-label-color: #7F838D;
+    --hp-dg-divider: rgba(0, 0, 0, 0.06);
+    --hp-dg-icon-new: linear-gradient(135deg, #FF7A8A 0%, #FF5B6E 100%);
+    --hp-dg-icon-review: linear-gradient(135deg, #A97BFF 0%, #8B5CF6 100%);
+    --hp-dg-btn-bg: linear-gradient(180deg, #58CC02 0%, #3EAA00 100%);
+    --hp-dg-btn-shadow: #2B7A00;
+    --hp-dg-ray: #FFD84D;
 }
 
 /* ===== 页面容器 ===== */
@@ -594,60 +606,81 @@
 
 /* ===== 4. DailyGoal 今日目标模块 ===== */
 .hp-daily-goal {
-    margin: 12px 16px 20px;
-    background: #FFFFFF;
-    border-radius: 24px;
-    padding: 16px;
+    margin: 14px 16px 22px;
+    background: var(--hp-dg-bg);
+    border-radius: 26px;
+    padding: 22px 20px 20px;
     box-sizing: border-box;
     text-align: left;
-    box-shadow: 0 6px 20px rgba(34, 185, 24, 0.10);
+    box-shadow: var(--hp-dg-shadow);
 }
 .hp-dg-title {
-    margin: 0 0 16px;
-    font-size: 18px;
-    font-weight: 600;
+    margin: 0 0 20px;
+    font-size: 20px;
+    font-weight: 800;
     color: #171A20;
     line-height: 1;
     text-align: left !important;
+    position: relative;
+    display: inline-block;
+}
+.hp-dg-title::after {
+    content: '';
+    position: absolute;
+    left: -4px;
+    right: -4px;
+    bottom: 1px;
+    height: 10px;
+    background: var(--hp-dg-marker);
+    border-radius: 999px;
+    z-index: -1;
+    opacity: 0.9;
 }
 .hp-dg-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: clamp(12px, 4vw, 32px);
+}
+.hp-dg-items {
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 3vw, 22px);
+    flex: 1;
+    min-width: 0;
 }
 .hp-dg-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     flex-shrink: 0;
 }
 .hp-dg-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: clamp(44px, 12vw, 52px);
+    height: clamp(44px, 12vw, 52px);
+    border-radius: 16px;
     display: grid;
     place-items: center;
-    font-size: 16px;
+    font-size: clamp(18px, 4.5vw, 22px);
     font-weight: 700;
     color: #fff;
     flex-shrink: 0;
 }
 .hp-dg-icon-new {
-    background: linear-gradient(135deg, #FF7A8A 0%, #FF5B6E 100%);
+    background: var(--hp-dg-icon-new);
 }
 .hp-dg-icon-review {
-    background: linear-gradient(135deg, #A97BFF 0%, #8B5CF6 100%);
+    background: var(--hp-dg-icon-review);
 }
 .hp-dg-info {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 5px;
 }
 .hp-dg-label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
-    color: #858995;
+    color: var(--hp-dg-label-color);
     line-height: 1;
 }
 .hp-dg-value {
@@ -657,32 +690,98 @@
     line-height: 1;
 }
 .hp-dg-value b {
-    font-size: 20px;
-    font-weight: 700;
+    font-size: clamp(22px, 5.5vw, 26px);
+    font-weight: 800;
     margin-right: 2px;
 }
+.hp-dg-divider {
+    width: 1px;
+    align-self: stretch;
+    min-height: 44px;
+    background: var(--hp-dg-divider);
+    flex-shrink: 0;
+    margin: 0 2px;
+}
 .hp-dg-start {
-    height: 44px;
+    height: clamp(48px, 13vw, 56px);
     border-radius: 999px;
-    padding: 0 18px;
-    background: linear-gradient(180deg, #58CC02 0%, #3EAA00 100%);
+    padding: 0 clamp(18px, 5vw, 28px);
+    background: var(--hp-dg-btn-bg);
     border: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     color: #fff;
-    font-size: 15px;
+    font-size: clamp(15px, 4vw, 17px);
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 0 4px 0 #2B7A00;
-    transition: transform 120ms ease, box-shadow 120ms ease;
+    box-shadow: 0 5px 0 var(--hp-dg-btn-shadow);
+    transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
     flex-shrink: 0;
+    position: relative;
 }
-.hp-dg-start svg { width: 20px; height: 20px; flex-shrink: 0; }
+.hp-dg-start svg { width: 22px; height: 22px; flex-shrink: 0; }
+.hp-dg-start:hover { filter: brightness(1.04); }
 .hp-dg-start:active {
-    transform: translateY(4px);
-    box-shadow: 0 1px 0 #2B7A00;
+    transform: translateY(5px);
+    box-shadow: 0 1px 0 var(--hp-dg-btn-shadow);
+}
+.hp-dg-start:focus-visible {
+    outline: 3px solid rgba(88, 204, 2, 0.45);
+    outline-offset: 3px;
+}
+.hp-dg-start::before,
+.hp-dg-start::after {
+    content: '';
+    position: absolute;
+    background: var(--hp-dg-ray);
+    border-radius: 999px;
+    display: none;
+}
+.hp-dg-start::before {
+    width: 10px;
+    height: 4px;
+    top: -8px;
+    right: -4px;
+    transform: rotate(25deg);
+}
+.hp-dg-start::after {
+    width: 7px;
+    height: 3px;
+    top: 2px;
+    right: -10px;
+    transform: rotate(45deg);
+    box-shadow: -10px 12px 0 -1px var(--hp-dg-ray);
+}
+@media (min-width: 420px) {
+    .hp-dg-divider { display: block; }
+    .hp-dg-start::before,
+    .hp-dg-start::after { display: block; }
+}
+@media (max-width: 390px) {
+    .hp-daily-goal { padding: 18px 16px; }
+    .hp-dg-title { font-size: 18px; margin-bottom: 16px; }
+    .hp-dg-content { flex-wrap: wrap; gap: 14px; }
+    .hp-dg-items { gap: 10px; flex: 1 1 auto; min-width: 0; }
+    .hp-dg-item { gap: 8px; }
+    .hp-dg-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        font-size: 17px;
+    }
+    .hp-dg-label { font-size: 12px; }
+    .hp-dg-value b { font-size: 20px; }
+    .hp-dg-start {
+        flex: 1 1 auto;
+        min-width: 120px;
+        height: 44px;
+        padding: 0 16px;
+        font-size: 15px;
+        gap: 6px;
+    }
+    .hp-dg-start svg { width: 18px; height: 18px; }
 }
 
 /* ===== 5. BookProgress 词库学习进度（阶梯形式） ===== */

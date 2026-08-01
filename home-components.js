@@ -222,18 +222,21 @@
             <div class="hp-daily-goal">
                 <h3 class="hp-dg-title">今日目标</h3>
                 <div class="hp-dg-content">
-                    <div class="hp-dg-item">
-                        <div class="hp-dg-icon hp-dg-icon-new">Aa</div>
-                        <div class="hp-dg-info">
-                            <span class="hp-dg-label">新词学习</span>
-                            <span class="hp-dg-value"><b>${newWords}</b> 个</span>
+                    <div class="hp-dg-items">
+                        <div class="hp-dg-item">
+                            <div class="hp-dg-icon hp-dg-icon-new">Aa</div>
+                            <div class="hp-dg-info">
+                                <span class="hp-dg-label">新词学习</span>
+                                <span class="hp-dg-value"><b>${newWords}</b> 个</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="hp-dg-item">
-                        <div class="hp-dg-icon hp-dg-icon-review">O</div>
-                        <div class="hp-dg-info">
-                            <span class="hp-dg-label">复习巩固</span>
-                            <span class="hp-dg-value"><b>${reviewWords}</b> 个</span>
+                        <div class="hp-dg-divider"></div>
+                        <div class="hp-dg-item">
+                            <div class="hp-dg-icon hp-dg-icon-review">O</div>
+                            <div class="hp-dg-info">
+                                <span class="hp-dg-label">复习巩固</span>
+                                <span class="hp-dg-value"><b>${reviewWords}</b> 个</span>
+                            </div>
                         </div>
                     </div>
                     <button class="hp-dg-start" onclick="onStartTaskClick && onStartTaskClick()" ontouchstart="unlockAudio && unlockAudio()" aria-label="开始学习">
