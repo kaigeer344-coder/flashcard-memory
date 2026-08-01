@@ -254,7 +254,7 @@
 
         const stepHTML = items.map((item, index) => {
             const pct = Math.round((item.progress || 0) * 100);
-            const stepHeight = Math.max(8, Math.round((item.progress || 0) * 90));
+            const stepHeight = Math.max(10, Math.round((item.progress || 0) * 120));
             const isLast = index === items.length - 1;
             return `
                 <div class="hp-lt-step" style="--step-color:${item.color};--step-height:${stepHeight}px" onclick="onBookProgressClick && onBookProgressClick('${item.id}')">
