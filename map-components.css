@@ -2,11 +2,11 @@
     --lp-bg-top: #E8E0F5;
     --lp-bg-bottom: #F5F0E8;
     --lp-header-height: 72px;
-    --lp-platform-w: 116px;
-    --lp-platform-h: 88px;
-    --lp-current-platform-w: 132px;
-    --lp-current-platform-h: 96px;
-    --lp-bubble-size: 42px;
+    --lp-platform-w: 148px;
+    --lp-platform-h: 108px;
+    --lp-current-platform-w: 168px;
+    --lp-current-platform-h: 122px;
+    --lp-bubble-size: 50px;
     --lp-color-current: #58CC02;
     --lp-color-completed: #58CC02;
     --lp-color-locked: #F49000;
@@ -15,14 +15,10 @@
 
 /* ===== 页面容器 ===== */
 .lp-page {
-    position: fixed;
+    position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    max-width: 520px;
-    margin: 0 auto;
-    left: 50%;
-    transform: translateX(-50%);
     overflow: hidden;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
     color: #3C3C3C;
@@ -320,7 +316,7 @@
     justify-content: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.16);
     z-index: 3;
-    border: 2px solid #FFFFFF;
+    border: 1px solid #000000;
     box-sizing: border-box;
 }
 
@@ -330,10 +326,24 @@
 }
 
 .lp-bubble-number {
-    background: #1A1A1A;
+    background: #000000;
     color: #FFFFFF;
     font-size: 16px;
     font-weight: 900;
+}
+
+/* 数字气泡下方的对话尖 */
+.lp-bubble-number::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-width: 6px 5px 0 5px;
+    border-style: solid;
+    border-color: #000000 transparent transparent transparent;
 }
 
 .lp-bubble-lock {
@@ -346,10 +356,10 @@
     color: #FFFFFF;
 }
 
-/* ===== 星级面板（嵌入平台内部，上移靠近气泡） ===== */
+/* ===== 星级面板（位于气泡小尖下方，1px 间距，不遮挡小尖） ===== */
 .lp-stars {
     position: absolute;
-    bottom: 30px;
+    top: calc(var(--lp-bubble-size) - 18px + 7px);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -361,7 +371,7 @@
     border-radius: 9px;
     background: rgba(255,255,255,0.92);
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    z-index: 3;
+    z-index: 2;
 }
 
 .lp-stars svg {
@@ -442,11 +452,11 @@
 /* ===== 响应式适配 ===== */
 @media (max-width: 360px) {
     :root {
-        --lp-platform-w: 104px;
-        --lp-platform-h: 78px;
-        --lp-current-platform-w: 116px;
-        --lp-current-platform-h: 84px;
-        --lp-bubble-size: 38px;
+        --lp-platform-w: 130px;
+        --lp-platform-h: 94px;
+        --lp-current-platform-w: 148px;
+        --lp-current-platform-h: 106px;
+        --lp-bubble-size: 44px;
     }
     .lp-title {
         font-size: 24px;
