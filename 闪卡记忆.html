@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>闪卡记忆</title>
-    <link rel="stylesheet" href="home-components.css?v=7.4">
+    <link rel="stylesheet" href="home-components.css?v=7.7">
     <style>
         :root {
             --primary: #58cc02;
@@ -2748,23 +2748,6 @@
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
 
-        .plan-section-title {
-            margin: 4px 18px 10px;
-            font-size: 14px;
-            font-weight: 900;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .plan-section-title::before {
-            content: '';
-            width: 4px;
-            height: 16px;
-            background: var(--primary);
-            border-radius: 2px;
-        }
-
         /* === LearningMap 学习地图组件(Duolingo 风格) === */
         .lm-card {
             margin: 14px 16px 20px;
@@ -3040,190 +3023,6 @@
             .lm-legend-dot { width: 10px; height: 10px; }
             .lm-legend-icon { width: 14px; height: 14px; }
             .lm-node-label { font-size: 10px; }
-        }
-
-        /* ===== TodayTaskCard 今日任务卡组件 ===== */
-        .ttc-card {
-            margin: 16px 16px 14px;
-            padding: 16px;
-            background: var(--surface);
-            border: 1.5px solid #c8e8b0;
-            border-radius: 18px;
-            box-shadow: 0 3px 8px rgba(88, 204, 2, 0.06);
-        }
-        /* 顶部标题区 */
-        .ttc-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-        .ttc-title-wrap {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-width: 0;
-        }
-        .ttc-star {
-            width: 22px;
-            height: 22px;
-            flex-shrink: 0;
-            color: var(--accent);
-            display: grid;
-            place-items: center;
-        }
-        .ttc-star svg { width: 100%; height: 100%; }
-        .ttc-title-text-wrap {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            min-width: 0;
-        }
-        .ttc-title {
-            font-size: 15px;
-            font-weight: 900;
-            color: var(--dark);
-            line-height: 1.1;
-        }
-        .ttc-subtitle {
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--primary);
-            font-variant-numeric: tabular-nums;
-            line-height: 1;
-        }
-        .ttc-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
-            background: #e8f7d8;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 800;
-            color: #3d8a00;
-            flex-shrink: 0;
-        }
-        .ttc-status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--primary);
-            box-shadow: 0 0 0 3px rgba(88, 204, 2, 0.18);
-        }
-        /* 中间数据区:三等宽卡片 */
-        .ttc-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .ttc-stat {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 8px;
-            background: #fafafa;
-            border: 1.5px solid var(--border);
-            border-radius: 12px;
-            min-width: 0;
-            overflow: hidden;
-        }
-        .ttc-stat-icon {
-            width: 22px;
-            height: 22px;
-            flex-shrink: 0;
-            display: grid;
-            place-items: center;
-        }
-        .ttc-stat-icon svg { width: 100%; height: 100%; }
-        .ttc-stat.is-new .ttc-stat-icon { color: var(--primary); }
-        .ttc-stat.is-review .ttc-stat-icon { color: var(--secondary); }
-        .ttc-stat.is-time .ttc-stat-icon { color: #ff9600; }
-        .ttc-stat-text {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            min-width: 0;
-        }
-        .ttc-stat-num {
-            font-size: 17px;
-            font-weight: 900;
-            color: var(--dark);
-            line-height: 1;
-            font-variant-numeric: tabular-nums;
-        }
-        .ttc-stat-label {
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--muted);
-            line-height: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        /* 底部奖励区 */
-        .ttc-reward {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 10px 12px;
-            background: #fff8e1;
-            border: 1.5px solid #ffe082;
-            border-radius: 12px;
-        }
-        .ttc-reward-left {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            min-width: 0;
-        }
-        .ttc-reward-badge {
-            width: 22px;
-            height: 22px;
-            flex-shrink: 0;
-            color: #ffb300;
-            display: grid;
-            place-items: center;
-        }
-        .ttc-reward-badge svg { width: 100%; height: 100%; }
-        .ttc-reward-text {
-            font-size: 13px;
-            font-weight: 700;
-            color: #5a4500;
-        }
-        .ttc-reward-xp {
-            color: #ff8c00;
-            font-weight: 900;
-            font-variant-numeric: tabular-nums;
-        }
-        .ttc-reward-img {
-            height: 32px;
-            width: auto;
-            max-width: 40px;
-            object-fit: contain;
-            flex-shrink: 0;
-        }
-        .ttc-reward-fallback {
-            width: 32px;
-            height: 32px;
-            display: grid;
-            place-items: center;
-            background: #ffe082;
-            border-radius: 8px;
-            color: #ff8c00;
-            flex-shrink: 0;
-        }
-        .ttc-reward-fallback svg { width: 18px; height: 18px; }
-        /* 窄屏适配(360px-380px):缩小图标和字号,保持一行不溢出 */
-        @media (max-width: 380px) {
-            .ttc-stat { padding: 8px 6px; gap: 6px; }
-            .ttc-stat-icon { width: 18px; height: 18px; }
-            .ttc-stat-num { font-size: 15px; }
-            .ttc-stat-label { font-size: 9px; }
-            .ttc-reward-img, .ttc-reward-fallback { height: 28px; width: 28px; }
         }
 
         .plan-action-bar {
@@ -4815,7 +4614,7 @@
     <script src="data/ielts.js"></script>
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
-    <script src="home-components.js?v=7.4"></script>
+    <script src="home-components.js?v=7.7"></script>
     <script>
         const wordDB = {
             cet4: window.CET4_WORDS || [],
@@ -7772,20 +7571,8 @@
                 </div>`;
 
             bodyEl.innerHTML = `
-                <div class="plan-section-title">学习地图</div>
                 ${mapHTML}
                 <div id="levelMapScrollAnchor" style="height:0"></div>
-
-                <div class="plan-section-title" style="margin-top:18px">今日任务</div>
-                ${renderTodayTaskCard({
-                    day: current,
-                    status: '进行中',
-                    newWords: newToday,
-                    reviewWords: reviewToday,
-                    estimatedMinutes: estMin,
-                    rewardXp: rewardXP,
-                    giftImg: 'assets/07_任务奖励礼盒_透明.png'
-                })}
 
                 <div class="plan-action-bar">
                     <button class="plan-action-primary" onclick="startFromPlanDetail()" ontouchstart="unlockAudio()">
