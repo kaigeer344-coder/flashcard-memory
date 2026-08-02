@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>闪卡记忆</title>
     <link rel="stylesheet" href="home-components.css?v=7.7">
-    <link rel="stylesheet" href="map-components.css?v=5.2">
+    <link rel="stylesheet" href="map-components.css?v=5.3">
     <style>
         :root {
             --primary: #58cc02;
@@ -4802,7 +4802,7 @@
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
-    <script src="map-components.js?v=5.2"></script>
+    <script src="map-components.js?v=5.3"></script>
     <script>
         const wordDB = {
             cet4: window.CET4_WORDS || [],
@@ -6956,19 +6956,24 @@
             const completed = [1, 2, 3, 4];
             const maxPathDay = 7;
 
-            // 之字形垂直排列：左右交替，数字小的在底部，数字大的在顶部
-            const step = 10;
-            const baseY = 18;
+            // 纵向斜向蛇形坐标（与 map-components.js getDefaultLevels 一致）
+            const coords = [
+                { x: 25, y: 90 },
+                { x: 69, y: 78 },
+                { x: 47, y: 63 },
+                { x: 18, y: 48 },
+                { x: 47, y: 32 },
+                { x: 18, y: 17 },
+                { x: 62, y: 5  }
+            ];
             const levels = [];
             for (let i = 1; i <= totalDays; i++) {
-                const isEven = i % 2 === 0;
-                const x = i === totalDays ? 50 : (isEven ? 72 : 28);
-                const y = baseY + (totalDays - i) * step;
+                const c = coords[i - 1] || { x: 50, y: 50 };
                 let status = 'locked';
                 if (completed.includes(i)) status = 'completed';
                 else if (i === currentDay) status = 'current';
                 const stars = completed.includes(i) ? 3 : 0;
-                levels.push({ day: i, status, stars, x, y, isFinal: i === totalDays });
+                levels.push({ day: i, status, stars, x: c.x, y: c.y, isFinal: i === totalDays });
             }
 
             root.innerHTML = renderLearningMapPage({
