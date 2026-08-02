@@ -63,13 +63,30 @@
         .game-header.hidden-on-detail { display: none; }
         .game-header {
             padding: 18px 20px;
-            background: var(--primary);
+            background: #FFFFFF;
             border: 0px solid #000000;
-            color: #ffffff;
+            color: var(--dark);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+        .game-header-back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--dark);
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: transform 120ms ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .game-header-back-btn:active { transform: scale(0.92); }
+        .game-header-back-btn svg { width: 22px; height: 22px; }
         .game-header h1 {
             display: flex;
             align-items: center;
@@ -88,8 +105,8 @@
             min-width: 68px;
             padding: 8px 10px;
             border-radius: 16px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.28);
+            background: #F3FCEB;
+            border: 2px solid var(--hp-border, #CDE8BC);
             font-size: 11px;
             font-weight: 800;
             text-align: center;
@@ -367,21 +384,55 @@
         .learning-screen h3 { color: var(--dark); font-size: 22px; font-weight: 1000; margin-bottom: 8px; }
         .learning-screen p { color: var(--muted); font-size: 15px; line-height: 1.55; margin-bottom: 12px; }
 
-        /* 队列信息（对话气泡样式） */
+        /* 顶部栏：返回按钮 + 进度条并排 */
+        .learning-top-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* 对话行：气泡左 + IP 右 */
+        .learning-chat-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* 队列信息（对话气泡样式，居左，尾巴朝右指向 IP） */
         .learning-queue-info {
+            flex: 1;
+            min-width: 0;
+            width: 300px;
+            height: 140px;
             display: block;
             text-align: left;
-            font-size: 26px;
+            font-size: 30px;
             font-weight: 1000;
             color: var(--dark);
             background: #ffffff;
             border: 2px solid #b7eaa0;
             border-radius: 24px;
+            border-bottom-right-radius: 6px;
             padding: 10px 16px;
-            margin-bottom: 15px;
             box-shadow: 0 3px 6px rgba(0,0,0,0.25);
             line-height: 1.4;
+            position: relative;
             animation: queueInfoEnter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        }
+        /* 气泡尾巴（右下角指向右侧 IP） */
+        .learning-queue-info::after {
+            content: "";
+            position: absolute;
+            right: -10px;
+            bottom: 10px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 6px 0 6px 10px;
+            border-color: transparent transparent transparent #ffffff;
+            filter: drop-shadow(2px 0 0 #b7eaa0);
         }
         @keyframes queueInfoEnter {
             0% { opacity: 0; transform: translateY(10px) scale(0.94); }
@@ -400,19 +451,19 @@
             background: var(--surface);
             color: var(--dark);
             cursor: pointer;
-            margin-bottom: 8px;
+            flex-shrink: 0;
             transition: transform 120ms ease;
             -webkit-tap-highlight-color: transparent;
         }
         .learning-back-btn:active { transform: scale(0.92); }
         .learning-back-btn svg { width: 22px; height: 22px; }
 
-        /* IP 形象行 */
+        /* IP 形象行（居右对齐） */
         .learning-mascot-row {
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
             align-items: flex-end;
-            margin-bottom: 15px;
+            flex-shrink: 0;
         }
         .learning-mascot-placeholder {
             width: 90px;
@@ -432,10 +483,12 @@
 
         /* 进度条 */
         .learning-progress {
+            flex: 1;
+            min-width: 0;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            margin: 8px 0 16px;
+            gap: 4px;
+            margin: 0;
         }
         .learning-progress-info {
             font-size: 13px;
@@ -476,14 +529,24 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        #familiarityIndicator { margin-bottom: 10px; min-height: 26px; }
+        /* 单词行：单词 + 熟悉度标签并排 */
+        .card-word-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+        #familiarityIndicator { flex-shrink: 0; }
         #familiarityIndicator span {
+            display: inline-block;
             border-radius: 999px;
-            padding: 5px 12px;
+            padding: 3px 10px;
             font-weight: 900;
             font-size: 11px;
             color: #ffffff;
             box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
+            white-space: nowrap;
         }
         .flashcard {
             min-height: 238px;
@@ -1408,6 +1471,21 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
+            position: relative;
+        }
+        /* 对话气泡尾巴（左下角指向 IP 形象） */
+        .game-hud-row-wrapper::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            bottom: 16px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 6px 10px 6px 0;
+            border-color: transparent #ffffff transparent transparent;
+            filter: drop-shadow(-2px 0 0 #b7eaa0);
+            z-index: 1;
         }
         .game-hud-row {
             display: flex;
@@ -4458,10 +4536,11 @@
     <audio id="silentAudio" preload="auto" src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQIAAAAAAA==" style="display:none"></audio>
     <div class="game-container">
         <div class="game-header" id="gameHeader">
-            <h1><img src="assets/generated-icons/app-logo.png" alt="">闪卡记忆</h1>
+            <button class="game-header-back-btn" onclick="goBackFromLearning()" aria-label="返回">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
             <div class="header-actions">
                 <div class="stat-item stat-new-words" id="headerNewWords"><img class="header-stat-icon" src="assets/generated-icons/daily-words.png" alt="">10</div>
-                <button class="header-settings-btn" onclick="switchTab('profile')" title="个人中心"><img src="assets/generated-icons/nav-profile.png" alt=""></button>
             </div>
         </div>
 
@@ -4522,18 +4601,24 @@
         </div>
 
         <div class="screen learning-screen" id="learningScreen">
-            <button class="learning-back-btn" onclick="goBackFromLearning()" aria-label="返回">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
-            <div class="learning-queue-info" id="learningQueueInfo"></div>
-            <div class="learning-progress" id="learningProgress"></div>
-            <div class="learning-mascot-row">
-                <img class="learning-mascot-placeholder" src="assets/ChatGPT Image 1png.png" alt="IP 形象" onerror="this.style.display='none'">
+            <div class="learning-top-bar">
+                <button class="learning-back-btn" onclick="goBackFromLearning()" aria-label="返回">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <div class="learning-progress" id="learningProgress"></div>
+            </div>
+            <div class="learning-chat-row">
+                <div class="learning-queue-info" id="learningQueueInfo"></div>
+                <div class="learning-mascot-row">
+                    <img class="learning-mascot-placeholder" src="assets/ChatGPT Image 1png.png" alt="IP 形象" onerror="this.style.display='none'">
+                </div>
             </div>
             <div id="learningReminder"></div>
-            <div id="familiarityIndicator"></div>
             <div class="flashcard" id="flashcard" onclick="flipCard()">
-                <div class="word" id="cardWord"></div>
+                <div class="card-word-row">
+                    <div class="word" id="cardWord"></div>
+                    <div id="familiarityIndicator"></div>
+                </div>
                 <div class="phonetic" id="cardPhonetic"></div>
                 <button class="pronounce-btn" onclick="event.stopPropagation(); pronounceWord(document.getElementById('cardWord').textContent)" title="听发音"><img class="ui-icon" src="assets/generated-icons/pronunciation.png" alt=""></button>
                 <div class="meaning" id="cardMeaning"></div>
@@ -4555,8 +4640,8 @@
                     <div class="game-round-info" id="gameRoundInfo"></div>
                     <div class="game-hud-row">
                         <div class="game-hud-item game-timer">
-                            <span class="hud-label">时间</span>
-                            <span class="hud-value" id="gameTimer">60</span>
+                            <span class="hud-label">第几组</span>
+                            <span class="hud-value" id="gameTimer">1</span>
                         </div>
                         <div class="game-hud-item game-score">
                             <span class="hud-label">得分</span>
@@ -9297,7 +9382,8 @@
             const comboHudEl = document.getElementById('gameCombo');
             const timerHudEl = document.querySelector('.game-timer');
 
-            timerEl.textContent = state.gameTimeLeft;
+            // 显示当前学习组数而非倒计时
+            timerEl.textContent = state.currentGroupIndex + 1;
             scoreEl.textContent = state.gameScore;
             comboHudEl.textContent = state.gameCombo;
 
@@ -9311,7 +9397,6 @@
             const pct = Math.max(0, (state.gameTimeLeft / state.gameMaxTime) * 100);
             timerBar.style.width = `${pct}%`;
             timerBar.classList.toggle('warning', state.gameTimeLeft <= 10);
-            timerHudEl.classList.toggle('danger', state.gameTimeLeft <= 10);
 
             const comboEl = document.querySelector('.game-combo');
             comboEl.classList.remove('active');
