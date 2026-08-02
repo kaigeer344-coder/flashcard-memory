@@ -21,16 +21,16 @@
         bolt: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>`
     };
 
-    // 默认关卡数据（纵向斜向蛇形：底部→顶部）
+    // 默认关卡数据（纵向斜向蛇形：底部→顶部，距离压缩至 2/3）
     window.getDefaultLevels = function() {
         return [
-            { day: 1, status: 'completed', stars: 3, x: 25, y: 90 },
-            { day: 2, status: 'completed', stars: 3, x: 69, y: 78 },
-            { day: 3, status: 'completed', stars: 3, x: 47, y: 63 },
-            { day: 4, status: 'completed', stars: 3, x: 18, y: 48 },
-            { day: 5, status: 'current',   stars: 0, x: 47, y: 32 },
-            { day: 6, status: 'locked',    stars: 0, x: 18, y: 17 },
-            { day: 7, status: 'locked',    stars: 0, x: 62, y: 5, isFinal: true }
+            { day: 1, status: 'completed', stars: 3, x: 30, y: 76 },
+            { day: 2, status: 'completed', stars: 3, x: 60, y: 68 },
+            { day: 3, status: 'completed', stars: 3, x: 45, y: 58 },
+            { day: 4, status: 'completed', stars: 3, x: 26, y: 48 },
+            { day: 5, status: 'current',   stars: 0, x: 45, y: 37 },
+            { day: 6, status: 'locked',    stars: 0, x: 26, y: 27 },
+            { day: 7, status: 'locked',    stars: 0, x: 55, y: 19, isFinal: true }
         ];
     };
 

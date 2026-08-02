@@ -346,10 +346,10 @@
     color: #FFFFFF;
 }
 
-/* ===== 星级面板（嵌入平台内部） ===== */
+/* ===== 星级面板（嵌入平台内部，上移靠近气泡） ===== */
 .lp-stars {
     position: absolute;
-    bottom: 14px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;

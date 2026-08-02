@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>闪卡记忆</title>
     <link rel="stylesheet" href="home-components.css?v=7.7">
-    <link rel="stylesheet" href="map-components.css?v=5.3">
+    <link rel="stylesheet" href="map-components.css?v=5.4">
     <style>
         :root {
             --primary: #58cc02;
@@ -6956,15 +6956,15 @@
             const completed = [1, 2, 3, 4];
             const maxPathDay = 7;
 
-            // 纵向斜向蛇形坐标（与 map-components.js getDefaultLevels 一致）
+            // 纵向斜向蛇形坐标（与 map-components.js getDefaultLevels 一致，距离压缩至 2/3）
             const coords = [
-                { x: 25, y: 90 },
-                { x: 69, y: 78 },
-                { x: 47, y: 63 },
-                { x: 18, y: 48 },
-                { x: 47, y: 32 },
-                { x: 18, y: 17 },
-                { x: 62, y: 5  }
+                { x: 30, y: 76 },
+                { x: 60, y: 68 },
+                { x: 45, y: 58 },
+                { x: 26, y: 48 },
+                { x: 45, y: 37 },
+                { x: 26, y: 27 },
+                { x: 55, y: 19 }
             ];
             const levels = [];
             for (let i = 1; i <= totalDays; i++) {
