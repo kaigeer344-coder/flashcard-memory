@@ -1,0 +1,43 @@
+[STEP] === Viewport iPhone14 390x844 DPR=3 ===
+[STEP] 1. Navigate to http://localhost:8080/闪卡记忆.html
+[error] Failed to load resource: the server responded with a status of 404 (File not found)
+[STEP] 2. Clear cache & unregister Service Workers
+[CONSOLE] caches => deleted 0 cache(s)
+[CONSOLE] service workers => unregistered 0 service worker(s)
+[STEP] 3. Force reload (Cmd+Shift+R)
+[warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[error] Failed to load resource: the server responded with a status of 404 (File not found)
+[STEP] 4. Pre-check showLearningMap
+[ASSERT] showLearningMap is function => true
+[ASSERT] learningMapScreen exists => true
+[STEP] 5. Execute showLearningMap()
+[STEP] 6. Take screenshots
+[INFO] Viewport screenshot: /Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_390x844.png
+[INFO] Full-page screenshot: /Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_390x844_full.png
+[STEP] 7. Collect layout info
+[INFO] Viewport: 390x844
+[INFO] Scroll: top=0.0 clientHeight=772 scrollHeight=924
+[INFO] Nodes: 7, Path segments: 6
+[STEP] 8. Node layout (bottom -> top)
+[NODE] Day 1 pct=(25%, 90%) center=(105.5, 787.5) size=116.0x88.0 platform=116.0x88.0 side=LEFT inViewport=true coordOk=✅
+[NODE] Day 2 pct=(69%, 78%) center=(263.0, 693.2) size=116.0x88.0 platform=116.0x88.0 side=RIGHT inViewport=true coordOk=✅
+[NODE] Day 3 pct=(47%, 63%) center=(184.3, 575.3) size=116.0x88.0 platform=116.0x88.0 side=CENTER inViewport=true coordOk=✅
+[NODE] Day 4 pct=(18%, 48%) center=(80.4, 457.3) size=116.0x88.0 platform=116.0x88.0 side=LEFT inViewport=true coordOk=✅
+[NODE] Day 5 pct=(47%, 32%) center=(184.3, 331.4) size=132.0x96.0 platform=132.0x96.0 side=CENTER inViewport=true coordOk=✅
+[NODE] Day 6 pct=(18%, 17%) center=(80.4, 213.6) size=116.0x88.0 platform=116.0x88.0 side=LEFT inViewport=true coordOk=✅
+[NODE] 最终目标 pct=(62%, 5%) center=(238.0, 119.3) size=116.0x88.0 platform=116.0x88.0 side=RIGHT inViewport=true coordOk=✅
+[INFO] Zigzag bottom->top: L -> R -> C -> L -> C -> L -> R (expected L->R->M->L->M->L->R)
+[STEP] 9. Current Day 5 visibility
+[CURRENT] Day 5 rect=[118.3, 283.4, 250.3, 379.4] inViewport=true
+[STEP] 10. Overlap checks
+[OVERLAP] ✅ No node-node overlap
+[OVERLAP] ✅ No path-bubble overlap
+[STEP] 11. Path segments summary
+[PATH] Count=6, avgWidth=70.51px, avgHeight=65.17px
+[PATH] Fills=none, Strokes=rgb(88, 204, 2); rgba(255, 255, 255, 0.75); rgba(255, 255, 255, 0.55)
+[PATH] Expected: 6 node-to-node connections (segments may be dashed)

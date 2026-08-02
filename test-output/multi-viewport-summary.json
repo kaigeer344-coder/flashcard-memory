@@ -1,0 +1,58 @@
+[
+  {
+    "name": "iPhone14",
+    "width": 390,
+    "height": 844,
+    "viewportPath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_390x844.png",
+    "fullPagePath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_390x844_full.png",
+    "logPath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_390x844.log",
+    "nodeCount": 7,
+    "pathCount": 6,
+    "currentInViewport": true,
+    "zigzag": "L -> R -> C -> L -> C -> L -> R",
+    "nodeOverlap": false,
+    "pathBubbleOverlap": false
+  },
+  {
+    "name": "iPhone13mini",
+    "width": 375,
+    "height": 812,
+    "viewportPath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_375x812.png",
+    "fullPagePath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_375x812_full.png",
+    "logPath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_375x812.log",
+    "nodeCount": 7,
+    "pathCount": 6,
+    "currentInViewport": true,
+    "zigzag": "L -> R -> C -> L -> C -> L -> R",
+    "nodeOverlap": false,
+    "pathBubbleOverlap": false
+  },
+  {
+    "name": "iPhone11ProMax",
+    "width": 414,
+    "height": 896,
+    "viewportPath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_414x896.png",
+    "fullPagePath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_414x896_full.png",
+    "logPath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_414x896.log",
+    "nodeCount": 7,
+    "pathCount": 6,
+    "currentInViewport": true,
+    "zigzag": "L -> R -> C -> L -> C -> L -> R",
+    "nodeOverlap": false,
+    "pathBubbleOverlap": false
+  },
+  {
+    "name": "Android360",
+    "width": 360,
+    "height": 800,
+    "viewportPath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_360x800.png",
+    "fullPagePath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_360x800_full.png",
+    "logPath": "/Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/learning_map_360x800.log",
+    "nodeCount": 7,
+    "pathCount": 6,
+    "currentInViewport": true,
+    "zigzag": "L -> R -> C -> L -> C -> L -> R",
+    "nodeOverlap": false,
+    "pathBubbleOverlap": false
+  }
+]
