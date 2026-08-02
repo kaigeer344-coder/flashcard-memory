@@ -383,7 +383,7 @@
         .learning-screen {
             text-align: center;
             min-height: 100dvh;
-            background: #E8F8E0;
+            background: linear-gradient(180deg, rgba(200, 240, 180, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%);
             padding: 24px 20px 28px;
         }
         .learning-screen.active { display: flex; flex-direction: column; }
@@ -436,7 +436,7 @@
         }
         .learning-progress-track {
             width: 100%;
-            height: 10px;
+            height: 25px;
             background: #e5e5e5;
             border-radius: 999px;
             overflow: hidden;
@@ -449,74 +449,72 @@
             transition: width 300ms ease;
         }
 
-        /* 对话行：气泡左 + IP 右 */
+        /* 对话行：左侧大卡片 + 右侧 IP */
         .learning-chat-row {
             display: flex;
             align-items: flex-end;
             justify-content: space-between;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 20px;
         }
 
-        /* 队列信息（对话气泡样式，居左，尾巴朝右指向 IP） */
+        /* 问候卡片（复刻参考图：白底大圆角卡片） */
         .learning-queue-info {
             flex: 1;
             min-width: 0;
-            max-width: 260px;
-            width: auto;
+            width: 362px;
             height: auto;
-            min-height: 90px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            min-height: 110px;
+            display: block;
             text-align: left;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
-            color: var(--dark);
+            color: #2d2d2d;
             background: #ffffff;
             border: none;
-            border-radius: 24px;
-            border-bottom-right-radius: 6px;
-            padding: 14px 18px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            line-height: 1.5;
+            border-radius: 28px;
+            padding: 20px 22px;
+            box-shadow: none;
+            line-height: 1.55;
             position: relative;
+            overflow: hidden;
             animation: queueInfoEnter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        }
+        /* 左下角淡绿色装饰弧线 */
+        .learning-queue-info::before {
+            content: "";
+            position: absolute;
+            pointer-events: none;
+            left: -30px;
+            bottom: -40px;
+            width: 110px;
+            height: 90px;
+            background: radial-gradient(ellipse at center, rgba(88,204,2,0.18) 0%, transparent 70%);
+            transform: rotate(-20deg);
+            border-radius: 50%;
         }
         .learning-queue-info .queue-highlight {
             color: var(--primary);
             font-weight: 1000;
+            font-size: 1.18em;
         }
-        /* 气泡尾巴（右下角指向右侧 IP） */
-        .learning-queue-info::after {
-            content: "";
-            position: absolute;
-            right: -10px;
-            bottom: 14px;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 7px 0 7px 11px;
-            border-color: transparent transparent transparent #ffffff;
-            z-index: 1;
-        }
-        @keyframes queueInfoEnter {
-            0% { opacity: 0; transform: translateY(10px) scale(0.94); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* IP 形象行（居右对齐） */
+        /* IP 形象行（居右对齐，底部与卡片底对齐） */
         .learning-mascot-row {
             display: flex;
             justify-content: flex-end;
             align-items: flex-end;
             flex-shrink: 0;
+            margin-left: -16px;
+            margin-bottom: -8px;
+            position: relative;
+            z-index: 2;
         }
         .learning-mascot-placeholder {
-            width: 100px;
-            height: 120px;
+            width: 110px;
+            height: 140px;
             object-fit: contain;
             display: block;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08));
         }
 
         /* 翻转提示 */
@@ -527,9 +525,17 @@
             color: var(--muted);
             margin-top: 8px;
         }
+        .flip-hint-card {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--muted);
+            margin-top: 5px;
+            line-height: 1.2;
+        }
 
         /* 未记住提示 */
-        #learningReminder { min-height: 28px; margin-bottom: 8px; }
+        #learningReminder { min-height: 15px; margin-bottom: 8px; }
         .reminder-badge {
             display: inline-block;
             padding: 5px 12px;
@@ -566,12 +572,12 @@
         }
         .flashcard {
             min-height: 280px;
-            height: 380px;
+            height: 480px;
             padding: 34px 22px 38px;
             border: none;
             border-radius: 28px;
             background: #ffffff;
-            box-shadow: 0 12px 0 #e5e5e5, 0 8px 24px rgba(0,0,0,0.06);
+            box-shadow: none;
             margin-bottom: 18px;
             display: flex;
             flex-direction: column;
@@ -1455,25 +1461,28 @@
         }
         .game-screen.active { display: flex; }
         .game-hud {
-            background: #ffffff;
-            border: 2px solid #b7eaa0;
-            border-radius: 24px;
-            padding: 14px 16px 16px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.25);
-            margin-bottom: 15px;
-            width: 300px;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
+            margin-bottom: 16px;
+            width: 100%;
             text-align: left;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            align-items: flex-end;
+            gap: 0;
         }
         .game-hud-mascot {
-            width: 124px;
-            height: 124px;
+            width: 110px;
+            height: 130px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-right: -10px;
+            position: relative;
+            z-index: 2;
         }
         .game-hud-mascot img {
             width: 100%;
@@ -1486,28 +1495,33 @@
             min-width: 0;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
+            justify-content: center;
             position: relative;
+            background: #ffffff;
+            border: 2px solid #b7eaa0;
+            border-radius: 24px;
+            padding: 14px 16px 14px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.06);
         }
-        /* 对话气泡尾巴（左下角指向 IP 形象） */
+        /* 对话气泡尾巴（左侧指向 IP 形象） */
         .game-hud-row-wrapper::before {
             content: "";
             position: absolute;
             left: -10px;
-            bottom: 16px;
+            bottom: 22px;
             width: 0;
             height: 0;
             border-style: solid;
-            border-width: 6px 10px 6px 0;
+            border-width: 7px 10px 7px 0;
             border-color: transparent #ffffff transparent transparent;
             filter: drop-shadow(-2px 0 0 #b7eaa0);
             z-index: 1;
         }
         .game-hud-row {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .game-round-info {
             text-align: center;
@@ -1520,47 +1534,64 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
-            min-width: 64px;
+            gap: 4px;
+            min-width: 60px;
+            padding: 0 8px;
+            position: relative;
+        }
+        .game-hud-item:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 10%;
+            height: 80%;
+            width: 1px;
+            background: #e8e8e8;
         }
         .hud-label {
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 800;
             color: var(--muted);
-            text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .hud-value {
-            font-size: 28px;
+            font-size: 36px;
             font-weight: 1000;
-            color: var(--dark);
-            line-height: 1.1;
+            line-height: 1;
         }
-        .game-timer .hud-value { color: var(--secondary-dark); }
-        .game-score .hud-value { color: var(--primary); }
-        .game-combo .hud-value { color: var(--accent); }
+        .game-timer .hud-value { color: #1cb0f6; }
+        .game-score .hud-value { color: #58cc02; }
+        .game-combo .hud-value { color: #ffc800; }
         .game-combo.active .hud-value { animation: comboPop 260ms ease; }
         @keyframes comboPop {
             0% { transform: scale(1); }
             50% { transform: scale(1.35); }
             100% { transform: scale(1); }
         }
+        .game-hud-divider {
+            width: 100%;
+            height: 0;
+            border-top: 2px dashed #e0e0e0;
+            margin: 2px 0 10px;
+        }
+        .game-hud-hint {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #7cb342;
+        }
+        .game-hud-hint svg {
+            width: 16px;
+            height: 16px;
+            fill: #ffc800;
+            flex-shrink: 0;
+        }
         .timer-bar-track {
-            width: 100%;
-            height: 8px;
-            background: #e5e5e5;
-            border-radius: 999px;
-            overflow: hidden;
-            border: 1px solid #d8d8d8;
+            display: none;
         }
-        .timer-bar-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 999px;
-            transition: width 1s linear;
-        }
-        .timer-bar-fill.warning { background: linear-gradient(90deg, var(--accent), var(--danger)); }
         .game-timer.danger .hud-value { color: var(--danger); animation: timerPulse 1s ease-in-out infinite; }
         @keyframes timerPulse {
             0%, 100% { transform: scale(1); }
@@ -4629,7 +4660,6 @@
                     <img class="learning-mascot-placeholder" src="assets/ChatGPT Image 1png.png" alt="IP 形象" onerror="this.style.display='none'">
                 </div>
             </div>
-            <div id="learningReminder"></div>
             <div class="flashcard" id="flashcard" onclick="flipCard()">
                 <div class="card-word-row">
                     <div class="word" id="cardWord"></div>
@@ -4637,6 +4667,7 @@
                 </div>
                 <div class="phonetic" id="cardPhonetic"></div>
                 <button class="pronounce-btn" onclick="event.stopPropagation(); pronounceWord(document.getElementById('cardWord').textContent)" title="听发音"><img class="ui-icon" src="assets/generated-icons/pronunciation.png" alt=""></button>
+                <div class="flip-hint-card">点击翻转查看释义</div>
                 <div class="meaning" id="cardMeaning"></div>
             </div>
             <div class="learning-btns">
@@ -4644,7 +4675,6 @@
                 <button class="btn-fuzzy" onclick="markWord('fuzzy')">模糊</button>
                 <button class="btn-know" onclick="markWord('known')">认识</button>
             </div>
-            <div class="flip-hint">点击翻转查看释义</div>
         </div>
 
         <div class="screen game-screen" id="gameScreen">
@@ -4656,8 +4686,8 @@
                     <div class="game-round-info" id="gameRoundInfo"></div>
                     <div class="game-hud-row">
                         <div class="game-hud-item game-timer">
-                            <span class="hud-label">第几组</span>
-                            <span class="hud-value" id="gameTimer">1</span>
+                            <span class="hud-label">时间</span>
+                            <span class="hud-value" id="gameTimer">60</span>
                         </div>
                         <div class="game-hud-item game-score">
                             <span class="hud-label">得分</span>
@@ -4667,6 +4697,11 @@
                             <span class="hud-label">连击</span>
                             <span class="hud-value" id="gameCombo">0</span>
                         </div>
+                    </div>
+                    <div class="game-hud-divider"></div>
+                    <div class="game-hud-hint">
+                        <svg viewBox="0 0 24 24" fill="#ffc800"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        继续加油，将中文和英文配对就可以啦
                     </div>
                     <div class="timer-bar-track">
                         <div class="timer-bar-fill" id="timerBar"></div>
@@ -9398,8 +9433,8 @@
             const comboHudEl = document.getElementById('gameCombo');
             const timerHudEl = document.querySelector('.game-timer');
 
-            // 显示当前学习组数而非倒计时
-            timerEl.textContent = state.currentGroupIndex + 1;
+            // 显示倒计时（与参考图保持一致）
+            timerEl.textContent = state.gameTimeLeft;
             scoreEl.textContent = state.gameScore;
             comboHudEl.textContent = state.gameCombo;
 
