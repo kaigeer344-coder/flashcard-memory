@@ -3027,9 +3027,10 @@
 
         .plan-action-bar {
             position: fixed;
-            left: 0;
-            right: 0;
+            left: 50%;
+            right: auto;
             bottom: 0;
+            transform: translateX(-50%);
             padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px));
             background: var(--bg);
             border-top: 2px solid var(--border);
@@ -3038,7 +3039,7 @@
             align-items: center;
             box-sizing: border-box;
             width: 100%;
-            max-width: 100vw;
+            max-width: 520px;
             z-index: 20;
         }
         .plan-action-primary {
