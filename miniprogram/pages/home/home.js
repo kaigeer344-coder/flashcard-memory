@@ -9,8 +9,7 @@ Page({
     levels: [
       { id: 'cet4',  name: '四级词汇', desc: '基础必备', icon: '📘', vipOnly: false },
       { id: 'cet6',  name: '六级词汇', desc: '进阶提升', icon: '📗', vipOnly: false },
-      { id: 'toefl', name: '托福词汇', desc: '留学必备', icon: '📕', vipOnly: true  },
-      { id: 'gre',   name: 'GRE词汇',  desc: '挑战高难', icon: '📙', vipOnly: true  }
+      { id: 'toefl', name: '托福词汇', desc: '留学必备', icon: '📕', vipOnly: true  }
     ],
     selectedLevel: 'cet4',
     dailyNewWords: 10,

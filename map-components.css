@@ -1,0 +1,463 @@
+:root {
+    --lp-bg-top: #E8E0F5;
+    --lp-bg-bottom: #F5F0E8;
+    --lp-header-height: 72px;
+    --lp-platform-w: 116px;
+    --lp-platform-h: 88px;
+    --lp-current-platform-w: 132px;
+    --lp-current-platform-h: 96px;
+    --lp-bubble-size: 42px;
+    --lp-color-current: #58CC02;
+    --lp-color-completed: #58CC02;
+    --lp-color-locked: #F49000;
+    --lp-color-final: #FFD900;
+}
+
+/* ===== 页面容器 ===== */
+.lp-page {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    left: 50%;
+    transform: translateX(-50%);
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #3C3C3C;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 地图背景层 ===== */
+.lp-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.lp-bg img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    z-index: 1;
+}
+
+.lp-bg-fallback {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+        radial-gradient(ellipse 120% 60% at 50% 25%, rgba(255,255,255,0.32) 0%, transparent 55%),
+        linear-gradient(180deg, var(--lp-bg-top) 0%, var(--lp-bg-bottom) 100%);
+}
+
+.lp-bg-fallback::after {
+    content: "地图背景占位";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(90, 80, 120, 0.22);
+    letter-spacing: 2px;
+}
+
+/* ===== 覆盖层 ===== */
+.lp-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== 顶部信息 ===== */
+.lp-header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--lp-header-height);
+    padding: 10px 16px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.lp-back-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    border: none;
+    background: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4B4B4B;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    flex-shrink: 0;
+}
+
+.lp-back-btn:active {
+    transform: scale(0.94);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.lp-back-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.lp-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 27px;
+    font-weight: 800;
+    color: #1F1F1F;
+    letter-spacing: 0.5px;
+}
+
+.lp-progress {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 50px;
+    padding: 0 18px;
+    border-radius: 25px;
+    background: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    font-size: 15px;
+    font-weight: 800;
+    color: #FFB800;
+    flex-shrink: 0;
+}
+
+.lp-progress svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ===== 可滚动地图区域 ===== */
+.lp-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 16px 130px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.lp-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* ===== 关卡舞台 ===== */
+.lp-stage {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+}
+
+/* ===== 路线虚线 ===== */
+.lp-paths {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.lp-path {
+    fill: none;
+    stroke: rgba(255,255,255,0.75);
+    stroke-width: 5;
+    stroke-dasharray: 10 8;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.lp-path-completed {
+    stroke: #58CC02;
+    stroke-opacity: 1;
+}
+
+.lp-path-future {
+    stroke: rgba(255,255,255,0.75);
+}
+
+.lp-path-locked {
+    stroke: rgba(255,255,255,0.55);
+}
+
+/* ===== 关卡节点 ===== */
+.lp-node {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: var(--lp-platform-w);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.lp-node-current {
+    width: var(--lp-current-platform-w);
+    animation: lp-node-float 2.6s ease-in-out infinite;
+}
+
+@keyframes lp-node-float {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+    50% { transform: translate(-50%, -50%) translateY(-4px); }
+}
+
+.lp-node:active {
+    transform: translate(-50%, -50%) scale(0.96);
+}
+
+/* ===== 当前标记 ===== */
+.lp-current-marker {
+    position: absolute;
+    top: -52px;
+    padding: 3px 10px;
+    border-radius: 10px;
+    background: #58CC02;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 2px 4px rgba(88,204,2,0.25);
+    white-space: nowrap;
+}
+
+.lp-current-marker::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -4px;
+    transform: translateX(-50%);
+    border-width: 4px 4px 0;
+    border-style: solid;
+    border-color: #58CC02 transparent transparent transparent;
+}
+
+/* ===== 平台占位 ===== */
+.lp-platform {
+    position: relative;
+    width: var(--lp-platform-w);
+    height: var(--lp-platform-h);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+}
+
+.lp-platform-current {
+    width: var(--lp-current-platform-w);
+    height: var(--lp-current-platform-h);
+    background: transparent;
+    border-radius: 0;
+}
+
+.lp-platform-completed {
+    width: var(--lp-platform-w);
+    height: var(--lp-platform-h);
+    background: transparent;
+    border-radius: 0;
+}
+
+.lp-platform-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 150%;
+    object-fit: contain;
+    display: block;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    pointer-events: none;
+}
+
+.lp-platform-locked {
+    background: transparent;
+    border-radius: 0;
+}
+
+.lp-platform-final {
+    background: linear-gradient(180deg, #FFEA61 0%, #FFD900 100%);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    filter: drop-shadow(0 4px 0 #D4A017) drop-shadow(0 4px 6px rgba(255,217,0,0.2));
+}
+
+/* ===== 气泡（平台上方居中） ===== */
+.lp-bubble {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--lp-bubble-size);
+    height: var(--lp-bubble-size);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.16);
+    z-index: 3;
+    border: 2px solid #FFFFFF;
+    box-sizing: border-box;
+}
+
+.lp-bubble svg {
+    width: 20px;
+    height: 20px;
+}
+
+.lp-bubble-number {
+    background: #1A1A1A;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.lp-bubble-lock {
+    background: #1A1A1A;
+    color: #FFFFFF;
+}
+
+.lp-bubble-trophy {
+    background: #1A1A1A;
+    color: #FFFFFF;
+}
+
+/* ===== 星级面板（嵌入平台内部） ===== */
+.lp-stars {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    height: 18px;
+    padding: 0 8px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.92);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    z-index: 3;
+}
+
+.lp-stars svg {
+    width: 11px;
+    height: 11px;
+    color: #FFB800;
+}
+
+/* ===== 装饰预留区域 ===== */
+.lp-decorations {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.lp-decoration-placeholder {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.35);
+    border: 2px dashed rgba(120,110,160,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: rgba(120,110,160,0.45);
+    transform: translate(-50%, -50%);
+}
+
+/* ===== 底部开始按钮 ===== */
+.lp-start-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+    box-sizing: border-box;
+    background: linear-gradient(180deg, transparent 0%, rgba(245,240,232,0.9) 25%, rgba(245,240,232,1) 55%);
+    display: flex;
+    justify-content: center;
+}
+
+.lp-start-btn {
+    width: 70%;
+    max-width: 340px;
+    height: 64px;
+    border-radius: 32px;
+    border: none;
+    border-bottom: 3px solid #389E0D;
+    background: linear-gradient(180deg, #89E219 0%, #58CC02 100%);
+    color: #FFFFFF;
+    font-size: 18px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(88,204,2,0.22);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.lp-start-btn:active {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+    box-shadow: 0 3px 8px rgba(88,204,2,0.2);
+}
+
+.lp-start-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* ===== 响应式适配 ===== */
+@media (max-width: 360px) {
+    :root {
+        --lp-platform-w: 104px;
+        --lp-platform-h: 78px;
+        --lp-current-platform-w: 116px;
+        --lp-current-platform-h: 84px;
+        --lp-bubble-size: 38px;
+    }
+    .lp-title {
+        font-size: 24px;
+    }
+    .lp-progress {
+        font-size: 13px;
+        padding: 0 14px;
+        height: 42px;
+    }
+    .lp-back-btn {
+        width: 50px;
+        height: 50px;
+    }
+}

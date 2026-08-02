@@ -13,7 +13,7 @@ const VIP_PLANS = {
 };
 
 const FREE_LEVELS = ['cet4', 'cet6'];
-const VIP_LEVELS = ['toefl', 'gre'];
+const VIP_LEVELS = ['toefl'];
 const FREE_DAILY_MAX = 20;
 const VIP_DAILY_MAX = 50;
 

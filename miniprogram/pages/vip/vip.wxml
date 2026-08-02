@@ -12,7 +12,7 @@
   </view>
   <view class="section-title">会员权益</view>
   <view class="card benefits-card">
-    <view class="benefit-row"><text>词库范围</text><text class="benefit-val">托福 / GRE 全解锁</text></view>
+    <view class="benefit-row"><text>词库范围</text><text class="benefit-val">托福全解锁</text></view>
     <view class="benefit-row"><text>每日新词</text><text class="benefit-val">50 个/天</text></view>
     <view class="benefit-row"><text>连连看道具</text><text class="benefit-val">无限使用</text></view>
     <view class="benefit-row"><text>学习统计</text><text class="benefit-val">完整数据</text></view>

@@ -1,0 +1,26 @@
+[STEP] 1. 导航到 http://localhost:8080/闪卡记忆.html
+[error] Failed to load resource: the server responded with a status of 404 (File not found)
+[STEP] 2. 清除缓存并注销 Service Worker
+[CONSOLE] caches.keys().then(ks => ks.forEach(k => caches.delete(k))) => 已删除 0 个 cache(s)
+[CONSOLE] navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())) => 已注销 0 个 service worker(s)
+[STEP] 3. 强制刷新页面（Cmd+Shift+R）
+[warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[warning] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio
+[error] Failed to load resource: the server responded with a status of 404 (File not found)
+[STEP] 4. 确认 showLearningMap 与 learningMapScreen
+[ASSERT] typeof showLearningMap === 'function' => true
+[ASSERT] document.getElementById('learningMapScreen') !== null => true
+[STEP] 5. 执行 showLearningMap()
+[STEP] 6. 截图
+[INFO] 截图已保存: /Users/adminmima0000/Desktop/trae比赛项目/trae/test-output/verify-independent-map.png
+[VALIDATE] 顶部标题: "学习地图"
+[VALIDATE] 返回按钮存在: true
+[VALIDATE] 星星进度存在: true (12 / 21)
+[VALIDATE] 开始学习按钮: "开始学习"
+[VALIDATE] 当前关卡标签: "Day 5"
+[VALIDATE] learningMapScreen 为 active: true
+[VALIDATE] 不应存在计划详情子标题: true (检测到=false)
+[VALIDATE] 不应有规则说明按钮: true (检测到=false)
+[VALIDATE] 不应有"今天"按钮: true (检测到=false)
+[RESULT] ✅ 独立学习地图页面验证通过

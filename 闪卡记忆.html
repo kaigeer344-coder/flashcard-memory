@@ -8,6 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>闪卡记忆</title>
     <link rel="stylesheet" href="home-components.css?v=7.7">
+    <link rel="stylesheet" href="map-components.css?v=5.2">
     <style>
         :root {
             --primary: #58cc02;
@@ -2531,7 +2532,11 @@
         /* ===== V2.0 计划详情页(关卡地图) apple-design 审查落地 ===== */
         .plan-detail-screen {
             padding: 0 0 88px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            max-height: 100vh;
         }
+        .plan-detail-screen::-webkit-scrollbar { display: none; }
         .plan-detail-bar {
             position: sticky;
             top: 0;
@@ -3109,6 +3114,178 @@
             border: 0;
             box-shadow: 0 4px 0 var(--primary-dark);
             cursor: pointer;
+        }
+
+        /* ===== V2.1 学习地图单列居中布局(参考图风格) ===== */
+        .v2lm-card {
+            margin: 14px 16px 20px;
+            background: #fff;
+            border-radius: 28px;
+            box-shadow: 0 8px 0 #e5e5e5;
+            overflow: hidden;
+        }
+        .v2lm-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px 10px;
+        }
+        .v2lm-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--dark);
+        }
+        .v2lm-title svg { width: 22px; height: 22px; color: var(--primary); }
+        .v2lm-map {
+            position: relative;
+            width: 100%;
+            min-height: 620px;
+            padding: 20px 0 80px;
+            box-sizing: border-box;
+            background: linear-gradient(180deg, #F3FCEB 0%, #E8F5E0 100%);
+        }
+        .v2lm-paths {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .v2lm-paths path {
+            fill: none;
+            stroke-linecap: round;
+            stroke-dasharray: 8 6;
+            stroke-width: 4;
+            vector-effect: non-scaling-stroke;
+        }
+        .v2lm-path-done { stroke: #fff; }
+        .v2lm-path-current { stroke: #fff; opacity: 0.85; }
+        .v2lm-path-locked { stroke: #fff; opacity: 0.55; }
+        .v2lm-nodes {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+        }
+        .v2lm-node {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 112px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 140ms ease;
+        }
+        .v2lm-node:active { transform: translate(-50%, -50%) scale(0.94); }
+        .v2lm-node-current { width: 124px; }
+        .v2lm-node-float { animation: v2lm-float 2.6s ease-in-out infinite; }
+        @keyframes v2lm-float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-4px); }
+        }
+        .v2lm-platform {
+            position: relative;
+            width: 112px;
+            height: 82px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .v2lm-node-current .v2lm-platform {
+            width: 124px;
+            height: 92px;
+        }
+        .v2lm-platform-img {
+            position: absolute;
+            inset: -16%;
+            width: 132%;
+            height: 132%;
+            object-fit: contain;
+            display: block;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.12));
+            pointer-events: none;
+        }
+        .v2lm-bubble {
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1A1A1A;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 900;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.16);
+            z-index: 3;
+            border: 2px solid #FFFFFF;
+            box-sizing: border-box;
+        }
+        .v2lm-bubble svg {
+            width: 18px;
+            height: 18px;
+            color: #fff;
+        }
+        .v2lm-stars {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            height: 16px;
+            padding: 0 6px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.92);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            z-index: 3;
+        }
+        .v2lm-stars svg {
+            width: 10px;
+            height: 10px;
+            color: #FFB800;
+        }
+        .v2lm-current-marker {
+            position: absolute;
+            top: -46px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            background: #58CC02;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            box-shadow: 0 2px 4px rgba(88,204,2,0.25);
+            white-space: nowrap;
+        }
+        .v2lm-current-marker::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -4px;
+            transform: translateX(-50%);
+            border-width: 4px 4px 0;
+            border-style: solid;
+            border-color: #58CC02 transparent transparent transparent;
+        }
+        @media (max-width: 390px) {
+            .v2lm-node { width: 100px; }
+            .v2lm-node-current { width: 110px; }
+            .v2lm-platform { width: 100px; height: 74px; }
+            .v2lm-node-current .v2lm-platform { width: 110px; height: 82px; }
+            .v2lm-bubble { width: 36px; height: 36px; font-size: 13px; }
+            .v2lm-bubble svg { width: 16px; height: 16px; }
         }
 
         /* ===== V2.0 考后留存(apple-design 审查落地) ===== */
@@ -4251,6 +4428,11 @@
             <div id="planDetailBody"></div>
         </div>
 
+        <!-- V2.1 独立学习地图页 -->
+        <div class="screen learning-map-screen" id="learningMapScreen">
+            <div id="learningMapRoot"></div>
+        </div>
+
         <div class="screen learning-screen" id="learningScreen">
             <div class="learning-queue-info" id="learningQueueInfo"></div>
             <div class="learning-progress" id="learningProgress"></div>
@@ -4620,6 +4802,7 @@
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
+    <script src="map-components.js?v=5.2"></script>
     <script>
         const wordDB = {
             cet4: window.CET4_WORDS || [],
@@ -6748,6 +6931,81 @@
             updateBottomNavVisibility();
         }
 
+        let _learningMapPreviousScreen = null;
+
+        function showLearningMap() {
+            SFX.click();
+            const activeScreen = document.querySelector('.screen.active');
+            if (activeScreen) _learningMapPreviousScreen = activeScreen.id;
+            renderLearningMapScreen();
+            showScreen('learningMapScreen');
+        }
+
+        function hideLearningMap() {
+            SFX.click();
+            showScreen(_learningMapPreviousScreen || 'startScreen');
+        }
+
+        function renderLearningMapScreen() {
+            const root = document.getElementById('learningMapRoot');
+            if (!root) return;
+
+            // 模拟数据系统：当前进度为第5天，已完成1-4天，共7天
+            const totalDays = 7;
+            const currentDay = 5;
+            const completed = [1, 2, 3, 4];
+            const maxPathDay = 7;
+
+            // 之字形垂直排列：左右交替，数字小的在底部，数字大的在顶部
+            const step = 10;
+            const baseY = 18;
+            const levels = [];
+            for (let i = 1; i <= totalDays; i++) {
+                const isEven = i % 2 === 0;
+                const x = i === totalDays ? 50 : (isEven ? 72 : 28);
+                const y = baseY + (totalDays - i) * step;
+                let status = 'locked';
+                if (completed.includes(i)) status = 'completed';
+                else if (i === currentDay) status = 'current';
+                const stars = completed.includes(i) ? 3 : 0;
+                levels.push({ day: i, status, stars, x, y, isFinal: i === totalDays });
+            }
+
+            root.innerHTML = renderLearningMapPage({
+                background: 'assets/background.png',
+                header: { progress: { current: completed.length * 3, total: totalDays * 3 } },
+                levels: levels,
+                maxPathDay: maxPathDay,
+                startLabel: '开始学习'
+            });
+
+            // 默认将当前关卡滚动到可视区域（偏下方位置，向上滑动查看后续关卡）
+            requestAnimationFrame(() => {
+                const scroll = document.querySelector('.lp-scroll');
+                const current = document.querySelector('.lp-node-current');
+                if (scroll && current) {
+                    const nodeTop = current.offsetTop;
+                    const nodeHeight = current.offsetHeight;
+                    const scrollHeight = scroll.clientHeight;
+                    scroll.scrollTop = nodeTop - scrollHeight * 0.35 + nodeHeight / 2;
+                }
+            });
+        }
+
+        window.onLearningMapBack = function() { hideLearningMap(); };
+        window.onLearningMapNodeClick = function(day) {
+            SFX.click();
+            if (day === 5 || [1, 2, 3, 4].includes(day)) {
+                showToast(`Day ${day} 学习流程接入中`, 'info');
+            } else {
+                showToast(`Day ${day} 尚未解锁`, 'warning');
+            }
+        };
+        window.onLearningMapStartClick = function() {
+            SFX.click();
+            showToast('开始学习 Day 5', 'success');
+        };
+
         // V2.0:首次配置完成后刷新首页(显示当前模式状态)
         // 阶段3 扩展为渲染进度阶梯首页
         function refreshStartScreen() {
@@ -6858,11 +7116,11 @@
         window.onHomeAvatarClick = function() { SFX.click(); showToast('个人中心开发中', 'info'); };
         window.onCiciClick = function() { SFX.click(); showToast('Cici：点击开始今日任务吧！', 'success'); };
         window.onStartTaskClick = function() { SFX.click(); unlockAudio(); startV2TodayTask(); };
-        window.onCourseTaskCardClick = function() { SFX.click(); enterPlanDetail(); };
+        window.onCourseTaskCardClick = function() { SFX.click(); showLearningMap(); };
         window.onProgressColumnClick = function(levelId) { SFX.click(); showToast(`${levelId} 进度互通中`, 'info'); };
         window.onBookProgressClick = function(bookId) { SFX.click(); showToast(`${bookId} 词库详情开发中`, 'info'); };
         window.onViewAllBooksClick = function() { SFX.click(); showToast('查看全部词库', 'info'); };
-        window.onEnterMapClick = function(e) { if (e) e.stopPropagation(); SFX.click(); enterPlanDetail(); };
+        window.onEnterMapClick = function(e) { if (e) e.stopPropagation(); SFX.click(); showLearningMap(); };
 
         // 首页双页轮播控制（Cici 页 + 词汇金字塔页）
         (function initHomeSlider() {
@@ -7098,7 +7356,7 @@
                                     <div class="v2-today-title">今日任务</div>
                                     <div class="v2-today-day">Day ${plan.currentDay}</div>
                                 </div>
-                                <button class="v2-today-map-btn" onclick="enterPlanDetail()" aria-label="查看学习地图">
+                                <button class="v2-today-map-btn" onclick="showLearningMap()" aria-label="查看学习地图">
                                     <span>学习地图</span>
                                 </button>
                             </div>
@@ -7477,9 +7735,15 @@
             // 今日任务奖励 XP:新词 10 XP/个 + 复习 5 XP/个;队列未生成时展示默认 80 XP
             const rewardXP = (newToday + reviewToday) > 0 ? newToday * 10 + reviewToday * 5 : 80;
 
-            const completed = plan.completedDays || [];
-            const total = plan.planDays || 1;
-            const current = plan.currentDay || 1;
+            // 模拟数据系统：当前进度为第5天，已完成1-4天，共7天（集成测试）
+            const simulatedTotal = 7;
+            const simulatedCurrent = 5;
+            const simulatedCompleted = [1, 2, 3, 4];
+            const useSimulated = true; // 切换为 false 可恢复真实计划数据
+
+            const total = useSimulated ? simulatedTotal : (plan.planDays || 1);
+            const current = useSimulated ? simulatedCurrent : (plan.currentDay || 1);
+            const completed = useSimulated ? simulatedCompleted : (plan.completedDays || []);
 
             // 渲染顶部区域(品牌栏 + 标题栏)
             topEl.innerHTML = renderLearningMapTopSection({
@@ -7489,89 +7753,103 @@
                 pageTitle: `${plan.name} · 学习地图`
             });
 
-            // 关卡节点(两排蛇形:第一排 Day1-7 左→右,第二排 Day8-14 右→左)
-            // 节点位置用百分比坐标,不写死绝对位置;特殊节点用素材图
             const TREE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L6 10h3v4h6v-4h3z"/><path d="M12 14v8"/></svg>';
-            const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-            const LOCK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+            const STAR_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+            const STAR_EMPTY_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+            const LOCK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+            const TROPHY_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>';
 
-            // 14 节点固定百分比坐标(第一排 y=28%,第二排 y=72%)
-            const nodeCoords = [];
-            for (let i = 1; i <= 7; i++) {
-                nodeCoords.push({ day: i, x: (i - 0.5) * (100 / 7), y: 28 });
-            }
-            for (let i = 8; i <= 14; i++) {
-                nodeCoords.push({ day: i, x: (14.5 - i) * (100 / 7), y: 72 });
+            // 单列居中垂直排列：步长 11%，起始 14%
+            const step = 11;
+            const baseY = 14;
+            const levels = [];
+            for (let i = 1; i <= total; i++) {
+                let status = 'locked';
+                if (completed.includes(i)) status = 'completed';
+                else if (i === current) status = 'current';
+                const stars = completed.includes(i) ? 3 : 0;
+                levels.push({ day: i, status, stars, x: 50, y: baseY + (i - 1) * step, isFinal: i === total });
             }
 
-            // SVG 路径(viewBox 0 0 100 62,对应节点 top%:28%→y=17.36, 72%→y=44.64)
-            // 已完成段:Day1→Day7 水平
-            // 当前段:Day7→Day8 转弯曲线
-            // 未解锁段:Day8→Day14 水平
-            const pathDone = "M 7.14,17.36 L 21.43,17.36 L 35.71,17.36 L 50,17.36 L 64.29,17.36 L 78.57,17.36 L 92.86,17.36";
-            const pathCurrent = "M 92.86,17.36 Q 100,31 92.86,44.64";
-            const pathLocked = "M 92.86,44.64 L 78.57,44.64 L 64.29,44.64 L 50,44.64 L 35.71,44.64 L 21.43,44.64 L 7.14,44.64";
+            // 生成直线连接路径
+            function buildLinePath(n1, n2) {
+                const dx = n2.x - n1.x;
+                const dy = n2.y - n1.y;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                const ux = dx / dist;
+                const uy = dy / dist;
+                const offset = Math.min(8, dist * 0.22);
+                const x1 = n1.x + ux * offset;
+                const y1 = n1.y + uy * offset;
+                const x2 = n2.x - ux * offset;
+                const y2 = n2.y - uy * offset;
+                return `M ${x1} ${y1} L ${x2} ${y2}`;
+            }
+
+            const pathsHTML = levels.slice(0, -1).map((lvl, i) => {
+                const d = buildLinePath(lvl, levels[i + 1]);
+                let cls = 'v2lm-path';
+                if (lvl.status === 'completed') cls += ' v2lm-path-done';
+                else if (lvl.status === 'current') cls += ' v2lm-path-current';
+                else cls += ' v2lm-path-locked';
+                return `<path class="${cls}" d="${d}" />`;
+            }).join('');
 
             // 生成节点 HTML
-            const nodesHTML = nodeCoords.map(pos => {
-                let stateCls = 'is-locked';
-                let inner = '';
-                let special = null;
-                if (pos.day === 10) special = { img: 'assets/05_Day10宝箱_透明.png', alt: '宝箱奖励' };
-                else if (pos.day === total) special = { img: 'assets/06_Day14城堡_透明.png', alt: '最终挑战城堡' };
+            const nodesHTML = levels.map(level => {
+                const isCurrent = level.status === 'current';
+                const isCompleted = level.status === 'completed';
+                const isLocked = level.status === 'locked';
+                const isFinal = level.isFinal;
 
-                if (completed.includes(pos.day) || pos.day < current) {
-                    stateCls = 'is-done';
-                } else if (pos.day === current) {
-                    stateCls = 'is-active';
-                }
+                let platformImg = '';
+                if (isCurrent) platformImg = 'assets/today.png';
+                else if (isCompleted) platformImg = 'assets/select.png';
+                else if (isLocked) platformImg = 'assets/unselect.png';
+                else if (isFinal) platformImg = 'assets/unselect.png';
 
-                if (special) {
-                    stateCls += ' is-special';
-                    inner = `<img class="lm-node-special-img" src="${special.img}" alt="${special.alt}">`;
-                } else if (stateCls.includes('is-done')) {
-                    inner = `<span class="lm-node-check">${CHECK_SVG}</span>`;
-                } else if (stateCls.includes('is-active')) {
-                    inner = `<span class="lm-node-num">${pos.day}</span>`;
+                let bubbleHtml = '';
+                if (isFinal) {
+                    bubbleHtml = `<div class="v2lm-bubble" aria-label="最终目标">${TROPHY_SVG}</div>`;
+                } else if (isLocked) {
+                    bubbleHtml = `<div class="v2lm-bubble" aria-label="未解锁">${LOCK_SVG}</div>`;
                 } else {
-                    inner = `<span class="lm-node-lock">${LOCK_SVG}</span>`;
+                    bubbleHtml = `<div class="v2lm-bubble" aria-label="第 ${level.day} 关">${level.day}</div>`;
                 }
 
-                const marker = pos.day === current ? '<span class="lm-node-marker">你在这里</span>' : '';
+                const starsHtml = isCompleted && !isFinal
+                    ? `<div class="v2lm-stars" aria-label="${level.stars} 颗星">${STAR_SVG}${STAR_SVG}${STAR_SVG}</div>`
+                    : '';
+
+                const marker = isCurrent ? '<span class="v2lm-current-marker">当前</span>' : '';
+                const floatCls = isCurrent ? ' v2lm-node-float' : '';
 
                 return `
-                <div class="lm-node ${stateCls}" style="left:${pos.x.toFixed(2)}%;top:${pos.y}%"
-                     onclick="clickPlanLevel(${pos.day})" role="button" tabindex="0"
-                     aria-label="Day ${pos.day}">
+                <div class="v2lm-node ${isCurrent ? 'v2lm-node-current' : ''}${floatCls}"
+                     style="top:${level.y}%"
+                     onclick="clickPlanLevel(${level.day})" role="button" tabindex="0"
+                     aria-label="Day ${level.day}">
                     ${marker}
-                    <div class="lm-node-circle">${inner}</div>
-                    <span class="lm-node-label">Day ${pos.day}</span>
+                    <div class="v2lm-platform">
+                        <img class="v2lm-platform-img" src="${platformImg}" alt="" onerror="this.style.display='none'">
+                    </div>
+                    ${bubbleHtml}
+                    ${starsHtml}
                 </div>`;
             }).join('');
 
-            // 学习地图卡片(标题 + 地图 + 图例)
+            const mapHeight = baseY + (total - 1) * step + 20;
             const mapHTML = `
-                <div class="lm-card">
-                    <div class="lm-header">
-                        <div class="lm-title">${TREE_SVG} 学习地图</div>
+                <div class="v2lm-card">
+                    <div class="v2lm-header">
+                        <div class="v2lm-title">${TREE_SVG} 学习地图</div>
                         <button class="lm-rules-btn" onclick="showMapRules()" type="button">规则说明 ?</button>
                     </div>
-                    <div class="lm-map">
-                        <div class="lm-map-bg"></div>
-                        <div class="lm-sign">记忆森林</div>
-                        <svg class="lm-paths" viewBox="0 0 100 62" preserveAspectRatio="none">
-                            <path class="lm-path-done" d="${pathDone}" vector-effect="non-scaling-stroke"/>
-                            <path class="lm-path-current" d="${pathCurrent}" vector-effect="non-scaling-stroke"/>
-                            <path class="lm-path-locked" d="${pathLocked}" vector-effect="non-scaling-stroke"/>
+                    <div class="v2lm-map" style="height:${mapHeight}%">
+                        <svg class="v2lm-paths" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            ${pathsHTML}
                         </svg>
-                        <div class="lm-nodes">${nodesHTML}</div>
-                    </div>
-                    <div class="lm-legend">
-                        <div class="lm-legend-item"><span class="lm-legend-dot is-done"></span>已完成</div>
-                        <div class="lm-legend-item"><span class="lm-legend-dot is-active"></span>进行中</div>
-                        <div class="lm-legend-item"><span class="lm-legend-dot is-locked"></span>未解锁</div>
-                        <div class="lm-legend-item"><img class="lm-legend-icon" src="assets/05_Day10宝箱_透明.png" alt="">奖励关卡</div>
-                        <div class="lm-legend-item"><img class="lm-legend-icon" src="assets/06_Day14城堡_透明.png" alt="">最终挑战</div>
+                        <div class="v2lm-nodes">${nodesHTML}</div>
                     </div>
                 </div>`;
 
@@ -7588,25 +7866,21 @@
                 </div>
             `;
 
-            // 渲染下一帧:绘制节点间 SVG 曲线路径 + 自动滚动到当前关卡
+            // 自动滚动到当前关卡节点(将当前节点滚到视图偏下方)
             requestAnimationFrame(() => {
-                drawLevelMapPaths();
                 scrollLevelMapToCurrent();
             });
         }
 
-        // 路径已在 HTML 中静态渲染(两排蛇形 + 右侧转弯),此函数仅保留为兼容调用
-        function drawLevelMapPaths() { /* no-op: paths are static in HTML */ }
-
-        // 自动滚动到当前关卡节点(将 is-active 节点滚到视图中心)
+        // 自动滚动到当前关卡节点(将当前节点定位到视口偏下方,向上可查看后续关卡)
         function scrollLevelMapToCurrent() {
-            const current = document.querySelector('.lm-map .lm-node.is-active');
-            if (!current) return;
-            try {
-                current.scrollIntoView({ block: 'center', behavior: 'smooth' });
-            } catch (e) {
-                try { current.scrollIntoView(); } catch (e2) {}
-            }
+            const screen = document.getElementById('planDetailScreen');
+            const current = document.querySelector('.v2lm-node-current');
+            if (!screen || !current) return;
+            const screenRect = screen.getBoundingClientRect();
+            const currentRect = current.getBoundingClientRect();
+            const targetY = currentRect.top - screenRect.top - screenRect.height * 0.35;
+            screen.scrollTop = Math.max(0, screen.scrollTop + targetY);
         }
 
         // 显示地图规则说明
@@ -7617,14 +7891,14 @@
 
         function clickPlanLevel(day) {
             SFX.click();
-            const plan = LearningSystem.getActivePlan();
-            if (!plan) return;
-            const completed = plan.completedDays || [];
-            if (!completed.includes(day) && day !== plan.currentDay) {
+            // 与 renderPlanDetail 中的模拟数据保持一致
+            const current = 5;
+            const completed = [1, 2, 3, 4];
+            if (!completed.includes(day) && day !== current) {
                 showToast('完成前一关后解锁', 'warning');
                 return;
             }
-            if (day === plan.currentDay) {
+            if (day === current) {
                 // 当前天:直接进入学习
                 startFromPlanDetail();
                 return;
@@ -7966,7 +8240,7 @@
             }, 2400);
         }
 
-        const HIDDEN_NAV_SCREENS = ['learningScreen', 'gameScreen', 'planDetailScreen'];
+        const HIDDEN_NAV_SCREENS = ['learningScreen', 'gameScreen', 'planDetailScreen', 'learningMapScreen'];
         function updateBottomNavVisibility() {
             const bottomNav = document.getElementById('bottomNav');
             const hpBottomNav = document.getElementById('hpBottomNav');
@@ -9312,7 +9586,7 @@
                                 <div class="settings-v2-row-name">查看学习地图</div>
                                 <div class="settings-v2-row-meta">第 ${plan.currentDay} / ${plan.planDays} 天</div>
                             </div>
-                            <button class="settings-v2-link" onclick="enterPlanDetail()">查看</button>
+                            <button class="settings-v2-link" onclick="showLearningMap()">查看</button>
                         </div>`;
                 } else if (settings.mode === 'free') {
                     const bookInfo = LearningSystem.getBookInfo(settings.activeBookId);

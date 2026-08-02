@@ -26,14 +26,14 @@ Page({
     const levelStats = [];
 
     // 统计每个词库的掌握情况
-    ['cet4', 'cet6', 'toefl', 'gre'].forEach(level => {
+    ['cet4', 'cet6', 'toefl'].forEach(level => {
       const allWords = wordDB[level] || [];
       const memoryMap = srs.loadMemoryMap(level);
       const learned = Object.keys(memoryMap).length;
       const mastered = Object.values(memoryMap).filter(m => m.box >= 4).length;
       const learning = learned - mastered;
       const rate = allWords.length > 0 ? Math.round(learned * 100 / allWords.length) : 0;
-      const levelNames = { cet4: '四级', cet6: '六级', toefl: '托福', gre: 'GRE' };
+      const levelNames = { cet4: '四级', cet6: '六级', toefl: '托福' };
       levelStats.push({
         level: level,
         name: levelNames[level],

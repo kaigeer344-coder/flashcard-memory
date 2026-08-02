@@ -48,8 +48,7 @@ App({
       this.globalData.wordDB = {
         cet4: require('./data/cet4.js'),
         cet6: require('./data/cet6.js'),
-        toefl: require('./data/toefl.js'),
-        gre: require('./data/gre.js')
+        toefl: require('./data/toefl.js')
       };
     }
     return this.globalData.wordDB;
