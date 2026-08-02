@@ -87,6 +87,24 @@
         }
         .game-header-back-btn:active { transform: scale(0.92); }
         .game-header-back-btn svg { width: 22px; height: 22px; }
+        .game-header-timer-track {
+            flex: 1;
+            min-width: 0;
+            height: 25px;
+            background: #e5e5e5;
+            border-radius: 999px;
+            overflow: hidden;
+            border: 2px solid #d7d7d7;
+            margin: 0 14px;
+        }
+        .game-header-timer-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #58CC02, #1cb0f6);
+            border-radius: 999px;
+            transition: width 1s linear;
+        }
+        .game-header-timer-fill.warning { background: linear-gradient(90deg, #ffc800, #ff4b4b); }
         .game-header h1 {
             display: flex;
             align-items: center;
@@ -1450,6 +1468,7 @@
             .stat-value { font-size: 15px; }
             .level-btn { min-height: 120px; }
             .level-icon { width: 64px; height: 64px; }
+            .game-header-timer-track { margin: 0 10px; }
         }
         .game-screen {
             padding: 18px 14px 22px;
@@ -1471,6 +1490,7 @@
             text-align: left;
             display: flex;
             align-items: flex-end;
+            justify-content: space-between;
             gap: 0;
         }
         .game-hud-mascot {
@@ -1491,37 +1511,49 @@
             display: block;
         }
         .game-hud-row-wrapper {
-            flex: 1;
-            min-width: 0;
+            flex: 0 0 350px;
+            width: 350px;
+            height: 150px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             position: relative;
             background: #ffffff;
             border: 2px solid #b7eaa0;
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 14px 16px 14px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+            box-shadow: 0 6px 0 #e0e0e0, 0 8px 20px rgba(0,0,0,0.08);
         }
-        /* 对话气泡尾巴（左侧指向 IP 形象） */
+        /* 对话气泡尖角（左侧圆润小尖，带绿边指向 IP 形象） */
         .game-hud-row-wrapper::before {
             content: "";
             position: absolute;
-            left: -10px;
-            bottom: 22px;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 7px 10px 7px 0;
-            border-color: transparent #ffffff transparent transparent;
-            filter: drop-shadow(-2px 0 0 #b7eaa0);
+            left: -11px;
+            bottom: 30px;
+            width: 18px;
+            height: 18px;
+            background: #ffffff;
+            border-left: 2px solid #b7eaa0;
+            border-bottom: 2px solid #b7eaa0;
+            border-radius: 4px 0 0 0;
+            transform: rotate(45deg);
             z-index: 1;
+        }
+        /* 盖住尖角内侧多出的边框线 */
+        .game-hud-row-wrapper::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 30px;
+            width: 10px;
+            height: 16px;
+            background: #ffffff;
+            z-index: 2;
         }
         .game-hud-row {
             display: flex;
-            justify-content: space-around;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 4px;
         }
         .game-round-info {
             text-align: center;
@@ -1531,20 +1563,20 @@
             margin-bottom: 8px;
         }
         .game-hud-item {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            min-width: 60px;
-            padding: 0 8px;
+            min-width: 0;
             position: relative;
         }
         .game-hud-item:not(:last-child)::after {
             content: "";
             position: absolute;
-            right: 0;
-            top: 10%;
-            height: 80%;
+            right: -1px;
+            top: 12%;
+            height: 76%;
             width: 1px;
             background: #e8e8e8;
         }
@@ -1572,7 +1604,7 @@
             width: 100%;
             height: 0;
             border-top: 2px dashed #e0e0e0;
-            margin: 2px 0 10px;
+            margin: 14px 0 12px;
         }
         .game-hud-hint {
             display: flex;
@@ -4586,6 +4618,9 @@
             <button class="game-header-back-btn" onclick="goBackFromLearning()" aria-label="返回">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
+            <div class="game-header-timer-track" id="gameHeaderTimerTrack">
+                <div class="game-header-timer-fill" id="gameHeaderTimerFill"></div>
+            </div>
             <div class="header-actions">
                 <div class="stat-item stat-new-words" id="headerNewWords"><img class="header-stat-icon" src="assets/generated-icons/daily-words.png" alt="">10</div>
             </div>
@@ -4686,8 +4721,8 @@
                     <div class="game-round-info" id="gameRoundInfo"></div>
                     <div class="game-hud-row">
                         <div class="game-hud-item game-timer">
-                            <span class="hud-label">时间</span>
-                            <span class="hud-value" id="gameTimer">60</span>
+                            <span class="hud-label">第几组</span>
+                            <span class="hud-value" id="gameTimer">1</span>
                         </div>
                         <div class="game-hud-item game-score">
                             <span class="hud-label">得分</span>
@@ -9433,8 +9468,8 @@
             const comboHudEl = document.getElementById('gameCombo');
             const timerHudEl = document.querySelector('.game-timer');
 
-            // 显示倒计时（与参考图保持一致）
-            timerEl.textContent = state.gameTimeLeft;
+            // 显示当前学习组数
+            timerEl.textContent = state.currentGroupIndex + 1;
             scoreEl.textContent = state.gameScore;
             comboHudEl.textContent = state.gameCombo;
 
@@ -9448,6 +9483,17 @@
             const pct = Math.max(0, (state.gameTimeLeft / state.gameMaxTime) * 100);
             timerBar.style.width = `${pct}%`;
             timerBar.classList.toggle('warning', state.gameTimeLeft <= 10);
+
+            // 同步更新顶部 header 倒计时进度条
+            const headerTimerFill = document.getElementById('gameHeaderTimerFill');
+            const headerTimerTrack = document.getElementById('gameHeaderTimerTrack');
+            if (headerTimerFill) {
+                headerTimerFill.style.width = `${pct}%`;
+                headerTimerFill.classList.toggle('warning', state.gameTimeLeft <= 10);
+            }
+            if (headerTimerTrack) {
+                headerTimerTrack.style.display = state.gameTimeLeft > 0 ? 'block' : 'none';
+            }
 
             const comboEl = document.querySelector('.game-combo');
             comboEl.classList.remove('active');
