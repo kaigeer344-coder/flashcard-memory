@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>闪卡记忆</title>
     <link rel="stylesheet" href="home-components.css?v=7.7">
-    <link rel="stylesheet" href="map-components.css?v=5.4">
+    <link rel="stylesheet" href="map-components.css?v=5.5">
     <style>
         :root {
             --primary: #58cc02;
@@ -666,41 +666,28 @@
             min-height: 0;
         }
         .completion-title-wrap {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            width: 100%;
+            text-align: center;
             margin-bottom: 10px;
         }
         .completion-title {
-            font-size: 32px;
+            font-size: 60px;
             font-weight: 1000;
-            color: #ffffff;
+            color: #f2f2f2;
             text-shadow: 0 2px 0 rgba(0,0,0,0.08);
             margin: 0;
-            letter-spacing: 1px;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.1;
         }
-        .completion-spark {
-            width: 24px;
-            height: 6px;
-            background: #FFE66D;
-            border-radius: 999px;
+        .completion-title > span {
             display: inline-block;
-            position: relative;
         }
-        .completion-spark::before,
-        .completion-spark::after {
-            content: "";
-            position: absolute;
-            width: 10px;
-            height: 4px;
-            background: #FFE66D;
-            border-radius: 999px;
+        .completion-title > span:not(:last-child) {
+            margin-right: 4px;
         }
-        .completion-spark.left::before { left: -4px; top: -6px; transform: rotate(35deg); }
-        .completion-spark.left::after { left: -4px; bottom: -6px; transform: rotate(-35deg); }
-        .completion-spark.right::before { right: -4px; top: -6px; transform: rotate(-35deg); }
-        .completion-spark.right::after { right: -4px; bottom: -6px; transform: rotate(35deg); }
         .completion-subtitle {
             font-size: 17px;
             font-weight: 800;
@@ -715,33 +702,25 @@
             height: 220px;
             margin: 0 auto 10px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 1;
         }
-        .completion-mascot-placeholder img {
+        .completion-mascot-placeholder .mascot-gap {
             width: 100%;
-            height: 100%;
+            height: 10px;
+            flex-shrink: 0;
+            display: block;
+        }
+        .completion-mascot-placeholder img {
+            width: 300px;
+            height: 280px;
             object-fit: contain;
             position: relative;
             z-index: 2;
-        }
-        .mascot-fallback {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-        }
-        .completion-mascot-placeholder img:not([style*="display: none"]) + .mascot-fallback { display: none; }
-        .mascot-fallback span { font-size: 80px; line-height: 1; }
-        .mascot-fallback small {
-            font-size: 13px;
-            color: rgba(255,255,255,0.9);
-            font-weight: 800;
-            margin-top: 8px;
+            flex-shrink: 0;
+            margin-top: 10px;
         }
         .mascot-burst {
             position: absolute;
@@ -751,21 +730,9 @@
             z-index: 0;
             animation: mascotBurst 3s ease-in-out infinite;
         }
-        .mascot-ring {
-            position: absolute;
-            inset: 5%;
-            border: 3px dashed rgba(255,255,255,0.35);
-            border-radius: 50%;
-            z-index: 0;
-            animation: mascotRing 12s linear infinite;
-        }
         @keyframes mascotBurst {
             0%, 100% { transform: scale(0.95); opacity: 0.8; }
             50% { transform: scale(1.08); opacity: 1; }
-        }
-        @keyframes mascotRing {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         .completion-score-section { margin-top: auto; padding-top: 8px; }
@@ -785,10 +752,13 @@
             background: rgba(255,255,255,0.85);
             border-radius: 50%;
         }
+        .completion-score-label > span:not(.dot) {
+            font-size: 30px;
+        }
         .completion-score-value {
-            font-size: 84px;
+            font-size: 140px;
             font-weight: 1000;
-            color: #FFF9C4;
+            color: #ffff82;
             line-height: 1;
             text-shadow: 0 4px 0 rgba(0,0,0,0.08);
         }
@@ -800,7 +770,8 @@
             margin: 16px 0;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
+            gap: 5px;
             box-shadow: 0 6px 0 rgba(0,0,0,0.08), 0 10px 24px rgba(0,0,0,0.1);
             flex-shrink: 0;
         }
@@ -836,9 +807,12 @@
         }
         .completion-btns button:active { transform: scale(0.97); }
         .btn-home {
-            background: #ffffff;
-            color: #2E7D32;
+            background: #a0ec69;
+            color: #ffffff;
             box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* ===== 结果页爆炸特效 ===== */
@@ -4765,21 +4739,19 @@
         <div class="screen completion-screen" id="completionScreen">
             <div class="completion-content">
                 <div class="completion-title-wrap">
-                    <span class="completion-spark left"></span>
-                    <h2 class="completion-title">学习完成！</h2>
-                    <span class="completion-spark right"></span>
+                    <h2 class="completion-title"><span>学</span><span>习</span><span>完</span><span>成</span></h2>
                 </div>
                 <p class="completion-subtitle">太棒了，继续保持！</p>
+
+                <!-- 素材与副标题之间 15px 间距 -->
+                <span class="mascot-gap" style="height: 15px"></span>
 
                 <!-- 吉祥物/素材占位符 -->
                 <div class="completion-mascot-placeholder" id="completionMascot">
                     <div class="mascot-burst"></div>
-                    <div class="mascot-ring"></div>
-                    <img src="assets/庆祝素材.png" alt="IP 形象" onerror="this.style.display='none'">
-                    <div class="mascot-fallback">
-                        <span>🎉</span>
-                        <small>素材占位</small>
-                    </div>
+                    <span class="mascot-gap"></span>
+                    <img src="界面截图/庆祝素材1.png" alt="IP 形象" onerror="this.style.display='none'">
+                    <span class="mascot-gap"></span>
                 </div>
 
                 <div class="completion-score-section">
@@ -4801,7 +4773,7 @@
             </div>
 
             <div class="completion-btns">
-                <button class="btn-home" onclick="switchTab('home')"><img class="ui-icon" src="assets/generated-icons/nav-home.png" alt=""> 返回首页</button>
+                <button class="btn-home" onclick="switchTab('home')">返回首页</button>
             </div>
         </div>
 
@@ -5110,7 +5082,7 @@
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
-    <script src="map-components.js?v=5.3"></script>
+    <script src="map-components.js?v=5.5"></script>
     <script>
         const wordDB = {
             cet4: window.CET4_WORDS || [],
@@ -7266,13 +7238,13 @@
 
             // 纵向斜向蛇形坐标（与 map-components.js getDefaultLevels 一致，距离压缩至 2/3）
             const coords = [
-                { x: 30, y: 76 },
-                { x: 60, y: 68 },
-                { x: 45, y: 58 },
-                { x: 26, y: 48 },
-                { x: 45, y: 37 },
-                { x: 26, y: 27 },
-                { x: 55, y: 19 }
+                { x: 32, y: 86 },
+                { x: 68, y: 72 },
+                { x: 50, y: 58 },
+                { x: 32, y: 44 },
+                { x: 50, y: 30 },
+                { x: 32, y: 16 },
+                { x: 68, y: 4 }
             ];
             const levels = [];
             for (let i = 1; i <= totalDays; i++) {
@@ -8553,7 +8525,7 @@
             }, 2400);
         }
 
-        const HIDDEN_NAV_SCREENS = ['learningScreen', 'gameScreen', 'planDetailScreen', 'learningMapScreen'];
+        const HIDDEN_NAV_SCREENS = ['learningScreen', 'gameScreen', 'planDetailScreen', 'learningMapScreen', 'completionScreen'];
         // 需要底部导航的页面 → 对应高亮 tab(设置/会员是「我的」的子页,结果页归首页)
         const NAV_TAB_MAP = {
             wordbookScreen: 'wordbook',
