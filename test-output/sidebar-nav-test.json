@@ -1,0 +1,114 @@
+{
+  "time": "2026-08-03T15:22:51.824Z",
+  "errors": [],
+  "results": [
+    {
+      "label": "冲刺模式首页",
+      "screen": "startScreen",
+      "dialog": "",
+      "activeBefore": "startScreen",
+      "activeAfter": "startScreen",
+      "changed": false,
+      "jsError": false
+    },
+    {
+      "label": "自由学习首页",
+      "screen": "startScreen",
+      "dialog": "",
+      "activeBefore": "startScreen",
+      "activeAfter": "startScreen",
+      "changed": false,
+      "jsError": false
+    },
+    {
+      "label": "学习地图",
+      "screen": "learningMapScreen",
+      "dialog": "",
+      "activeBefore": "startScreen",
+      "activeAfter": "learningMapScreen",
+      "changed": true,
+      "jsError": false
+    },
+    {
+      "label": "闪卡学习",
+      "screen": "learningScreen",
+      "dialog": "该界面需要从学习流程进入",
+      "activeBefore": "learningMapScreen",
+      "activeAfter": "learningMapScreen",
+      "changed": false,
+      "jsError": false
+    },
+    {
+      "label": "配对游戏",
+      "screen": "gameScreen",
+      "dialog": "该界面需要从学习流程进入",
+      "activeBefore": "learningMapScreen",
+      "activeAfter": "learningMapScreen",
+      "changed": false,
+      "jsError": false
+    },
+    {
+      "label": "结果页",
+      "screen": "completionScreen",
+      "dialog": "",
+      "activeBefore": "learningMapScreen",
+      "activeAfter": "completionScreen",
+      "changed": true,
+      "jsError": false
+    },
+    {
+      "label": "单词本",
+      "screen": "wordbookScreen",
+      "dialog": "",
+      "activeBefore": "completionScreen",
+      "activeAfter": "wordbookScreen",
+      "changed": true,
+      "jsError": false
+    },
+    {
+      "label": "学习统计",
+      "screen": "statsScreen",
+      "dialog": "",
+      "activeBefore": "wordbookScreen",
+      "activeAfter": "statsScreen",
+      "changed": true,
+      "jsError": false
+    },
+    {
+      "label": "个人中心",
+      "screen": "profileScreen",
+      "dialog": "",
+      "activeBefore": "statsScreen",
+      "activeAfter": "profileScreen",
+      "changed": true,
+      "jsError": false
+    },
+    {
+      "label": "设置",
+      "screen": "settingsScreen",
+      "dialog": "",
+      "activeBefore": "profileScreen",
+      "activeAfter": "settingsScreen",
+      "changed": true,
+      "jsError": false
+    },
+    {
+      "label": "会员中心",
+      "screen": "vipScreen",
+      "dialog": "",
+      "activeBefore": "settingsScreen",
+      "activeAfter": "vipScreen",
+      "changed": true,
+      "jsError": false
+    },
+    {
+      "label": "学习路径图",
+      "screen": "learningMapScreen",
+      "dialog": "",
+      "activeBefore": "vipScreen",
+      "activeAfter": "learningMapScreen",
+      "changed": true,
+      "jsError": false
+    }
+  ]
+}

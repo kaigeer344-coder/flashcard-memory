@@ -1,0 +1,69 @@
+{
+  "results": [
+    {
+      "test": "成果页渲染",
+      "pass": true,
+      "details": {
+        "activeScreen": "statsScreen",
+        "hasTitle": "学习成果",
+        "cardCount": 2,
+        "cardTitles": [
+          "四级冲刺",
+          "六级冲刺"
+        ],
+        "cardBadges": [
+          "已完成",
+          "进行中"
+        ]
+      }
+    },
+    {
+      "test": "已完成卡片弹窗",
+      "pass": true,
+      "details": {
+        "detailVisible": true
+      }
+    },
+    {
+      "test": "底部导航标签",
+      "pass": true,
+      "details": {
+        "navLabels": [
+          "首页",
+          "单词本",
+          "成果",
+          "我的",
+          "首页",
+          "单词本",
+          "成果",
+          "我的"
+        ]
+      }
+    },
+    {
+      "test": "汇总数据",
+      "pass": true,
+      "details": {
+        "achTotalCards": "1",
+        "achTotalDays": "12",
+        "achTotalWords": "230"
+      }
+    },
+    {
+      "test": "进行中卡片进度条",
+      "pass": true,
+      "details": {
+        "hasProgressBar": true
+      }
+    },
+    {
+      "test": "空数据空状态",
+      "pass": true,
+      "details": {
+        "emptyVisible2": true,
+        "noCards": 0
+      }
+    }
+  ],
+  "errors": []
+}
