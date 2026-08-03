@@ -7,6 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>闪卡记忆</title>
+    <link rel="icon" href="assets/generated-icons/app-logo.png">
     <link rel="stylesheet" href="home-components.css?v=7.7">
     <link rel="stylesheet" href="map-components.css?v=5.5">
     <style>
@@ -647,15 +648,18 @@
         .btn-know { background: #58CC02; color: #ffffff; box-shadow: 0 4px 0 #46A302; }
         /* ===== 结果页 - 学习完成（参考图风格） ===== */
         .completion-screen {
-            background: linear-gradient(180deg, #8FE07B 0%, #7AD468 100%);
+            background: url('assets/progress/back.png') center center / cover no-repeat;
             color: #ffffff;
             text-align: center;
             padding: 48px 24px 24px;
             flex-direction: column;
             justify-content: space-between;
-            height: calc(100dvh - 82px);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             overflow: hidden;
-            position: relative;
         }
         .completion-screen.active { display: flex; }
         .completion-content {
@@ -807,7 +811,7 @@
         }
         .completion-btns button:active { transform: scale(0.97); }
         .btn-home {
-            background: #a0ec69;
+            background: #58cc04;
             color: #ffffff;
             box-shadow: 0 4px 0 rgba(0,0,0,0.08);
             display: flex;
@@ -1776,7 +1780,7 @@
         }
         @media (max-width: 480px) {
             .game-screen { padding: 14px 12px 18px; height: calc(100dvh - 74px); }
-            .completion-screen { padding: 32px 18px 18px; height: calc(100dvh - 74px); }
+            .completion-screen { padding: 32px 18px 18px; }
             .completion-title { font-size: 26px; }
             .completion-subtitle { font-size: 15px; }
             .completion-mascot-placeholder { width: 180px; height: 180px; }
