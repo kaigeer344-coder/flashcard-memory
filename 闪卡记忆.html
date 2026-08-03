@@ -54,7 +54,7 @@
             margin: 0 auto;
             border-radius: 28px;
             border: 2px solid var(--border);
-            background: var(--surface);
+            background: #fcfcfc;
             box-shadow: 0 8px 0 #d9d9d9, 0 18px 38px rgba(60, 60, 60, 0.08);
             overflow: hidden;
             position: relative;
@@ -1066,147 +1066,217 @@
         }
 
         /* Settings Screen */
-        .profile-card {
+        /* ===== 个人中心(参考图复刻) ===== */
+        .profile-header-card {
+            position: relative;
+            background: linear-gradient(135deg, #e8f9df 0%, #d4f6d4 50%, #e8f9df 100%);
+            border-radius: 28px;
+            padding: 22px 20px 18px;
+            margin-bottom: 14px;
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 250px;
+            box-shadow: 0 5px 0 rgba(88, 204, 2, 0.10);
+        }
+        .profile-header-top {
+            width: 100%;
             display: flex;
             align-items: center;
-            gap: 16px;
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 18px;
-            box-shadow: var(--shadow-neutral);
-        }
-        .profile-avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: grid;
-            place-items: center;
-            font-size: 36px;
+            position: relative;
             flex-shrink: 0;
         }
+        .profile-header-xp {
+            width: 100%;
+            margin-top: 12px;
+            position: relative;
+            z-index: 5;
+            flex-shrink: 0;
+        }
+        .profile-header-xp .xp-progress-section {
+            margin-bottom: 0;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.95);
+        }
+        .profile-header-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            z-index: 2;
+        }
+        .profile-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 3px solid rgba(255,255,255,0.9);
+        }
         .profile-avatar img {
-            width: 58px;
-            height: 58px;
+            width: 40px;
+            height: 40px;
             object-fit: contain;
         }
         .profile-info { flex: 1; }
         .profile-level {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 1000;
-            color: var(--dark);
-            margin-bottom: 4px;
+            color: #2d2d2d;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
         }
         .profile-level-badge {
-            display: inline-block;
-            padding: 3px 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 12px;
             border-radius: 999px;
-            background: #ffffff;
-            color: var(--primary-dark);
+            background: #58cc02;
+            color: #ffffff;
             font-size: 13px;
-            font-weight: 1000;
-            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+            font-weight: 900;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.08);
         }
         .xp-progress-section {
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 18px;
-            box-shadow: var(--shadow-neutral);
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 16px 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.04);
         }
         .xp-progress-header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 13px;
             font-weight: 800;
-            color: var(--muted);
             margin-bottom: 10px;
         }
+        .xp-progress-label { color: #6f6f6f; }
+        .xp-progress-value { color: #3c3c3c; }
         .xp-progress-bar {
-            height: 14px;
-            background: #e8f5e9;
+            height: 16px;
+            background: #eef8ea;
             border-radius: 999px;
             overflow: hidden;
         }
         .xp-progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(90deg, #7ee04a 0%, #58cc02 100%);
             border-radius: 999px;
             transition: width 600ms ease;
+            box-shadow: 0 2px 6px rgba(88,204,2,0.3);
         }
-        .settings-currency-row {
-            display: flex;
+        .profile-assets-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 12px;
-            margin-bottom: 18px;
+            margin-bottom: 12px;
         }
-        .settings-currency {
-            flex: 1;
+        .profile-assets-grid .profile-stat-card {
+            border: 1px solid #f0f0f0;
+        }
+        .profile-items-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .profile-items-grid .profile-stat-card {
+            border: 1px solid #f0f0f0;
+        }
+        .profile-stat-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 14px 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            padding: 14px;
-            font-size: 18px;
-            font-weight: 1000;
-            box-shadow: var(--shadow-neutral);
+            gap: 10px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.04);
         }
-        .settings-currency-icon {
-            width: 28px;
-            height: 28px;
-            display: grid;
-            place-items: center;
-        }
-        .settings-currency-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .settings-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .settings-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            padding: 16px;
-            background: #ffffff;
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            font-size: 15px;
-            font-weight: 800;
-            color: var(--dark);
-            cursor: pointer;
-            box-shadow: var(--shadow-neutral);
-            transition: transform 120ms ease, border-color 160ms ease;
-        }
-        .settings-item:active { transform: scale(0.98); }
-        .settings-item-icon {
-            width: 30px;
-            height: 30px;
+        .profile-stat-icon {
+            width: 34px;
+            height: 34px;
             flex-shrink: 0;
             display: grid;
             place-items: center;
         }
-        .settings-item-icon img {
+        .profile-stat-icon img {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
-        .settings-item-text { flex: 1; text-align: left; }
-        .settings-item-arrow { color: var(--muted); font-size: 20px; }
-        .settings-item.danger {
-            color: var(--danger);
-            border-color: #ffd1d1;
+        .profile-stat-main {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 0;
+        }
+        .profile-stat-value {
+            font-size: 20px;
+            font-weight: 1000;
+            color: #3c3c3c;
+            line-height: 1.1;
+        }
+        .profile-stat-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #8a8a8a;
+            margin-top: 2px;
+        }
+        .profile-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .profile-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 15px 16px;
+            background: #ffffff;
+            border-radius: 18px;
+            font-size: 15px;
+            font-weight: 800;
+            color: #3c3c3c;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.04);
+            transition: transform 120ms ease, background 160ms ease;
+            border: none;
+            text-align: left;
+        }
+        .profile-menu-item:active { transform: scale(0.98); }
+        .profile-menu-item-icon {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+        }
+        .profile-menu-item-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .profile-menu-item-text { flex: 1; }
+        .profile-menu-item-arrow {
+            color: #c8c8c8;
+            font-size: 22px;
+            font-weight: 300;
+        }
+        .profile-menu-item.danger {
+            color: #ff4b4b;
             background: #fff5f5;
+        }
+        .profile-menu-item.danger .profile-menu-item-icon img {
+            filter: hue-rotate(320deg) saturate(1.5);
         }
 
         /* 设置子页头部（返回按钮 + 标题） */
@@ -1805,7 +1875,7 @@
         .btn-primary, .btn-secondary, .btn-retry, .btn-home,
         .learning-btns button, .completion-btns button,
         .count-btn, .nav-item, .level-btn, .pronounce-btn,
-        .header-settings-btn, .settings-item {
+        .header-settings-btn, .profile-menu-item {
             -webkit-tap-highlight-color: transparent;
         }
         .btn-retry:active, .btn-home:active {
@@ -4938,61 +5008,75 @@
 
         <!-- 个人中心主页 -->
         <div class="screen settings-screen" id="profileScreen">
-            <div class="profile-card">
-                <div class="profile-avatar"><img src="assets/generated-icons/nav-profile.png" alt=""></div>
-                <div class="profile-info">
-                    <div class="profile-level" id="profileLevelTitle">新手上路</div>
-                    <div class="profile-level-badge" id="profileLevelBadge">Lv.1</div>
+            <div class="profile-header-card">
+                <div class="profile-header-top">
+                    <div class="profile-header-content">
+                        <div class="profile-avatar"><img src="assets/generated-icons/nav-profile.png" alt=""></div>
+                        <div class="profile-info">
+                            <div class="profile-level" id="profileLevelTitle">新手上路</div>
+                            <div class="profile-level-badge" id="profileLevelBadge">Lv.1</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-header-xp">
+                    <div class="xp-progress-section">
+                        <div class="xp-progress-header">
+                            <span class="xp-progress-label">等级进度</span>
+                            <span class="xp-progress-value" id="profileXpText">0 / 500</span>
+                        </div>
+                        <div class="xp-progress-bar">
+                            <div class="xp-progress-fill" id="profileXpFill"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="xp-progress-section">
-                <div class="xp-progress-header">
-                    <span>等级进度</span>
-                    <span id="profileXpText">0 / 500</span>
-                </div>
-                <div class="xp-progress-bar">
-                    <div class="xp-progress-fill" id="profileXpFill"></div>
-                </div>
-            </div>
-            <div class="settings-currency-row">
-                <div class="settings-currency">
-                    <span class="settings-currency-icon"><img src="assets/generated-icons/coin.png" alt=""></span>
-                    <span id="profileCoins">0</span>
-                </div>
-                <div class="settings-currency">
-                    <span class="settings-currency-icon"><img src="assets/generated-icons/gem.png" alt=""></span>
-                    <span id="profileGems">0</span>
+            <div class="profile-assets-grid">
+                <div class="profile-stat-card">
+                    <div class="profile-stat-icon"><img src="assets/generated-icons/coin.png" alt=""></div>
+                    <div class="profile-stat-main">
+                        <div class="profile-stat-value" id="profileCoins">0</div>
+                        <div class="profile-stat-label">金币</div>
+                    </div>
                 </div>
             </div>
-            <div class="settings-currency-row">
-                <div class="settings-currency">
-                    <span class="settings-currency-icon"><img src="assets/generated-icons/item-hint.png" alt=""></span>
-                    <span id="profileHints">0</span>
+            <div class="profile-items-grid">
+                <div class="profile-stat-card">
+                    <div class="profile-stat-icon"><img src="assets/generated-icons/item-hint.png" alt=""></div>
+                    <div class="profile-stat-main">
+                        <div class="profile-stat-value" id="profileHints">0</div>
+                        <div class="profile-stat-label">提示</div>
+                    </div>
                 </div>
-                <div class="settings-currency">
-                    <span class="settings-currency-icon"><img src="assets/generated-icons/item-time-bonus.png" alt=""></span>
-                    <span id="profileTimeBonuses">0</span>
+                <div class="profile-stat-card">
+                    <div class="profile-stat-icon"><img src="assets/generated-icons/item-shuffle.png" alt=""></div>
+                    <div class="profile-stat-main">
+                        <div class="profile-stat-value" id="profileTimeBonuses">0</div>
+                        <div class="profile-stat-label">重置</div>
+                    </div>
                 </div>
-                <div class="settings-currency">
-                    <span class="settings-currency-icon"><img src="assets/generated-icons/item-shuffle.png" alt=""></span>
-                    <span id="profileShuffles">0</span>
+                <div class="profile-stat-card">
+                    <div class="profile-stat-icon"><img src="assets/generated-icons/item-time-bonus.png" alt=""></div>
+                    <div class="profile-stat-main">
+                        <div class="profile-stat-value" id="profileShuffles">0</div>
+                        <div class="profile-stat-label">延时</div>
+                    </div>
                 </div>
             </div>
-            <div class="settings-menu">
-                <button class="settings-item" onclick="openShop()">
-                    <span class="settings-item-icon"><img src="assets/generated-icons/shop.png" alt=""></span>
-                    <span class="settings-item-text">打开商店</span>
-                    <span class="settings-item-arrow">›</span>
+            <div class="profile-menu">
+                <button class="profile-menu-item" onclick="openShop()">
+                    <span class="profile-menu-item-icon"><img src="assets/generated-icons/shop.png" alt=""></span>
+                    <span class="profile-menu-item-text">打开商店</span>
+                    <span class="profile-menu-item-arrow">›</span>
                 </button>
-                <button class="settings-item" onclick="switchTab('settings')">
-                    <span class="settings-item-icon"><img src="assets/generated-icons/settings.png" alt=""></span>
-                    <span class="settings-item-text">设置</span>
-                    <span class="settings-item-arrow">›</span>
+                <button class="profile-menu-item" onclick="switchTab('settings')">
+                    <span class="profile-menu-item-icon"><img src="assets/generated-icons/settings.png" alt=""></span>
+                    <span class="profile-menu-item-text">学习设置</span>
+                    <span class="profile-menu-item-arrow">›</span>
                 </button>
-                <button class="settings-item danger" onclick="clearLearningData()">
-                    <span class="settings-item-icon"><img src="assets/generated-icons/delete.png" alt=""></span>
-                    <span class="settings-item-text">清除学习数据</span>
-                    <span class="settings-item-arrow">›</span>
+                <button class="profile-menu-item danger" onclick="clearLearningData()">
+                    <span class="profile-menu-item-icon"><img src="assets/generated-icons/delete.png" alt=""></span>
+                    <span class="profile-menu-item-text">清除学习数据</span>
+                    <span class="profile-menu-item-arrow">›</span>
                 </button>
             </div>
         </div>
@@ -10133,7 +10217,6 @@
             document.getElementById('profileLevelTitle').textContent = levelInfo.title;
             document.getElementById('profileLevelBadge').textContent = `Lv.${levelInfo.level}`;
             document.getElementById('profileCoins').textContent = progress.coins;
-            document.getElementById('profileGems').textContent = progress.gems;
             document.getElementById('profileHints').textContent = progress.hints || 0;
             document.getElementById('profileTimeBonuses').textContent = progress.timeBonuses || 0;
             document.getElementById('profileShuffles').textContent = progress.shuffles || 0;
