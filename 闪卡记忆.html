@@ -10476,10 +10476,12 @@
 
             // 词库徽章
             const wordTypes = ['cet4', 'cet6', 'kaoyan', 'ielts', 'toefl', 'gre'];
+            // 临时模拟:全部词库徽章按已解锁(彩色)展示 —— 确认效果后删除此标志
+            const DEMO_ALL_BADGES_UNLOCKED = true;
             let wordUnlocked = 0;
             const wordHtml = wordTypes.map(type => {
                 const plan = bestByType[type];
-                const unlocked = !!(plan && plan.status === 'completed');
+                const unlocked = DEMO_ALL_BADGES_UNLOCKED || !!(plan && plan.status === 'completed');
                 if (unlocked) wordUnlocked++;
                 const mastered = (plan && plan.plan && plan.plan.progress) ? (plan.plan.progress.masteredCount || 0) : 0;
                 const target = plan ? (plan.totalTargetWords || 0) : 0;
