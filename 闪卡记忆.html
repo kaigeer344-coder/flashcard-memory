@@ -1206,10 +1206,21 @@
             position: relative;
             z-index: 2;
         }
+        .ach-shield img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: relative;
+            z-index: 2;
+        }
         .ach-badge-card.locked .ach-shield {
             background: linear-gradient(135deg, #d0d0d0, #b5b5b5);
         }
         .ach-badge-card.locked .ach-shield svg { opacity: 0.5; }
+        .ach-badge-card.locked .ach-shield img {
+            filter: grayscale(1) brightness(0.92);
+            opacity: 0.75;
+        }
 
         /* 连击徽章(圆形) */
         .ach-streak-icon {
@@ -10422,13 +10433,13 @@
             });
         }
 
-        // 词库徽章图标(盾牌内白色 SVG)
+        // 词库徽章图标(盾牌内:图片素材 / GRE 无素材用 SVG)
         const WORD_BADGE_ICONS = {
-            cet4: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>',
-            cet6: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2L3 7v6c0 5 4 9 9 10 5-1 9-5 9-10V7l-9-5z"/></svg>',
-            kaoyan: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14v6M3 9v6c0 5 4 7 9 8 5-1 9-3 9-8V9"/></svg>',
-            ielts: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 12h20M12 2v20M5 5l14 14M19 5L5 19"/></svg>',
-            toefl: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>',
+            cet4: '<img src="assets/四级.png" alt="四级徽章">',
+            cet6: '<img src="assets/六级.png" alt="六级徽章">',
+            kaoyan: '<img src="assets/考研.png" alt="考研徽章">',
+            ielts: '<img src="assets/雅思.png" alt="雅思徽章">',
+            toefl: '<img src="assets/托福.png" alt="托福徽章">',
             gre: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>'
         };
         const WORD_BADGE_LABELS = {
