@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>闪卡记忆</title>
     <link rel="icon" href="assets/generated-icons/app-logo.png">
-    <link rel="stylesheet" href="home-components.css?v=7.7">
+    <link rel="stylesheet" href="home-components.css?v=7.8">
     <link rel="stylesheet" href="map-components.css?v=5.5">
     <style>
         :root {
@@ -5496,7 +5496,7 @@
     <script src="data/ielts.js"></script>
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
-    <script src="home-components.js?v=7.7"></script>
+    <script src="home-components.js?v=7.8"></script>
     <script src="map-components.js?v=5.5"></script>
     <script>
         const wordDB = {
@@ -7831,7 +7831,8 @@
             // ===== 冲刺模式:沿用原数据 =====
             if (mode === 'sprint') {
                 const currentDay = plan ? (plan.currentDay || 1) : 1;
-                const totalDays = plan ? (plan.planDays || 14) : 14;
+                let totalDays = plan ? (plan.planDays || 14) : 14;
+                if (!totalDays || totalDays < 1) totalDays = 14;  // 防御:避免 Day 1/0
                 const progress = totalDays > 0 ? Math.min(1, Math.max(0, (currentDay - 1) / totalDays)) : 0;
                 const completedToday = (newWords === 0 && reviewWords === 0 && currentDay > 1);
 

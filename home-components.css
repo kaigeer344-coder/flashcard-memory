@@ -536,6 +536,17 @@
     text-align: right;
 }
 
+/* ===== hp-page 内 v2 组件适配 ===== */
+.hp-page .v2-ladder-chart {
+    margin: 0 16px 16px;
+}
+.hp-page .v2-cumulative {
+    margin: 0 16px 16px;
+}
+.hp-page .v2-view-toggle {
+    margin: 0 16px 14px;
+}
+
 .hp-sp-section {
     margin: 16px 16px 24px;
     display: flex;
