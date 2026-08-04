@@ -6402,7 +6402,8 @@
             dailyWords: 45         // 冲刺模式:每日新词(可调)
         };
 
-        function startOnboarding() {
+        // preMode 可选:'free'|'sprint' —— 从设置页等入口直接进入指定模式的配置页
+        function startOnboarding(preMode) {
             onboardIndex = 0;
             onboardState = {
                 mode: null, bookId: 'cet4', dailyTarget: 20,
@@ -6412,6 +6413,12 @@
             const future = new Date();
             future.setDate(future.getDate() + 14);
             onboardState.examDate = future.toISOString().slice(0, 10);
+            // 预选模式:跳过 intro,直接进入该模式的配置页
+            if (preMode === 'sprint' || preMode === 'free') {
+                onboardState.mode = preMode;
+                const configIndex = ONBOARD_PAGES.findIndex(p => p.type === 'mode-config');
+                onboardIndex = configIndex >= 0 ? configIndex : 0;
+            }
             renderOnboardingPage();
             document.getElementById('onboardOverlay').classList.add('show');
         }
@@ -6711,6 +6718,11 @@
             document.getElementById('onboardOverlay').classList.remove('show');
             // 引导结束后刷新首页
             if (typeof refreshStartScreen === 'function') refreshStartScreen();
+            // 从设置页重新配置模式:配置完成后直接跳转首页查看新模式
+            if (window._reconfigOnboarding) {
+                window._reconfigOnboarding = false;
+                if (typeof showScreen === 'function') showScreen('startScreen');
+            }
             if (checkStreak()) showStreakReward();
         }
 
@@ -10725,8 +10737,10 @@
                 if (mode === 'sprint') {
                     const plan = LearningSystem.getActivePlan();
                     if (!plan) {
-                        // 没有冲刺计划:跳到 onboarding 配置冲刺
-                        showToast('请先在首页完成冲刺配置', 'warning');
+                        // 没有冲刺计划:直接进入冲刺配置向导(替代原先"去首页配置"的提示)
+                        showToast('先配置你的冲刺计划', 'info');
+                        window._reconfigOnboarding = true;  // 标记:从设置页重新配置
+                        startOnboarding('sprint');
                         return;
                     }
                     LearningSystem.updateSettings({ mode: 'sprint', activeRoleId: plan.id });
