@@ -1283,7 +1283,6 @@
         .shield-kaoyan { background: linear-gradient(135deg, #ff7eb8, #e85ba0); }
         .shield-ielts { background: linear-gradient(135deg, #ffc800, #e0a800); }
         .shield-toefl { background: linear-gradient(135deg, #ff4b4b, #e03838); }
-        .shield-gre { background: linear-gradient(135deg, #ff8c42, #e07430); }
 
         /* 各连击徽章配色 */
         .streak-3 { background: linear-gradient(135deg, #ff9600, #e08400); }
@@ -10446,11 +10445,10 @@
             cet6: '<img src="assets/xuexichengguo/六级.png" alt="六级徽章">',
             kaoyan: '<img src="assets/xuexichengguo/考研.png" alt="考研徽章">',
             ielts: '<img src="assets/xuexichengguo/雅思.png" alt="雅思徽章">',
-            toefl: '<img src="assets/xuexichengguo/托福.png" alt="托福徽章">',
-            gre: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>'
+            toefl: '<img src="assets/xuexichengguo/托福.png" alt="托福徽章">'
         };
         const WORD_BADGE_LABELS = {
-            cet4: '四级', cet6: '六级', kaoyan: '考研', ielts: '雅思', toefl: '托福', gre: 'GRE'
+            cet4: '四级', cet6: '六级', kaoyan: '考研', ielts: '雅思', toefl: '托福'
         };
         const LOCK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>`;
 
@@ -10475,7 +10473,7 @@
             });
 
             // 词库徽章
-            const wordTypes = ['cet4', 'cet6', 'kaoyan', 'ielts', 'toefl', 'gre'];
+            const wordTypes = ['cet4', 'cet6', 'kaoyan', 'ielts', 'toefl'];
             // 临时模拟:全部词库徽章按已解锁(彩色)展示 —— 确认效果后删除此标志
             const DEMO_ALL_BADGES_UNLOCKED = true;
             let wordUnlocked = 0;
