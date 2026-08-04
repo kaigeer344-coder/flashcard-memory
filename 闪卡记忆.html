@@ -1182,39 +1182,33 @@
 
         /* 盾牌徽章(核心词库) */
         .ach-shield {
-            width: 60px;
-            height: 72px;
+            width: 78px;
+            height: 78px;
             margin: 0 auto 8px;
             position: relative;
-            clip-path: polygon(50% 0%, 100% 18%, 100% 60%, 50% 100%, 0% 60%, 0% 18%);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #d8d8d8, #b8b8b8);
+            background: transparent;
         }
         .ach-shield::after {
-            content: '';
-            position: absolute;
-            inset: 3px;
-            clip-path: polygon(50% 0%, 100% 18%, 100% 60%, 50% 100%, 0% 60%, 0% 18%);
-            background: linear-gradient(160deg, rgba(255,255,255,0.4), transparent 55%);
-            pointer-events: none;
+            display: none;
         }
         .ach-shield svg {
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             position: relative;
             z-index: 2;
         }
         .ach-shield img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             position: relative;
             z-index: 2;
         }
         .ach-badge-card.locked .ach-shield {
-            background: linear-gradient(135deg, #d0d0d0, #b5b5b5);
+            background: transparent;
         }
         .ach-badge-card.locked .ach-shield svg { opacity: 0.5; }
         .ach-badge-card.locked .ach-shield img {
