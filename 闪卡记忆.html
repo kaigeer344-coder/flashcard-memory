@@ -1066,370 +1066,223 @@
         }
 
         /* ===== 学习成果页(多邻国风格纪念卡片) ===== */
-        /* ===== 成果页(多邻国风重做) ===== */
+        /* ===== 成果页(多邻国风徽章墙重做) ===== */
         .ach-hero {
             position: relative;
             margin: 0 0 18px;
             border-radius: 0 0 28px 28px;
             overflow: hidden;
             background: linear-gradient(135deg, #58cc02 0%, #46a302 100%);
-            padding: 22px 20px 28px;
+            padding: 20px 20px 26px;
             color: #fff;
+            min-height: 180px;
         }
         .ach-hero-bg {
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(circle at 85% 20%, rgba(255,255,255,0.18) 0%, transparent 40%),
-                radial-gradient(circle at 10% 90%, rgba(255,255,255,0.1) 0%, transparent 40%);
+                radial-gradient(circle at 85% 15%, rgba(255,255,255,0.22) 0%, transparent 38%),
+                radial-gradient(circle at 12% 85%, rgba(255,255,255,0.12) 0%, transparent 42%);
             pointer-events: none;
         }
+        .ach-hero-deco {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            pointer-events: none;
+        }
+        .ach-hero-deco.deco-1 { width: 60px; height: 60px; top: -20px; left: -15px; }
+        .ach-hero-deco.deco-2 { width: 36px; height: 36px; top: 30px; left: 22px; }
         .ach-hero-content {
             position: relative;
             z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
+            max-width: 260px;
         }
-        .ach-hero-streak {
-            display: flex;
+        .ach-unlock-pill {
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: rgba(255,255,255,0.22);
-            padding: 6px 16px 6px 10px;
+            padding: 5px 12px;
             border-radius: 999px;
-            margin-bottom: 12px;
-        }
-        .ach-hero-flame {
-            width: 22px;
-            height: 22px;
-        }
-        .ach-hero-flame svg { width: 100%; height: 100%; }
-        .ach-hero-streak-num {
-            font-size: 18px;
-            font-weight: 1000;
-            line-height: 1;
-        }
-        .ach-hero-streak-label {
             font-size: 12px;
-            font-weight: 700;
-            opacity: 0.9;
+            font-weight: 800;
+            margin-bottom: 14px;
         }
+        .ach-unlock-pill svg { width: 14px; height: 14px; }
         .ach-hero-title {
-            font-size: 28px;
+            font-size: 30px;
             font-weight: 1000;
-            margin-bottom: 4px;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            margin-bottom: 6px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            letter-spacing: 0.5px;
         }
         .ach-hero-sub {
             font-size: 13px;
             font-weight: 600;
-            opacity: 0.92;
+            opacity: 0.94;
+            line-height: 1.4;
         }
+        .ach-hero-mascot {
+            position: absolute;
+            right: 6px;
+            bottom: -4px;
+            width: 150px;
+            height: 140px;
+            z-index: 1;
+            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.15));
+        }
+        .ach-hero-mascot svg { width: 100%; height: 100%; }
 
         .ach-section {
-            margin: 0 14px 20px;
+            margin: 0 14px 22px;
         }
         .ach-section-head {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 4px;
         }
         .ach-section-title {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 900;
             color: var(--dark);
-            margin-bottom: 12px;
-        }
-        .ach-section-head .ach-section-title { margin-bottom: 0; }
-        .ach-clear-btn {
-            border: 2px solid #ffd4d4;
-            background: #fff;
-            color: #ff4b4b;
-            font-size: 12px;
-            font-weight: 800;
-            border-radius: 12px;
-            padding: 6px 12px;
-            cursor: pointer;
-            box-shadow: 0 3px 0 #ffd4d4;
-            transition: transform 120ms ease, box-shadow 120ms ease;
-        }
-        .ach-clear-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 #ffd4d4;
-        }
-
-        .ach-overview {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            background: #fff;
-            border-radius: 20px;
-            padding: 16px 10px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.04), 0 6px 16px rgba(0,0,0,0.03);
-        }
-        .ach-overview-item {
-            text-align: center;
-        }
-        .ach-overview-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 14px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin: 0 auto 6px;
+            gap: 6px;
         }
-        .ach-overview-icon svg { width: 22px; height: 22px; }
-        .ach-ov-green { background: linear-gradient(135deg, #58cc02, #46a302); }
-        .ach-ov-blue { background: linear-gradient(135deg, #1cb0f6, #1492d4); }
-        .ach-ov-orange { background: linear-gradient(135deg, #ff9600, #e08400); }
-        .ach-overview-value {
-            font-size: 22px;
-            font-weight: 1000;
-            color: var(--dark);
-            line-height: 1.1;
-        }
-        .ach-overview-label {
+        .ach-section-icon { font-size: 16px; }
+        .ach-section-hint {
             font-size: 11px;
             font-weight: 700;
             color: var(--muted);
-            margin-top: 2px;
         }
 
-        .ach-badges {
+        .ach-badge-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
+        }
+        .ach-badge-card {
             background: #fff;
-            border-radius: 20px;
-            padding: 14px 10px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.04), 0 6px 16px rgba(0,0,0,0.03);
-        }
-        .ach-badge {
+            border-radius: 18px;
+            padding: 14px 6px 10px;
             text-align: center;
-            padding: 10px 4px;
-            border-radius: 14px;
-            background: #f7f9f4;
             position: relative;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.04), 0 6px 14px rgba(0,0,0,0.03);
+            transition: transform 160ms ease;
         }
-        .ach-badge.unlocked {
-            background: #fff8e1;
+        .ach-badge-card:active { transform: scale(0.96); }
+        .ach-badge-card.locked {
+            background: #f3f4f1;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.03);
         }
-        .ach-badge-icon {
-            width: 44px;
-            height: 44px;
-            margin: 0 auto 6px;
+
+        /* 盾牌徽章(核心词库) */
+        .ach-shield {
+            width: 60px;
+            height: 72px;
+            margin: 0 auto 8px;
+            position: relative;
+            clip-path: polygon(50% 0%, 100% 18%, 100% 60%, 50% 100%, 0% 60%, 0% 18%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #d8d8d8, #b8b8b8);
+        }
+        .ach-shield::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            clip-path: polygon(50% 0%, 100% 18%, 100% 60%, 50% 100%, 0% 60%, 0% 18%);
+            background: linear-gradient(160deg, rgba(255,255,255,0.4), transparent 55%);
+            pointer-events: none;
+        }
+        .ach-shield svg {
+            width: 30px;
+            height: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        .ach-badge-card.locked .ach-shield {
+            background: linear-gradient(135deg, #d0d0d0, #b5b5b5);
+        }
+        .ach-badge-card.locked .ach-shield svg { opacity: 0.5; }
+
+        /* 连击徽章(圆形) */
+        .ach-streak-icon {
+            width: 56px;
+            height: 56px;
+            margin: 4px auto 8px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #e0e0e0;
-            color: #afafaf;
+            background: linear-gradient(135deg, #d8d8d8, #b8b8b8);
+            box-shadow: 0 3px 0 rgba(0,0,0,0.08);
         }
-        .ach-badge.unlocked .ach-badge-icon {
-            background: linear-gradient(135deg, #ffc800, #ffa700);
-            color: #fff;
-            box-shadow: 0 3px 0 rgba(255,180,0,0.4);
-        }
-        .ach-badge-icon svg { width: 24px; height: 24px; }
+        .ach-streak-icon svg { width: 28px; height: 28px; }
+        .ach-badge-card.locked .ach-streak-icon svg { opacity: 0.5; }
+
         .ach-badge-name {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 800;
             color: var(--dark);
             line-height: 1.2;
+            margin-bottom: 4px;
         }
-        .ach-badge.locked .ach-badge-name { color: #afafaf; }
-        .ach-badge-lock {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            width: 14px;
-            height: 14px;
+        .ach-badge-card.locked .ach-badge-name { color: #afafaf; }
+        .ach-badge-status {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #e8f5d0;
+            color: #58cc02;
+        }
+        .ach-badge-card.locked .ach-badge-status {
+            background: #ececec;
             color: #afafaf;
         }
-        .ach-badge.locked .ach-badge-lock { display: block; }
-        .ach-badge.unlocked .ach-badge-lock { display: none; }
+        .ach-badge-lock {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 16px;
+            height: 16px;
+            color: #999;
+        }
+        .ach-badge-card.locked .ach-badge-lock { display: block; }
+        .ach-badge-card:not(.locked) .ach-badge-lock { display: none; }
         .ach-badge-lock svg { width: 100%; height: 100%; }
 
-        .achievement-empty {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 30px 20px 24px;
-            text-align: center;
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.04), 0 6px 16px rgba(0,0,0,0.03);
-        }
-        .ach-empty-illu {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 12px;
-        }
-        .ach-empty-illu svg { width: 100%; height: 100%; }
-        .ach-empty-title {
-            font-size: 16px;
-            font-weight: 900;
-            color: var(--dark);
-            margin-bottom: 6px;
-        }
-        .ach-empty-sub {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--muted);
-            line-height: 1.5;
-            margin-bottom: 16px;
-        }
-        .ach-empty-cta {
-            background: linear-gradient(135deg, #58cc02, #46a302);
-            color: #fff;
-            border: none;
-            font-size: 14px;
-            font-weight: 900;
-            padding: 12px 28px;
-            border-radius: 14px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #3d8a01;
-            transition: transform 120ms ease, box-shadow 120ms ease;
-        }
-        .ach-empty-cta:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #3d8a01;
-        }
+        /* 各词库盾牌配色 */
+        .shield-cet4 { background: linear-gradient(135deg, #ce82ff, #a85cd6); }
+        .shield-cet6 { background: linear-gradient(135deg, #1cb0f6, #1492d4); }
+        .shield-kaoyan { background: linear-gradient(135deg, #ff7eb8, #e85ba0); }
+        .shield-ielts { background: linear-gradient(135deg, #ffc800, #e0a800); }
+        .shield-toefl { background: linear-gradient(135deg, #ff4b4b, #e03838); }
+        .shield-gre { background: linear-gradient(135deg, #ff8c42, #e07430); }
 
-        .achievement-cards-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .achievement-card {
-            border-radius: 24px;
-            padding: 20px 18px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
-            cursor: pointer;
-            transition: transform 200ms ease;
-        }
-        .achievement-card:active { transform: scale(0.97); }
-        .achievement-card-shine {
-            position: absolute;
-            top: -50%;
-            left: -20%;
-            width: 60%;
-            height: 200%;
-            background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%);
-            pointer-events: none;
-        }
-        .achievement-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            position: relative;
-            z-index: 2;
-        }
-        .achievement-card-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.85);
-            font-size: 11px;
-            font-weight: 900;
-        }
-        .achievement-card-date {
-            font-size: 12px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.9);
-        }
-        .achievement-card-body {
-            position: relative;
-            z-index: 2;
-        }
-        .achievement-card-title {
-            font-size: 22px;
-            font-weight: 1000;
-            color: #ffffff;
-            margin-bottom: 6px;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.15);
-        }
-        .achievement-card-subtitle {
-            font-size: 13px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 16px;
-        }
-        .achievement-card-stats {
-            display: flex;
-            gap: 16px;
-        }
-        .achievement-card-stat {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .achievement-card-stat-value {
-            font-size: 20px;
-            font-weight: 1000;
-            color: #ffffff;
-            line-height: 1.1;
-        }
-        .achievement-card-stat-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.8);
-        }
-        .achievement-card-icon {
-            position: absolute;
-            right: -8px;
-            bottom: -12px;
-            width: 90px;
-            height: 90px;
-            opacity: 0.2;
-            z-index: 1;
-        }
-        .achievement-card-icon svg {
-            width: 100%;
-            height: 100%;
-        }
-        .achievement-card.in-progress {
-            opacity: 0.65;
-        }
-        .achievement-card-progress {
-            height: 8px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 999px;
-            overflow: hidden;
-            margin-top: 12px;
-            position: relative;
-            z-index: 2;
-        }
-        .achievement-card-progress-fill {
-            height: 100%;
-            background: rgba(255,255,255,0.8);
-            border-radius: 999px;
-            transition: width 600ms ease;
-        }
-        .achievement-card-progress-text {
-            font-size: 11px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.85);
-            margin-top: 6px;
-            position: relative;
-            z-index: 2;
-        }
+        /* 各连击徽章配色 */
+        .streak-3 { background: linear-gradient(135deg, #ff9600, #e08400); }
+        .streak-7 { background: linear-gradient(135deg, #ff6b35, #e0542a); }
+        .streak-30 { background: linear-gradient(135deg, #ff4b4b, #e03838); }
+        .streak-100 { background: linear-gradient(135deg, #ce82ff, #a85cd6); }
+        .streak-early { background: linear-gradient(135deg, #1cb0f6, #1492d4); }
+        .streak-night { background: linear-gradient(135deg, #5b6ef5, #3f4fd4); }
 
         /* Settings Screen */
         /* ===== 个人中心(参考图复刻) ===== */
         .profile-header-card {
             position: relative;
-            background: linear-gradient(135deg, #e8f9df 0%, #d4f6d4 50%, #e8f9df 100%);
+            background-image: url('assets/profile-back.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             border-radius: 28px;
             padding: 22px 20px 18px;
             margin-bottom: 14px;
@@ -5316,72 +5169,53 @@
         <div class="screen stats-screen" id="statsScreen">
             <div class="ach-hero">
                 <div class="ach-hero-bg"></div>
+                <div class="ach-hero-deco deco-1"></div>
+                <div class="ach-hero-deco deco-2"></div>
                 <div class="ach-hero-content">
-                    <div class="ach-hero-streak">
-                        <div class="ach-hero-flame">
-                            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2s4 4 4 8a4 4 0 11-8 0c0-2 1-3 1-3s-3 2-3 6a6 6 0 1012 0c0-6-6-11-6-11z" fill="#fff"/></svg>
-                        </div>
-                        <div class="ach-hero-streak-num" id="achHeroStreak">0</div>
-                        <div class="ach-hero-streak-label">连续打卡</div>
+                    <div class="ach-unlock-pill" id="achUnlockPill">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M6 4h12v3a6 6 0 01-12 0V4z"/><path d="M6 5H3v1a3 3 0 003 3M18 5h3v1a3 3 0 01-3 3"/><path d="M10 16h4M12 13v3M8 20h8" fill="currentColor"/></svg>
+                        <span id="achUnlockCount">已解锁 0 / 11</span>
                     </div>
-                    <div class="ach-hero-title">学习成果</div>
-                    <div class="ach-hero-sub" id="achHeroSub">完成冲刺计划，收藏你的纪念卡片</div>
+                    <h2 class="ach-hero-title">纪念徽章</h2>
+                    <p class="ach-hero-sub">完成学习目标，收集你的专属徽章</p>
                 </div>
-            </div>
-
-            <div class="ach-section">
-                <div class="ach-section-title">总览</div>
-                <div class="ach-overview">
-                    <div class="ach-overview-item">
-                        <div class="ach-overview-icon ach-ov-green">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2L3 7v6c0 5 4 9 9 10 5-1 9-5 9-10V7l-9-5z"/></svg>
-                        </div>
-                        <div class="ach-overview-value" id="achTotalCards">0</div>
-                        <div class="ach-overview-label">纪念卡片</div>
-                    </div>
-                    <div class="ach-overview-item">
-                        <div class="ach-overview-icon ach-ov-blue">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-                        </div>
-                        <div class="ach-overview-value" id="achTotalDays">0</div>
-                        <div class="ach-overview-label">坚持天数</div>
-                    </div>
-                    <div class="ach-overview-item">
-                        <div class="ach-overview-icon ach-ov-orange">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>
-                        </div>
-                        <div class="ach-overview-value" id="achTotalWords">0</div>
-                        <div class="ach-overview-label">掌握单词</div>
-                    </div>
+                <div class="ach-hero-mascot">
+                    <svg viewBox="0 0 140 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="70" cy="75" rx="48" ry="44" fill="#a5e65a"/>
+                        <ellipse cx="70" cy="68" rx="42" ry="38" fill="#baf06d"/>
+                        <circle cx="52" cy="62" r="5" fill="#2d2d2d"/>
+                        <circle cx="88" cy="62" r="5" fill="#2d2d2d"/>
+                        <path d="M42 54h24a4 4 0 000-8H42a4 4 0 000 8z" fill="#2d2d2d"/>
+                        <path d="M74 54h24a4 4 0 000-8H74a4 4 0 000 8z" fill="#2d2d2d"/>
+                        <path d="M58 84c4 4 20 4 24 0" stroke="#2d2d2d" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M45 96h50v8a6 6 0 01-6 6H51a6 6 0 01-6-6v-8z" fill="#fff9c4"/>
+                        <path d="M45 96h50v4H45z" fill="#ffeb3b"/>
+                        <path d="M95 96h8v8a4 4 0 01-4 4h-4v-12z" fill="#ff9800"/>
+                        <path d="M45 96h-8v8a4 4 0 004 4h4v-12z" fill="#ff9800"/>
+                    </svg>
                 </div>
-            </div>
-
-            <div class="ach-section">
-                <div class="ach-section-title">成就徽章</div>
-                <div class="ach-badges" id="achBadges"></div>
             </div>
 
             <div class="ach-section">
                 <div class="ach-section-head">
-                    <div class="ach-section-title">纪念卡片</div>
-                    <button class="ach-clear-btn" onclick="clearAchievementData()">清空</button>
-                </div>
-                <div class="achievement-cards-grid" id="achievementCardsGrid"></div>
-                <div class="achievement-empty" id="achievementEmpty">
-                    <div class="ach-empty-illu">
-                        <svg viewBox="0 0 120 120" fill="none">
-                            <rect x="20" y="30" width="80" height="60" rx="12" fill="#e8f5d0" stroke="#c8e6a0" stroke-width="2"/>
-                            <rect x="28" y="42" width="40" height="6" rx="3" fill="#b8d890"/>
-                            <rect x="28" y="54" width="28" height="4" rx="2" fill="#c8e6a0"/>
-                            <circle cx="84" cy="64" r="14" fill="#58cc02"/>
-                            <path d="M78 64l4 4 8-8" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M30 30l8-8h44l8 8" stroke="#a8c878" stroke-width="2" fill="none"/>
-                        </svg>
+                    <div class="ach-section-title">
+                        <span class="ach-section-icon">⭐</span>
+                        核心词库徽章
                     </div>
-                    <div class="ach-empty-title">还没有纪念卡片</div>
-                    <div class="ach-empty-sub">制定冲刺计划并坚持完成，<br>就能获得专属纪念卡片</div>
-                    <button class="ach-empty-cta" onclick="switchTab('home')">去制定计划</button>
+                    <span class="ach-section-hint">背完一个词库，解锁一枚</span>
                 </div>
+                <div class="ach-badge-grid" id="achWordBadges"></div>
+            </div>
+
+            <div class="ach-section">
+                <div class="ach-section-head">
+                    <div class="ach-section-title">
+                        <span class="ach-section-icon">🔥</span>
+                        打卡连击徽章
+                    </div>
+                    <span class="ach-section-hint">坚持越久，徽章越酷</span>
+                </div>
+                <div class="ach-badge-grid" id="achStreakBadges"></div>
             </div>
         </div>
 
@@ -10576,107 +10410,89 @@
             });
         }
 
+        // 词库徽章图标(盾牌内白色 SVG)
+        const WORD_BADGE_ICONS = {
+            cet4: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>',
+            cet6: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2L3 7v6c0 5 4 9 9 10 5-1 9-5 9-10V7l-9-5z"/></svg>',
+            kaoyan: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14v6M3 9v6c0 5 4 7 9 8 5-1 9-3 9-8V9"/></svg>',
+            ielts: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 12h20M12 2v20M5 5l14 14M19 5L5 19"/></svg>',
+            toefl: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>',
+            gre: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>'
+        };
+        const WORD_BADGE_LABELS = {
+            cet4: '四级', cet6: '六级', kaoyan: '考研', ielts: '雅思', toefl: '托福', gre: 'GRE'
+        };
+        const LOCK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>`;
+
         function renderStatsScreen() {
-            const cards = getAchievementCards();
-            const grid = document.getElementById('achievementCardsGrid');
-            const emptyEl = document.getElementById('achievementEmpty');
+            const allPlans = (typeof LearningSystem !== 'undefined' && LearningSystem.getAllPlans) ? LearningSystem.getAllPlans() : [];
+            // 取每个词库类型最佳计划(优先 completed,其次进度最高)
+            const bestByType = {};
+            allPlans.forEach(p => {
+                const cur = bestByType[p.type];
+                if (!cur) { bestByType[p.type] = p; return; }
+                const aDone = cur.status === 'completed';
+                const bDone = p.status === 'completed';
+                if (bDone && !aDone) bestByType[p.type] = p;
+                else if (aDone && bDone && (p.updatedAt || 0) > (cur.updatedAt || 0)) bestByType[p.type] = p;
+            });
 
-            // 汇总
-            const totalCards = cards.filter(c => c.completed).length;
-            const totalDays = cards.reduce((sum, c) => sum + c.completedDays, 0);
-            const totalWords = cards.reduce((sum, c) => sum + c.masteredCount, 0);
-            document.getElementById('achTotalCards').textContent = totalCards;
-            document.getElementById('achTotalDays').textContent = totalDays;
-            document.getElementById('achTotalWords').textContent = totalWords;
-
-            // Hero 连续打卡天数
             let maxStreak = 0;
-            try {
-                const plans = (typeof LearningSystem !== 'undefined' && LearningSystem.getAllPlans) ? LearningSystem.getAllPlans() : [];
-                plans.forEach(p => {
-                    if (p.plan && p.plan.progress && p.plan.progress.streakDays) {
-                        maxStreak = Math.max(maxStreak, p.plan.progress.streakDays);
-                    }
-                });
-            } catch (e) {}
-            document.getElementById('achHeroStreak').textContent = maxStreak;
-            document.getElementById('achHeroSub').textContent = totalCards > 0
-                ? `已收藏 ${totalCards} 张纪念卡片，继续加油！`
-                : '完成冲刺计划，收藏你的纪念卡片';
+            allPlans.forEach(p => {
+                if (p.plan && p.plan.progress && p.plan.progress.streakDays) {
+                    maxStreak = Math.max(maxStreak, p.plan.progress.streakDays);
+                }
+            });
 
-            // 徽章墙
-            renderAchBadges(totalCards, totalDays, totalWords, maxStreak);
-
-            // 卡片
-            if (!cards.length) {
-                grid.innerHTML = '';
-                emptyEl.style.display = 'flex';
-                return;
-            }
-            emptyEl.style.display = 'none';
-
-            grid.innerHTML = cards.map(card => {
-                const dateStr = card.completed
-                    ? _formatDate(card.completedAt || Date.now())
-                    : _formatDate(Date.now());
-                const badgeText = card.completed ? '已完成' : '进行中';
-                const badgeColor = card.completed ? card.accent : '#afafaf';
-                const TrophyIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M6 4h12v3a6 6 0 01-12 0V4z"/><path d="M6 5H3v1a3 3 0 003 3M18 5h3v1a3 3 0 01-3 3"/><path d="M10 16h4M12 13v3M8 20h8"/></svg>`;
-                const BookIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>`;
+            // 词库徽章
+            const wordTypes = ['cet4', 'cet6', 'kaoyan', 'ielts', 'toefl', 'gre'];
+            let wordUnlocked = 0;
+            const wordHtml = wordTypes.map(type => {
+                const plan = bestByType[type];
+                const unlocked = !!(plan && plan.status === 'completed');
+                if (unlocked) wordUnlocked++;
+                const mastered = (plan && plan.plan && plan.plan.progress) ? (plan.plan.progress.masteredCount || 0) : 0;
+                const target = plan ? (plan.totalTargetWords || 0) : 0;
+                const statusText = unlocked ? '已解锁' : '未解锁';
+                const progressText = unlocked && target ? `${mastered}/${target}` : '';
                 return `
-                    <div class="achievement-card ${card.completed ? '' : 'in-progress'}" style="background: ${card.bg}" onclick="onAchievementCardClick('${card.id}')">
-                        <div class="achievement-card-shine"></div>
-                        <div class="achievement-card-header">
-                            <span class="achievement-card-badge" style="color: ${badgeColor}">
-                                ${card.completed ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>' : ''}
-                                ${badgeText}
-                            </span>
-                            <span class="achievement-card-date">${dateStr}</span>
-                        </div>
-                        <div class="achievement-card-body">
-                            <div class="achievement-card-title">${card.title}</div>
-                            <div class="achievement-card-subtitle">${card.subtitle}</div>
-                            <div class="achievement-card-stats">
-                                <div class="achievement-card-stat">
-                                    <div class="achievement-card-stat-value">${card.completedDays}<span style="font-size:14px">/${card.totalDays}</span></div>
-                                    <div class="achievement-card-stat-label">坚持天数</div>
-                                </div>
-                                <div class="achievement-card-stat">
-                                    <div class="achievement-card-stat-value">${card.masteredCount}</div>
-                                    <div class="achievement-card-stat-label">掌握单词</div>
-                                </div>
-                            </div>
-                        </div>
-                        ${card.completed ? '' : `
-                            <div class="achievement-card-progress">
-                                <div class="achievement-card-progress-fill" style="width: ${card.progressPct}%"></div>
-                            </div>
-                            <div class="achievement-card-progress-text">进度 ${card.progressPct}%</div>
-                        `}
-                        <div class="achievement-card-icon">${card.completed ? TrophyIcon : BookIcon}</div>
+                    <div class="ach-badge-card ${unlocked ? '' : 'locked'}">
+                        <div class="ach-badge-lock">${LOCK_ICON}</div>
+                        <div class="ach-shield ${unlocked ? 'shield-' + type : ''}">${WORD_BADGE_ICONS[type]}</div>
+                        <div class="ach-badge-name">${WORD_BADGE_LABELS[type]}</div>
+                        <div class="ach-badge-status">${unlocked && progressText ? progressText : statusText}</div>
                     </div>
                 `;
             }).join('');
-        }
+            document.getElementById('achWordBadges').innerHTML = wordHtml;
 
-        function renderAchBadges(totalCards, totalDays, totalWords, maxStreak) {
-            const LockIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>`;
-            const badges = [
-                { id: 'first', name: '首张纪念', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 4h12v3a6 6 0 01-12 0V4z"/><path d="M10 16h4M12 13v3M8 20h8"/></svg>', unlocked: totalCards >= 1 },
-                { id: 's3', name: '坚持3天', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>', unlocked: maxStreak >= 3 || totalDays >= 3 },
-                { id: 's7', name: '坚持7天', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2s4 4 4 8a4 4 0 11-8 0c0-2 1-3 1-3s-3 2-3 6a6 6 0 1012 0c0-6-6-11-6-11z"/></svg>', unlocked: maxStreak >= 7 || totalDays >= 7 },
-                { id: 'w100', name: '百词斩', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>', unlocked: totalWords >= 100 },
-                { id: 'c3', name: '三卡收藏家', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="5" width="14" height="14" rx="2"/><path d="M8 9h6M8 13h4"/></svg>', unlocked: totalCards >= 3 },
-                { id: 's30', name: '坚持30天', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5L12 17l-6.5 4.5L8 14l-6-4.5h7.5z"/></svg>', unlocked: maxStreak >= 30 || totalDays >= 30 }
+            // 连击徽章
+            const streakBadges = [
+                { id: 's3', name: '3天连击', cls: 'streak-3', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2s4 4 4 8a4 4 0 11-8 0c0-2 1-3 1-3s-3 2-3 6a6 6 0 1012 0c0-6-6-11-6-11z"/></svg>', unlocked: maxStreak >= 3 },
+                { id: 's7', name: '7天连击', cls: 'streak-7', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2s4 4 4 8a4 4 0 11-8 0c0-2 1-3 1-3s-3 2-3 6a6 6 0 1012 0c0-6-6-11-6-11z"/></svg>', unlocked: maxStreak >= 7 },
+                { id: 's30', name: '30天连击', cls: 'streak-30', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5L12 17l-6.5 4.5L8 14l-6-4.5h7.5z"/></svg>', unlocked: maxStreak >= 30 },
+                { id: 's100', name: '百日大师', cls: 'streak-100', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5L12 17l-6.5 4.5L8 14l-6-4.5h7.5z"/></svg>', unlocked: maxStreak >= 100 },
+                { id: 'early', name: '早起达人', cls: 'streak-early', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>', unlocked: maxStreak >= 14 },
+                { id: 'night', name: '夜读之星', cls: 'streak-night', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>', unlocked: maxStreak >= 21 }
             ];
-            const html = badges.map(b => `
-                <div class="ach-badge ${b.unlocked ? 'unlocked' : 'locked'}">
-                    <div class="ach-badge-lock">${LockIcon}</div>
-                    <div class="ach-badge-icon">${b.icon}</div>
-                    <div class="ach-badge-name">${b.name}</div>
-                </div>
-            `).join('');
-            document.getElementById('achBadges').innerHTML = html;
+            let streakUnlocked = 0;
+            const streakHtml = streakBadges.map(b => {
+                if (b.unlocked) streakUnlocked++;
+                return `
+                    <div class="ach-badge-card ${b.unlocked ? '' : 'locked'}">
+                        <div class="ach-badge-lock">${LOCK_ICON}</div>
+                        <div class="ach-streak-icon ${b.unlocked ? b.cls : ''}">${b.icon}</div>
+                        <div class="ach-badge-name">${b.name}</div>
+                        <div class="ach-badge-status">${b.unlocked ? '已解锁' : '未解锁'}</div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('achStreakBadges').innerHTML = streakHtml;
+
+            // Hero 解锁数
+            const totalUnlocked = wordUnlocked + streakUnlocked;
+            const totalAll = wordTypes.length + streakBadges.length;
+            document.getElementById('achUnlockCount').textContent = `已解锁 ${totalUnlocked} / ${totalAll}`;
         }
 
         function onAchievementCardClick(cardId) {
