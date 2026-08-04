@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>闪卡记忆</title>
     <link rel="icon" href="assets/generated-icons/app-logo.png">
-    <link rel="stylesheet" href="home-components.css?v=7.8">
+    <link rel="stylesheet" href="home-components.css?v=7.7">
     <link rel="stylesheet" href="map-components.css?v=5.5">
     <style>
         :root {
@@ -5496,7 +5496,7 @@
     <script src="data/ielts.js"></script>
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
-    <script src="home-components.js?v=7.8"></script>
+    <script src="home-components.js?v=7.7"></script>
     <script src="map-components.js?v=5.5"></script>
     <script>
         const wordDB = {
@@ -7777,23 +7777,33 @@
                     v2El.innerHTML = '';
                     return;
                 }
-                // 冲刺/自由模式统一走新版首页(home-components.js 组件化)
-                // 自由模式不再走 _renderV2LadderHTML,改用统一 renderHomePage 架构
+                // 冲刺模式:渲染新版游戏化首页
+                if (mode === 'sprint') {
+                    startScreen.classList.add('v2-active');
+                    v2El.className = 'hp-home-root';
+                    v2El.innerHTML = _renderNewHomeHTML(settings);
+                    return;
+                }
+                // 自由学习模式:保留 V2 阶梯首页
                 startScreen.classList.add('v2-active');
-                v2El.className = 'hp-home-root';
-                v2El.innerHTML = _renderNewHomeHTML(settings);
+                v2El.className = 'v2-ladder';
+                _v2View = settings.defaultView === 'all' ? 'all' : 'core';
+                v2El.innerHTML = _renderV2LadderHTML(settings, mode);
+                renderHeaderStats();
             } catch (e) {
                 console.error('renderStartScreenV2 失败:', e);
             }
         }
 
-        // 新版首页数据准备与渲染(冲刺/自由统一入口)
+        // 新版首页数据准备与渲染
         function _renderNewHomeHTML(settings) {
-            const mode = settings.mode || 'sprint';
             const plan = LearningSystem.getActivePlan();
             const ladder = LearningSystem.calculateLadderProgress();
             const stats = LearningSystem.getGlobalStats();
             const meta = _safeGetTodayMeta();
+            const currentDay = plan ? (plan.currentDay || 1) : 1;
+            const totalDays = plan ? (plan.planDays || 14) : 14;
+            const progress = totalDays > 0 ? Math.min(1, Math.max(0, (currentDay - 1) / totalDays)) : 0;
             const newWords = meta.newWordsToday || 0;
             const reviewWords = meta.reviewWordsToday || 0;
             const estimatedMinutes = Math.max(5, Math.round((newWords + reviewWords) * 0.6));
@@ -7808,155 +7818,44 @@
                 { id: 'toefl', name: '托福', color: '#FF6262', icon: 'assets/progress/toefl-topper.png' }
             ];
 
-            // 词汇金字塔数据(共用)
-            const vocabularyProgress = {
-                title: '词汇金字塔',
-                items: [
-                    { id: 'cet4', name: '四级', color: '#58CC02', learned: 2700, total: 4500, progress: 0.60 },
-                    { id: 'cet6', name: '六级', color: '#1CB0F6', learned: 2200, total: 5500, progress: 0.40 },
-                    { id: 'kaoyan', name: '考研', color: '#FFB020', learned: 1375, total: 5500, progress: 0.25 },
-                    { id: 'ielts', name: '雅思', color: '#8A5CF6', learned: 900, total: 6000, progress: 0.15 },
-                    { id: 'toefl', name: '托福', color: '#FF6262', learned: 500, total: 5000, progress: 0.10 }
-                ]
-            };
 
-            // studyStats 共用
-            const studyStats = {
-                streak: stats.streakDays || 3,
-                learned: stats.totalLearned || 245,
-                goalCurrent: stats.weeklyGoalCurrent || 2,
-                goalTotal: stats.weeklyGoalTotal || 5
-            };
-
-            // ===== 冲刺模式:沿用原数据 =====
-            if (mode === 'sprint') {
-                const currentDay = plan ? (plan.currentDay || 1) : 1;
-                let totalDays = plan ? (plan.planDays || 14) : 14;
-                if (!totalDays || totalDays < 1) totalDays = 14;  // 防御:避免 Day 1/0
-                const progress = totalDays > 0 ? Math.min(1, Math.max(0, (currentDay - 1) / totalDays)) : 0;
-                const completedToday = (newWords === 0 && reviewWords === 0 && currentDay > 1);
-
-                return renderHomePage({
-                    mode: 'sprint',
-                    header: { brandName: '闪卡记忆', energy: 10 },
-                    courseTask: {
-                        courseTitle: plan ? plan.name : '四级冲刺',
-                        tagLabel: '极限冲刺',
-                        tagIcon: '🔥',
-                        currentDay: currentDay,
-                        totalDays: totalDays,
-                        progress: progress,
-                        newWords: newWords,
-                        reviewWords: reviewWords,
-                        estimatedMinutes: estimatedMinutes,
-                        rewardXp: rewardXp,
-                        completed: completedToday
-                    },
-                    cici: {
-                        mode: 'sprint',
-                        speech: `还剩 ${Math.max(0, totalDays - currentDay)} 天，Cici 陪你一起冲！`,
-                        remainDays: Math.max(0, totalDays - currentDay),
-                        totalDays: totalDays,
-                        currentDay: currentDay
-                    },
-                    ladderChart: _buildLadderData(settings, mode),
-                    cumulativeStats: _buildCumulativeStats(),
-                    showViewToggle: false,
-                    vocabularyProgress: vocabularyProgress,
-                    studyStats: studyStats,
-                    activeTab: 'home'
-                });
-            }
-
-            // ===== 自由模式:重新组装数据 =====
-            const bookInfo = LearningSystem.getBookInfo(settings.activeBookId) || { name: '四级核心词', coreWords: 2000 };
-            const dailyTarget = settings.dailyTarget || 20;
-            const totalLearned = stats.totalLearnedWords || 0;
-            const streakDays = stats.currentStreak || 0;
-            const completedToday = (newWords === 0 && reviewWords === 0 && totalLearned > 0);
-
-            // 自由模式气泡文案(D/C/A/B/E 优先级)
-            let ciciSpeech;
-            if (totalLearned === 0) {
-                // D 词库探索
-                ciciSpeech = `正在学《${bookInfo.name}》，下一本《六级》等你哦`;
-            } else if (streakDays >= 3) {
-                // C 连击激励
-                ciciSpeech = `连续 ${streakDays} 天打卡！继续保持节奏～`;
-            } else if (!completedToday) {
-                // A 每日目标
-                ciciSpeech = `今天目标 ${dailyTarget} 个词，Cici 陪你慢慢来～`;
-            } else {
-                // B 累计成就
-                const next1000 = Math.ceil((totalLearned + 1) / 1000) * 1000;
-                ciciSpeech = `你已掌握 ${totalLearned} 词，距离 ${next1000} 还差 ${next1000 - totalLearned} 个！`;
-            }
+            // 判断今日是否已完成（简化：如果新词和复习都为 0 但进度已到当天，认为已完成）
+            const completedToday = (newWords === 0 && reviewWords === 0 && currentDay > 1);
 
             return renderHomePage({
-                mode: 'free',
                 header: { brandName: '闪卡记忆', energy: 10 },
-                freeMode: {
-                    bookId: settings.activeBookId,
-                    bookName: bookInfo.name,
-                    coreWords: bookInfo.coreWords || 2000,
-                    dailyTarget: dailyTarget,
-                    totalLearned: totalLearned,
-                    streakDays: streakDays,
-                    completedToday: completedToday
-                },
                 courseTask: {
+                    courseTitle: plan ? plan.name : '四级冲刺',
+                    tagLabel: '极限冲刺',
+                    tagIcon: '🔥',
+                    currentDay: currentDay,
+                    totalDays: totalDays,
+                    progress: progress,
                     newWords: newWords,
                     reviewWords: reviewWords,
-                    completed: completedToday,
-                    currentDay: streakDays || 1,
-                    totalDays: 0  // 自由模式无总天数
+                    estimatedMinutes: estimatedMinutes,
+                    rewardXp: rewardXp,
+                    completed: completedToday
                 },
-                cici: {
-                    mode: 'free',
-                    speech: ciciSpeech,
-                    mascotVariant: 'calm'  // 从容姿态
+                ciciSpeech: `还剩 ${Math.max(0, totalDays - currentDay)} 天，Cici 陪你一起冲！`,
+                vocabularyProgress: {
+                    title: '词汇金字塔',
+                    items: [
+                        { id: 'cet4', name: '四级', color: '#58CC02', learned: 2700, total: 4500, progress: 0.60 },
+                        { id: 'cet6', name: '六级', color: '#1CB0F6', learned: 2200, total: 5500, progress: 0.40 },
+                        { id: 'kaoyan', name: '考研', color: '#FFB020', learned: 1375, total: 5500, progress: 0.25 },
+                        { id: 'ielts', name: '雅思', color: '#8A5CF6', learned: 900, total: 6000, progress: 0.15 },
+                        { id: 'toefl', name: '托福', color: '#FF6262', learned: 500, total: 5000, progress: 0.10 }
+                    ]
                 },
-                ladderChart: _buildLadderData(settings, mode),
-                cumulativeStats: _buildCumulativeStats(),
-                showViewToggle: true,
-                vocabularyProgress: vocabularyProgress,
-                studyStats: studyStats,
+                studyStats: {
+                    streak: stats.streakDays || 3,
+                    learned: stats.totalLearned || 245,
+                    goalCurrent: stats.weeklyGoalCurrent || 2,
+                    goalTotal: stats.weeklyGoalTotal || 5
+                },
                 activeTab: 'home'
             });
-        }
-
-        // 构建阶梯柱形图数据(供 renderHomePage 使用)
-        function _buildLadderData(settings, mode) {
-            const ladder = LearningSystem.calculateLadderProgress();
-            const books = LearningSystem.getAllBooksInfo();
-            const difficultyOrder = ['cet4', 'cet6', 'kaoyan', 'ielts', 'toefl', 'gre'];
-            const currentBookId = mode === 'free'
-                ? settings.activeBookId
-                : (LearningSystem.getActivePlan()?.type);
-            const sortedBooks = difficultyOrder
-                .map(id => books.find(b => b.id === id))
-                .filter(Boolean)
-                .map(b => ({
-                    id: b.id,
-                    name: b.name,
-                    color: b.color,
-                    progress: ladder[b.id] || { core: { learned: 0, total: 1 }, all: { learned: 0, total: 1 } }
-                }));
-            return {
-                books: sortedBooks,
-                currentBookId: currentBookId,
-                view: settings.defaultView === 'all' ? 'all' : 'core'
-            };
-        }
-
-        // 构建累计统计数据
-        function _buildCumulativeStats() {
-            const stats = LearningSystem.getGlobalStats();
-            return {
-                totalStudyDays: stats.totalStudyDays || getStudyDays(),
-                totalLearnedWords: stats.totalLearnedWords || 0,
-                currentStreak: stats.currentStreak || 0
-            };
         }
 
         // 新版首页交互回调
@@ -7965,7 +7864,6 @@
         window.onHomeEnergyClick = function() { SFX.click(); showToast('能量用于复习和提示', 'info'); };
         window.onHomeAvatarClick = function() { SFX.click(); showToast('个人中心开发中', 'info'); };
         window.onCiciClick = function() { SFX.click(); showToast('Cici：点击开始今日任务吧！', 'success'); };
-        window.onFreeModeCardClick = function() { SFX.click(); showToast('点击词库柱子可切换词书', 'info'); };
         window.onStartTaskClick = function() { SFX.click(); unlockAudio(); startV2TodayTask(); };
         window.onCourseTaskCardClick = function() { SFX.click(); showLearningMap(); };
         window.onProgressColumnClick = function(levelId) { SFX.click(); showToast(`${levelId} 进度互通中`, 'info'); };

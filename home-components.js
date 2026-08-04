@@ -8,12 +8,12 @@
     const HOME_ASSETS = {
         logo: 'assets/home/logo.png',
         avatar: 'assets/characters/cici-avatar.png',
-        mascot: 'assets/characters/cici-mascot.svg',
-        mascotOpen: 'assets/characters/cici-mascot.svg',
-        mascotClose: 'assets/characters/cici-mascot.svg',
-        mascotUrgent: 'assets/characters/cici-mascot.svg',
-        mascotConfident: 'assets/characters/cici-mascot.svg',
-        mascotCalm: 'assets/characters/cici-mascot.svg',
+        mascot: 'assets/characters/cici-default.png',
+        mascotOpen: 'assets/characters/cici-blink-open.png',
+        mascotClose: 'assets/characters/cici-blink-close.png',
+        mascotUrgent: 'assets/characters/cici-urgent.png',
+        mascotConfident: 'assets/characters/cici-confident.png',
+        mascotCalm: 'assets/characters/cici-calm.png',
         badgeShield: 'assets/progress/badge-shield.png',
         cloud: 'assets/progress/cloud.png',
         bushLeft: 'assets/progress/bush-left.png',
@@ -163,19 +163,11 @@
             </div>`;
     };
 
-    // ===== Cici 主角色区（独立组件，两种模式共用）=====
+    // ===== Cici 主角色区（仅保留形象和鼓励语）=====
     window.renderCiciMascot = function(data) {
-        data = data || {};
-        const mode = data.mode || 'sprint';
-        // 自由模式固定用从容姿态，冲刺模式按剩余天数选
-        let mascotSrc;
-        if (mode === 'free') {
-            mascotSrc = HOME_ASSETS.mascotCalm || HOME_ASSETS.mascot;
-        } else {
-            const remainDays = Math.max(0, (data.totalDays || 14) - (data.currentDay || 1));
-            mascotSrc = data.mascotAsset || getMascotByDays(remainDays);
-        }
-        const speech = data.speech || getRandomEncouragement((data.currentDay || 1) + (data.totalDays || 14));
+        const remainDays = Math.max(0, data.totalDays - data.currentDay);
+        const mascotSrc = data.mascotAsset || getMascotByDays(remainDays);
+        const speech = data.speech || getRandomEncouragement(data.currentDay + data.totalDays);
         return `
             <div class="hp-cici-zone" onclick="onCiciClick && onCiciClick()">
                 <div class="hp-cici-speech">
@@ -185,109 +177,6 @@
                     ${imgOrPlaceholder(mascotSrc, 'hp-cici-img', 'Cici', CICI_PLACEHOLDER)}
                 </div>
                 <div class="hp-cici-shadow"></div>
-            </div>`;
-    };
-
-    // ===== FreeModeCard 自由模式词书头卡片 =====
-    window.renderFreeModeCard = function(data) {
-        data = data || {};
-        const bookName = data.bookName || '四级核心词';
-        const coreWords = data.coreWords || 2000;
-        const dailyTarget = data.dailyTarget || 20;
-        const totalLearned = data.totalLearned || 0;
-        const streakDays = data.streakDays || 0;
-        const pct = Math.min(100, Math.round((totalLearned / Math.max(1, coreWords)) * 100));
-        return `
-            <div class="hp-fm-card" onclick="onFreeModeCardClick && onFreeModeCardClick()" role="button" aria-label="自由学习 ${bookName}">
-                <div class="hp-fm-left">
-                    <h2 class="hp-fm-title">
-                        自由学习 · <strong class="hp-fm-book">${bookName}</strong>
-                    </h2>
-                    <div class="hp-fm-tag">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="#58CC02"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        <span>每日 ${dailyTarget} 词</span>
-                    </div>
-                    <div class="hp-fm-day">已坚持 ${streakDays} 天 · 累计 ${totalLearned} 词</div>
-                    <div class="hp-fm-progress">
-                        <div class="hp-fm-track">
-                            <div class="hp-fm-fill" style="width:${pct}%"></div>
-                        </div>
-                        <span class="hp-fm-pct">${pct}%</span>
-                    </div>
-                </div>
-            </div>`;
-    };
-
-    // ===== LadderChart 阶梯柱形图（从 _renderV2LadderHTML 移植）=====
-    window.renderLadderChart = function(data) {
-        data = data || {};
-        const books = data.books || [];
-        const currentBookId = data.currentBookId;
-        const view = data.view || 'core';  // 'core' | 'all'
-        const heightMap = {
-            cet4: 70, cet6: 88, kaoyan: 106, ielts: 122, toefl: 138, gre: 154
-        };
-        const bars = books.map(b => {
-            const prog = b.progress || { core: { learned: 0, total: 1 }, all: { learned: 0, total: 1 } };
-            const target = view === 'core' ? prog.core : prog.all;
-            const total = target.total || 1;
-            const learned = target.learned || 0;
-            const pct = Math.round((learned / total) * 100);
-            const isCurrent = b.id === currentBookId;
-            const barHeight = heightMap[b.id] || 70;
-            const fillHeight = Math.max(2, Math.round(barHeight * (pct / 100)));
-            return `
-                <div class="v2-ladder-bar ${isCurrent ? 'current' : ''}"
-                     onclick="selectLadderBar('${b.id}')"
-                     role="button"
-                     tabindex="0"
-                     aria-label="${b.name} ${pct}% 已学,共 ${learned} 词">
-                    ${isCurrent ? '<div class="v2-ladder-bar-marker">你在这里</div>' : ''}
-                    <div class="v2-ladder-bar-pct">${pct}%</div>
-                    <div class="v2-ladder-bar-track" style="height: ${barHeight}px;">
-                        <div class="v2-ladder-bar-fill" style="height: ${fillHeight}px; background: ${b.color};"></div>
-                    </div>
-                    <div class="v2-ladder-bar-name">${b.name}</div>
-                    <div class="v2-ladder-bar-count">${learned}/${total > 999 ? (total/1000).toFixed(1)+'k' : total}</div>
-                </div>`;
-        }).join('');
-        return `
-            <div class="v2-ladder-chart" role="region" aria-label="词库进度阶梯">
-                ${bars}
-            </div>`;
-    };
-
-    // ===== CumulativeStats 累计统计条 =====
-    window.renderCumulativeStats = function(data) {
-        data = data || {};
-        return `
-            <div class="v2-cumulative">
-                <div class="v2-cumulative-item">
-                    <div class="v2-cumulative-num">${data.totalStudyDays || 0}</div>
-                    <div class="v2-cumulative-label">累计学习天数</div>
-                </div>
-                <div class="v2-cumulative-divider"></div>
-                <div class="v2-cumulative-item">
-                    <div class="v2-cumulative-num">${data.totalLearnedWords || 0}</div>
-                    <div class="v2-cumulative-label">总学习词数</div>
-                </div>
-                <div class="v2-cumulative-divider"></div>
-                <div class="v2-cumulative-item">
-                    <div class="v2-cumulative-num">${data.currentStreak || 0}</div>
-                    <div class="v2-cumulative-label">连续天数</div>
-                </div>
-            </div>`;
-    };
-
-    // ===== ViewToggle 核心词/全部词切换 =====
-    window.renderViewToggle = function(currentView) {
-        currentView = currentView === 'all' ? 'all' : 'core';
-        return `
-            <div class="v2-view-toggle" role="tablist">
-                <button class="v2-view-toggle-btn ${currentView === 'core' ? 'active' : ''}"
-                        onclick="switchV2View('core')" role="tab" aria-selected="${currentView === 'core'}">核心词</button>
-                <button class="v2-view-toggle-btn ${currentView === 'all' ? 'active' : ''}"
-                        onclick="switchV2View('all')" role="tab" aria-selected="${currentView === 'all'}">全部词</button>
             </div>`;
     };
 
@@ -545,39 +434,22 @@
             </nav>`;
     };
 
-    // ===== HomePage 首页组合组件（冲刺/自由统一架构）=====
+    // ===== HomePage 首页组合组件 =====
     window.renderHomePage = function(data) {
-        data = data || {};
-        const mode = data.mode || 'sprint';
-        let modeCardHTML = '';
-        if (mode === 'sprint') {
-            // 冲刺模式:沿用冲刺进度卡(带 Cici 形象+倒计时)
-            modeCardHTML = renderSprintProgressCard({
-                ...data.courseTask,
-                mascotAsset: data.courseTask.mascotAsset || HOME_ASSETS.mascot
-            });
-        } else {
-            // 自由模式:顶部 Cici 形象 + 对话气泡 + 词书头卡
-            modeCardHTML = renderCiciMascot(data.cici) + renderFreeModeCard(data.freeMode);
-        }
-        // 词库阶梯柱形图 + 累计统计(两种模式共用)
-        const ladderData = data.ladderChart || { books: [], currentBookId: '', view: 'core' };
-        const ladderHTML = renderLadderChart(ladderData);
-        const statsHTML = renderCumulativeStats(data.cumulativeStats || {});
-        const toggleHTML = data.showViewToggle ? renderViewToggle(ladderData.view) : '';
         return `
             <div class="hp-page">
                 ${renderHomeHeader(data.header)}
-                ${modeCardHTML}
-                ${toggleHTML}
+                ${renderSprintProgressCard({
+                    ...data.courseTask,
+                    mascotAsset: data.courseTask.mascotAsset || HOME_ASSETS.mascot
+                })}
                 ${renderDailyGoal({
                     newWords: data.courseTask.newWords,
                     reviewWords: data.courseTask.reviewWords
                 })}
-                ${ladderHTML}
-                ${statsHTML}
+                ${renderBookProgress(data.vocabularyProgress)}
                 ${renderStartTaskButton({
-                    dayLabel: mode === 'sprint' ? `Day ${data.courseTask.currentDay}` : `每日 ${data.freeMode?.dailyTarget || 20} 词`,
+                    dayLabel: `Day ${data.courseTask.currentDay}`,
                     completed: data.courseTask.completed,
                     newWords: data.courseTask.newWords,
                     reviewWords: data.courseTask.reviewWords
