@@ -10,3 +10,4 @@ keep-server-alive.sh
 .serena/
 .workbuddy/
 .trae/
+test-output/

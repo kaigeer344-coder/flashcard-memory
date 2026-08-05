@@ -1122,17 +1122,6 @@
             opacity: 0.94;
             line-height: 1.4;
         }
-        .ach-hero-mascot {
-            position: absolute;
-            right: 6px;
-            bottom: -4px;
-            width: 150px;
-            height: 140px;
-            z-index: 1;
-            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.15));
-        }
-        .ach-hero-mascot svg { width: 100%; height: 100%; }
-
         .ach-section {
             margin: 0 14px 22px;
         }
@@ -4922,63 +4911,212 @@
 
         /* === 单词本页面 === */
         .wordbook-level-selector {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-bottom: 14px;
+            display: flex;
+            gap: 10px;
+            margin: 0 16px 14px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
+        .wordbook-level-selector::-webkit-scrollbar { display: none; }
         .wordbook-level-btn {
-            padding: 10px 4px;
-            border: 2px solid var(--border);
-            border-radius: 14px;
-            background: var(--surface);
-            font-size: 13px;
+            flex: 0 0 auto;
+            min-width: 56px;
+            padding: 8px 18px;
+            border: 1.5px solid #e8f5e0;
+            border-radius: 999px;
+            background: #fff;
+            font-size: 14px;
             font-weight: 800;
-            color: var(--muted);
+            color: #5c5c5c;
             cursor: pointer;
             text-align: center;
-            transition: all 140ms ease;
+            transition: all 160ms ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            height: 38px;
+            line-height: 1;
         }
         .wordbook-level-btn.active {
             color: #fff;
-            background: var(--primary);
-            border-color: var(--primary-dark);
-            box-shadow: 0 4px 0 var(--primary-dark);
+            background: #58cc02;
+            border-color: #58cc02;
+            box-shadow: 0 3px 0 #45a301;
+        }
+        .wordbook-level-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #45a301;
+        }
+        .wordbook-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 16px 14px;
         }
         .wordbook-filter {
             display: flex;
             gap: 8px;
-            margin-bottom: 14px;
+            flex-shrink: 0;
         }
         .wordbook-filter-btn {
-            flex: 1;
-            padding: 10px 4px;
-            border: 2px solid var(--border);
-            border-radius: 14px;
-            background: var(--surface);
+            padding: 7px 14px;
+            border: 1.5px solid #e8f5e0;
+            border-radius: 999px;
+            background: #fff;
             font-size: 13px;
             font-weight: 800;
-            color: var(--muted);
+            color: #5c5c5c;
             cursor: pointer;
             text-align: center;
-            transition: all 140ms ease;
+            transition: all 160ms ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            height: 34px;
+            line-height: 1;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .wordbook-filter-btn svg {
+            width: 14px;
+            height: 14px;
         }
         .wordbook-filter-btn.active {
-            color: #fff;
-            background: var(--secondary);
-            border-color: var(--secondary-dark);
-            box-shadow: 0 4px 0 var(--secondary-dark);
+            color: #58cc02;
+            background: #e8f8df;
+            border-color: #58cc02;
+        }
+        .wordbook-filter-btn:active {
+            transform: scale(0.97);
+        }
+        .wordbook-search {
+            flex: 1;
+            min-width: 120px;
+            position: relative;
+        }
+        .wordbook-search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: #aaa;
+            pointer-events: none;
+        }
+        .wordbook-search-input {
+            width: 100%;
+            height: 34px;
+            padding: 0 12px 0 34px;
+            border: 1.5px solid #e8f5e0;
+            border-radius: 999px;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            color: #2d2d2d;
+            outline: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            box-sizing: border-box;
+        }
+        .wordbook-search-input::placeholder {
+            color: #aaa;
+            font-weight: 500;
+        }
+        .wordbook-search-input:focus {
+            border-color: #58cc02;
         }
         .wordbook-summary {
             font-size: 13px;
             color: var(--muted);
-            margin-bottom: 12px;
+            margin: 0 16px 12px;
             text-align: center;
         }
+        .wordbook-preview {
+            margin: 0 16px 16px;
+            border-radius: 24px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #8fe85f 0%, #58cc02 55%, #45b300 100%);
+            height: 200px;
+            position: relative;
+            box-shadow: 0 10px 28px rgba(88, 204, 2, 0.28);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 18px 18px 14px;
+            box-sizing: border-box;
+        }
+        .wordbook-preview * { box-sizing: border-box; }
+        .wbp-deco {
+            position: absolute;
+            pointer-events: none;
+        }
+        .wbp-deco.star-1 { top: 14%; left: 52%; width: 14px; height: 14px; color: #fff7a8; }
+        .wbp-deco.star-2 { top: 8%; left: 70%; width: 10px; height: 10px; color: #fff7a8; }
+        .wbp-deco.star-3 { top: 28%; left: 62%; width: 8px; height: 8px; color: #fff7a8; }
+        .wbp-deco.leaf-1 { bottom: 18%; left: -6px; width: 44px; height: 44px; color: rgba(74, 181, 0, 0.45); }
+        .wbp-deco.flower { bottom: 12%; right: 4%; width: 28px; height: 28px; color: #fff; }
+        .wbp-header { position: relative; z-index: 2; }
+        .wbp-title {
+            font-size: 48px;
+            font-weight: 1000;
+            color: #fff;
+            line-height: 1.1;
+            margin: 0 0 6px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            transform: translateY(10px);
+        }
+        .wbp-subtitle {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.92);
+            line-height: 1.3;
+            margin-top: 20px;
+        }
+        .wbp-stats {
+            position: relative;
+            z-index: 2;
+            background: rgba(255,255,255,0.96);
+            border-radius: 18px;
+            padding: 14px 16px;
+            height: 90px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+        .wbp-stat { display: flex; flex-direction: column; gap: 6px; flex: 1; align-items: center; min-width: 0; text-align: center; }
+        .wbp-stat:not(:last-child) { border-right: 1px solid #e8f5e0; padding-right: 10px; margin-right: 10px; }
+        .wbp-stat-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #8c8c8c;
+            white-space: nowrap;
+            line-height: 1.2;
+            min-height: 14px;
+        }
+        .wbp-stat-label svg { width: 14px; height: 14px; flex-shrink: 0; }
+        .wbp-stat-num {
+            font-size: 22px;
+            font-weight: 1000;
+            color: #3c3c3c;
+            line-height: 1;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            min-height: 22px;
+        }
+        .wbp-stat-num span { font-size: 12px; font-weight: 700; color: #8c8c8c; margin-left: 2px; line-height: 1; }
+        .wbp-stat-num.orange { color: #ff8c00; }
+        #wbpTotal, #wbpMastered { color: #58cc04; }
         .wordbook-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
+            margin: 0 16px;
         }
         .wordbook-item {
             display: flex;
@@ -5036,6 +5174,220 @@
             font-weight: 800;
             color: var(--dark);
         }
+        .wordbook-item-clickable {
+            transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+        }
+        .wordbook-item-clickable:hover {
+            transform: translateY(-1px);
+            border-color: var(--primary);
+            box-shadow: 0 4px 0 #c9e590;
+        }
+        .wordbook-item-clickable:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 0 #e5e5e5;
+        }
+        .wordbook-detail-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+            animation: wbFadeIn 160ms ease;
+        }
+        .wordbook-detail-modal {
+            width: 100%;
+            max-width: 420px;
+            max-height: 90vh;
+            overflow: hidden;
+            background: #fff;
+            border-radius: 24px;
+            padding: 0 0 18px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+            animation: wbPopIn 220ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+            display: flex;
+            flex-direction: column;
+        }
+        @keyframes wbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes wbPopIn { from { opacity: 0; transform: scale(0.9) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .wordbook-detail-hero {
+            position: relative;
+            background: linear-gradient(135deg, #8fe85f 0%, #58cc02 60%, #45b300 100%);
+            border-radius: 24px 24px 0 0;
+            padding: 22px 20px 18px;
+            color: #fff;
+            overflow: hidden;
+        }
+        .wordbook-detail-hero::after {
+            content: '';
+            position: absolute;
+            top: -30px; right: -30px;
+            width: 120px; height: 120px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 50%;
+        }
+        .wordbook-detail-close {
+            position: absolute;
+            top: 14px; right: 14px;
+            width: 36px; height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            color: #fff;
+            font-size: 20px;
+            font-weight: 900;
+            cursor: pointer;
+            z-index: 2;
+            transition: background 140ms ease, transform 140ms ease;
+            backdrop-filter: blur(6px);
+        }
+        .wordbook-detail-close:hover { background: rgba(255,255,255,0.4); transform: scale(1.05); }
+        .wordbook-detail-close:active { transform: scale(0.92); }
+        .wordbook-detail-word {
+            font-size: 30px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 1;
+        }
+        .wordbook-detail-phonetic {
+            font-size: 14px;
+            color: rgba(255,255,255,0.92);
+            font-weight: 600;
+            margin-top: 4px;
+            position: relative;
+            z-index: 1;
+        }
+        .wordbook-detail-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 900;
+            color: #2d2d2d;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+        }
+        .wordbook-detail-status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+        }
+        .wordbook-detail-body {
+            padding: 16px 18px 0;
+            overflow-y: auto;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
+        }
+        .wordbook-detail-body::-webkit-scrollbar { width: 6px; }
+        .wordbook-detail-body::-webkit-scrollbar-track { background: transparent; }
+        .wordbook-detail-body::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 999px; }
+        .wordbook-detail-cn {
+            font-size: 15px;
+            color: #2d2d2d;
+            background: #f7f9f4;
+            border: 2px solid #e8f5e0;
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            line-height: 1.5;
+            font-weight: 700;
+        }
+        .wordbook-detail-section-title {
+            font-size: 11px;
+            font-weight: 900;
+            color: #8c8c8c;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin: 14px 0 8px;
+            padding-left: 2px;
+        }
+        .wordbook-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .wordbook-detail-cell {
+            background: #fff;
+            border: 2px solid #e5e5e5;
+            border-radius: 14px;
+            padding: 10px 12px;
+            transition: transform 140ms ease, border-color 140ms ease;
+        }
+        .wordbook-detail-cell:hover {
+            transform: translateY(-1px);
+            border-color: #c9e590;
+        }
+        .wordbook-detail-cell-label {
+            font-size: 11px;
+            color: #8c8c8c;
+            font-weight: 800;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .wordbook-detail-cell-value {
+            font-size: 18px;
+            font-weight: 900;
+            color: #2d2d2d;
+            line-height: 1;
+        }
+        .wordbook-detail-cell-value.accent { color: #58cc02; }
+        .wordbook-detail-cell-value.orange { color: #ff8c00; }
+        .wordbook-detail-cell-value.danger { color: #ff4b4b; }
+        .wordbook-detail-bar-wrap {
+            margin-top: 12px;
+            background: #f7f9f4;
+            border: 2px solid #e8f5e0;
+            border-radius: 14px;
+            padding: 10px 12px;
+        }
+        .wordbook-detail-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #2d2d2d;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+        .wordbook-detail-bar-label .label-num { color: #58cc02; }
+        .wordbook-detail-bar {
+            height: 12px;
+            background: #e5e5e5;
+            border-radius: 999px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+        }
+        .wordbook-detail-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8fe85f, #58cc02);
+            border-radius: 999px;
+            transition: width 360ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+            box-shadow: 0 1px 2px rgba(88,204,2,0.4);
+        }
+        .wordbook-detail-bar-fill.orange { background: linear-gradient(90deg, #ffb74d, #ff8c00); }
+        .wordbook-detail-dates {
+            margin-top: 14px;
+            padding: 12px 14px;
+            background: #fafafa;
+            border-radius: 14px;
+            font-size: 12px;
+            color: #5c5c5c;
+            line-height: 1.8;
+            font-weight: 600;
+        }
+        .wordbook-detail-dates strong { color: #2d2d2d; font-weight: 900; }
+        .wordbook-detail-dates .date-row { display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
@@ -5243,21 +5595,6 @@
                     <h2 class="ach-hero-title">纪念徽章</h2>
                     <p class="ach-hero-sub">完成学习目标，收集你的专属徽章</p>
                 </div>
-                <div class="ach-hero-mascot">
-                    <svg viewBox="0 0 140 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <ellipse cx="70" cy="75" rx="48" ry="44" fill="#a5e65a"/>
-                        <ellipse cx="70" cy="68" rx="42" ry="38" fill="#baf06d"/>
-                        <circle cx="52" cy="62" r="5" fill="#2d2d2d"/>
-                        <circle cx="88" cy="62" r="5" fill="#2d2d2d"/>
-                        <path d="M42 54h24a4 4 0 000-8H42a4 4 0 000 8z" fill="#2d2d2d"/>
-                        <path d="M74 54h24a4 4 0 000-8H74a4 4 0 000 8z" fill="#2d2d2d"/>
-                        <path d="M58 84c4 4 20 4 24 0" stroke="#2d2d2d" stroke-width="3" stroke-linecap="round"/>
-                        <path d="M45 96h50v8a6 6 0 01-6 6H51a6 6 0 01-6-6v-8z" fill="#fff9c4"/>
-                        <path d="M45 96h50v4H45z" fill="#ffeb3b"/>
-                        <path d="M95 96h8v8a4 4 0 01-4 4h-4v-12z" fill="#ff9800"/>
-                        <path d="M45 96h-8v8a4 4 0 004 4h4v-12z" fill="#ff9800"/>
-                    </svg>
-                </div>
             </div>
 
             <div class="ach-section">
@@ -5271,7 +5608,7 @@
                 <div class="ach-badge-grid" id="achWordBadges"></div>
             </div>
 
-            <div id="achievementPage"></div>
+            <div id="achievementMount"></div>
         </div>
 
         <!-- 个人中心主页 -->
@@ -5373,12 +5710,59 @@
 
         <!-- 单词本页 -->
         <div class="screen settings-screen" id="wordbookScreen">
-            <div class="stats-title">单词本</div>
+            <div class="wordbook-preview" id="wordbookPreview">
+                <svg class="wbp-deco star-1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 9.3l-5.5 4.5 1.7 7.2-6.2-3.8-6.2 3.8 1.7-7.2L2 9.3l7.1-.4z"/></svg>
+                <svg class="wbp-deco star-2" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 9.3l-5.5 4.5 1.7 7.2-6.2-3.8-6.2 3.8 1.7-7.2L2 9.3l7.1-.4z"/></svg>
+                <svg class="wbp-deco star-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.9L22 9.3l-5.5 4.5 1.7 7.2-6.2-3.8-6.2 3.8 1.7-7.2L2 9.3l7.1-.4z"/></svg>
+                <svg class="wbp-deco leaf-1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22C12 22 4 16 4 9a8 8 0 0116 0c0 7-8 13-8 13z"/><path d="M12 22V8" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <svg class="wbp-deco flower" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3" fill="#ffeb3b"/><path d="M12 5a3 3 0 013 3 3 3 0 01-3 3 3 3 0 01-3-3 3 3 0 013-3z"/><path d="M19 12a3 3 0 01-3 3 3 3 0 01-3-3 3 3 0 013-3 3 3 0 013 3z"/><path d="M12 19a3 3 0 01-3-3 3 3 0 013-3 3 3 0 013 3 3 3 0 01-3 3z"/><path d="M5 12a3 3 0 013-3 3 3 0 013 3 3 3 0 01-3 3 3 3 0 01-3-3z"/></svg>
+
+                <div class="wbp-header">
+                    <h2 class="wbp-title">单词本</h2>
+                    <p class="wbp-subtitle">按词库整理，随时复习你的单词</p>
+                </div>
+
+                <div class="wbp-stats">
+                    <div class="wbp-stat">
+                        <div class="wbp-stat-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#58cc02" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            全部词库
+                        </div>
+                        <div class="wbp-stat-num" id="wbpTotal">0<span>词</span></div>
+                    </div>
+                    <div class="wbp-stat">
+                        <div class="wbp-stat-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#58cc02" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            已掌握
+                        </div>
+                        <div class="wbp-stat-num" id="wbpMastered">0</div>
+                    </div>
+                    <div class="wbp-stat">
+                        <div class="wbp-stat-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#ff8c00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            今日待复习
+                        </div>
+                        <div class="wbp-stat-num orange" id="wbpDue">0</div>
+                    </div>
+                </div>
+            </div>
             <div class="wordbook-level-selector" id="wordbookLevelSelector"></div>
-            <div class="wordbook-filter">
-                <button class="wordbook-filter-btn active" data-sort="frequency" onclick="sortWordbook('frequency')">按词频</button>
-                <button class="wordbook-filter-btn" data-sort="az" onclick="sortWordbook('az')">A-Z</button>
-                <button class="wordbook-filter-btn" data-sort="mastery" onclick="sortWordbook('mastery')">按掌握度</button>
+            <div class="wordbook-toolbar">
+                <div class="wordbook-filter">
+                    <button class="wordbook-filter-btn active" data-sort="frequency" onclick="sortWordbook('frequency')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                        词频
+                    </button>
+                    <button class="wordbook-filter-btn" data-sort="az" onclick="sortWordbook('az')">A-Z</button>
+                    <button class="wordbook-filter-btn" data-sort="mastery" onclick="sortWordbook('mastery')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        掌握度
+                    </button>
+                </div>
+                <div class="wordbook-search">
+                    <svg class="wordbook-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" class="wordbook-search-input" id="wordbookSearchInput" placeholder="搜索单词或释义" oninput="onWordbookSearch(this.value)">
+                </div>
             </div>
             <div class="wordbook-summary" id="wordbookSummary"></div>
             <div class="wordbook-list" id="wordbookList"></div>
@@ -5457,6 +5841,9 @@
 
     <!-- 统一底部导航容器(冲刺模式首页同款模板) -->
     <div id="hpBottomNavContainer"></div>
+
+    <!-- 打卡连击成就抽屉挂载点(全屏, 可延伸到底部导航栏后方) -->
+    <div id="achievementPage"></div>
 
     <!-- 界面清单侧栏（开发/测试用） -->
     <aside class="screen-nav-sidebar" id="screenNavSidebar">
@@ -7695,6 +8082,18 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             updateBottomNavVisibility();
+            // 打卡连击徽章抽屉只在学习成果页显示
+            const sheet = document.getElementById('achievementSheet');
+            if (sheet) {
+                if (id === 'statsScreen') {
+                    sheet.style.display = '';
+                } else {
+                    sheet.classList.remove('expanded');
+                    sheet.style.display = 'none';
+                    const backdrop = document.getElementById('achBackdrop');
+                    if (backdrop) backdrop.classList.remove('show');
+                }
+            }
         }
 
         let _learningMapPreviousScreen = null;
@@ -10590,9 +10989,9 @@
                 const dy = touch.clientY - startY;
                 const newTranslate = dy;
                 if (newTranslate > 0) {
-                    sheet.style.transform = `translateY(${newTranslate}px)`;
+                    sheet.style.transform = `translateX(-50%) translateY(${newTranslate}px)`;
                 } else {
-                    sheet.style.transform = `translateY(${newTranslate * 0.3}px)`;
+                    sheet.style.transform = `translateX(-50%) translateY(${newTranslate * 0.3}px)`;
                 }
             };
             const onEnd = () => {
@@ -11056,10 +11455,32 @@
 
         function renderWordbookScreen() {
             const selector = document.getElementById('wordbookLevelSelector');
-            selector.innerHTML = Object.keys(LEVEL_NAMES).map(lv =>
-                `<button class="wordbook-level-btn ${lv === wordbookState.level ? 'active' : ''}" onclick="selectWordbookLevel('${lv}')">${LEVEL_NAMES[lv]}</button>`
+            const levels = [['all', '全部'], ...Object.entries(LEVEL_NAMES)];
+            selector.innerHTML = levels.map(([lv, name]) =>
+                `<button class="wordbook-level-btn ${lv === wordbookState.level ? 'active' : ''}" onclick="selectWordbookLevel('${lv}')">${name}</button>`
             ).join('');
+            updateWordbookPreviewStats();
             renderWordbook();
+        }
+
+        function updateWordbookPreviewStats() {
+            try {
+                let total = 0, mastered = 0, due = 0;
+                Object.keys(LEVEL_NAMES).forEach(level => {
+                    const stats = MemorySystem.getLearningStats(level);
+                    total += stats.total || 0;
+                    mastered += stats.mastered || 0;
+                    due += stats.dueForReview || 0;
+                });
+                const elTotal = document.getElementById('wbpTotal');
+                const elMastered = document.getElementById('wbpMastered');
+                const elDue = document.getElementById('wbpDue');
+                if (elTotal) elTotal.innerHTML = `${total}<span>词</span>`;
+                if (elMastered) elMastered.textContent = mastered;
+                if (elDue) elDue.textContent = due;
+            } catch (e) {
+                console.error('updateWordbookPreviewStats 失败:', e);
+            }
         }
 
         function selectWordbookLevel(level) {
@@ -11067,13 +11488,22 @@
             wordbookState.level = level;
             wordbookState.sort = 'frequency';
             wordbookState.page = 0;
+            const input = document.getElementById('wordbookSearchInput');
+            if (input) input.value = '';
+            wordbookState.search = '';
             document.querySelectorAll('.wordbook-level-btn').forEach(b => {
-                b.classList.toggle('active', b.textContent.trim() === LEVEL_NAMES[level]);
+                b.classList.toggle('active', b.textContent.trim() === (level === 'all' ? '全部' : LEVEL_NAMES[level]));
             });
             document.querySelectorAll('.wordbook-filter-btn').forEach(b => {
                 b.classList.toggle('active', b.dataset.sort === 'frequency');
             });
             renderWordbook();
+        }
+
+        function onWordbookSearch(val) {
+            wordbookState.search = (val || '').trim().toLowerCase();
+            wordbookState.page = 0;
+            renderWordbookPage();
         }
 
         function sortWordbook(sort) {
@@ -11090,13 +11520,23 @@
 
         function renderWordbook() {
             const level = wordbookState.level;
-            const words = wordDB[level] || [];
             const sort = wordbookState.sort;
 
-            wordbookAllItems = words.map((w, i) => {
-                const mem = MemorySystem.getMemoryForWord(level, w, i);
-                return { word: w, index: i, mem };
-            });
+            if (level === 'all') {
+                wordbookAllItems = [];
+                Object.keys(LEVEL_NAMES).forEach(lv => {
+                    const words = wordDB[lv] || [];
+                    words.forEach((w, i) => {
+                        wordbookAllItems.push({ word: w, index: i, level: lv, mem: MemorySystem.getMemoryForWord(lv, w, i) });
+                    });
+                });
+            } else {
+                const words = wordDB[level] || [];
+                wordbookAllItems = words.map((w, i) => {
+                    const mem = MemorySystem.getMemoryForWord(level, w, i);
+                    return { word: w, index: i, level, mem };
+                });
+            }
 
             if (sort === 'az') {
                 wordbookAllItems.sort((a, b) => a.word.en.localeCompare(b.word.en));
@@ -11116,10 +11556,20 @@
         }
 
         function renderWordbookPage() {
+            let items = wordbookAllItems;
+            const search = wordbookState.search || '';
+            if (search) {
+                items = items.filter(item => {
+                    const en = (item.word.en || '').toLowerCase();
+                    const cn = (item.word.cn || '').toLowerCase();
+                    return en.includes(search) || cn.includes(search);
+                });
+            }
+
             const start = 0;
             const end = (wordbookState.page + 1) * wordbookState.pageSize;
-            const visible = wordbookAllItems.slice(start, end);
-            const hasMore = end < wordbookAllItems.length;
+            const visible = items.slice(start, end);
+            const hasMore = end < items.length;
 
             const masteryClass = { new: 'mastery-new', learning: 'mastery-learning', mastered: 'mastery-mastered', lapsed: 'mastery-lapsed' };
             const masteryLabel = { new: '未学', learning: '学习中', mastered: '已掌握', lapsed: '需复习' };
@@ -11129,8 +11579,11 @@
                 const w = item.word;
                 const phonetic = w.phonetic ? `<span class="wordbook-phonetic">${w.phonetic}</span>` : '';
                 const cn = (w.cn || '').replace(/'/g, '&#39;').replace(/</g, '&lt;');
+                const isNew = (m.status === 'new' || !m.lastReview);
+                const clickAttr = isNew ? '' : `onclick="showWordbookDetail('${item.level}','${item.index}')" style="cursor:pointer"`;
+                const itemClass = isNew ? 'wordbook-item' : 'wordbook-item wordbook-item-clickable';
                 return `
-                    <div class="wordbook-item">
+                    <div class="${itemClass}" ${clickAttr}>
                         <div class="wordbook-mastery ${masteryClass[m.status] || 'mastery-new'}"></div>
                         <div class="wordbook-info">
                             <div class="wordbook-word">${w.en} ${phonetic}</div>
@@ -11145,8 +11598,8 @@
             }).join('');
 
             const loadMoreHtml = hasMore
-                ? `<button class="btn-secondary" style="margin-top:12px;" onclick="loadMoreWordbook()">加载更多（剩余 ${wordbookAllItems.length - end} 词）</button>`
-                : (wordbookAllItems.length > wordbookState.pageSize ? '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px;">已显示全部</div>' : '');
+                ? `<button class="btn-secondary" style="margin-top:12px;" onclick="loadMoreWordbook()">加载更多（剩余 ${items.length - end} 词）</button>`
+                : (items.length > wordbookState.pageSize ? '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px;">已显示全部</div>' : '');
 
             document.getElementById('wordbookList').innerHTML = html + loadMoreHtml;
         }
@@ -11154,6 +11607,128 @@
         function loadMoreWordbook() {
             wordbookState.page++;
             renderWordbookPage();
+        }
+
+        function showWordbookDetail(level, index) {
+            const words = wordDB[level] || [];
+            const idx = Number(index);
+            const w = words[idx];
+            if (!w) return;
+            const mem = MemorySystem.getMemoryForWord(level, w, idx);
+            if (mem.status === 'new' || !mem.lastReview) return;
+
+            const masteryClass = { new: 'mastery-new', learning: 'mastery-learning', mastered: 'mastery-mastered', lapsed: 'mastery-lapsed' };
+            const masteryLabel = { new: '未学', learning: '学习中', mastered: '已掌握', lapsed: '需复习' };
+            const masteryColor = { new: '#ccc', learning: 'var(--accent)', mastered: 'var(--primary)', lapsed: 'var(--danger)' };
+
+            const S = Number(mem.stability) || 0;
+            const D = Number(mem.difficulty) || 0;
+            const R = Math.max(0, Math.min(1, Number(mem.retrievability) || 1));
+            const accuracy = mem.reviewCount > 0 ? Math.round(((mem.correctCount || 0) / mem.reviewCount) * 100) : 0;
+            const familiarity = Number(mem.familiarity) || 0;
+            const intervalDays = mem.nextReview && mem.lastReview
+                ? Math.max(0, Math.round((mem.nextReview - mem.lastReview) / 86400000))
+                : 0;
+            const firstDate = mem.firstLearnedAt ? new Date(mem.firstLearnedAt).toLocaleDateString('zh-CN') : '—';
+            const lastDate = mem.lastReview ? new Date(mem.lastReview).toLocaleDateString('zh-CN') : '—';
+            const nextDate = mem.nextReview ? new Date(mem.nextReview).toLocaleDateString('zh-CN') : '—';
+
+            const cnText = (w.cn || '').replace(/'/g, '&#39;').replace(/</g, '&lt;');
+            const phoneticHtml = w.phonetic ? `<div class="wordbook-detail-phonetic">${w.phonetic}</div>` : '';
+
+            const html = `
+                <div class="wordbook-detail-overlay" id="wordbookDetailOverlay" onclick="if(event.target.id==='wordbookDetailOverlay')closeWordbookDetail()">
+                    <div class="wordbook-detail-modal">
+                        <div class="wordbook-detail-hero">
+                            <button class="wordbook-detail-close" onclick="closeWordbookDetail()" aria-label="关闭">×</button>
+                            <div class="wordbook-detail-word">${w.en}</div>
+                            ${phoneticHtml}
+                            <div class="wordbook-detail-status-badge">
+                                <div class="wordbook-detail-status-dot" style="background:${masteryColor[mem.status] || '#ccc'}"></div>
+                                ${masteryLabel[mem.status] || '未学'}
+                            </div>
+                        </div>
+                        <div class="wordbook-detail-body">
+                            <div class="wordbook-detail-cn">${cnText}</div>
+
+                            <div class="wordbook-detail-section-title">学习数据</div>
+                            <div class="wordbook-detail-grid">
+                                <div class="wordbook-detail-cell">
+                                    <div class="wordbook-detail-cell-label">复习次数</div>
+                                    <div class="wordbook-detail-cell-value">${mem.reviewCount || 0}</div>
+                                </div>
+                                <div class="wordbook-detail-cell">
+                                    <div class="wordbook-detail-cell-label">正确率</div>
+                                    <div class="wordbook-detail-cell-value accent">${accuracy}%</div>
+                                </div>
+                                <div class="wordbook-detail-cell">
+                                    <div class="wordbook-detail-cell-label">正确次数</div>
+                                    <div class="wordbook-detail-cell-value">${mem.correctCount || 0}</div>
+                                </div>
+                                <div class="wordbook-detail-cell">
+                                    <div class="wordbook-detail-cell-label">错误次数</div>
+                                    <div class="wordbook-detail-cell-value danger">${mem.wrongCount || 0}</div>
+                                </div>
+                                <div class="wordbook-detail-cell">
+                                    <div class="wordbook-detail-cell-label">连续正确</div>
+                                    <div class="wordbook-detail-cell-value accent">${mem.consecutiveCorrect || 0}</div>
+                                </div>
+                                <div class="wordbook-detail-cell">
+                                    <div class="wordbook-detail-cell-label">遗忘次数</div>
+                                    <div class="wordbook-detail-cell-value orange">${mem.lapseCount || 0}</div>
+                                </div>
+                            </div>
+
+                            <div class="wordbook-detail-section-title">FSRS 记忆参数</div>
+                            <div class="wordbook-detail-grid">
+                                <div class="wordbook-detail-cell">
+                                    <div class="wordbook-detail-cell-label">难度 D</div>
+                                    <div class="wordbook-detail-cell-value">${D.toFixed(1)}</div>
+                                </div>
+                                <div class="wordbook-detail-cell">
+                                    <div class="wordbook-detail-cell-label">稳定度 S</div>
+                                    <div class="wordbook-detail-cell-value accent">${S.toFixed(1)}</div>
+                                </div>
+                            </div>
+
+                            <div class="wordbook-detail-bar-wrap">
+                                <div class="wordbook-detail-bar-label">
+                                    <span>记忆保持率 R</span>
+                                    <span class="label-num">${(R * 100).toFixed(0)}%</span>
+                                </div>
+                                <div class="wordbook-detail-bar">
+                                    <div class="wordbook-detail-bar-fill" style="width:${(R * 100).toFixed(1)}%"></div>
+                                </div>
+                            </div>
+                            <div class="wordbook-detail-bar-wrap">
+                                <div class="wordbook-detail-bar-label">
+                                    <span>熟悉度</span>
+                                    <span class="label-num">${familiarity}/5</span>
+                                </div>
+                                <div class="wordbook-detail-bar">
+                                    <div class="wordbook-detail-bar-fill orange" style="width:${(familiarity / 5 * 100).toFixed(1)}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="wordbook-detail-dates">
+                                <div class="date-row"><span>词库</span><strong>${LEVEL_NAMES[level] || level}</strong></div>
+                                <div class="date-row"><span>首次学习</span><strong>${firstDate}</strong></div>
+                                <div class="date-row"><span>上次复习</span><strong>${lastDate}</strong></div>
+                                <div class="date-row"><span>下次复习</span><strong>${nextDate}</strong></div>
+                                <div class="date-row"><span>复习间隔</span><strong>${intervalDays} 天</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            const old = document.getElementById('wordbookDetailOverlay');
+            if (old) old.remove();
+            document.body.insertAdjacentHTML('beforeend', html);
+        }
+
+        function closeWordbookDetail() {
+            const el = document.getElementById('wordbookDetailOverlay');
+            if (el) el.remove();
         }
 
         function clearLearningData() {
