@@ -1329,22 +1329,36 @@
         .streak-night { background: linear-gradient(135deg, #5b6ef5, #3f4fd4); }
 
         /* Settings Screen */
-        /* ===== 个人中心(参考图复刻) ===== */
+        /* ===== 个人中心(多邻国风格) ===== */
+        .profile-section-title {
+            font-size: 13px;
+            font-weight: 900;
+            color: #8c8c8c;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin: 18px 4px 8px;
+        }
         .profile-header-card {
             position: relative;
-            background-image: url('assets/profile-back.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            border-radius: 28px;
+            background: linear-gradient(135deg, #8fe85f 0%, #58cc02 60%, #45b300 100%);
+            border-radius: 24px;
             padding: 22px 20px 18px;
-            margin-bottom: 14px;
-            overflow: visible;
+            margin-bottom: 4px;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 250px;
-            box-shadow: 0 5px 0 rgba(88, 204, 2, 0.10);
+            gap: 16px;
+            box-shadow: 0 6px 0 #3d8a02;
+        }
+        .profile-header-card::after {
+            content: '';
+            position: absolute;
+            top: -40px; right: -40px;
+            width: 140px; height: 140px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 50%;
+            pointer-events: none;
         }
         .profile-header-top {
             width: 100%;
@@ -1352,49 +1366,52 @@
             align-items: center;
             position: relative;
             flex-shrink: 0;
+            z-index: 1;
         }
         .profile-header-xp {
             width: 100%;
-            margin-top: 12px;
             position: relative;
-            z-index: 5;
+            z-index: 1;
             flex-shrink: 0;
         }
         .profile-header-xp .xp-progress-section {
             margin-bottom: 0;
-            border-radius: 18px;
+            border-radius: 16px;
             background: rgba(255,255,255,0.95);
+            padding: 12px 14px;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.08);
         }
         .profile-header-content {
             display: flex;
             align-items: center;
             gap: 14px;
             flex: 1;
-            z-index: 2;
+            z-index: 1;
         }
         .profile-avatar {
-            width: 68px;
-            height: 68px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             background: #ffffff;
             display: grid;
             place-items: center;
             flex-shrink: 0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            border: 3px solid rgba(255,255,255,0.9);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 4px solid rgba(255,255,255,0.9);
         }
         .profile-avatar img {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             object-fit: contain;
         }
         .profile-info { flex: 1; }
         .profile-level {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 1000;
-            color: #2d2d2d;
+            color: #ffffff;
             margin-bottom: 6px;
             letter-spacing: -0.3px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
         .profile-level-badge {
             display: inline-flex;
@@ -1402,11 +1419,11 @@
             justify-content: center;
             padding: 4px 12px;
             border-radius: 999px;
-            background: #58cc02;
-            color: #ffffff;
+            background: #ffffff;
+            color: #58cc02;
             font-size: 13px;
             font-weight: 900;
-            box-shadow: 0 2px 0 rgba(0,0,0,0.08);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
         }
         .xp-progress-section {
             background: #ffffff;
@@ -1423,10 +1440,10 @@
             font-weight: 800;
             margin-bottom: 10px;
         }
-        .xp-progress-label { color: #6f6f6f; }
-        .xp-progress-value { color: #3c3c3c; }
+        .xp-progress-label { color: #8c8c8c; }
+        .xp-progress-value { color: #58cc02; }
         .xp-progress-bar {
-            height: 16px;
+            height: 14px;
             background: #eef8ea;
             border-radius: 999px;
             overflow: hidden;
@@ -1438,14 +1455,15 @@
             transition: width 600ms ease;
             box-shadow: 0 2px 6px rgba(88,204,2,0.3);
         }
+        /* 资产区：4 列网格 */
         .profile-assets-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 4px;
         }
         .profile-assets-grid .profile-stat-card {
-            border: 1px solid #f0f0f0;
+            border: 2px solid #f0f0f0;
         }
         .profile-items-grid {
             display: grid;
@@ -1454,21 +1472,24 @@
             margin-bottom: 14px;
         }
         .profile-items-grid .profile-stat-card {
-            border: 1px solid #f0f0f0;
+            border: 2px solid #f0f0f0;
         }
         .profile-stat-card {
             background: #ffffff;
-            border-radius: 20px;
-            padding: 14px 12px;
+            border-radius: 16px;
+            padding: 12px 8px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.04);
+            gap: 4px;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.04);
+            transition: transform 120ms ease;
         }
+        .profile-stat-card:active { transform: scale(0.96); }
         .profile-stat-icon {
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             flex-shrink: 0;
             display: grid;
             place-items: center;
@@ -1481,25 +1502,26 @@
         .profile-stat-main {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             min-width: 0;
+            gap: 1px;
         }
         .profile-stat-value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 1000;
-            color: #3c3c3c;
+            color: #2d2d2d;
             line-height: 1.1;
         }
         .profile-stat-label {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            color: #8a8a8a;
-            margin-top: 2px;
+            color: #8c8c8c;
+            line-height: 1;
         }
         .profile-menu {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
         .profile-menu-item {
             display: flex;
@@ -1508,20 +1530,23 @@
             width: 100%;
             padding: 15px 16px;
             background: #ffffff;
-            border-radius: 18px;
+            border-radius: 16px;
             font-size: 15px;
             font-weight: 800;
-            color: #3c3c3c;
+            color: #2d2d2d;
             cursor: pointer;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.04);
-            transition: transform 120ms ease, background 160ms ease;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.04);
+            transition: transform 120ms ease, box-shadow 120ms ease;
             border: none;
             text-align: left;
         }
-        .profile-menu-item:active { transform: scale(0.98); }
+        .profile-menu-item:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+        }
         .profile-menu-item-icon {
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             flex-shrink: 0;
             display: grid;
             place-items: center;
@@ -1540,6 +1565,10 @@
         .profile-menu-item.danger {
             color: #ff4b4b;
             background: #fff5f5;
+            box-shadow: 0 3px 0 rgba(255,75,75,0.12);
+        }
+        .profile-menu-item.danger:active {
+            box-shadow: 0 1px 0 rgba(255,75,75,0.12);
         }
         .profile-menu-item.danger .profile-menu-item-icon img {
             filter: hue-rotate(320deg) saturate(1.5);
@@ -5654,6 +5683,7 @@
 
         <!-- 个人中心主页 -->
         <div class="screen settings-screen" id="profileScreen">
+            <!-- Hero 卡片：绿色渐变 + 头像 + 等级 + XP -->
             <div class="profile-header-card">
                 <div class="profile-header-top">
                     <div class="profile-header-content">
@@ -5676,6 +5706,9 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 资产区：金币 + 3 道具合并为 4 列网格 -->
+            <div class="profile-section-title">我的资产</div>
             <div class="profile-assets-grid">
                 <div class="profile-stat-card">
                     <div class="profile-stat-icon"><img src="assets/generated-icons/coin.png" alt=""></div>
@@ -5684,8 +5717,6 @@
                         <div class="profile-stat-label">金币</div>
                     </div>
                 </div>
-            </div>
-            <div class="profile-items-grid">
                 <div class="profile-stat-card">
                     <div class="profile-stat-icon"><img src="assets/generated-icons/item-hint.png" alt=""></div>
                     <div class="profile-stat-main">
@@ -5708,6 +5739,9 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 菜单：分两组 -->
+            <div class="profile-section-title">学习</div>
             <div class="profile-menu">
                 <button class="profile-menu-item" onclick="openShop()">
                     <span class="profile-menu-item-icon"><img src="assets/generated-icons/shop.png" alt=""></span>
@@ -5719,6 +5753,10 @@
                     <span class="profile-menu-item-text">学习设置</span>
                     <span class="profile-menu-item-arrow">›</span>
                 </button>
+            </div>
+
+            <div class="profile-section-title">数据</div>
+            <div class="profile-menu">
                 <button class="profile-menu-item danger" onclick="clearLearningData()">
                     <span class="profile-menu-item-icon"><img src="assets/generated-icons/delete.png" alt=""></span>
                     <span class="profile-menu-item-text">清除学习数据</span>
