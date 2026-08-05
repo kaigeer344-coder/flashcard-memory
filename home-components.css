@@ -969,7 +969,6 @@
     cursor: pointer;
     transition: transform 120ms ease, background 120ms ease;
     position: relative;
-    overflow: hidden;
 }
 .hp-lt-step:hover { background: rgba(34, 185, 24, 0.16); }
 .hp-lt-step:active { transform: scale(0.96); }
