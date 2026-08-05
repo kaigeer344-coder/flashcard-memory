@@ -1076,7 +1076,7 @@
             background: linear-gradient(135deg, #58cc02 0%, #46a302 100%);
             padding: 20px 20px 26px;
             color: #fff;
-            min-height: 180px;
+            min-height: 340px;
         }
         .ach-hero-bg {
             position: absolute;
@@ -1095,7 +1095,7 @@
         .ach-hero-content {
             position: relative;
             z-index: 2;
-            max-width: 260px;
+            max-width: 100%;
         }
         .ach-unlock-pill {
             display: inline-flex;
@@ -1121,6 +1121,66 @@
             font-weight: 600;
             opacity: 0.94;
             line-height: 1.4;
+        }
+        /* 下一枚徽章：连续学习进度卡 */
+        .ach-streak-card {
+            background: #f7f7e8;
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin: 0 0 18px;
+            max-width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.06);
+        }
+        .ach-streak-top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .ach-streak-icon {
+            font-size: 14px;
+            line-height: 1;
+        }
+        .ach-streak-next {
+            font-size: 12px;
+            font-weight: 800;
+            color: #8c8c8c;
+        }
+        .ach-streak-title {
+            font-size: 19px;
+            font-weight: 1000;
+            color: #2d2d2d;
+            margin-bottom: 10px;
+            letter-spacing: -0.2px;
+        }
+        .ach-streak-blocks {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .ach-streak-block {
+            flex: 1;
+            height: 10px;
+            border-radius: 4px;
+            background: #dcf7c9;
+            transition: background 300ms ease, transform 200ms ease;
+        }
+        .ach-streak-block.done {
+            background: #58cc02;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.08);
+        }
+        .ach-streak-block.current {
+            animation: achStreakPulse 1.6s ease-in-out infinite;
+        }
+        @keyframes achStreakPulse {
+            0%, 100% { transform: scale(1); background: #58cc02; }
+            50% { transform: scale(1.08); background: #7ee04a; }
+        }
+        .ach-streak-hint {
+            font-size: 12px;
+            font-weight: 700;
+            color: #8c8c8c;
         }
         .ach-section {
             margin: 0 14px 22px;
@@ -5661,6 +5721,16 @@
                     <div class="ach-unlock-pill" id="achUnlockPill">
                         <svg viewBox="0 0 24 24" fill="none"><path d="M6 4h12v3a6 6 0 01-12 0V4z"/><path d="M6 5H3v1a3 3 0 003 3M18 5h3v1a3 3 0 01-3 3"/><path d="M10 16h4M12 13v3M8 20h8" fill="currentColor"/></svg>
                         <span id="achUnlockCount">已解锁 0 / 11</span>
+                    </div>
+                    <!-- 下一枚徽章：连续学习天数进度卡 -->
+                    <div class="ach-streak-card" id="achStreakCard">
+                        <div class="ach-streak-top">
+                            <span class="ach-streak-icon">🔥</span>
+                            <span class="ach-streak-next" id="achStreakNext">下一枚徽章</span>
+                        </div>
+                        <div class="ach-streak-title" id="achStreakTitle">连续学习 0 天</div>
+                        <div class="ach-streak-blocks" id="achStreakBlocks"></div>
+                        <div class="ach-streak-hint" id="achStreakHint">还差 0 天可解锁</div>
                     </div>
                     <h2 class="ach-hero-title">纪念徽章</h2>
                     <p class="ach-hero-sub">完成学习目标，收集你的专属徽章</p>
@@ -11107,6 +11177,38 @@
             const totalUnlocked = wordUnlocked + streakUnlocked;
             const totalAll = wordTypes.length + achievements.length;
             document.getElementById('achUnlockCount').textContent = `已解锁 ${totalUnlocked} / ${totalAll}`;
+
+            // 下一枚徽章：连续学习进度卡
+            renderStreakProgressCard(maxStreak);
+        }
+
+        // 连续学习进度卡：显示距下一枚打卡徽章还差几天
+        function renderStreakProgressCard(streak) {
+            const card = document.getElementById('achStreakCard');
+            if (!card) return;
+            const targets = [3, 7, 30, 100];
+            const current = Math.max(0, streak || 0);
+            // 下一目标：第一个 > current 的目标；全部完成则取最后一个
+            const next = targets.find(t => current < t) || targets[targets.length - 1];
+            const done = current >= next;
+            // 7 格归一化：每格代表 target/7 天
+            const totalBlocks = 7;
+            const perBlock = next / totalBlocks;
+            const filled = Math.min(totalBlocks, Math.max(1, Math.round(current / perBlock)));
+            const title = document.getElementById('achStreakTitle');
+            const hint = document.getElementById('achStreakHint');
+            const nextEl = document.getElementById('achStreakNext');
+            if (title) title.textContent = done ? `连续学习 ${next} 天` : `连续学习 ${current} 天`;
+            if (nextEl) nextEl.textContent = done ? '徽章已达成' : `下一枚徽章：${next} 天打卡`;
+            if (hint) hint.textContent = done ? '🎉 已解锁，继续冲击下一目标' : `还差 ${next - current} 天可解锁`;
+            const blocksEl = document.getElementById('achStreakBlocks');
+            if (blocksEl) {
+                blocksEl.innerHTML = Array.from({ length: totalBlocks }, (_, i) => {
+                    const isDone = i < filled;
+                    const isCurrent = !done && i === filled - 1;
+                    return `<div class="ach-streak-block ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}"></div>`;
+                }).join('');
+            }
         }
 
         // 底部抽屉：打卡连击徽章
