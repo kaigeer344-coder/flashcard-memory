@@ -214,6 +214,57 @@
             </div>`;
     };
 
+    // ===== FreeOverviewCard 自由学习概览卡（替代冲刺卡的顶部模块）=====
+    // 与 SprintProgressCard 同尺寸/圆角/阴影，移除天数进度条/极限冲刺标签
+    // 改为：标题行 + 三栏数据胶囊 + 个性化推荐文案
+    window.renderFreeOverviewCard = function(data) {
+        const bookName = data.bookName || '自由学习';
+        const dailyTarget = data.dailyTarget || 10;
+        const streak = data.streak || 0;
+        const learnedToday = data.learnedToday || 0;
+        const mastered = data.mastered || 0;
+        const recommendation = data.recommendation || '按自己的节奏，每天进步一点点';
+
+        return `
+            <div class="hp-sp-section hp-fo-section">
+                <div class="hp-sp-card hp-fo-card" onclick="onCourseTaskCardClick && onCourseTaskCardClick()">
+                    <div class="hp-sp-left hp-fo-left">
+                        <h2 class="hp-sp-title hp-fo-title">
+                            自由学习 · <span class="hp-fo-book">${bookName}</span>
+                        </h2>
+                        <div class="hp-fo-sub">每日目标 ${dailyTarget} 词</div>
+                        <div class="hp-fo-capsules">
+                            <div class="hp-fo-cap">
+                                <div class="hp-fo-cap-icon fire">${TASK_ICON_SVGS.fire}</div>
+                                <div class="hp-fo-cap-num">${streak}</div>
+                                <div class="hp-fo-cap-label">连续天</div>
+                            </div>
+                            <div class="hp-fo-cap">
+                                <div class="hp-fo-cap-icon book">${TASK_ICON_SVGS.book}</div>
+                                <div class="hp-fo-cap-num">${learnedToday}<small>/${dailyTarget}</small></div>
+                                <div class="hp-fo-cap-label">今日</div>
+                            </div>
+                            <div class="hp-fo-cap">
+                                <div class="hp-fo-cap-icon trophy">${TASK_ICON_SVGS.trophy}</div>
+                                <div class="hp-fo-cap-num">${mastered}</div>
+                                <div class="hp-fo-cap-label">已掌握</div>
+                            </div>
+                        </div>
+                        <div class="hp-fo-recommend">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="#FFC928"><path d="M9 21h6v-1H9v1zm3-19a7 7 0 00-4 12.74V17h8v-2.26A7 7 0 0012 2z"/></svg>
+                            <span>${recommendation}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hp-sp-mascot hp-fo-mascot">
+                    ${imgOrPlaceholder('assets/characters/cici-calm.png', 'hp-sp-cici', 'Cici', CICI_PLACEHOLDER)}
+                    <svg class="hp-sp-star hp-sp-star-1" viewBox="0 0 24 24" width="14" height="14" fill="#FFD84D"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="hp-sp-star hp-sp-star-2" viewBox="0 0 24 24" width="10" height="10" fill="#FFD84D"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="hp-sp-star hp-sp-star-3" viewBox="0 0 24 24" width="12" height="12" fill="#FFD84D"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
+            </div>`;
+    };
+
     // ===== DailyGoal 今日目标模块 =====
     window.renderDailyGoal = function(data) {
         const newWords = data.newWords || 0;
@@ -436,24 +487,32 @@
 
     // ===== HomePage 首页组合组件 =====
     window.renderHomePage = function(data) {
+        const mode = data.mode || 'sprint';
+        // 顶部模块按模式分流：冲刺→SprintProgressCard，自由→FreeOverviewCard
+        const topCardHTML = mode === 'free'
+            ? renderFreeOverviewCard(data.freeOverview || {})
+            : renderSprintProgressCard({
+                ...data.courseTask,
+                mascotAsset: data.courseTask.mascotAsset || HOME_ASSETS.mascot
+            });
+
+        // 自由模式下的"今日目标"用 freeOverview 数据；冲刺模式沿用 courseTask
+        const dailyGoalData = mode === 'free'
+            ? { newWords: (data.freeOverview || {}).learnedToday || 0, reviewWords: (data.freeOverview || {}).reviewToday || 0 }
+            : { newWords: data.courseTask.newWords, reviewWords: data.courseTask.reviewWords };
+
+        // 开始按钮的 dayLabel 也按模式区分
+        const startBtnData = mode === 'free'
+            ? { dayLabel: `目标 ${(data.freeOverview || {}).dailyTarget || 10} 词`, completed: data.freeOverview && data.freeOverview.completed }
+            : { dayLabel: `Day ${data.courseTask.currentDay}`, completed: data.courseTask.completed, newWords: data.courseTask.newWords, reviewWords: data.courseTask.reviewWords };
+
         return `
             <div class="hp-page">
                 ${renderHomeHeader(data.header)}
-                ${renderSprintProgressCard({
-                    ...data.courseTask,
-                    mascotAsset: data.courseTask.mascotAsset || HOME_ASSETS.mascot
-                })}
-                ${renderDailyGoal({
-                    newWords: data.courseTask.newWords,
-                    reviewWords: data.courseTask.reviewWords
-                })}
+                ${topCardHTML}
+                ${renderDailyGoal(dailyGoalData)}
                 ${renderBookProgress(data.vocabularyProgress)}
-                ${renderStartTaskButton({
-                    dayLabel: `Day ${data.courseTask.currentDay}`,
-                    completed: data.courseTask.completed,
-                    newWords: data.courseTask.newWords,
-                    reviewWords: data.courseTask.reviewWords
-                })}
+                ${renderStartTaskButton(startBtnData)}
             </div>
             ${renderBottomNavigation(data.activeTab || 'home')}
         `;
