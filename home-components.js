@@ -300,19 +300,27 @@
 
     // ===== BookProgress 词库学习进度（阶梯形式）=====
     window.renderBookProgress = function(data) {
-        const items = (data && data.items) || [];
+        // 按词汇量升序排列：最少的在左，最多的在右
+        const items = ((data && data.items) || []).slice().sort((a, b) => (a.total || 0) - (b.total || 0));
         const totalMastered = items.reduce((sum, it) => sum + (it.total || 0), 0);
         const totalLearned = items.reduce((sum, it) => sum + (it.learned || 0), 0);
         const nextGoal = Math.min(totalMastered, Math.ceil((totalLearned + 1) / 1000) * 1000);
         const remainToNext = Math.max(0, nextGoal - totalLearned);
 
+        // 词汇量范围 → 进度槽高度范围(90~150px)
+        const totals = items.map(it => it.total || 0);
+        const minT = Math.min(...totals, 1);
+        const maxT = Math.max(...totals, 1);
+        const slotH = (t) => Math.round(90 + (maxT === minT ? 0 : (t - minT) / (maxT - minT) * 60));
+
         const stepHTML = items.map((item, index) => {
             const pct = Math.round((item.progress || 0) * 100);
-            // 填充高度：进度映射到 24~120px，保证低进度也清晰可见
-            const fillHeight = Math.max(24, Math.round((item.progress || 0) * 120));
+            const slot = slotH(item.total || 0);
+            // 填充高度 = 槽高 × 进度，最小可视 20px
+            const fillHeight = Math.max(20, Math.round((item.progress || 0) * slot));
             const isLast = index === items.length - 1;
             return `
-                <div class="hp-lt-step" style="--step-color:${item.color};--step-fill:${fillHeight}px" onclick="onBookProgressClick && onBookProgressClick('${item.id}')">
+                <div class="hp-lt-step" style="--step-color:${item.color};--step-slot:${slot}px;--step-fill:${fillHeight}px" onclick="onBookProgressClick && onBookProgressClick('${item.id}')">
                     <span class="hp-lt-step-label">${item.name}</span>
                     <div class="hp-lt-step-fill"></div>
                     <span class="hp-lt-step-pct">${pct}%</span>

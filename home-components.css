@@ -962,8 +962,8 @@
 .hp-lt-step {
     flex: 1;
     min-width: 0;
-    /* 固定总高度背景条：浅色表示总量 */
-    height: 130px;
+    /* 总高度由词汇量决定：--step-slot(90~150px) */
+    height: var(--step-slot, 120px);
     background: rgba(34, 185, 24, 0.10);
     border-radius: 10px 10px 4px 4px;
     cursor: pointer;
