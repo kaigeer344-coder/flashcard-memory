@@ -10,6 +10,7 @@
     <link rel="icon" href="assets/generated-icons/app-logo.png">
     <link rel="stylesheet" href="home-components.css?v=7.7">
     <link rel="stylesheet" href="map-components.css?v=5.5">
+    <link rel="stylesheet" href="css/achievements.css?v=1.0">
     <style>
         :root {
             --primary: #58cc02;
@@ -874,7 +875,7 @@
 
         /* Bottom Navigation(统一使用 home-components 中的 hp-bottom-nav 模板) */
         .game-container { padding-bottom: 110px; }
-        .stats-screen, .settings-screen { padding-bottom: 90px; }
+        .stats-screen, .settings-screen { padding-bottom: 90px; position: relative; }
 
         /* 界面清单侧栏 */
         .screen-nav-sidebar {
@@ -1080,9 +1081,7 @@
         .ach-hero-bg {
             position: absolute;
             inset: 0;
-            background:
-                radial-gradient(circle at 85% 15%, rgba(255,255,255,0.22) 0%, transparent 38%),
-                radial-gradient(circle at 12% 85%, rgba(255,255,255,0.12) 0%, transparent 42%);
+            background: url('assets/back1.png') center center / cover no-repeat;
             pointer-events: none;
         }
         .ach-hero-deco {
@@ -1165,6 +1164,16 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
+        /* 词库徽章:第一行 3 个,第二行 2 个(整体居中);窄屏(390px)时徽章自动收缩防溢出 */
+        #achWordBadges {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        #achWordBadges .ach-badge-row {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
         .ach-badge-card {
             background: #fff;
             border-radius: 18px;
@@ -1185,13 +1194,18 @@
             background: transparent;
             box-shadow: none;
             padding: 0;
+            width: 143px;
+            height: 143px;
+            max-width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .ach-shield {
-            width: 92px;
-            height: 92px;
+            width: 143px;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            max-width: 100%;
             margin: 0 auto;
             position: relative;
             display: flex;
@@ -1201,6 +1215,10 @@
             background: #f2f9ea;
             box-shadow: 0 4px 0 rgba(88, 204, 2, 0.12);
             transition: transform 160ms ease;
+        }
+        /* 词库徽章:素材背景统一浅灰(覆盖解锁彩色渐变) */
+        #achWordBadges .ach-shield {
+            background: #eceae6;
         }
         .ach-badge-card:active .ach-shield { transform: scale(0.96); }
         .ach-shield::after {
@@ -1212,12 +1230,15 @@
             position: relative;
             z-index: 2;
         }
-        .ach-shield img {
-            width: 72px;
-            height: 72px;
+        /* 词库徽章:图片填满盾牌,不留空隙;素材背景统一浅紫 */
+        #achWordBadges .ach-shield img {
+            width: 100%;
+            height: 100%;
             object-fit: contain;
             position: relative;
             z-index: 2;
+            background-color: #f8f7fe;
+            border-radius: 3px;
         }
         .ach-badge-card.locked .ach-shield {
             background: #eceae6;
@@ -1229,41 +1250,67 @@
             opacity: 0.75;
         }
 
-        /* 连击徽章(圆形) */
-        .ach-streak-icon {
-            width: 56px;
-            height: 56px;
-            margin: 4px auto 8px;
-            border-radius: 50%;
+        /* 连击徽章：素材图 + 名称 + 进度小字 */
+        .ach-streak-graphic {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
             background: linear-gradient(135deg, #d8d8d8, #b8b8b8);
-            box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.08);
         }
-        .ach-streak-icon svg { width: 28px; height: 28px; }
-        .ach-badge-card.locked .ach-streak-icon svg { opacity: 0.5; }
+        .ach-streak-placeholder {
+            font-size: 28px;
+            font-weight: 1000;
+            color: rgba(255,255,255,0.95);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            user-select: none;
+        }
+        .ach-badge-card.locked .ach-streak-graphic {
+            filter: grayscale(1) brightness(0.92);
+            opacity: 0.75;
+        }
 
         .ach-badge-name {
+            position: absolute;
+            bottom: 18px;
+            left: 0;
+            right: 0;
+            z-index: 3;
+            text-align: center;
             font-size: 12px;
             font-weight: 800;
-            color: var(--dark);
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.35);
             line-height: 1.2;
-            margin-bottom: 4px;
         }
-        .ach-badge-card.locked .ach-badge-name { color: #afafaf; }
-        .ach-badge-status {
-            display: inline-block;
+        .ach-badge-card.locked .ach-badge-name { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .ach-badge-progress {
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            right: 0;
+            z-index: 3;
+            text-align: center;
             font-size: 10px;
-            font-weight: 800;
-            padding: 2px 8px;
-            border-radius: 999px;
-            background: #e8f5d0;
-            color: #58cc02;
+            font-weight: 700;
+            color: rgba(255,255,255,0.95);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.35);
         }
-        .ach-badge-card.locked .ach-badge-status {
-            background: #ececec;
-            color: #afafaf;
+        .ach-badge-card:not(.locked) .ach-badge-progress { display: none; }
+        /* 文字叠在素材图上，底部加弱渐变遮罩防穿帮 */
+        .ach-streak-graphic::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 42px;
+            background: linear-gradient(to top, rgba(0,0,0,0.32), transparent);
+            border-radius: 0 0 20px 20px;
+            pointer-events: none;
         }
         .ach-badge-lock {
             position: absolute;
@@ -5224,16 +5271,7 @@
                 <div class="ach-badge-grid" id="achWordBadges"></div>
             </div>
 
-            <div class="ach-section">
-                <div class="ach-section-head">
-                    <div class="ach-section-title">
-                        <span class="ach-section-icon">🔥</span>
-                        打卡连击徽章
-                    </div>
-                    <span class="ach-section-hint">坚持越久，徽章越酷</span>
-                </div>
-                <div class="ach-badge-grid" id="achStreakBadges"></div>
-            </div>
+            <div id="achievementPage"></div>
         </div>
 
         <!-- 个人中心主页 -->
@@ -5515,6 +5553,10 @@
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
     <script src="map-components.js?v=5.5"></script>
+    <script src="js/achievements/data.js?v=1.0"></script>
+    <script src="js/achievements/achievement-card.js?v=1.0"></script>
+    <script src="js/achievements/achievement-grid.js?v=1.0"></script>
+    <script src="js/achievements/achievement-page.js?v=1.0"></script>
     <script>
         const wordDB = {
             cet4: window.CET4_WORDS || [],
@@ -10477,49 +10519,113 @@
             // 临时模拟:全部词库徽章按已解锁(彩色)展示 —— 确认效果后删除此标志
             const DEMO_ALL_BADGES_UNLOCKED = true;
             let wordUnlocked = 0;
-            const wordHtml = wordTypes.map(type => {
+            // 前 3 个第一行,后 2 个第二行(整体居中)
+            const buildBadge = type => {
                 const plan = bestByType[type];
                 const unlocked = DEMO_ALL_BADGES_UNLOCKED || !!(plan && plan.status === 'completed');
                 if (unlocked) wordUnlocked++;
-                const mastered = (plan && plan.plan && plan.plan.progress) ? (plan.plan.progress.masteredCount || 0) : 0;
-                const target = plan ? (plan.totalTargetWords || 0) : 0;
-                const statusText = unlocked ? '已解锁' : '未解锁';
-                const progressText = unlocked && target ? `${mastered}/${target}` : '';
                 return `
                     <div class="ach-badge-card ${unlocked ? '' : 'locked'}">
                         <div class="ach-shield ${unlocked ? 'shield-' + type : ''}">${WORD_BADGE_ICONS[type]}</div>
                     </div>
                 `;
-            }).join('');
+            };
+            const wordHtml = wordTypes.slice(0, 3).map(buildBadge).join('') +
+                (wordTypes.length > 3 ? `<div class="ach-badge-row">${wordTypes.slice(3).map(buildBadge).join('')}</div>` : '');
             document.getElementById('achWordBadges').innerHTML = wordHtml;
 
-            // 连击徽章
-            const streakBadges = [
-                { id: 's3', name: '3天连击', cls: 'streak-3', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2s4 4 4 8a4 4 0 11-8 0c0-2 1-3 1-3s-3 2-3 6a6 6 0 1012 0c0-6-6-11-6-11z"/></svg>', unlocked: maxStreak >= 3 },
-                { id: 's7', name: '7天连击', cls: 'streak-7', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2s4 4 4 8a4 4 0 11-8 0c0-2 1-3 1-3s-3 2-3 6a6 6 0 1012 0c0-6-6-11-6-11z"/></svg>', unlocked: maxStreak >= 7 },
-                { id: 's30', name: '30天连击', cls: 'streak-30', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5L12 17l-6.5 4.5L8 14l-6-4.5h7.5z"/></svg>', unlocked: maxStreak >= 30 },
-                { id: 's100', name: '百日大师', cls: 'streak-100', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2l2.5 7.5H22l-6 4.5 2.5 7.5L12 17l-6.5 4.5L8 14l-6-4.5h7.5z"/></svg>', unlocked: maxStreak >= 100 },
-                { id: 'early', name: '早起达人', cls: 'streak-early', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>', unlocked: maxStreak >= 14 },
-                { id: 'night', name: '夜读之星', cls: 'streak-night', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>', unlocked: maxStreak >= 21 }
-            ];
-            let streakUnlocked = 0;
-            const streakHtml = streakBadges.map(b => {
-                if (b.unlocked) streakUnlocked++;
-                return `
-                    <div class="ach-badge-card ${b.unlocked ? '' : 'locked'}">
-                        <div class="ach-badge-lock">${LOCK_ICON}</div>
-                        <div class="ach-streak-icon ${b.unlocked ? b.cls : ''}">${b.icon}</div>
-                        <div class="ach-badge-name">${b.name}</div>
-                        <div class="ach-badge-status">${b.unlocked ? '已解锁' : '未解锁'}</div>
-                    </div>
-                `;
-            }).join('');
-            document.getElementById('achStreakBadges').innerHTML = streakHtml;
+            // 打卡连击成就页（组件化渲染）
+            const achievementContainer = document.getElementById('achievementPage');
+            if (achievementContainer) {
+                achievementContainer.innerHTML = AchievementPage();
+                // 初始化底部抽屉
+                initAchievementSheet();
+            }
 
-            // Hero 解锁数
+            // Hero 解锁数统计
+            const streakUnlocked = achievements.filter(a => a.current >= a.target).length;
             const totalUnlocked = wordUnlocked + streakUnlocked;
-            const totalAll = wordTypes.length + streakBadges.length;
+            const totalAll = wordTypes.length + achievements.length;
             document.getElementById('achUnlockCount').textContent = `已解锁 ${totalUnlocked} / ${totalAll}`;
+        }
+
+        // 底部抽屉：打卡连击徽章
+        function initAchievementSheet() {
+            const sheet = document.getElementById('achievementSheet');
+            const backdrop = document.getElementById('achBackdrop');
+            if (!sheet) return;
+
+            function toggle() {
+                const expanding = !sheet.classList.contains('expanded');
+                sheet.classList.toggle('expanded');
+                if (backdrop) backdrop.classList.toggle('show', expanding);
+            }
+            function collapse() {
+                sheet.classList.remove('expanded');
+                if (backdrop) backdrop.classList.remove('show');
+            }
+
+            // 顶部手柄/标题点击展开
+            const handle = document.getElementById('achHandle');
+            const head = document.getElementById('achHead');
+            if (handle) handle.addEventListener('click', toggle);
+            if (head) head.addEventListener('click', toggle);
+            // 点击蒙版收起
+            if (backdrop) backdrop.addEventListener('click', collapse);
+
+            // 触摸拖拽
+            let startY = 0, startTranslate = 0, dragging = false;
+            const onStart = (e) => {
+                const touch = e.touches ? e.touches[0] : e;
+                startY = touch.clientY;
+                startTranslate = sheet.classList.contains('expanded') ? 0 :
+                    parseFloat(getComputedStyle(sheet).transform.split(',')[5] || 0) ||
+                    sheet.getBoundingClientRect().top;
+                dragging = true;
+                sheet.style.transition = 'none';
+            };
+            const onMove = (e) => {
+                if (!dragging) return;
+                const touch = e.touches ? e.touches[0] : e;
+                const dy = touch.clientY - startY;
+                const newTranslate = dy;
+                if (newTranslate > 0) {
+                    sheet.style.transform = `translateY(${newTranslate}px)`;
+                } else {
+                    sheet.style.transform = `translateY(${newTranslate * 0.3}px)`;
+                }
+            };
+            const onEnd = () => {
+                if (!dragging) return;
+                dragging = false;
+                sheet.style.transition = '';
+                sheet.style.transform = '';
+                const rect = sheet.getBoundingClientRect();
+                const sheetHeight = sheet.scrollHeight;
+                const visible = window.innerHeight - rect.top;
+                // 如果露出超过一半就展开，否则收起
+                if (visible > sheetHeight * 0.45) {
+                    sheet.classList.add('expanded');
+                    if (backdrop) backdrop.classList.add('show');
+                } else {
+                    sheet.classList.remove('expanded');
+                    if (backdrop) backdrop.classList.remove('show');
+                }
+            };
+
+            // 触摸事件
+            const dragArea = handle || sheet;
+            dragArea.addEventListener('touchstart', onStart, { passive: true });
+            dragArea.addEventListener('touchmove', onMove, { passive: true });
+            dragArea.addEventListener('touchend', onEnd);
+            // 鼠标拖拽（桌面端）
+            dragArea.addEventListener('mousedown', onStart);
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onEnd);
+
+            // 初始状态：收起
+            sheet.classList.remove('expanded');
+            if (backdrop) backdrop.classList.remove('show');
         }
 
         function onAchievementCardClick(cardId) {
