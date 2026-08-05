@@ -8362,7 +8362,9 @@
             // 词汇金字塔数据（两模式共用，从 ladder 实时计算）
             const vpItems = levelOrder.map(item => {
                 const prog = ladder[item.id] || { core: { learned: 0, total: 1 } };
-                const total = prog.core.total || 1;
+                // 用词库实际词汇量作为 total，保证排序和槽高反映真实词量
+                const dbWords = wordDB[item.id] || [];
+                const total = dbWords.length || prog.core.total || 1;
                 const learned = prog.core.learned || 0;
                 return {
                     id: item.id,
