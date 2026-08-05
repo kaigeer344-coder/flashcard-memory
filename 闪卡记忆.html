@@ -876,6 +876,12 @@
         /* Bottom Navigation(统一使用 home-components 中的 hp-bottom-nav 模板) */
         .game-container { padding-bottom: 110px; }
         .stats-screen, .settings-screen { padding-bottom: 90px; position: relative; }
+        #statsScreen { padding-left: 0; padding-right: 0; background: #ffffff; }
+        #statsScreen .ach-hero,
+        #statsScreen .ach-section {
+            width: 469px;
+            max-width: none;
+        }
 
         /* 界面清单侧栏 */
         .screen-nav-sidebar {
@@ -1070,13 +1076,16 @@
         /* ===== 成果页(多邻国风徽章墙重做) ===== */
         .ach-hero {
             position: relative;
-            margin: 0 0 18px;
-            border-radius: 0 0 28px 28px;
+            margin: 0 auto 18px;
+            width: 469px;
+            max-width: 100%;
+            box-sizing: border-box;
+            border-radius: 28px;
             overflow: hidden;
             background: linear-gradient(135deg, #58cc02 0%, #46a302 100%);
             padding: 20px 20px 26px;
             color: #fff;
-            min-height: 340px;
+            min-height: 240px;
         }
         .ach-hero-bg {
             position: absolute;
@@ -1097,18 +1106,6 @@
             z-index: 2;
             max-width: 100%;
         }
-        .ach-unlock-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.22);
-            padding: 5px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 800;
-            margin-bottom: 14px;
-        }
-        .ach-unlock-pill svg { width: 14px; height: 14px; }
         .ach-hero-title {
             font-size: 30px;
             font-weight: 1000;
@@ -1124,7 +1121,7 @@
         }
         /* 下一枚徽章：连续学习进度卡 */
         .ach-streak-card {
-            background: #f7f7e8;
+            background: #ffffff;
             border-radius: 16px;
             padding: 14px 16px;
             margin: 14px 0 0;
@@ -1183,7 +1180,10 @@
             color: #8c8c8c;
         }
         .ach-section {
-            margin: 0 14px 22px;
+            margin: 0 auto 22px;
+            width: 469px;
+            max-width: 100%;
+            box-sizing: border-box;
         }
         .ach-section-head {
             display: flex;
@@ -1243,15 +1243,15 @@
             background: transparent;
             box-shadow: none;
             padding: 0;
-            width: 143px;
-            height: 143px;
+            width: 120px;
+            height: 120px;
             max-width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .ach-shield {
-            width: 143px;
+            width: 120px;
             height: auto;
             aspect-ratio: 1 / 1;
             max-width: 100%;
@@ -5718,10 +5718,6 @@
                 <div class="ach-hero-deco deco-1"></div>
                 <div class="ach-hero-deco deco-2"></div>
                 <div class="ach-hero-content">
-                    <div class="ach-unlock-pill" id="achUnlockPill">
-                        <svg viewBox="0 0 24 24" fill="none"><path d="M6 4h12v3a6 6 0 01-12 0V4z"/><path d="M6 5H3v1a3 3 0 003 3M18 5h3v1a3 3 0 01-3 3"/><path d="M10 16h4M12 13v3M8 20h8" fill="currentColor"/></svg>
-                        <span id="achUnlockCount">已解锁 0 / 11</span>
-                    </div>
                     <h2 class="ach-hero-title">纪念徽章</h2>
                     <p class="ach-hero-sub">完成学习目标，收集你的专属徽章</p>
                     <!-- 下一枚徽章：连续学习天数进度卡 -->
@@ -11171,12 +11167,6 @@
                 // 初始化底部抽屉
                 initAchievementSheet();
             }
-
-            // Hero 解锁数统计
-            const streakUnlocked = achievements.filter(a => a.current >= a.target).length;
-            const totalUnlocked = wordUnlocked + streakUnlocked;
-            const totalAll = wordTypes.length + achievements.length;
-            document.getElementById('achUnlockCount').textContent = `已解锁 ${totalUnlocked} / ${totalAll}`;
 
             // 下一枚徽章：连续学习进度卡
             renderStreakProgressCard(maxStreak);
