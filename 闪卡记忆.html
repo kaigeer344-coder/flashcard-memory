@@ -5121,58 +5121,13 @@
         .wordbook-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 14px;
+            gap: 12px;
+            padding: 14px 16px;
             border: 2px solid var(--border);
-            border-radius: 14px;
+            border-radius: 16px;
             background: var(--surface);
             box-shadow: 0 3px 0 #e5e5e5;
-        }
-        .wordbook-mastery {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-        .mastery-new { background: #ccc; }
-        .mastery-learning { background: var(--accent); }
-        .mastery-mastered { background: var(--primary); }
-        .mastery-lapsed { background: var(--danger); }
-        .wordbook-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .wordbook-word {
-            font-size: 15px;
-            font-weight: 900;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .wordbook-phonetic {
-            font-size: 12px;
-            color: var(--muted);
-            font-weight: 400;
-        }
-        .wordbook-cn {
-            font-size: 13px;
-            color: var(--muted);
-            margin-top: 2px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .wordbook-stats {
-            text-align: right;
-            flex-shrink: 0;
-            font-size: 11px;
-            color: var(--muted);
-            line-height: 1.5;
-        }
-        .wordbook-stats .review-count {
-            font-weight: 800;
-            color: var(--dark);
+            box-sizing: border-box;
         }
         .wordbook-item-clickable {
             transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
@@ -5185,6 +5140,101 @@
         .wordbook-item-clickable:active {
             transform: translateY(1px);
             box-shadow: 0 1px 0 #e5e5e5;
+        }
+        /* 左:喇叭按钮 */
+        .wb-item-audio {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            border: none;
+            border-radius: 50%;
+            background: #d8f0be;
+            color: #46a302;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 120ms ease, background 120ms ease;
+            padding: 0;
+        }
+        .wb-item-audio svg { width: 20px; height: 20px; }
+        .wb-item-audio:hover { background: #c9e590; transform: scale(1.05); }
+        .wb-item-audio:active { transform: scale(0.92); }
+        /* 左中:单词+音标+释义 */
+        .wb-item-main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .wb-item-word {
+            font-size: 17px;
+            font-weight: 900;
+            color: var(--dark);
+            line-height: 1.15;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .wb-item-phonetic {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 400;
+            line-height: 1;
+        }
+        .wb-item-cn {
+            font-size: 13px;
+            color: var(--muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.2;
+        }
+        /* 中:词库胶囊 */
+        .wb-item-level {
+            flex-shrink: 0;
+            background: #f0ebff;
+            color: #8b5cf6;
+            font-size: 11px;
+            font-weight: 800;
+            border-radius: 999px;
+            padding: 4px 10px;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        /* 中右:进度条 */
+        .wb-item-bar {
+            width: 64px;
+            height: 8px;
+            flex-shrink: 0;
+            background: #e8e8e8;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .wb-item-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 360ms cubic-bezier(0.2,0.8,0.2,1);
+        }
+        /* 右:百分比+状态 */
+        .wb-item-right {
+            flex-shrink: 0;
+            width: 48px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .wb-item-pct {
+            font-size: 15px;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .wb-item-status {
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1;
         }
         .wordbook-detail-overlay {
             position: fixed;
@@ -5219,15 +5269,6 @@
             border-radius: 24px 24px 0 0;
             padding: 22px 20px 18px;
             color: #fff;
-            overflow: hidden;
-        }
-        .wordbook-detail-hero::after {
-            content: '';
-            position: absolute;
-            top: -30px; right: -30px;
-            width: 120px; height: 120px;
-            background: rgba(255,255,255,0.12);
-            border-radius: 50%;
         }
         .wordbook-detail-close {
             position: absolute;
@@ -11651,27 +11692,36 @@
             const visible = items.slice(start, end);
             const hasMore = end < items.length;
 
-            const masteryClass = { new: 'mastery-new', learning: 'mastery-learning', mastered: 'mastery-mastered', lapsed: 'mastery-lapsed' };
             const masteryLabel = { new: '未学', learning: '学习中', mastered: '已掌握', lapsed: '需复习' };
 
             const html = visible.map(item => {
                 const m = item.mem;
                 const w = item.word;
-                const phonetic = w.phonetic ? `<span class="wordbook-phonetic">${w.phonetic}</span>` : '';
+                const phonetic = w.phonetic || '';
                 const cn = (w.cn || '').replace(/'/g, '&#39;').replace(/</g, '&lt;');
+                const enSafe = (w.en || '').replace(/'/g, "\\'");
                 const isNew = (m.status === 'new' || !m.lastReview);
                 const clickAttr = isNew ? '' : `onclick="showWordbookDetail('${item.level}','${item.index}')" style="cursor:pointer"`;
                 const itemClass = isNew ? 'wordbook-item' : 'wordbook-item wordbook-item-clickable';
+                // 状态配色与百分比(记忆保持率 R)
+                const statusColor = { new: '#afafaf', learning: '#1cb0f6', mastered: '#58cc02', lapsed: '#ff4b4b' }[m.status] || '#afafaf';
+                const barColor = { new: '#d8d8d8', learning: '#1cb0f6', mastered: '#58cc02', lapsed: '#ff4b4b' }[m.status] || '#d8d8d8';
+                const pct = isNew ? 0 : Math.round(Math.max(0, Math.min(1, Number(m.retrievability) || 0)) * 100);
                 return `
                     <div class="${itemClass}" ${clickAttr}>
-                        <div class="wordbook-mastery ${masteryClass[m.status] || 'mastery-new'}"></div>
-                        <div class="wordbook-info">
-                            <div class="wordbook-word">${w.en} ${phonetic}</div>
-                            <div class="wordbook-cn">${cn}</div>
+                        <button class="wb-item-audio" onclick="event.stopPropagation(); pronounceWord('${enSafe}')" aria-label="播放发音">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 8.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 5a8.5 8.5 0 0 1 0 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        </button>
+                        <div class="wb-item-main">
+                            <div class="wb-item-word">${w.en}</div>
+                            ${phonetic ? `<div class="wb-item-phonetic">${phonetic}</div>` : ''}
+                            <div class="wb-item-cn">${cn}</div>
                         </div>
-                        <div class="wordbook-stats">
-                            <div class="review-count">${m.reviewCount}次</div>
-                            <div>${masteryLabel[m.status] || '未学'}</div>
+                        <span class="wb-item-level">${LEVEL_NAMES[item.level] || item.level}</span>
+                        <div class="wb-item-bar"><div class="wb-item-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+                        <div class="wb-item-right">
+                            <div class="wb-item-pct" style="color:${statusColor}">${pct}%</div>
+                            <div class="wb-item-status" style="color:${statusColor}">${masteryLabel[m.status] || '未学'}</div>
                         </div>
                     </div>
                 `;
@@ -11697,7 +11747,6 @@
             const mem = MemorySystem.getMemoryForWord(level, w, idx);
             if (mem.status === 'new' || !mem.lastReview) return;
 
-            const masteryClass = { new: 'mastery-new', learning: 'mastery-learning', mastered: 'mastery-mastered', lapsed: 'mastery-lapsed' };
             const masteryLabel = { new: '未学', learning: '学习中', mastered: '已掌握', lapsed: '需复习' };
             const masteryColor = { new: '#ccc', learning: 'var(--accent)', mastered: 'var(--primary)', lapsed: 'var(--danger)' };
 
