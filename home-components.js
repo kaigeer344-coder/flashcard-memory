@@ -308,12 +308,14 @@
 
         const stepHTML = items.map((item, index) => {
             const pct = Math.round((item.progress || 0) * 100);
-            const stepHeight = Math.max(10, Math.round((item.progress || 0) * 120));
+            // 填充高度：进度映射到 24~120px，保证低进度也清晰可见
+            const fillHeight = Math.max(24, Math.round((item.progress || 0) * 120));
             const isLast = index === items.length - 1;
             return `
-                <div class="hp-lt-step" style="--step-color:${item.color};--step-height:${stepHeight}px" onclick="onBookProgressClick && onBookProgressClick('${item.id}')">
+                <div class="hp-lt-step" style="--step-color:${item.color};--step-fill:${fillHeight}px" onclick="onBookProgressClick && onBookProgressClick('${item.id}')">
                     <span class="hp-lt-step-label">${item.name}</span>
                     <span class="hp-lt-step-pct">${pct}%</span>
+                    <div class="hp-lt-step-fill"></div>
                     ${isLast ? `<svg class="hp-lt-flag" viewBox="0 0 24 24" width="16" height="16" fill="#FFD84D"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>` : ''}
                 </div>`;
         }).join('');

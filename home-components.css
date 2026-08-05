@@ -962,16 +962,29 @@
 .hp-lt-step {
     flex: 1;
     min-width: 0;
-    height: var(--step-height, 28px);
-    min-height: 8px;
+    /* 固定总高度背景条：浅色表示总量 */
+    height: 130px;
+    background: rgba(34, 185, 24, 0.10);
+    border-radius: 10px 10px 4px 4px;
+    cursor: pointer;
+    transition: transform 120ms ease, background 120ms ease;
+    position: relative;
+    overflow: hidden;
+}
+.hp-lt-step:hover { background: rgba(34, 185, 24, 0.16); }
+.hp-lt-step:active { transform: scale(0.96); }
+/* 填充层：表示已学进度，最小可视高度 24px */
+.hp-lt-step-fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--step-fill, 24px);
     background: var(--step-color, #8B5CF6);
     border-radius: 8px 8px 4px 4px;
-    cursor: pointer;
-    transition: transform 120ms ease, opacity 120ms ease;
-    position: relative;
-    opacity: 0.9;
+    transition: height 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: inset 0 2px 0 rgba(255,255,255,0.25);
 }
-.hp-lt-step:active { transform: scale(0.96); opacity: 1; }
 .hp-lt-step-label {
     position: absolute;
     bottom: calc(100% + 5px);
@@ -982,6 +995,7 @@
     color: #171A20;
     line-height: 1;
     white-space: nowrap;
+    z-index: 2;
 }
 .hp-lt-step-pct {
     position: absolute;
@@ -993,12 +1007,14 @@
     color: #858995;
     line-height: 1;
     white-space: nowrap;
+    z-index: 2;
 }
 .hp-lt-flag {
     position: absolute;
     top: -14px;
     right: 4px;
     filter: drop-shadow(0 1px 2px rgba(0,0,0,0.12));
+    z-index: 2;
 }
 .hp-lt-stats {
     display: flex;
