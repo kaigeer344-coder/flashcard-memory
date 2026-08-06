@@ -1213,15 +1213,25 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
-        /* 词库徽章:第一行 3 个,第二行 2 个(整体居中);窄屏(390px)时徽章自动收缩防溢出 */
+        /* 词库徽章:全部一行,横向滑动查看 */
         #achWordBadges {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-        #achWordBadges .ach-badge-row {
-            grid-column: 1 / -1;
             display: flex;
-            justify-content: center;
-            gap: 10px;
+            flex-wrap: nowrap;
+            align-items: flex-start;
+            gap: 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+            padding: 4px 4px 10px;
+            scroll-snap-type: x proximity;
+        }
+        #achWordBadges::-webkit-scrollbar { display: none; }
+        #achWordBadges .ach-badge-row {
+            display: contents;
+        }
+        #achWordBadges .ach-badge-card {
+            flex-shrink: 0;
+            scroll-snap-align: start;
         }
         .ach-badge-card {
             background: #fff;
