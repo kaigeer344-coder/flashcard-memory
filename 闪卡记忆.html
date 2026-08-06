@@ -4640,6 +4640,91 @@
             color: var(--primary-dark);
             line-height: 1.5;
         }
+        /* ===== 设置页多邻国风格强化 ===== */
+        #settingsScreen { background: #ffffff; }
+        #settingsScreen .settings-subheader { margin-bottom: 20px; }
+        #settingsScreen .settings-subheader h2 { font-size: 28px; letter-spacing: -0.3px; }
+        #settingsScreen .settings-back {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            border: 2px solid #e5e5e5;
+            background: #ffffff;
+            box-shadow: 0 3px 0 #d9d9d9;
+            font-size: 24px;
+            color: #4b4b4b;
+            line-height: 1;
+            transition: transform 120ms ease, box-shadow 120ms ease;
+        }
+        #settingsScreen .settings-back:active { transform: translateY(2px); box-shadow: 0 1px 0 #d9d9d9; }
+        /* 每组单词数卡片 */
+        #settingsScreen .word-count-section {
+            border: none;
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.04);
+            padding: 20px 18px;
+        }
+        #settingsScreen .section-label { font-size: 15px; font-weight: 900; color: #2d2d2d; }
+        #settingsScreen .setting-tip { font-size: 12px; font-weight: 700; color: #8c8c8c; text-align: center; }
+        /* V2 分组卡片 */
+        #settingsScreen .settings-v2-section {
+            border: none;
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.04);
+            margin: 0 0 14px;
+            padding: 18px;
+        }
+        #settingsScreen .settings-v2-section-title {
+            font-size: 12px;
+            font-weight: 900;
+            color: #58cc02;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        #settingsScreen .settings-v2-row { border-bottom: 2px solid #f5f5f5; }
+        #settingsScreen .settings-v2-row:last-child { border-bottom: none; }
+        #settingsScreen .settings-v2-row-name { font-size: 15px; }
+        #settingsScreen .settings-v2-row-meta { color: #8c8c8c; }
+        /* 分段控件 */
+        #settingsScreen .settings-v2-segmented { background: #eef1ea; border-radius: 14px; padding: 4px; }
+        #settingsScreen .settings-v2-seg-btn { min-height: 40px; border-radius: 10px; font-size: 14px; }
+        #settingsScreen .settings-v2-seg-btn.active {
+            background: #ffffff;
+            color: #58cc02;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.10);
+        }
+        /* 查看按钮:绿色主题 */
+        #settingsScreen .settings-v2-link {
+            border: none;
+            border-radius: 12px;
+            background: #58cc02;
+            color: #ffffff;
+            box-shadow: 0 3px 0 #46a302;
+        }
+        #settingsScreen .settings-v2-link:active { transform: translateY(2px); box-shadow: 0 1px 0 #46a302; }
+        /* 危险操作:红底白字 */
+        #settingsScreen .settings-v2-danger {
+            border: none;
+            border-radius: 14px;
+            background: #ff4b4b;
+            color: #ffffff;
+            box-shadow: 0 4px 0 #e03b3b;
+        }
+        #settingsScreen .settings-v2-danger:active { transform: translateY(3px); box-shadow: 0 1px 0 #e03b3b; }
+        /* 提示信息 */
+        #settingsScreen .settings-v2-info {
+            background: #eaf8e0;
+            color: #46a302;
+            border-radius: 14px;
+        }
+        /* 日期输入 */
+        #settingsScreen .settings-v2-input {
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            background: #fafafa;
+        }
         .settings-v2-confirm-overlay {
             position: fixed;
             inset: 0;
