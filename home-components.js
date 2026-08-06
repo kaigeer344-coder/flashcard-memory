@@ -290,10 +290,6 @@
                             </div>
                         </div>
                     </div>
-                    <button class="hp-dg-start" onclick="onStartTaskClick && onStartTaskClick()" ontouchstart="unlockAudio && unlockAudio()" aria-label="开始学习">
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg>
-                        <span>开始学习</span>
-                    </button>
                 </div>
             </div>`;
     };

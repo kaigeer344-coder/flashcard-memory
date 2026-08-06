@@ -1254,16 +1254,15 @@
             box-shadow: none;
             padding: 0;
             width: 120px;
-            height: 120px;
             max-width: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
         }
         .ach-shield {
             width: 120px;
-            height: auto;
-            aspect-ratio: 1 / 1;
+            height: 150px;
             max-width: 100%;
             margin: 0 auto;
             position: relative;
@@ -1271,13 +1270,18 @@
             align-items: center;
             justify-content: center;
             border-radius: 20px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: #ededed;
             background: #f2f9ea;
             box-shadow: 0 4px 0 rgba(88, 204, 2, 0.12);
             transition: transform 160ms ease;
         }
-        /* 词库徽章:素材背景统一浅灰(覆盖解锁彩色渐变) */
+        /* 词库徽章:素材背景透明(原素材自带背景,不再覆盖);纵向布局让按钮放进盾牌内 */
         #achWordBadges .ach-shield {
-            background: #eceae6;
+            background: transparent;
+            flex-direction: column;
+            justify-content: center;
         }
         .ach-badge-card:active .ach-shield { transform: scale(0.96); }
         .ach-shield::after {
@@ -1289,15 +1293,16 @@
             position: relative;
             z-index: 2;
         }
-        /* 词库徽章:图片填满盾牌,不留空隙;素材背景统一浅紫 */
+        /* 词库徽章:素材填满盾牌,素材背景透明;下方留按钮位;素材上移10px */
         #achWordBadges .ach-shield img {
-            width: 100%;
-            height: 100%;
+            width: 84%;
+            height: 84%;
             object-fit: contain;
             position: relative;
             z-index: 2;
-            background-color: #f8f7fe;
+            background-color: transparent;
             border-radius: 3px;
+            transform: translateY(-10px);
         }
         .ach-badge-card.locked .ach-shield {
             background: #eceae6;
@@ -1307,6 +1312,104 @@
         .ach-badge-card.locked .ach-shield img {
             filter: grayscale(1) brightness(0.92);
             opacity: 0.75;
+        }
+
+        /* 词库徽章:素材下方进度统计(已背/总数) */
+        .ach-badge-progress {
+            margin-top: 2px;
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #8a8a8a;
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+        }
+        .ach-badge-card.locked .ach-badge-progress {
+            opacity: 0.55;
+        }
+
+        /* 多邻国风格解锁状态按钮:素材下方小号胶囊 */
+        .ach-lock-btn {
+            margin-top: -18px;
+            min-height: 18px;
+            padding: 1px 8px;
+            border: none;
+            border-radius: 999px;
+            font-family: inherit;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            line-height: 1;
+            cursor: pointer;
+            transition: transform 120ms ease, box-shadow 120ms ease;
+        }
+        .ach-lock-btn.unlocked {
+            color: #ffffff;
+            background: linear-gradient(180deg, #8fe85f, #58cc02 60%, #58cc02);
+            box-shadow: 0 2px 0 #45a301;
+            text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+        }
+        .ach-lock-btn.locked {
+            color: #5f5f5f;
+            background: linear-gradient(180deg, #f0f0f0, #e2e2e2);
+            box-shadow: 0 2px 0 #c8c8c8;
+        }
+        .ach-lock-btn:active {
+            transform: translateY(2px);
+        }
+        .ach-lock-btn.unlocked:active { box-shadow: 0 1px 0 #45a301; }
+        .ach-lock-btn.locked:active { box-shadow: 0 1px 0 #c8c8c8; }
+
+        /* 成就徽章模块：一行三个，可上下滑动，无方块背景 */
+        .achievement-badge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px 10px;
+            max-height: 320px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding-right: 2px;
+        }
+        .achievement-badge-grid::-webkit-scrollbar { display: none; }
+        .collection-badge-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .collection-badge-graphic {
+            width: 88px;
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 6px;
+        }
+        .collection-badge-graphic img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        .collection-badge-graphic svg {
+            width: 60px;
+            height: 60px;
+            color: #c8c8c8;
+        }
+        .collection-badge-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+        .collection-badge-count {
+            font-size: 11px;
+            font-weight: 700;
+            color: #a0a0a0;
+            line-height: 1.2;
         }
 
         /* 连击徽章：素材图 + 名称 + 进度小字 */
@@ -2394,7 +2497,12 @@
 
         /* ===== 新手引导层 ===== */
         .onboard-overlay {
-            position: fixed; inset: 0;
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0; bottom: 0;
+            width: 100%;
+            max-width: 520px;
             background: rgba(28, 28, 28, 0.92);
             display: none;
             align-items: center; justify-content: center;
@@ -2432,16 +2540,18 @@
         }
         .onboard-dot.active { width: 24px; border-radius: 5px; background: var(--primary); }
         .onboard-btn {
-            width: 100%; min-height: 52px;
+            width: 100%; min-height: 54px;
             border-radius: 16px;
-            background: var(--primary);
+            background: linear-gradient(180deg, #8fe85f, #58cc02);
             color: #fff; border: 0;
-            box-shadow: var(--shadow-green);
-            font-size: 17px; font-weight: 1000;
+            box-shadow: 0 4px 0 #45a301;
+            font-size: 17px; font-weight: 900;
             cursor: pointer;
             transition: transform 140ms ease, box-shadow 140ms ease;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+            -webkit-tap-highlight-color: transparent;
         }
-        .onboard-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--primary-dark); }
+        .onboard-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #45a301; }
         .onboard-skip {
             margin-top: 12px;
             background: none; border: 0;
@@ -2573,88 +2683,96 @@
 
         /* 配置区块 */
         .onboard-config-section {
-            margin-bottom: 16px;
-            padding: 14px;
-            background: var(--light);
+            margin-bottom: 14px;
+            padding: 16px;
+            background: #f7f7f7;
             border-radius: 16px;
+            border: 2px solid #e5e5e5;
         }
         .onboard-config-label {
             font-size: 13px;
-            font-weight: 800;
-            color: var(--dark);
-            margin-bottom: 8px;
+            font-weight: 900;
+            color: #1a1a1a;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .onboard-config-label .hint {
-            font-size: 11px;
-            color: #5e5e5e;
-            font-weight: 600;
+            font-size: 12px;
+            color: #777;
+            font-weight: 700;
+            text-transform: none;
+            letter-spacing: 0;
         }
 
-        /* 每日词数选择器 */
+        /* 每日词数选择器 - 多邻国风格 */
         .onboard-count-selector {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 16px;
         }
         .onboard-count-btn {
-            width: 44px; height: 44px;  /* 修复 C-1:触控 ≥44pt */
+            width: 48px; height: 48px;
             border-radius: 50%;
-            border: 2px solid var(--secondary-dark);
-            background: var(--secondary);
+            border: none;
+            background: linear-gradient(180deg, #5ac8fa, #1cb0f6);
             color: #fff;
-            font-size: 22px;
-            font-weight: 800;
+            font-size: 24px;
+            font-weight: 900;
             cursor: pointer;
-            box-shadow: var(--shadow-blue);
-            transition: transform 140ms ease;
+            box-shadow: 0 4px 0 #1492d4;
+            transition: transform 140ms ease, box-shadow 140ms ease;
             -webkit-tap-highlight-color: transparent;
             display: grid; place-items: center;
         }
-        .onboard-count-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--secondary-dark); }
+        .onboard-count-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #1492d4; }
         .onboard-count-display {
-            min-width: 80px;
+            min-width: 90px;
             text-align: center;
-            font-size: 26px;
-            font-weight: 800;
-            color: var(--dark);
+            font-size: 28px;
+            font-weight: 900;
+            color: #1a1a1a;
         }
         .onboard-count-display .unit {
             font-size: 13px;
-            color: #5e5e5e;
-            font-weight: 600;
+            color: #777;
+            font-weight: 700;
             margin-left: 4px;
         }
 
-        /* 日期选择器(apple-design:用原生 input[type=date]) */
+        /* 日期选择器 - 多邻国风格 */
         .onboard-date-input {
             width: 100%;
-            min-height: 48px;  /* 修复 C-1 */
-            padding: 10px 14px;
-            border: 2px solid var(--border);
+            min-height: 50px;
+            padding: 12px 16px;
+            border: 2px solid #e5e5e5;
+            border-bottom-width: 3px;
             border-radius: 14px;
-            background: var(--surface);
+            background: #fff;
             font-size: 16px;
-            font-weight: 700;
-            color: var(--dark);
+            font-weight: 800;
+            color: #1a1a1a;
             font-family: inherit;
             cursor: pointer;
+            transition: border-color 140ms ease;
         }
         .onboard-date-input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-soft);
+            border-color: #1cb0f6;
+            box-shadow: 0 0 0 3px rgba(28,176,246,0.15);
         }
 
-        /* 系统计算结果摘要 */
+        /* 系统计算结果摘要 - 多邻国风格 */
         .onboard-summary {
-            padding: 12px 14px;
-            background: linear-gradient(135deg, #fff5d6, #ffeaa7);
+            padding: 14px 16px;
+            background: linear-gradient(135deg, #fff9e6, #fff3cc);
             border: 2px solid #ffc800;
-            border-radius: 14px;
+            border-bottom-width: 4px;
+            border-radius: 16px;
             box-shadow: 0 4px 0 #d6a900;
             margin-bottom: 14px;
         }
@@ -2662,63 +2780,72 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 4px 0;
-            font-size: 13px;
-            color: var(--dark);
+            padding: 5px 0;
+            font-size: 14px;
+            color: #1a1a1a;
         }
         .onboard-summary-row .label {
             font-weight: 700;
-            color: #5e5e5e;
+            color: #777;
         }
         .onboard-summary-row .value {
-            font-weight: 800;
-            color: var(--dark);
+            font-weight: 900;
+            color: #1a1a1a;
         }
         .onboard-summary-row .value.highlight {
-            color: var(--danger-dark);
-            font-size: 16px;
+            color: #ff4b4b;
+            font-size: 17px;
         }
 
-        /* 配置页返回按钮 */
+        /* 配置页关闭按钮(✕) - 多邻国风格 */
         .onboard-back {
             position: absolute;
             top: 16px;
             left: 16px;
-            width: 44px; height: 44px;  /* 修复 C-1 */
+            width: 44px; height: 44px;
             border-radius: 50%;
-            border: 2px solid var(--border);
-            background: var(--surface);
-            color: var(--dark);
-            font-size: 20px;
-            font-weight: 700;
+            border: none;
+            background: #e5e5e5;
+            color: #777;
             cursor: pointer;
-            box-shadow: 0 3px 0 var(--border);
+            box-shadow: 0 3px 0 #c4c4c4;
             display: grid; place-items: center;
-            transition: transform 140ms ease;
+            transition: transform 140ms ease, box-shadow 140ms ease;
             -webkit-tap-highlight-color: transparent;
         }
-        .onboard-back:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--border); }
+        .onboard-back svg {
+            width: 20px;
+            height: 20px;
+        }
+        .onboard-back:active { transform: translateY(2px); box-shadow: 0 1px 0 #c4c4c4; }
 
         /* 配置页面容器(支持滚动) */
         .onboard-card.v2-config-card {
             max-width: 440px;
-            padding: 44px 20px 18px;
+            padding: 52px 20px 20px;
             max-height: 90vh;
             overflow-y: auto;
             text-align: left;
             position: relative;
+            border-radius: 24px;
+            background: #fff;
+            box-shadow: 0 0 0 3px #e5e5e5, 0 12px 36px rgba(0,0,0,0.12);
         }
         .onboard-card.v2-config-card .onboard-title {
             text-align: center;
-            font-size: 22px;
+            font-size: 26px;
+            font-weight: 900;
             margin-bottom: 4px;
+            color: #1a1a1a;
+            letter-spacing: -0.3px;
         }
         .onboard-card.v2-config-card .onboard-desc {
             text-align: center;
-            color: #5e5e5e;
+            color: #777;
             min-height: auto;
-            margin-bottom: 14px;
-            font-size: 13px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         /* 错误提示 */
@@ -2735,23 +2862,24 @@
         }
         .onboard-error.show { display: block; }
 
-        /* 提示卡片(模式切换说明等) */
+        /* 提示卡片 - 多邻国风格 */
         .onboard-tip {
             display: flex;
             gap: 10px;
-            padding: 10px 12px;
-            background: #fff8e1;
-            border: 2px solid var(--accent);
-            border-radius: 12px;
-            margin-bottom: 12px;
+            padding: 12px 14px;
+            background: #e8f5fe;
+            border: 2px solid #1cb0f6;
+            border-bottom-width: 3px;
+            border-radius: 14px;
+            margin-bottom: 14px;
             font-size: 12px;
-            color: #5e5e5e;
+            color: #4a4a4a;
             font-weight: 600;
             line-height: 1.5;
         }
         .onboard-tip img { width: 20px; height: 20px; flex-shrink: 0; }
 
-        /* 选项胶囊(用于核心/全部、考试类型快速选择) */
+        /* 选项胶囊(用于核心/全部、考试类型快速选择) - 多邻国风格 */
         .onboard-pill-group {
             display: flex;
             flex-wrap: wrap;
@@ -2759,24 +2887,252 @@
             margin-bottom: 14px;
         }
         .onboard-pill {
-            min-height: 44px;  /* 修复 C-1 */
-            padding: 10px 16px;
-            border: 2px solid var(--border);
+            min-height: 44px;
+            padding: 10px 18px;
+            border: 2px solid #e5e5e5;
+            border-bottom-width: 3px;
             border-radius: 999px;
-            background: var(--surface);
-            font-size: 13px;
+            background: #fff;
+            font-size: 14px;
             font-weight: 800;
-            color: var(--dark);
+            color: #1a1a1a;
             cursor: pointer;
             transition: all 140ms ease;
             -webkit-tap-highlight-color: transparent;
         }
-        .onboard-pill:active { transform: translateY(1px); }
+        .onboard-pill:active { transform: translateY(1px); border-bottom-width: 2px; }
         .onboard-pill.selected {
-            background: var(--primary);
-            border-color: var(--primary-dark);
+            background: linear-gradient(180deg, #8fe85f, #58cc02);
+            border-color: #58cc02;
             color: #fff;
-            box-shadow: 0 3px 0 var(--primary-dark);
+            box-shadow: 0 3px 0 #45a301;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+        }
+
+        /* ===== 多邻国式分步提问(mode-config) ===== */
+        .onboard-overlay.onboard-full {
+            padding: 0;
+        }
+        /* 全屏引导界面 */
+        .onboard-card.onboard-full {
+            width: 100%;
+            max-width: 520px;
+            height: 100dvh;
+            max-height: none;
+            border-radius: 0;
+            box-shadow: none;
+            background: linear-gradient(180deg, #f2fdf1 0%, #eef7ff 100%);
+            display: flex;
+            flex-direction: column;
+            padding: 16px 24px calc(20px + env(safe-area-inset-bottom));
+            text-align: left;
+            overflow-y: auto;
+        }
+        .onboard-card.onboard-full #onboardDynamic {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .onboard-card.onboard-full .onboard-q-progress {
+            margin-top: 54px;  /* 给顶部返回按钮让位 */
+            margin-bottom: 14px;
+        }
+        .onboard-card.onboard-full .onboard-q-body {
+            flex: 1;
+        }
+        .onboard-card.onboard-full .onboard-btn {
+            margin-top: 14px;
+        }
+        /* 叉按钮 + 进度条同一行 */
+        .onboard-q-topbar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .onboard-q-topbar .onboard-back {
+            position: static;
+            flex-shrink: 0;
+        }
+        .onboard-card.onboard-full .onboard-q-topbar .onboard-q-progress {
+            flex: 1;
+            min-width: 0;
+            margin: 0;
+        }
+        /* IP 形象 + 对话气泡 */
+        .onboard-q-mascot {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 22px;
+            padding: 0 2px;
+        }
+        .onboard-q-mascot-img {
+            width: 108px;
+            height: 108px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid #e5e5e5;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            flex-shrink: 0;
+        }
+        .onboard-q-bubble {
+            position: relative;
+            flex: 1;
+            background: #fff;
+            border: 2px solid #e5e5e5;
+            border-bottom-width: 4px;
+            border-radius: 20px;
+            padding: 14px 16px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.04);
+        }
+        .onboard-q-bubble::before,
+        .onboard-q-bubble::after {
+            content: '';
+            position: absolute;
+            left: -12px;
+            bottom: 20px;
+            border: 7px solid transparent;
+            border-left: 0;
+            border-right-color: #e5e5e5;
+        }
+        .onboard-q-bubble::after {
+            left: -8px;
+            border-width: 6px;
+            border-right-color: #fff;
+        }
+        .onboard-q-bubble-title {
+            font-size: 20px;
+            font-weight: 900;
+            color: #1a1a1a;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+        .onboard-q-bubble-desc {
+            font-size: 13px;
+            font-weight: 600;
+            color: #777;
+            line-height: 1.4;
+        }
+        .onboard-q-progress {
+            width: 100%;
+            height: 18px;
+            background: #e5e5e5;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            margin-top: 2px;
+        }
+        .onboard-q-progress-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #8fe85f, #58cc02);
+            transition: width 260ms ease;
+        }
+        .onboard-q-body {
+            padding-bottom: 4px;
+        }
+        /* 选项卡片网格 */
+        .onboard-q-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .onboard-q-card {
+            position: relative;
+            min-height: 96px;
+            padding: 18px 12px;
+            border: 2px solid #e5e5e5;
+            border-bottom-width: 4px;
+            border-radius: 18px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .onboard-q-card:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+        .onboard-q-card.selected {
+            background: linear-gradient(180deg, #eaffd9, #d8f7c0);
+            border-color: var(--q-accent, #58cc02);
+            box-shadow: 0 4px 0 var(--q-accent, #58cc02);
+        }
+        .onboard-q-card-name {
+            font-size: 18px;
+            font-weight: 900;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        .onboard-q-card-num {
+            font-size: 28px;
+            font-weight: 900;
+            color: #1a1a1a;
+            line-height: 1.1;
+            margin-bottom: 2px;
+        }
+        .onboard-q-card-sub {
+            font-size: 12px;
+            font-weight: 700;
+            color: #777;
+        }
+        .onboard-q-tag {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #ffd900, #ffc800);
+            color: #4a3b00;
+            font-size: 11px;
+            font-weight: 900;
+            box-shadow: 0 2px 0 #d6a900;
+        }
+        /* 日期步骤 */
+        .onboard-q-date-wrap {
+            padding: 6px 2px;
+        }
+        .onboard-q-date {
+            font-size: 17px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .onboard-q-date-hint {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #777;
+        }
+        .onboard-q-date-hint b {
+            color: #1cb0f6;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        /* 小屏:缩小 IP 形象与气泡 */
+        @media (max-width: 380px) {
+            .onboard-card.onboard-full {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+            .onboard-q-mascot-img {
+                width: 88px;
+                height: 88px;
+            }
+            .onboard-q-bubble-title {
+                font-size: 18px;
+            }
+            .onboard-q-bubble-desc {
+                font-size: 12px;
+            }
         }
 
         /* ===== V2.0 进度阶梯首页 ===== */
@@ -5839,6 +6195,17 @@
                 <div class="ach-badge-grid" id="achWordBadges"></div>
             </div>
 
+            <div class="ach-section">
+                <div class="ach-section-head">
+                    <div class="ach-section-title">
+                        <span class="ach-section-icon">🏆</span>
+                        成就徽章
+                    </div>
+                    <span class="ach-section-hint">完成目标，收集更多成就</span>
+                </div>
+                <div class="achievement-badge-grid" id="achCollectionBadges"></div>
+            </div>
+
             <div id="achievementMount"></div>
         </div>
 
@@ -6089,6 +6456,7 @@
     <aside class="screen-nav-sidebar" id="screenNavSidebar">
         <div class="screen-nav-title">界面清单</div>
         <nav class="screen-nav-list">
+            <button class="screen-nav-item" data-screen="startScreen" data-nav="onboard">学习模式选择</button>
             <button class="screen-nav-item" data-screen="startScreen" data-mode="sprint">冲刺模式首页</button>
             <button class="screen-nav-item" data-screen="startScreen" data-mode="free">自由学习首页</button>
             <button class="screen-nav-item" data-screen="learningMapScreen">学习地图</button>
@@ -7078,6 +7446,17 @@
             { type: 'mode-config', title: '配置学习计划', desc: '根据你的选择生成专属计划' }
         ];
         let onboardIndex = 0;
+        // mode-config 页内的子步骤索引(多邻国式一问一答)
+        let onboardQIndex = 0;
+        // 多邻国式问题流:每步一个问题,选择后点"继续"进入下一步
+        const ONBOARD_Q = {
+            mode:    { title: '你想怎么学习？',     desc: '两种模式随时可以切换,进度不丢失' },
+            book:    { title: '你想学哪本词书？',     desc: '学习进度在所有词书间共享,不会丢失' },
+            exam:    { title: '你要考哪个考试？',     desc: '系统将按考试真题词频为你安排' },
+            date:    { title: '考试日期是哪天？',     desc: '我们将按剩余天数倒排学习计划' },
+            daily:   { title: '每天想学多少新词？',   desc: '随时可以在设置中调整' },
+            confirm: { title: '学习计划已准备好！',   desc: '确认后开启你的学习之旅' }
+        };
         // V2.0 临时状态
         let onboardState = {
             mode: null,           // 'free' | 'sprint'
@@ -7091,6 +7470,7 @@
         // preMode 可选:'free'|'sprint' —— 从设置页等入口直接进入指定模式的配置页
         function startOnboarding(preMode) {
             onboardIndex = 0;
+            onboardQIndex = 0;
             onboardState = {
                 mode: null, bookId: 'cet4', dailyTarget: 20,
                 examType: 'cet4', examDate: '', dailyWords: 45
@@ -7111,6 +7491,7 @@
 
         function renderOnboardingPage() {
             const page = ONBOARD_PAGES[onboardIndex];
+            const overlay = document.getElementById('onboardOverlay');
             const card = document.getElementById('onboardCard');
             const emojiEl = document.getElementById('onboardEmoji');
             const titleEl = document.getElementById('onboardTitle');
@@ -7121,7 +7502,8 @@
             const dynEl = document.getElementById('onboardDynamic');
 
             // 重置容器样式
-            card.classList.remove('v2-mode-card', 'v2-config-card');
+            card.classList.remove('v2-mode-card', 'v2-config-card', 'onboard-full');
+            if (overlay) overlay.classList.remove('onboard-full');
             // 默认显示 emoji/title/desc/dots
             emojiEl.style.display = '';
             titleEl.style.display = '';
@@ -7138,27 +7520,36 @@
                 btn.disabled = false;
                 btn.style.opacity = '1';
             } else if (page.type === 'mode-select') {
-                card.classList.add('v2-mode-card');
+                // 全屏引导:IP 形象 + 对话气泡
+                if (overlay) overlay.classList.add('onboard-full');
+                card.classList.add('v2-mode-card', 'onboard-full');
                 emojiEl.style.display = 'none';
-                titleEl.textContent = page.title;
-                descEl.textContent = page.desc;
+                titleEl.style.display = 'none';
+                descEl.style.display = 'none';
+                dotsEl.style.display = 'none';  // 进度条代替圆点
                 skipBtn.style.display = 'none';  // 模式选择不允许跳过
                 btn.textContent = '下一步';
                 btn.disabled = !onboardState.mode;
                 btn.style.opacity = onboardState.mode ? '1' : '0.5';
-                dynEl.innerHTML = _renderModeSelectHTML();
+                dynEl.innerHTML = _renderQProgressHTML(['intro', 'intro', 'intro', 'mode'], 3, 'mode', false) + _renderModeSelectHTML();
             } else if (page.type === 'mode-config') {
-                card.classList.add('v2-config-card');
+                // 全屏引导:IP 形象 + 对话气泡
+                if (overlay) overlay.classList.add('onboard-full');
+                card.classList.add('v2-config-card', 'onboard-full');
                 emojiEl.style.display = 'none';
-                dotsEl.style.display = 'none';
-                titleEl.textContent = onboardState.mode === 'free' ? '自由学习设置' : '考试冲刺设置';
-                descEl.textContent = onboardState.mode === 'free' ? '选择词书和每日学习量' : '选择考试并设定日期';
+                titleEl.style.display = 'none';
+                descEl.style.display = 'none';
+                dotsEl.style.display = 'none';  // 进度条代替圆点
+                const flow = _getQuestionFlow();
+                const step = flow[onboardQIndex] || flow[flow.length - 1];
                 skipBtn.style.display = 'none';
-                btn.textContent = '开始学习';
-                btn.disabled = !_isModeConfigValid();
-                btn.style.opacity = _isModeConfigValid() ? '1' : '0.5';
-                dynEl.innerHTML = _renderModeConfigHTML();
-                _afterConfigRender();  // 绑定事件
+                const isLast = onboardQIndex >= flow.length - 1;
+                btn.textContent = isLast ? '开始学习' : '继续';
+                const valid = _isQValid(step);
+                btn.disabled = !valid;
+                btn.style.opacity = valid ? '1' : '0.5';
+                dynEl.innerHTML = _renderQProgressHTML(flow, onboardQIndex, step) + _renderQHTML(step);
+                _afterConfigRender();
             }
 
             dotsEl.innerHTML = ONBOARD_PAGES.map((_, i) =>
@@ -7166,41 +7557,77 @@
             ).join('');
         }
 
-        // 渲染:模式选择页
+        // 渲染:模式选择页(全屏,IP 气泡在上,选项在下)
         function _renderModeSelectHTML() {
             return `
-                <div class="onboard-mode-grid">
-                    <div class="onboard-mode-card ${onboardState.mode === 'free' ? 'selected' : ''}"
-                         onclick="selectOnboardMode('free')" role="button" aria-label="选择自由学习模式">
-                        <div class="onboard-mode-icon"><img src="assets/generated-icons/daily-words.png" alt=""></div>
-                        <div class="onboard-mode-name">自由学习</div>
-                        <div class="onboard-mode-desc">无压力,按自己的节奏背单词</div>
+                <div class="onboard-q-body">
+                    <div class="onboard-mode-grid">
+                        <div class="onboard-mode-card ${onboardState.mode === 'free' ? 'selected' : ''}"
+                             onclick="selectOnboardMode('free')" role="button" aria-label="选择自由学习模式">
+                            <div class="onboard-mode-icon"><img src="assets/generated-icons/daily-words.png" alt=""></div>
+                            <div class="onboard-mode-name">自由学习</div>
+                            <div class="onboard-mode-desc">无压力,按自己的节奏背单词</div>
+                        </div>
+                        <div class="onboard-mode-card mode-sprint ${onboardState.mode === 'sprint' ? 'selected' : ''}"
+                             onclick="selectOnboardMode('sprint')" role="button" aria-label="选择考试冲刺模式">
+                            <div class="onboard-mode-icon"><img src="assets/generated-icons/achievement-trophy.png" alt=""></div>
+                            <div class="onboard-mode-name">考试冲刺</div>
+                            <div class="onboard-mode-desc">有目标有计划,倒计时备考</div>
+                        </div>
                     </div>
-                    <div class="onboard-mode-card mode-sprint ${onboardState.mode === 'sprint' ? 'selected' : ''}"
-                         onclick="selectOnboardMode('sprint')" role="button" aria-label="选择考试冲刺模式">
-                        <div class="onboard-mode-icon"><img src="assets/generated-icons/achievement-trophy.png" alt=""></div>
-                        <div class="onboard-mode-name">考试冲刺</div>
-                        <div class="onboard-mode-desc">有目标有计划,倒计时备考</div>
+                    <div class="onboard-tip">
+                        <img src="assets/generated-icons/item-hint.png" alt="">
+                        <div>两种模式共享记忆数据,切换不会丢失进度。背四级词时,六级/考研进度同步推进。</div>
                     </div>
-                </div>
-                <div class="onboard-tip">
-                    <img src="assets/generated-icons/item-hint.png" alt="">
-                    <div>两种模式共享记忆数据,切换不会丢失进度。背四级词时,六级/考研进度同步推进。</div>
                 </div>
             `;
         }
 
-        // 渲染:模式配置页(根据 mode 渲染不同表单)
-        function _renderModeConfigHTML() {
-            if (onboardState.mode === 'free') return _renderFreeConfigHTML();
-            if (onboardState.mode === 'sprint') return _renderSprintConfigHTML();
-            return '<div class="onboard-error show">请先选择学习模式</div>';
+        // ===== 多邻国式分步提问(mode-config) =====
+        // 问题流:自由 = 词书→词数→确认;冲刺 = 考试→日期→词数→确认
+        function _getQuestionFlow() {
+            return onboardState.mode === 'free'
+                ? ['book', 'daily', 'confirm']
+                : ['exam', 'date', 'daily', 'confirm'];
         }
 
-        // 自由模式配置:词书 + 每日词数
-        function _renderFreeConfigHTML() {
+        // 顶部进度条 + IP 形象 + 对话气泡(showClose=false 时无关闭按钮)
+        function _renderQProgressHTML(flow, qIndex, step, showClose = true) {
+            const pct = Math.round(((qIndex + 1) / flow.length) * 100);
+            const q = ONBOARD_Q[step];
+            return `
+                <div class="onboard-q-topbar">
+                    ${showClose ? `<button class="onboard-back" onclick="closeOnboarding()" aria-label="关闭引导">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                    </button>` : ''}
+                    <div class="onboard-q-progress" role="progressbar" aria-label="配置进度">
+                        <div class="onboard-q-progress-fill" style="width:${pct}%"></div>
+                    </div>
+                </div>
+                <div class="onboard-q-mascot">
+                    <img class="onboard-q-mascot-img" src="assets/ChatGPT Image 1png.png"
+                         alt="学习伙伴" onerror="this.style.display='none'">
+                    <div class="onboard-q-bubble">
+                        <div class="onboard-q-bubble-title">${q.title}</div>
+                        <div class="onboard-q-bubble-desc">${q.desc}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function _renderQHTML(step) {
+            if (step === 'book') return _renderQBook();
+            if (step === 'exam') return _renderQExam();
+            if (step === 'date') return _renderQDate();
+            if (step === 'daily') return _renderQDaily();
+            if (step === 'confirm') return _renderQConfirm();
+            return '';
+        }
+
+        // Q: 选择词书
+        function _renderQBook() {
             const books = LearningSystem.getAllBooksInfo();
-            const bookCards = books.map(b => {
+            const cards = books.map(b => {
                 const iconMap = { cet4: 'assets/icon-cet4.png', cet6: 'assets/icon-cet6.png', toefl: 'assets/icon-toefl.png' };
                 const iconSrc = iconMap[b.id] || 'assets/generated-icons/daily-words.png';
                 return `
@@ -7214,102 +7641,132 @@
                     </div>
                 `;
             }).join('');
-            return `
-                <button class="onboard-back" onclick="onboardBack()" aria-label="返回上一步">‹</button>
-                <div class="onboard-config-section">
-                    <div class="onboard-config-label">选择词书 <span class="hint">已选: ${LearningSystem.getBookInfo(onboardState.bookId).name}</span></div>
-                    <div class="onboard-book-grid">${bookCards}</div>
-                </div>
-                <div class="onboard-config-section">
-                    <div class="onboard-config-label">每日新词数 <span class="hint">建议 15-30</span></div>
-                    <div class="onboard-count-selector">
-                        <button class="onboard-count-btn" onclick="changeOnboardCount('free', -5)" aria-label="减少 5">−</button>
-                        <div class="onboard-count-display">${onboardState.dailyTarget}<span class="unit">词/天</span></div>
-                        <button class="onboard-count-btn" onclick="changeOnboardCount('free', +5)" aria-label="增加 5">+</button>
+            return `<div class="onboard-q-body"><div class="onboard-book-grid">${cards}</div></div>`;
+        }
+
+        // Q: 选择考试类型(卡片,多邻国式)
+        function _renderQExam() {
+            const examTypes = LearningSystem.getExamTypes();
+            const cards = Object.entries(examTypes)
+                .filter(([id]) => id !== 'gre') // 隐藏 GRE 入口
+                .map(([id, cfg]) => `
+                    <div class="onboard-q-card ${onboardState.examType === id ? 'selected' : ''}"
+                         style="--q-accent:${cfg.color}"
+                         onclick="selectOnboardExam('${id}')" role="button" aria-label="选择 ${cfg.name}">
+                        <div class="onboard-q-card-name">${cfg.name}</div>
+                        <div class="onboard-q-card-sub">${cfg.totalWords} 词</div>
                     </div>
-                </div>
-                <div class="onboard-tip">
-                    <img src="assets/generated-icons/item-hint.png" alt="">
-                    <div>每日新词上限 80 词。学习后系统会用 FSRS 算法安排复习节奏。</div>
+                `).join('');
+            return `<div class="onboard-q-body"><div class="onboard-q-grid">${cards}</div></div>`;
+        }
+
+        // Q: 考试日期(手动选择,独立一步)
+        function _renderQDate() {
+            const today = new Date();
+            const todayStr = today.toISOString().slice(0, 10);
+            const examTs = onboardState.examDate ? new Date(onboardState.examDate) : new Date(today.getTime() + 14 * 86400000);
+            const remainingDays = Math.max(1, Math.round((examTs - today) / 86400000));
+            return `
+                <div class="onboard-q-body">
+                    <div class="onboard-q-date-wrap">
+                        <input type="date" class="onboard-date-input onboard-q-date" id="onboardExamDate"
+                               min="${todayStr}" value="${onboardState.examDate}"
+                               onchange="setOnboardExamDate(this.value)" />
+                        <div class="onboard-q-date-hint">距考试还剩 <b>${remainingDays}</b> 天</div>
+                    </div>
                 </div>
             `;
         }
 
-        // 冲刺模式配置:考试 + 日期 + 系统计算每日词数
-        function _renderSprintConfigHTML() {
-            const examTypes = LearningSystem.getExamTypes();
-            const examPills = Object.entries(examTypes).map(([id, cfg]) => `
-                <div class="onboard-pill ${onboardState.examType === id ? 'selected' : ''}"
-                     onclick="selectOnboardExam('${id}')" role="button" aria-label="选择 ${cfg.name}">
-                    ${cfg.name}
+        // Q: 每日新词数(卡片选项,推荐项标注)
+        function _renderQDaily() {
+            const isFree = onboardState.mode === 'free';
+            const current = isFree ? onboardState.dailyTarget : onboardState.dailyWords;
+            let opts, recommend;
+            if (isFree) {
+                opts = [10, 20, 30, 50];
+                recommend = 20;
+            } else {
+                const today = new Date();
+                const examTs = onboardState.examDate ? new Date(onboardState.examDate) : new Date(today.getTime() + 14 * 86400000);
+                const remainingDays = Math.max(1, Math.round((examTs - today) / 86400000));
+                const cfg = LearningSystem.getSprintConfig(remainingDays);
+                recommend = cfg.dailyNew;
+                opts = [recommend - 10, recommend, recommend + 10].filter(v => v >= 5);
+                if (opts.length < 3) opts = [recommend, recommend + 10, recommend + 20];
+            }
+            const cards = opts.map(v => `
+                <div class="onboard-q-card ${current === v ? 'selected' : ''}"
+                     onclick="selectOnboardDaily(${v})" role="button" aria-label="每天 ${v} 词">
+                    <div class="onboard-q-card-num">${v}</div>
+                    <div class="onboard-q-card-sub">词 / 天</div>
+                    ${v === recommend ? '<div class="onboard-q-tag">推荐</div>' : ''}
                 </div>
             `).join('');
-            // 计算冲刺配置预览
+            return `<div class="onboard-q-body"><div class="onboard-q-grid">${cards}</div></div>`;
+        }
+
+        // Q: 确认计划(摘要)
+        function _renderQConfirm() {
+            const isFree = onboardState.mode === 'free';
+            if (isFree) {
+                const info = LearningSystem.getBookInfo(onboardState.bookId);
+                return `
+                    <div class="onboard-q-body">
+                        <div class="onboard-summary">
+                            <div class="onboard-summary-row"><span class="label">词书</span><span class="value">${info.name} · ${info.totalWords} 词</span></div>
+                            <div class="onboard-summary-row"><span class="label">每日新词</span><span class="value">${onboardState.dailyTarget} 词</span></div>
+                        </div>
+                        <div class="onboard-tip">
+                            <img src="assets/generated-icons/item-hint.png" alt="">
+                            <div>每日新词上限 80 词。学习后系统会用 FSRS 算法安排复习节奏。</div>
+                        </div>
+                    </div>
+                `;
+            }
             const today = new Date();
             const todayStr = today.toISOString().slice(0, 10);
-            const minDate = todayStr;
             const examTs = onboardState.examDate ? new Date(onboardState.examDate) : new Date(today.getTime() + 14 * 86400000);
             const remainingDays = Math.max(1, Math.round((examTs - today) / 86400000));
             const config = LearningSystem.getSprintConfig(remainingDays);
-            const sysSuggestDaily = config.dailyNew;
-            const actualDaily = onboardState.dailyWords || sysSuggestDaily;
+            const actualDaily = onboardState.dailyWords || config.dailyNew;
+            const examCfg = LearningSystem.getExamTypes()[onboardState.examType] || {};
             return `
-                <button class="onboard-back" onclick="onboardBack()" aria-label="返回上一步">‹</button>
-                <div class="onboard-config-section">
-                    <div class="onboard-config-label">选择考试类型</div>
-                    <div class="onboard-pill-group">${examPills}</div>
-                </div>
-                <div class="onboard-config-section">
-                    <div class="onboard-config-label">考试日期 <span class="hint">还剩 ${remainingDays} 天</span></div>
-                    <input type="date" class="onboard-date-input" id="onboardExamDate"
-                           min="${minDate}" value="${onboardState.examDate}"
-                           onchange="setOnboardExamDate(this.value)" />
-                </div>
-                <div class="onboard-config-section">
-                    <div class="onboard-config-label">每日新词数 <span class="hint">系统建议: ${sysSuggestDaily} 词</span></div>
-                    <div class="onboard-count-selector">
-                        <button class="onboard-count-btn" onclick="changeOnboardCount('sprint', -5)" aria-label="减少 5">−</button>
-                        <div class="onboard-count-display">${actualDaily}<span class="unit">词/天</span></div>
-                        <button class="onboard-count-btn" onclick="changeOnboardCount('sprint', +5)" aria-label="增加 5">+</button>
+                <div class="onboard-q-body">
+                    <div class="onboard-summary">
+                        <div class="onboard-summary-row"><span class="label">考试</span><span class="value">${examCfg.name || onboardState.examType}</span></div>
+                        <div class="onboard-summary-row"><span class="label">剩余时间</span><span class="value">${remainingDays} 天</span></div>
+                        <div class="onboard-summary-row"><span class="label">每日新词</span><span class="value">${actualDaily} 词</span></div>
+                        <div class="onboard-summary-row"><span class="label">阶段</span><span class="value">${config.label}</span></div>
+                        <div class="onboard-summary-row"><span class="label">完成所需天数</span><span class="value highlight">${Math.ceil(config.totalWords / actualDaily)} 天</span></div>
+                        <div class="onboard-summary-row"><span class="label">是否够时间</span><span class="value">${remainingDays >= Math.ceil(config.totalWords / actualDaily) ? '✓ 时间充裕' : '⚠ 时间紧张'}</span></div>
                     </div>
-                </div>
-                <div class="onboard-summary" id="onboardSummary">
-                    <div class="onboard-summary-row">
-                        <span class="label">阶段</span>
-                        <span class="value">${config.label}</span>
+                    <div class="onboard-tip">
+                        <img src="assets/generated-icons/item-hint.png" alt="">
+                        <div>系统会优先学习真题词频最高的核心词。剩余时间越少,越聚焦高频词。</div>
                     </div>
-                    <div class="onboard-summary-row">
-                        <span class="label">目标词数</span>
-                        <span class="value">${config.totalWords} 词</span>
-                    </div>
-                    <div class="onboard-summary-row">
-                        <span class="label">完成所需天数</span>
-                        <span class="value highlight">${Math.ceil(config.totalWords / actualDaily)} 天</span>
-                    </div>
-                    <div class="onboard-summary-row">
-                        <span class="label">是否够时间</span>
-                        <span class="value">${remainingDays >= Math.ceil(config.totalWords / actualDaily) ? '✓ 时间充裕' : '⚠ 时间紧张'}</span>
-                    </div>
-                </div>
-                <div class="onboard-tip">
-                    <img src="assets/generated-icons/item-hint.png" alt="">
-                    <div>系统会优先学习真题词频最高的核心词。剩余时间越少,越聚焦高频词。</div>
                 </div>
             `;
         }
 
-        function _isModeConfigValid() {
-            if (onboardState.mode === 'free') {
-                return !!onboardState.bookId && onboardState.dailyTarget >= 5;
-            }
-            if (onboardState.mode === 'sprint') {
-                return !!onboardState.examType && !!onboardState.examDate && onboardState.dailyWords >= 5;
-            }
+        // 当前步骤校验
+        function _isQValid(step) {
+            if (step === 'book') return !!onboardState.bookId;
+            if (step === 'exam') return !!onboardState.examType;
+            if (step === 'date') return !!onboardState.examDate;
+            if (step === 'daily') return onboardState.mode === 'free' ? onboardState.dailyTarget >= 5 : onboardState.dailyWords >= 5;
+            if (step === 'confirm') return true;
             return false;
         }
 
+        // 兼容旧调用:整体配置是否有效(仅 confirm 前用于按钮态)
+        function _isModeConfigValid() {
+            const flow = _getQuestionFlow();
+            return flow.every(s => _isQValid(s));
+        }
+
         function _afterConfigRender() {
-            // 当前无额外事件绑定(onclick 已 inline)
+            // 无额外事件绑定(onclick 已 inline)
         }
 
         // ===== V2.0 交互函数 =====
@@ -7328,6 +7785,14 @@
         function selectOnboardExam(examType) {
             SFX.click();
             onboardState.examType = examType;
+            renderOnboardingPage();
+        }
+
+        // 卡片式选择每日词数
+        function selectOnboardDaily(v) {
+            SFX.click();
+            if (onboardState.mode === 'free') onboardState.dailyTarget = v;
+            else onboardState.dailyWords = v;
             renderOnboardingPage();
         }
 
@@ -7354,6 +7819,20 @@
 
         function onboardBack() {
             SFX.click();
+            const page = ONBOARD_PAGES[onboardIndex];
+            // 配置页内:先返回上一个问题
+            if (page && page.type === 'mode-config') {
+                if (onboardQIndex > 0) {
+                    onboardQIndex--;
+                    renderOnboardingPage();
+                    return;
+                }
+                // 已回到第一个问题:退回模式选择页
+                onboardIndex--;
+                onboardQIndex = 0;
+                renderOnboardingPage();
+                return;
+            }
             if (onboardIndex > 0) {
                 onboardIndex--;
                 renderOnboardingPage();
@@ -7362,13 +7841,23 @@
 
         function onboardNext() {
             SFX.click();
+            const page = ONBOARD_PAGES[onboardIndex];
+            // 配置页:多邻国式逐步推进
+            if (page && page.type === 'mode-config') {
+                const flow = _getQuestionFlow();
+                const step = flow[onboardQIndex];
+                if (!_isQValid(step)) return;
+                if (onboardQIndex < flow.length - 1) {
+                    onboardQIndex++;
+                    renderOnboardingPage();
+                } else {
+                    finishOnboarding();
+                }
+                return;
+            }
             if (onboardIndex < ONBOARD_PAGES.length - 1) {
                 // 模式选择页:必须选择模式才能继续
                 if (ONBOARD_PAGES[onboardIndex].type === 'mode-select' && !onboardState.mode) {
-                    return;
-                }
-                // 配置页:必须验证通过才能完成
-                if (ONBOARD_PAGES[onboardIndex].type === 'mode-config' && !_isModeConfigValid()) {
                     return;
                 }
                 onboardIndex++;
@@ -7410,6 +7899,27 @@
                 if (typeof showScreen === 'function') showScreen('startScreen');
             }
             if (checkStreak()) showStreakReward();
+        }
+
+        // 打开完整引导并定位到模式选择页(页面清单入口)
+        function openModeSelect() {
+            if (typeof startOnboarding === 'function') startOnboarding();
+            const idx = ONBOARD_PAGES.findIndex(p => p.type === 'mode-select');
+            if (idx >= 0) {
+                onboardIndex = idx;
+                renderOnboardingPage();
+            }
+        }
+
+        // 多邻国式:✕ 关闭引导(回到主界面)
+        function closeOnboarding() {
+            SFX.click();
+            document.getElementById('onboardOverlay').classList.remove('show');
+            if (typeof refreshStartScreen === 'function') refreshStartScreen();
+            if (window._reconfigOnboarding) {
+                window._reconfigOnboarding = false;
+                if (typeof showScreen === 'function') showScreen('startScreen');
+            }
         }
 
         // V2.0:跳过引导(在未选模式时跳到模式选择页,不允许直接跳过)
@@ -8382,7 +8892,7 @@
             }
 
             root.innerHTML = renderLearningMapPage({
-                background: 'assets/background.png',
+                background: 'assets/map.png',
                 header: { progress: { current: completed.length * 3, total: totalDays * 3 } },
                 levels: levels,
                 maxPathDay: maxPathDay,
@@ -8595,7 +9105,9 @@
             const reviewWords = meta.reviewWordsToday || 0;
             const estimatedMinutes = Math.max(5, Math.round((newWords + reviewWords) * 0.6));
             const rewardXp = (newWords + reviewWords) > 0 ? newWords * 10 + reviewWords * 5 : 80;
-            const completedToday = (newWords === 0 && reviewWords === 0 && currentDay > 1);
+            // 今日任务完成 = 今天学到的新词达到计划目标;未学习时显示"开始学习"
+            const dailyNewWords = plan ? (plan.dailyNewWords || 20) : 20;
+            const completedToday = newWords >= dailyNewWords && dailyNewWords > 0;
 
             return renderHomePage({
                 mode: 'sprint',
@@ -9794,7 +10306,12 @@
 
         // 界面清单侧栏导航函数
         function navigateToScreen(screenId, options = {}) {
-            const { mode, variant } = options;
+            const { mode, variant, nav } = options;
+            if (screenId === 'startScreen' && nav === 'onboard') {
+                // 学习模式选择入口:打开完整引导并定位到模式选择页
+                if (typeof openModeSelect === 'function') openModeSelect();
+                return;
+            }
             if (screenId === 'startScreen' && mode) {
                 if (typeof settingsChangeMode === 'function') settingsChangeMode(mode);
                 showScreen('startScreen');
@@ -9860,7 +10377,8 @@
                 if (!item) return;
                 navigateToScreen(item.dataset.screen, {
                     mode: item.dataset.mode,
-                    variant: item.dataset.variant
+                    variant: item.dataset.variant,
+                    nav: item.dataset.nav
                 });
             });
         }
@@ -11213,6 +11731,8 @@
         const WORD_BADGE_LABELS = {
             cet4: '四级', cet6: '六级', kaoyan: '考研', ielts: '雅思', toefl: '托福'
         };
+        // 词库总词数(无计划时兜底展示)
+        const WORD_BANK_TOTALS = { cet4: 4500, cet6: 5500, kaoyan: 5500, ielts: 6000, toefl: 5000 };
         const LOCK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>`;
 
         function renderStatsScreen() {
@@ -11245,15 +11765,68 @@
                 const plan = bestByType[type];
                 const unlocked = DEMO_ALL_BADGES_UNLOCKED || !!(plan && plan.status === 'completed');
                 if (unlocked) wordUnlocked++;
+                const learned = (plan && plan.plan && plan.plan.progress && plan.plan.progress.learnedWordIds) ? plan.plan.progress.learnedWordIds.length : 0;
+                const total = (plan && plan.totalTargetWords) ? plan.totalTargetWords : (WORD_BANK_TOTALS[type] || 0);
                 return `
                     <div class="ach-badge-card ${unlocked ? '' : 'locked'}">
-                        <div class="ach-shield ${unlocked ? 'shield-' + type : ''}">${WORD_BADGE_ICONS[type]}</div>
+                        <div class="ach-shield ${unlocked ? 'shield-' + type : ''}">
+                            ${WORD_BADGE_ICONS[type]}
+                            <div class="ach-badge-progress">已背 ${learned}/${total}</div>
+                            <button class="ach-lock-btn ${unlocked ? 'unlocked' : 'locked'}" type="button">${unlocked ? '已解锁' : '未解锁'}</button>
+                        </div>
                     </div>
                 `;
             };
             const wordHtml = wordTypes.slice(0, 3).map(buildBadge).join('') +
                 (wordTypes.length > 3 ? `<div class="ach-badge-row">${wordTypes.slice(3).map(buildBadge).join('')}</div>` : '');
             document.getElementById('achWordBadges').innerHTML = wordHtml;
+
+            // 成就徽章：素材占位图 + 名称 + 获得数量（参考徽章体系.md，4组共16枚）
+            const COLLECTION_BADGES = [
+                // 组1 · 打卡连击（6枚）
+                { name: '3天连击', current: 2, target: 3 },
+                { name: '7天连击', current: 2, target: 7 },
+                { name: '30天连击', current: 2, target: 30 },
+                { name: '百日大师', current: 2, target: 100 },
+                { name: '早起达人', current: 0, target: 1 },
+                { name: '夜读之星', current: 0, target: 1 },
+                // 组2 · 词汇积累（4枚）
+                { name: '初学乍练', current: 120, target: 50 },
+                { name: '渐入佳境', current: 120, target: 300 },
+                { name: '词汇达人', current: 120, target: 1000 },
+                { name: '词汇大师', current: 80, target: 500 },
+                // 组3 · 游戏挑战（4枚）
+                { name: '初露锋芒', current: 1, target: 1 },
+                { name: '连连高手', current: 1, target: 10 },
+                { name: '连击新星', current: 6, target: 10 },
+                { name: '闪卡王者', current: 6, target: 20 },
+                // 组4 · 冲刺荣耀（2枚）
+                { name: '首战告捷', current: 0, target: 1 },
+                { name: '全速冲刺', current: 0, target: 1 }
+            ];
+            // 徽章占位图：SVG 奖章轮廓，无方块背景
+            const BADGE_PLACEHOLDER = (name, unlocked) => {
+                const color = unlocked ? '#ffc800' : '#d8d8d8';
+                return `
+                    <svg viewBox="0 0 100 100" width="72" height="72" aria-label="${name}占位">
+                        <circle cx="50" cy="42" r="26" fill="none" stroke="${color}" stroke-width="6"/>
+                        <path d="M38 62 L30 88 L50 78 L70 88 L62 62" fill="none" stroke="${color}" stroke-width="6" stroke-linejoin="round"/>
+                        <path d="M50 25 v34 M36 42 h28" stroke="${color}" stroke-width="5" stroke-linecap="round"/>
+                    </svg>
+                `;
+            };
+            const collectionHtml = COLLECTION_BADGES.map(b => {
+                const unlocked = b.current >= b.target;
+                return `
+                    <div class="collection-badge-card">
+                        <div class="collection-badge-graphic">${BADGE_PLACEHOLDER(b.name, unlocked)}</div>
+                        <div class="collection-badge-name">${b.name}</div>
+                        <div class="collection-badge-count">${Math.min(b.current, b.target)}/${b.target}</div>
+                    </div>
+                `;
+            }).join('');
+            const collectionEl = document.getElementById('achCollectionBadges');
+            if (collectionEl) collectionEl.innerHTML = collectionHtml;
 
             // 打卡连击成就页（组件化渲染）
             const achievementContainer = document.getElementById('achievementPage');

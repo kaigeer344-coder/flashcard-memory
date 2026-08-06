@@ -413,7 +413,7 @@
     z-index: 20;
     padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
     box-sizing: border-box;
-    background: linear-gradient(180deg, transparent 0%, rgba(245,240,232,0.9) 25%, rgba(245,240,232,1) 55%);
+    background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.72) 30%, rgba(255,255,255,0.96) 60%);
     display: flex;
     justify-content: center;
 }

@@ -734,12 +734,13 @@
 .hp-dg-content {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: clamp(12px, 4vw, 32px);
 }
 .hp-dg-items {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: clamp(8px, 3vw, 22px);
     flex: 1;
     min-width: 0;
