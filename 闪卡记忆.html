@@ -6185,7 +6185,26 @@
 
         <!-- V2.1 独立学习地图页(默认首页) -->
         <div class="screen learning-map-screen active" id="learningMapScreen">
-            <div id="learningMapRoot"></div>
+            <div id="learningMapRoot">
+                <!-- 首屏骨架:JS 渲染地图前占位,避免刷新时空白/旧页闪烁 -->
+                <div class="lp-page" style="background:#F6FBF1;">
+                    <div class="lp-scroll">
+                        <div class="lp-statsbar" style="display:flex;gap:14px;justify-content:center;">
+                            <div style="width:56px;height:34px;border-radius:8px;background:#E6F4D8;"></div>
+                            <div style="width:56px;height:34px;border-radius:8px;background:#E6F4D8;"></div>
+                            <div style="width:56px;height:34px;border-radius:8px;background:#E6F4D8;"></div>
+                            <div style="width:56px;height:34px;border-radius:8px;background:#E6F4D8;"></div>
+                        </div>
+                        <div class="lp-banner" style="box-shadow:0 4px 0 #46A302, 0 8px 24px rgba(88,204,2,0.15);">
+                            <div class="lp-banner-content">
+                                <div style="display:inline-block;width:76px;height:22px;border-radius:8px;background:rgba(255,255,255,0.35);"></div>
+                                <div style="width:150px;height:30px;margin-top:10px;border-radius:8px;background:rgba(255,255,255,0.35);"></div>
+                                <div style="width:60%;height:8px;margin-top:14px;border-radius:4px;background:rgba(255,255,255,0.35);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="screen learning-screen" id="learningScreen">
@@ -13989,12 +14008,6 @@
             requestAnimationFrame(() => {
                 setTimeout(updateEstimate, 0);
             });
-            // 学习地图为默认首页:已配置模式时直接渲染并进入学习地图(异步执行,不阻塞首屏绘制)
-            if (LearningSystem.isOnboarded()) {
-                requestAnimationFrame(() => {
-                    try { showHomeScreen(); } catch (e) { console.error('showHomeScreen init 失败:', e); }
-                });
-            }
             // 启动流程：V2 onboarding 优先级最高
             // 修复:老用户 ONBOARDING_KEY='1' 但 V2 mode 未配置时,仍强制启动 V2 onboarding
             // (避免卡在中间状态:V1 首页显示但 V2 入口缺失)
@@ -14004,6 +14017,18 @@
                 showStreakReward();
             }
         });
+
+        // 学习地图为默认首页:内联脚本末尾同步渲染,确保首帧即为地图,避免刷新闪烁。
+        // 脚本位于 body 末尾,DOM 已解析,此处直接渲染并显示地图。
+        (function renderHomeBeforeFirstPaint() {
+            try {
+                if (LearningSystem.isOnboarded()) {
+                    showHomeScreen();
+                }
+            } catch (e) {
+                console.error('renderHomeBeforeFirstPaint 失败:', e);
+            }
+        })();
     </script>
 </body>
 </html>
