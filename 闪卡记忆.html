@@ -9,7 +9,7 @@
     <title>闪卡记忆</title>
     <link rel="icon" href="assets/generated-icons/app-logo.png">
     <link rel="stylesheet" href="home-components.css?v=7.7">
-    <link rel="stylesheet" href="map-components.css?v=5.5">
+    <link rel="stylesheet" href="map-components.css?v=6.2">
     <link rel="stylesheet" href="css/achievements.css?v=1.0">
     <style>
         :root {
@@ -877,6 +877,178 @@
         .game-container { padding-bottom: 110px; }
         .stats-screen, .settings-screen { padding-bottom: 90px; position: relative; }
         #statsScreen { padding-left: 0; padding-right: 0; background: #ffffff; }
+
+        /* ===== 任务中心 ===== */
+        .tc-hero {
+            position: relative;
+            margin: 0 auto 16px;
+            width: 100%;
+            max-width: 460px;
+            box-sizing: border-box;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 50%, #7c3aed 100%);
+            padding: 20px 20px 22px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 6px 0 #6d28d9, 0 10px 24px rgba(139, 92, 246, 0.25);
+        }
+        .tc-hero-content { z-index: 2; flex: 1; min-width: 0; }
+        .tc-hero-title {
+            font-size: 26px;
+            font-weight: 1000;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        .tc-hero-sub {
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.92;
+            line-height: 1.4;
+        }
+        .tc-hero-mascot {
+            width: 90px;
+            height: auto;
+            flex-shrink: 0;
+            margin-left: 12px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+            z-index: 2;
+        }
+        .tc-section {
+            margin: 0 auto 16px;
+            width: 100%;
+            max-width: 460px;
+            box-sizing: border-box;
+        }
+        .tc-section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 0 2px;
+        }
+        .tc-section-title {
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--dark);
+        }
+        .tc-section-timer {
+            font-size: 12px;
+            font-weight: 700;
+            color: #fff;
+            background: #ff4b4b;
+            padding: 2px 8px;
+            border-radius: 8px;
+            line-height: 1.4;
+        }
+        .tc-task-card {
+            background: #fff;
+            border: 2px solid #e5e5e5;
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: transform 120ms ease;
+            box-shadow: 0 4px 0 #e5e5e5;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .tc-task-card:active { transform: scale(0.98); }
+        .tc-task-card:last-child { margin-bottom: 0; }
+        .tc-task-featured {
+            background: linear-gradient(135deg, #d7ffb8 0%, #c8f5a0 100%);
+            border-color: #a3d97a;
+            box-shadow: 0 4px 0 #a3d97a;
+        }
+        .tc-task-info { flex: 1; min-width: 0; }
+        .tc-task-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+        .tc-task-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tc-progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #e5e5e5;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .tc-task-featured .tc-progress-bar { background: rgba(88, 204, 2, 0.2); }
+        .tc-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 400ms ease;
+            width: 0%;
+        }
+        .tc-progress-text {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+        .tc-task-reward {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            flex-shrink: 0;
+            background: #fff8e1;
+            border: 1.5px solid #ffc800;
+            border-radius: 10px;
+            padding: 4px 8px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #e0a800;
+        }
+        .tc-task-reward img { width: 16px; height: 16px; }
+        .tc-task-card.tc-completed .tc-task-reward {
+            background: #f0f0f0;
+            border-color: #d0d0d0;
+            color: #999;
+        }
+        .tc-reward-ready {
+            background: #fff3cd !important;
+            border-color: #ff9600 !important;
+            color: #ff9600 !important;
+            animation: tcRewardPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes tcRewardPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 150, 0, 0.3); }
+            50% { transform: scale(1.06); box-shadow: 0 0 0 4px rgba(255, 150, 0, 0); }
+        }
+        .tc-task-card.tc-completed {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .tc-task-card.tc-locked {
+            background: #f5f5f5;
+            border-color: #e0e0e0;
+            box-shadow: 0 4px 0 #e0e0e0;
+            cursor: default;
+            opacity: 0.65;
+        }
+        .tc-reward-locked {
+            background: #e5e5e5;
+            border-color: #ccc;
+            color: #999;
+        }
+        .tc-reward-locked svg { width: 20px; height: 20px; }
+        @media (max-width: 360px) {
+            .tc-hero-mascot { width: 70px; }
+            .tc-hero-title { font-size: 22px; }
+        }
+
         #statsScreen .ach-hero,
         #statsScreen .ach-section {
             width: 469px;
@@ -1533,6 +1705,32 @@
             border-radius: 50%;
             pointer-events: none;
         }
+        /* 个人信息卡右上角设置小按钮 */
+        .profile-settings-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            z-index: 3;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: #ffffff;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: transform 120ms ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .profile-settings-btn:active {
+            transform: scale(0.92);
+        }
+        .profile-settings-btn img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
         .profile-header-top {
             width: 100%;
             display: flex;
@@ -1627,16 +1825,6 @@
             border-radius: 999px;
             transition: width 600ms ease;
             box-shadow: 0 2px 6px rgba(88,204,2,0.3);
-        }
-        /* 资产区：4 列网格 */
-        .profile-assets-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 4px;
-        }
-        .profile-assets-grid .profile-stat-card {
-            border: 2px solid #f0f0f0;
         }
         .profile-items-grid {
             display: grid;
@@ -6164,55 +6352,93 @@
         </div>
 
         <div class="screen stats-screen" id="statsScreen">
-            <div class="ach-hero">
-                <div class="ach-hero-bg"></div>
-                <div class="ach-hero-deco deco-1"></div>
-                <div class="ach-hero-deco deco-2"></div>
-                <div class="ach-hero-content">
-                    <h2 class="ach-hero-title">纪念徽章</h2>
-                    <p class="ach-hero-sub">完成学习目标，收集你的专属徽章</p>
-                    <!-- 下一枚徽章：连续学习天数进度卡 -->
-                    <div class="ach-streak-card" id="achStreakCard">
-                        <div class="ach-streak-top">
-                            <span class="ach-streak-icon">🔥</span>
-                            <span class="ach-streak-next" id="achStreakNext">下一枚徽章</span>
+            <!-- 任务中心 -->
+            <div class="tc-hero">
+                <div class="tc-hero-content">
+                    <h2 class="tc-hero-title">特别任务</h2>
+                    <p class="tc-hero-sub">完成特别任务，获取额外奖励！</p>
+                </div>
+                <img class="tc-hero-mascot" src="assets/characters/cici-mascot.png" alt="Cici" onerror="this.style.display='none'">
+            </div>
+
+            <div class="tc-section">
+                <div class="tc-section-head">
+                    <span class="tc-section-title">周末大挑战</span>
+                    <span class="tc-section-timer" id="tcWeeklyTimer">2 天</span>
+                </div>
+                <div class="tc-task-card tc-task-featured" id="tcWeeklyCard" onclick="onTaskClick('weekly')">
+                    <div class="tc-task-info">
+                        <div class="tc-task-name" id="tcWeeklyName">连续打卡 3 天</div>
+                        <div class="tc-task-progress">
+                            <div class="tc-progress-bar"><div class="tc-progress-fill" id="tcWeeklyFill"></div></div>
+                            <span class="tc-progress-text" id="tcWeeklyProgress">0/3</span>
                         </div>
-                        <div class="ach-streak-title" id="achStreakTitle">连续学习 0 天</div>
-                        <div class="ach-streak-blocks" id="achStreakBlocks"></div>
-                        <div class="ach-streak-hint" id="achStreakHint">还差 0 天可解锁</div>
+                    </div>
+                    <div class="tc-task-reward" id="tcWeeklyReward">
+                        <img src="assets/generated-icons/coin.png" alt="金币">
+                        <span>50</span>
                     </div>
                 </div>
             </div>
 
-            <div class="ach-section">
-                <div class="ach-section-head">
-                    <div class="ach-section-title">
-                        <span class="ach-section-icon">⭐</span>
-                        核心词库徽章
-                    </div>
-                    <span class="ach-section-hint">背完一个词库，解锁一枚</span>
+            <div class="tc-section">
+                <div class="tc-section-head">
+                    <span class="tc-section-title">每日特别任务</span>
+                    <span class="tc-section-timer" id="tcDailyTimer">3 小时</span>
                 </div>
-                <div class="ach-badge-grid" id="achWordBadges"></div>
+                <div class="tc-task-card" id="tcDailyCard" onclick="onTaskClick('daily')">
+                    <div class="tc-task-info">
+                        <div class="tc-task-name" id="tcDailyName">完成接下来的 1 个单元</div>
+                        <div class="tc-task-progress">
+                            <div class="tc-progress-bar"><div class="tc-progress-fill" id="tcDailyFill"></div></div>
+                            <span class="tc-progress-text" id="tcDailyProgress">0/1</span>
+                        </div>
+                    </div>
+                    <div class="tc-task-reward" id="tcDailyReward">
+                        <img src="assets/generated-icons/coin.png" alt="金币">
+                        <span>20</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="ach-section">
-                <div class="ach-section-head">
-                    <div class="ach-section-title">
-                        <span class="ach-section-icon">🏆</span>
-                        成就徽章
-                    </div>
-                    <span class="ach-section-hint">完成目标，收集更多成就</span>
+            <div class="tc-section">
+                <div class="tc-section-head">
+                    <span class="tc-section-title">即将解锁</span>
                 </div>
-                <div class="achievement-badge-grid" id="achCollectionBadges"></div>
+                <div class="tc-task-card tc-locked" id="tcUp1Card">
+                    <div class="tc-task-info">
+                        <div class="tc-task-name">1 天后揭晓</div>
+                        <div class="tc-task-progress">
+                            <div class="tc-progress-bar"><div class="tc-progress-fill" style="width:0%"></div></div>
+                            <span class="tc-progress-text">?/?</span>
+                        </div>
+                    </div>
+                    <div class="tc-task-reward tc-reward-locked">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                </div>
+                <div class="tc-task-card tc-locked" id="tcUp2Card">
+                    <div class="tc-task-info">
+                        <div class="tc-task-name">2 天后揭晓</div>
+                        <div class="tc-task-progress">
+                            <div class="tc-progress-bar"><div class="tc-progress-fill" style="width:0%"></div></div>
+                            <span class="tc-progress-text">?/?</span>
+                        </div>
+                    </div>
+                    <div class="tc-task-reward tc-reward-locked">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                </div>
             </div>
-
-            <div id="achievementMount"></div>
         </div>
 
         <!-- 个人中心主页 -->
         <div class="screen settings-screen" id="profileScreen">
             <!-- Hero 卡片：绿色渐变 + 头像 + 等级 + XP -->
             <div class="profile-header-card">
+                <button class="profile-settings-btn" onclick="switchTab('settings')" aria-label="学习设置">
+                    <img src="assets/generated-icons/settings.png" alt="">
+                </button>
                 <div class="profile-header-top">
                     <div class="profile-header-content">
                         <div class="profile-avatar"><img src="assets/generated-icons/nav-profile.png" alt=""></div>
@@ -6235,65 +6461,51 @@
                 </div>
             </div>
 
-            <!-- 资产区：金币 + 3 道具合并为 4 列网格 -->
+            <!-- 资产区：与学习地图 statsbar 一致风格，点击打开商店 -->
             <div class="profile-section-title">我的资产</div>
-            <div class="profile-assets-grid">
-                <div class="profile-stat-card">
-                    <div class="profile-stat-icon"><img src="assets/generated-icons/coin.png" alt=""></div>
-                    <div class="profile-stat-main">
-                        <div class="profile-stat-value" id="profileCoins">0</div>
-                        <div class="profile-stat-label">金币</div>
-                    </div>
+            <div class="lp-statsbar" onclick="openShop()" role="button" tabindex="0" aria-label="打开商店购买道具" style="cursor:pointer;-webkit-tap-highlight-color:transparent;">
+                <div class="lp-stat-item" aria-label="金币">
+                    <span class="lp-stat-icon"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9" opacity=".95"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2.2" opacity=".4"/></svg></span>
+                    <span class="lp-stat-value" id="profileCoins">0</span>
                 </div>
-                <div class="profile-stat-card">
-                    <div class="profile-stat-icon"><img src="assets/generated-icons/item-hint.png" alt=""></div>
-                    <div class="profile-stat-main">
-                        <div class="profile-stat-value" id="profileHints">0</div>
-                        <div class="profile-stat-label">提示</div>
-                    </div>
+                <div class="lp-stat-item" aria-label="提示道具">
+                    <span class="lp-stat-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 21h6v-1H9v1zm3-19a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></span>
+                    <span class="lp-stat-value" id="profileHints">0</span>
                 </div>
-                <div class="profile-stat-card">
-                    <div class="profile-stat-icon"><img src="assets/generated-icons/item-shuffle.png" alt=""></div>
-                    <div class="profile-stat-main">
-                        <div class="profile-stat-value" id="profileTimeBonuses">0</div>
-                        <div class="profile-stat-label">重置</div>
-                    </div>
+                <div class="lp-stat-item" aria-label="重置道具">
+                    <span class="lp-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg></span>
+                    <span class="lp-stat-value" id="profileShuffles">0</span>
                 </div>
-                <div class="profile-stat-card">
-                    <div class="profile-stat-icon"><img src="assets/generated-icons/item-time-bonus.png" alt=""></div>
-                    <div class="profile-stat-main">
-                        <div class="profile-stat-value" id="profileShuffles">0</div>
-                        <div class="profile-stat-label">延时</div>
-                    </div>
+                <div class="lp-stat-item" aria-label="延时道具">
+                    <span class="lp-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg></span>
+                    <span class="lp-stat-value" id="profileTimeBonuses">0</span>
                 </div>
             </div>
 
-            <!-- 菜单：分两组 -->
-            <div class="profile-section-title">学习</div>
-            <div class="profile-menu">
-                <button class="profile-menu-item" onclick="openShop()">
-                    <span class="profile-menu-item-icon"><img src="assets/generated-icons/shop.png" alt=""></span>
-                    <span class="profile-menu-item-text">打开商店</span>
-                    <span class="profile-menu-item-arrow">›</span>
-                </button>
-                <button class="profile-menu-item" onclick="switchTab('settings')">
-                    <span class="profile-menu-item-icon"><img src="assets/generated-icons/settings.png" alt=""></span>
-                    <span class="profile-menu-item-text">学习设置</span>
-                    <span class="profile-menu-item-arrow">›</span>
-                </button>
+            <!-- 核心词库徽章 -->
+            <div class="ach-section">
+                <div class="ach-section-head">
+                    <div class="ach-section-title">
+                        <span class="ach-section-icon">⭐</span>
+                        核心词库徽章
+                    </div>
+                    <span class="ach-section-hint">背完一个词库，解锁一枚</span>
+                </div>
+                <div class="ach-badge-grid" id="achWordBadges"></div>
             </div>
 
-            <div class="profile-section-title">数据</div>
-            <div class="profile-menu">
-                <button class="profile-menu-item danger" onclick="clearLearningData()">
-                    <span class="profile-menu-item-icon"><img src="assets/generated-icons/delete.png" alt=""></span>
-                    <span class="profile-menu-item-text">清除学习数据</span>
-                    <span class="profile-menu-item-arrow">›</span>
-                </button>
+            <!-- 成就徽章 -->
+            <div class="ach-section">
+                <div class="ach-section-head">
+                    <div class="ach-section-title">
+                        <span class="ach-section-icon">🏆</span>
+                        成就徽章
+                    </div>
+                    <span class="ach-section-hint">完成目标，收集更多成就</span>
+                </div>
+                <div class="achievement-badge-grid" id="achCollectionBadges"></div>
             </div>
         </div>
-
-        <!-- 设置子页 -->
         <div class="screen settings-screen" id="settingsScreen">
             <div class="settings-subheader">
                 <button class="settings-back" onclick="switchTab('profile')" aria-label="返回">‹</button>
@@ -6464,7 +6676,7 @@
             <button class="screen-nav-item" data-screen="gameScreen">配对游戏</button>
             <button class="screen-nav-item" data-screen="completionScreen">结果页</button>
             <button class="screen-nav-item" data-screen="wordbookScreen">单词本</button>
-            <button class="screen-nav-item" data-screen="statsScreen">学习成果</button>
+            <button class="screen-nav-item" data-screen="statsScreen">任务中心</button>
             <button class="screen-nav-item" data-screen="profileScreen">个人中心</button>
             <button class="screen-nav-item" data-screen="settingsScreen">设置</button>
             <button class="screen-nav-item" data-screen="vipScreen">会员中心</button>
@@ -6547,7 +6759,7 @@
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
-    <script src="map-components.js?v=5.5"></script>
+    <script src="map-components.js?v=6.1"></script>
     <script src="js/achievements/data.js?v=1.0"></script>
     <script src="js/achievements/achievement-card.js?v=1.0"></script>
     <script src="js/achievements/achievement-grid.js?v=1.0"></script>
@@ -7408,6 +7620,24 @@
             shopToast(`购买成功！${item.name} +1`);
             renderShop();
             renderSettingsScreen();
+        }
+
+        // 从个人中心资产卡直接购买道具
+        function buyPropFromCard(itemId) {
+            const item = SHOP_ITEMS.find(i => i.id === itemId);
+            if (!item) return;
+            SFX.click();
+            if (progress.coins < item.price) {
+                shopToast(`金币不足！需要 ${item.price} 金币`);
+                SFX.wrong();
+                return;
+            }
+            progress.coins -= item.price;
+            progress[itemId] = (progress[itemId] || 0) + 1;
+            saveProgress();
+            SFX.coin();
+            shopToast(`购买成功！${item.name} +1`);
+            renderProfileScreen();
         }
 
         function buyExchange(exId) {
@@ -8832,17 +9062,17 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             updateBottomNavVisibility();
-            // 打卡连击徽章抽屉只在学习成果页显示
+            // 打卡连击徽章抽屉已移除(任务中心不再需要)
             const sheet = document.getElementById('achievementSheet');
             if (sheet) {
-                if (id === 'statsScreen') {
-                    sheet.style.display = '';
-                } else {
-                    sheet.classList.remove('expanded');
-                    sheet.style.display = 'none';
-                    const backdrop = document.getElementById('achBackdrop');
-                    if (backdrop) backdrop.classList.remove('show');
-                }
+                sheet.classList.remove('expanded');
+                sheet.style.display = 'none';
+                const backdrop = document.getElementById('achBackdrop');
+                if (backdrop) backdrop.classList.remove('show');
+            }
+            // 进入任务中心时刷新数据
+            if (id === 'statsScreen') {
+                renderTaskCenter();
             }
         }
 
@@ -8891,10 +9121,16 @@
             const week = Math.max(1, Math.ceil(currentDay / 7));
 
             root.innerHTML = renderLearningMapPage({
-                stats: { words: 20, streak: 1, gems: 570, energy: 24 },
-                unit: { tag: `${bookName} · Week ${week}`, title: `${bookName}核心词汇` },
+                stats: { words: 20, reset: 1, hourglass: 570, hint: 24 },
+                unit: { tag: `${bookName}词汇`, title: `${bookName}核心词汇`, done: completed.length, total: totalDays },
                 tip: '跟着 Cici 每天 10 分钟，轻松拿下核心词！',
-                levels: levels
+                levels: levels.map(l => ({
+                    day: l.day,
+                    status: l.status,
+                    // 奇数为听力(耳机)，偶数为阅读词汇(书本)
+                    type: l.day % 2 === 1 ? '听力' : '阅读词汇',
+                    icon: l.day % 2 === 1 ? 'headphone' : 'book'
+                }))
             });
         }
 
@@ -10336,7 +10572,6 @@
                 return;
             }
             if (screenId === 'statsScreen') {
-                renderStatsScreen();
                 showScreen('statsScreen');
                 return;
             }
@@ -10415,7 +10650,6 @@
                 renderWordbookScreen();
                 showScreen('wordbookScreen');
             } else if (tab === 'stats') {
-                renderStatsScreen();
                 showScreen('statsScreen');
             } else if (tab === 'profile') {
                 renderProfileScreen();
@@ -11480,6 +11714,8 @@
             progress.gameTotalCorrectAttempts += state.totalGameCorrectAttempts;
             saveProgress();
             renderHeaderStats();
+            // 记录今日完成的学习单元(供任务中心统计)
+            recordDailyUnitDone();
 
             showCompletionSummary({
                 score: state.totalGameScore,
@@ -11728,9 +11964,9 @@
         const WORD_BANK_TOTALS = { cet4: 4500, cet6: 5500, kaoyan: 5500, ielts: 6000, toefl: 5000 };
         const LOCK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>`;
 
-        function renderStatsScreen() {
+        // ===== 个人中心徽章渲染(从旧成果页迁移) =====
+        function renderProfileBadges() {
             const allPlans = (typeof LearningSystem !== 'undefined' && LearningSystem.getAllPlans) ? LearningSystem.getAllPlans() : [];
-            // 取每个词库类型最佳计划(优先 completed,其次进度最高)
             const bestByType = {};
             allPlans.forEach(p => {
                 const cur = bestByType[p.type];
@@ -11741,23 +11977,12 @@
                 else if (aDone && bDone && (p.updatedAt || 0) > (cur.updatedAt || 0)) bestByType[p.type] = p;
             });
 
-            let maxStreak = 0;
-            allPlans.forEach(p => {
-                if (p.plan && p.plan.progress && p.plan.progress.streakDays) {
-                    maxStreak = Math.max(maxStreak, p.plan.progress.streakDays);
-                }
-            });
-
             // 词库徽章
             const wordTypes = ['cet4', 'cet6', 'kaoyan', 'ielts', 'toefl'];
-            // 临时模拟:全部词库徽章按已解锁(彩色)展示 —— 确认效果后删除此标志
             const DEMO_ALL_BADGES_UNLOCKED = true;
-            let wordUnlocked = 0;
-            // 前 3 个第一行,后 2 个第二行(整体居中)
             const buildBadge = type => {
                 const plan = bestByType[type];
                 const unlocked = DEMO_ALL_BADGES_UNLOCKED || !!(plan && plan.status === 'completed');
-                if (unlocked) wordUnlocked++;
                 const learned = (plan && plan.plan && plan.plan.progress && plan.plan.progress.learnedWordIds) ? plan.plan.progress.learnedWordIds.length : 0;
                 const total = (plan && plan.totalTargetWords) ? plan.totalTargetWords : (WORD_BANK_TOTALS[type] || 0);
                 return `
@@ -11772,32 +11997,28 @@
             };
             const wordHtml = wordTypes.slice(0, 3).map(buildBadge).join('') +
                 (wordTypes.length > 3 ? `<div class="ach-badge-row">${wordTypes.slice(3).map(buildBadge).join('')}</div>` : '');
-            document.getElementById('achWordBadges').innerHTML = wordHtml;
+            const wordEl = document.getElementById('achWordBadges');
+            if (wordEl) wordEl.innerHTML = wordHtml;
 
-            // 成就徽章：素材占位图 + 名称 + 获得数量（参考徽章体系.md，4组共16枚）
+            // 成就徽章
             const COLLECTION_BADGES = [
-                // 组1 · 打卡连击（6枚）
                 { name: '3天连击', current: 2, target: 3 },
                 { name: '7天连击', current: 2, target: 7 },
                 { name: '30天连击', current: 2, target: 30 },
                 { name: '百日大师', current: 2, target: 100 },
                 { name: '早起达人', current: 0, target: 1 },
                 { name: '夜读之星', current: 0, target: 1 },
-                // 组2 · 词汇积累（4枚）
                 { name: '初学乍练', current: 120, target: 50 },
                 { name: '渐入佳境', current: 120, target: 300 },
                 { name: '词汇达人', current: 120, target: 1000 },
                 { name: '词汇大师', current: 80, target: 500 },
-                // 组3 · 游戏挑战（4枚）
                 { name: '初露锋芒', current: 1, target: 1 },
                 { name: '连连高手', current: 1, target: 10 },
                 { name: '连击新星', current: 6, target: 10 },
                 { name: '闪卡王者', current: 6, target: 20 },
-                // 组4 · 冲刺荣耀（2枚）
                 { name: '首战告捷', current: 0, target: 1 },
                 { name: '全速冲刺', current: 0, target: 1 }
             ];
-            // 徽章占位图：SVG 奖章轮廓，无方块背景
             const BADGE_PLACEHOLDER = (name, unlocked) => {
                 const color = unlocked ? '#ffc800' : '#d8d8d8';
                 return `
@@ -11820,17 +12041,172 @@
             }).join('');
             const collectionEl = document.getElementById('achCollectionBadges');
             if (collectionEl) collectionEl.innerHTML = collectionHtml;
+        }
 
-            // 打卡连击成就页（组件化渲染）
-            const achievementContainer = document.getElementById('achievementPage');
-            if (achievementContainer) {
-                achievementContainer.innerHTML = AchievementPage();
-                // 初始化底部抽屉
-                initAchievementSheet();
+        // ===== 任务中心 =====
+        const TASKS = {
+            weekly: {
+                id: 'weekly_streak',
+                title: '周末大挑战',
+                timer: '2 天',
+                name: '连续打卡 3 天',
+                target: 3,
+                reward: 50
+            },
+            daily: {
+                id: 'daily_unit',
+                title: '每日特别任务',
+                timer: '3 小时',
+                name: '完成接下来的 1 个单元',
+                target: 1,
+                reward: 20
+            }
+        };
+
+        // 获取任务运行时状态(已领取奖励的记录)
+        function getTaskStates() {
+            try {
+                return JSON.parse(localStorage.getItem('wordmatch_task_states') || '{}');
+            } catch (e) { return {}; }
+        }
+        function saveTaskStates(states) {
+            try { localStorage.setItem('wordmatch_task_states', JSON.stringify(states)); } catch (e) {}
+        }
+
+        // 获取任务当前进度
+        function getTaskProgress(taskId) {
+            if (taskId === 'weekly_streak') {
+                // 取所有计划中最大连击天数
+                let maxStreak = 0;
+                if (typeof LearningSystem !== 'undefined' && LearningSystem.getAllPlans) {
+                    LearningSystem.getAllPlans().forEach(p => {
+                        if (p.plan && p.plan.progress && p.plan.progress.streakDays) {
+                            maxStreak = Math.max(maxStreak, p.plan.progress.streakDays);
+                        }
+                    });
+                }
+                return Math.min(maxStreak, 3);
+            }
+            if (taskId === 'daily_unit') {
+                // 今日已完成的学习单元数
+                const todayKey = new Date().toISOString().slice(0, 10);
+                try {
+                    return JSON.parse(localStorage.getItem('wordmatch_daily_done_' + todayKey) || '0');
+                } catch (e) { return 0; }
+            }
+            return 0;
+        }
+
+        function renderTaskCenter() {
+            const states = getTaskStates();
+
+            // 周末挑战
+            const weekly = TASKS.weekly;
+            const weeklyCurrent = getTaskProgress(weekly.id);
+            const weeklyDone = weeklyCurrent >= weekly.target;
+            const weeklyClaimed = !!states[weekly.id];
+            const weeklyPct = Math.min(100, (weeklyCurrent / weekly.target) * 100);
+            const wFill = document.getElementById('tcWeeklyFill');
+            const wProg = document.getElementById('tcWeeklyProgress');
+            const wCard = document.getElementById('tcWeeklyCard');
+            const wReward = document.getElementById('tcWeeklyReward');
+            const wTimer = document.getElementById('tcWeeklyTimer');
+            const wName = document.getElementById('tcWeeklyName');
+            if (wName) wName.textContent = weekly.name;
+            if (wTimer) wTimer.textContent = weekly.timer;
+            if (wFill) wFill.style.width = weeklyPct + '%';
+            if (wProg) wProg.textContent = weeklyCurrent + '/' + weekly.target;
+            if (wReward) wReward.querySelector('span').textContent = weekly.reward;
+            if (wCard) {
+                wCard.classList.toggle('tc-completed', weeklyDone && weeklyClaimed);
+                if (weeklyDone && !weeklyClaimed) {
+                    // 已完成未领取：高亮奖励
+                    wReward.classList.add('tc-reward-ready');
+                } else {
+                    wReward.classList.remove('tc-reward-ready');
+                }
             }
 
-            // 下一枚徽章：连续学习进度卡
-            renderStreakProgressCard(maxStreak);
+            // 每日任务
+            const daily = TASKS.daily;
+            const dailyCurrent = getTaskProgress(daily.id);
+            const dailyDone = dailyCurrent >= daily.target;
+            const dailyClaimed = !!states[daily.id];
+            const dailyPct = Math.min(100, (dailyCurrent / daily.target) * 100);
+            const dFill = document.getElementById('tcDailyFill');
+            const dProg = document.getElementById('tcDailyProgress');
+            const dCard = document.getElementById('tcDailyCard');
+            const dReward = document.getElementById('tcDailyReward');
+            const dTimer = document.getElementById('tcDailyTimer');
+            const dName = document.getElementById('tcDailyName');
+            if (dName) dName.textContent = daily.name;
+            if (dTimer) dTimer.textContent = daily.timer;
+            if (dFill) dFill.style.width = dailyPct + '%';
+            if (dProg) dProg.textContent = dailyCurrent + '/' + daily.target;
+            if (dReward) dReward.querySelector('span').textContent = daily.reward;
+            if (dCard) {
+                dCard.classList.toggle('tc-completed', dailyDone && dailyClaimed);
+                if (dailyDone && !dailyClaimed) {
+                    dReward.classList.add('tc-reward-ready');
+                } else {
+                    dReward.classList.remove('tc-reward-ready');
+                }
+            }
+        }
+
+        // 点击任务卡片
+        function onTaskClick(type) {
+            const task = TASKS[type];
+            if (!task) return;
+            const current = getTaskProgress(task.id);
+            const done = current >= task.target;
+            const states = getTaskStates();
+
+            if (done && !states[task.id]) {
+                // 领取奖励
+                claimTaskReward(type);
+            } else if (!done) {
+                // 未完成 → 跳转学习地图
+                SFX.click();
+                if (type === 'weekly') {
+                    showToast('去学习地图打卡，连续 3 天即可领取奖励！', 'info');
+                } else {
+                    showToast('完成 1 个学习单元即可领取奖励！', 'info');
+                }
+                setTimeout(() => switchTab('home'), 800);
+            } else {
+                // 已领取
+                showToast('任务奖励已领取', 'info');
+            }
+        }
+
+        // 领取任务奖励
+        function claimTaskReward(type) {
+            const task = TASKS[type];
+            if (!task) return;
+            const states = getTaskStates();
+            if (states[task.id]) {
+                showToast('奖励已领取', 'info');
+                return;
+            }
+            progress.coins += task.reward;
+            saveProgress();
+            states[task.id] = { claimedAt: Date.now(), reward: task.reward };
+            saveTaskStates(states);
+            SFX.coin();
+            showToast('🎉 获得 ' + task.reward + ' 金币！', 'success');
+            renderTaskCenter();
+            if (typeof renderProfileScreen === 'function') renderProfileScreen();
+        }
+
+        // 记录今日完成的学习单元数(供 daily_unit 任务统计)
+        function recordDailyUnitDone() {
+            const todayKey = new Date().toISOString().slice(0, 10);
+            const key = 'wordmatch_daily_done_' + todayKey;
+            let count = 0;
+            try { count = JSON.parse(localStorage.getItem(key) || '0'); } catch (e) {}
+            count = (Number(count) || 0) + 1;
+            localStorage.setItem(key, JSON.stringify(count));
         }
 
         // 连续学习进度卡：显示距下一枚打卡徽章还差几天
@@ -12007,6 +12383,11 @@
             } else {
                 document.getElementById('profileXpText').textContent = `${progress.totalScore} / MAX`;
                 document.getElementById('profileXpFill').style.width = '100%';
+            }
+
+            // 渲染徽章模块（已迁移到个人中心）
+            if (document.getElementById('achWordBadges') && !document.getElementById('achWordBadges').children.length) {
+                renderProfileBadges();
             }
         }
 
@@ -12701,7 +13082,7 @@
                 if (typeof LearningSystem !== 'undefined' && LearningSystem.load) {
                     LearningSystem.load();
                 }
-                renderStatsScreen();
+                renderProfileBadges();
                 showToast('已清空学习成果', 'success');
             } catch (e) {
                 console.error('clearAchievementData 失败:', e);

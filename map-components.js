@@ -1,137 +1,162 @@
 // ===== 闪卡记忆 - 学习地图页组件 =====
-// Duolingo Unit/Week 卡片式学习路径
-// 吉祥物与统计图标复用现有素材，节点图标全部内联 SVG
+// 左右交错线性时间轴布局
+// 现代无衬线中文字体 + 品牌绿点缀 + 克制留白
 
 (function() {
     'use strict';
 
-    const LP_ASSETS = {
-        mascot: 'assets/characters/cici-mascot.png'
-    };
-
+    // ===== SVG 图标库 =====
     const LP_ICONS = {
-        star: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
-        check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12.5 10 18.5 20 6.5"/></svg>`,
-        statWords: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h6v18H6a2 2 0 0 1-2-2V5z" fill="currentColor" stroke="none"/><path d="M20 5a2 2 0 0 0-2-2h-6v18h6a2 2 0 0 0 2-2V5z" fill="currentColor" stroke="none" opacity=".55"/></svg>`,
-        statStreak: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.5 3.5-1.5 5.5-3.5 7.5C6.5 11.5 5 13.5 5 16a7 7 0 0 0 14 0c0-2.5-1-4.5-2.5-6.5-.8 1-2 1.5-3 1.2.8-2.2.5-5-1.5-8.7z"/></svg>`,
-        statGems: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12l4 6-10 12L2 9l4-6z" opacity=".95"/><path d="M2 9h20l-10 12L2 9z" opacity=".4"/></svg>`,
-        statEnergy: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h7l-1 8 10-12h-7l1-8z"/></svg>`,
-        book: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 4H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1zM7 18a.5.5 0 0 1 0-1h13v2H7z" opacity=".92"/><path d="M3 6a2 2 0 0 1 2-2h1v16H5a2 2 0 0 1-2-2V6z"/></svg>`,
-        headphone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="13" width="4.5" height="7" rx="2.2" fill="currentColor" stroke="none"/><rect x="16.5" y="13" width="4.5" height="7" rx="2.2" fill="currentColor" stroke="none"/></svg>`,
-        chat: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`,
-        chest: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2.5" fill="currentColor" stroke="none" opacity=".92"/><path d="M3 11a9 9 0 0 1 18 0" stroke="none" fill="currentColor"/><rect x="10.4" y="11.5" width="3.2" height="4.5" rx="1.2" fill="#FFFFFF" stroke="none"/><path d="M3 8V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v1" /></svg>`,
-        trophy: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/><path d="M6 4H4.5a2.5 2.5 0 0 0 0 5H6V4zm12 0h1.5a2.5 2.5 0 0 1 0 5H18V4z"/><path d="M10 14.7V17c0 .6-.5 1-1 1.2-1.2.5-2 2-2 3.8h10c0-1.8-.8-3.3-2-3.8-.5-.2-1-.6-1-1.2v-2.3a6.9 6.9 0 0 1-4 0z"/></svg>`,
-        list: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg>`,
-        sparkle: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c.6 4.8 4.2 8.4 9 9-4.8.6-8.4 4.2-9 9-.6-4.8-4.2-8.4-9-9 4.8-.6 8.4-4.2 9-9z"/></svg>`
+        // 顶部统计图标
+        statWords: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>`,
+        statReset: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>`,
+        statHourglass: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12"/><path d="M6 22h12"/><path d="M6 2v4l6 6-6 6v4"/><path d="M18 2v4l-6 6 6 6v4"/></svg>`,
+        statHint: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg>`,
+        // 关卡类型图标
+        headphone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="2" y="13" width="5" height="8" rx="2" fill="currentColor" stroke="none" opacity="0.15"/><rect x="17" y="13" width="5" height="8" rx="2" fill="currentColor" stroke="none" opacity="0.15"/><rect x="2" y="13" width="5" height="8" rx="2"/><rect x="17" y="13" width="5" height="8" rx="2"/></svg>`,
+        book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h7a2 2 0 0 1 2 2v14a1 1 0 0 0-1-1H4z"/><path d="M20 4h-7a2 2 0 0 0-2 2v14a1 1 0 0 1 1-1h8z"/></svg>`,
+        // 状态图标
+        check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 18 19 6.5"/></svg>`,
+        starOutline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>`,
+        lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`,
+        checkSmall: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 18 19 6.5"/></svg>`
     };
 
-    // 默认关卡数据：7 天，第 5 天为当前关
-    // kind: 节点图标类型（锁定态展示），final 为终点奖杯
+    // ===== 关卡数据 =====
     window.getDefaultLevels = function() {
         return [
-            { day: 1, status: 'completed', stars: 3, kind: 'book' },
-            { day: 2, status: 'completed', stars: 3, kind: 'headphone' },
-            { day: 3, status: 'completed', stars: 3, kind: 'chat' },
-            { day: 4, status: 'completed', stars: 3, kind: 'book' },
-            { day: 5, status: 'current',   stars: 0, kind: 'headphone' },
-            { day: 6, status: 'locked',    stars: 0, kind: 'chest' },
-            { day: 7, status: 'locked',    stars: 0, kind: 'final', isFinal: true }
+            { day: 1, status: 'completed', type: '听力', icon: 'headphone' },
+            { day: 2, status: 'completed', type: '阅读词汇', icon: 'book' },
+            { day: 3, status: 'completed', type: '听力', icon: 'headphone' },
+            { day: 4, status: 'completed', type: '阅读词汇', icon: 'book' },
+            { day: 5, status: 'current',   type: '听力', icon: 'headphone' },
+            { day: 6, status: 'locked',    type: '阅读词汇', icon: 'book' },
+            { day: 7, status: 'locked',    type: '听力', icon: 'headphone' }
         ];
     };
 
     // ===== 顶部统计条 =====
     window.renderStatsBar = function(stats) {
-        const s = stats || { words: 20, streak: 1, gems: 570, energy: 24 };
+        const s = stats || { words: 20, reset: 1, hourglass: 570, hint: 24 };
         const items = [
-            { icon: LP_ICONS.statWords,  value: s.words,  label: '已学单词' },
-            { icon: LP_ICONS.statStreak, value: s.streak, label: '连续天数' },
-            { icon: LP_ICONS.statGems,   value: s.gems,   label: '宝石' },
-            { icon: LP_ICONS.statEnergy, value: s.energy, label: '体力' }
+            { icon: LP_ICONS.statWords,    value: s.words,     label: '今日单词' },
+            { icon: LP_ICONS.statReset,    value: s.reset,     label: '重置' },
+            { icon: LP_ICONS.statHourglass,value: s.hourglass, label: '延时' },
+            { icon: LP_ICONS.statHint,     value: s.hint,      label: '提示' }
         ];
         return `
             <div class="lp-statsbar">
-                ${items.map(it => `
+                ${items.map((it, i) => `
                     <div class="lp-stat-item" aria-label="${it.label} ${it.value}">
-                        <span class="lp-stat-icon">${it.icon}</span>
-                        <span class="lp-stat-value">${it.value}</span>
-                    </div>`).join('')}
+                        <div class="lp-stat-top">
+                            <span class="lp-stat-icon">${it.icon}</span>
+                            <span class="lp-stat-value">${it.value}</span>
+                        </div>
+                        <span class="lp-stat-label">${it.label}</span>
+                    </div>${i < items.length - 1 ? '<div class="lp-stat-divider"></div>' : ''}`).join('')}
             </div>`;
     };
 
-    // ===== 绿色主题横幅卡 =====
+    // ===== 课程进度 Banner =====
     window.renderUnitBanner = function(unit) {
-        const u = unit || { tag: '四级 · Week 1', title: '四级核心词汇' };
+        const u = unit || { tag: '四级词汇', title: '四级核心词汇', done: 4, total: 7 };
+        const pct = Math.round((u.done / u.total) * 100);
         return `
             <div class="lp-banner">
-                <div class="lp-banner-text">
+                <div class="lp-banner-deco lp-banner-deco-1"></div>
+                <div class="lp-banner-deco lp-banner-deco-2"></div>
+                <div class="lp-banner-content">
                     <div class="lp-banner-tag">${u.tag}</div>
                     <div class="lp-banner-title">${u.title}</div>
+                    <div class="lp-banner-progress">
+                        <span class="lp-banner-progress-text">已完成 ${u.done}/${u.total} 天</span>
+                        <div class="lp-banner-bar">
+                            <div class="lp-banner-bar-fill" style="width:${pct}%"></div>
+                        </div>
+                    </div>
                 </div>
-                <button class="lp-banner-list-btn" onclick="onLearningMapGuideClick && onLearningMapGuideClick()" aria-label="学习清单">
-                    ${LP_ICONS.list}
-                </button>
             </div>`;
     };
 
-    // ===== Day 关卡节点 =====
-    function getNodeIcon(level) {
-        if (level.status === 'completed') return LP_ICONS.check;
-        if (level.status === 'current') return LP_ICONS.star;
-        if (level.isFinal || level.kind === 'final') return LP_ICONS.trophy;
-        return LP_ICONS[level.kind] || LP_ICONS.book;
+    // ===== 单个关卡卡片（左右交替） =====
+    function renderDayCard(level) {
+        const isLeft = level.day % 2 === 1; // Day 1/3/5/7 左, 2/4/6 右
+        const sideClass = isLeft ? 'lp-card-left-side' : 'lp-card-right-side';
+        const statusClass = `lp-day-${level.status}`;
+        const iconSvg = LP_ICONS[level.icon] || LP_ICONS.book;
+
+        // 右上角状态角标
+        let badge = '';
+        if (level.status === 'completed') {
+            badge = `<span class="lp-day-badge lp-badge-done">${LP_ICONS.checkSmall}</span>`;
+        } else if (level.status === 'locked') {
+            badge = `<span class="lp-day-badge lp-badge-locked">${LP_ICONS.lock}</span>`;
+        }
+
+        // 卡片内图标
+        const iconWrap = level.status === 'current'
+            ? `<div class="lp-day-icon-wrap lp-icon-current">${LP_ICONS.starOutline}</div>`
+            : level.status === 'locked'
+                ? `<div class="lp-day-icon-wrap lp-icon-locked">${LP_ICONS.lock}</div>`
+                : `<div class="lp-day-icon-wrap lp-icon-done">${iconSvg}</div>`;
+
+        return `
+            <div class="lp-day-card ${sideClass} ${statusClass}"
+                 onclick="onLearningMapNodeClick && onLearningMapNodeClick(${level.day})"
+                 role="button" tabindex="0" aria-label="Day ${level.day} ${level.type}">
+                <div class="lp-day-card-inner">
+                    ${iconWrap}
+                    <div class="lp-day-card-text">
+                        <div class="lp-day-card-title">Day ${level.day}</div>
+                        <div class="lp-day-card-sub">${level.type}</div>
+                    </div>
+                    ${badge}
+                </div>
+                <div class="lp-day-card-arrow ${isLeft ? 'lp-arrow-right' : 'lp-arrow-left'}"></div>
+            </div>`;
     }
 
-    window.renderDayNode = function(level) {
+    // ===== 时间轴节点 =====
+    function renderTimelineNode(level) {
         const isCurrent = level.status === 'current';
-        const startTag = isCurrent ? `<span class="lp-day-start">START</span>` : '';
-        const label = level.isFinal ? '最终目标' : `第 ${level.day} 关`;
+        const nodeClass = isCurrent ? 'lp-node-current' : `lp-node-${level.status}`;
+        const innerSvg = level.status === 'completed' ? LP_ICONS.checkSmall : '';
 
         return `
-            <div class="lp-day-item lp-day-${level.status} ${level.isFinal ? 'lp-day-final' : ''}"
-                 onclick="onLearningMapNodeClick && onLearningMapNodeClick(${level.day})"
-                 role="button" tabindex="0" aria-label="${label}">
-                <div class="lp-day-circle">${getNodeIcon(level)}</div>
-                <div class="lp-day-meta">
-                    ${startTag}
-                    <div class="lp-day-label-row">
-                        <span class="lp-day-dot"></span>
-                        <span class="lp-day-label">Day ${level.day}</span>
-                    </div>
-                </div>
+            <div class="lp-timeline-node ${nodeClass}">
+                ${innerSvg}
+            </div>`;
+    }
+
+    // ===== 时间轴 + 卡片组合 =====
+    window.renderTimeline = function(levels) {
+        const items = levels || getDefaultLevels();
+        const currentDay = items.find(l => l.status === 'current')?.day || 5;
+        const total = items.length;
+        const doneRatio = (currentDay - 1) / (total - 1);
+
+        // 线从首节点中心延伸到当前节点中心（已完成段绿色）
+        // 行高统一 140px，首末节点中心在 70px 处，故线 top/bottom 各缩 70px
+        return `
+            <div class="lp-timeline">
+                <div class="lp-timeline-line lp-line-done" style="height: calc((100% - 140px) * ${doneRatio})"></div>
+                <div class="lp-timeline-line lp-line-future"></div>
+                ${items.map(level => {
+                    const isLeft = level.day % 2 === 1;
+                    return `
+                        <div class="lp-timeline-row ${isLeft ? 'lp-row-left' : 'lp-row-right'}">
+                            ${isLeft ? renderDayCard(level) : ''}
+                            ${renderTimelineNode(level)}
+                            ${!isLeft ? renderDayCard(level) : ''}
+                        </div>`;
+                }).join('')}
             </div>`;
     };
 
-    // ===== 白色内容大卡（左栏信息 + 右栏 Day 列表） =====
+    // ===== 白色内容大卡（全宽时间轴） =====
     window.renderUnitCard = function(data) {
         const levels = data.levels || getDefaultLevels();
-        const u = data.unit || { tag: '四级 · Week 1', title: '四级核心词汇' };
-        const tip = data.tip || '跟着 Cici 每天 10 分钟，轻松拿下核心词！';
-        const mascot = data.mascot || LP_ASSETS.mascot;
-
-        return `
-            <div class="lp-card">
-                <div class="lp-card-left">
-                    <span class="lp-chip">${u.tag}</span>
-                    <h2 class="lp-card-title">${u.title}</h2>
-                    <div class="lp-mascot-wrap">
-                        <span class="lp-sparkle lp-sparkle-1">${LP_ICONS.sparkle}</span>
-                        <span class="lp-sparkle lp-sparkle-2">${LP_ICONS.sparkle}</span>
-                        <img class="lp-mascot" src="${mascot}" alt="Cici 吉祥物" onerror="this.style.display='none'">
-                    </div>
-                    <div class="lp-tip-card">
-                        <span class="lp-tip-icon">${LP_ICONS.star}</span>
-                        <span class="lp-tip-text">${tip}</span>
-                    </div>
-                    <div class="lp-empty-stars" aria-label="本周星级待获得">
-                        ${LP_ICONS.star}${LP_ICONS.star}${LP_ICONS.star}
-                    </div>
-                </div>
-                <div class="lp-card-right">
-                    <div class="lp-day-list">
-                        ${levels.map(renderDayNode).join('')}
-                    </div>
-                </div>
-            </div>`;
+        return `<div class="lp-card">${renderTimeline(levels)}</div>`;
     };
 
     // ===== 整页组合 =====

@@ -2,15 +2,21 @@
     --lp-green: #58CC02;
     --lp-green-dark: #46A302;
     --lp-green-light: #89E219;
-    --lp-text: #3C3C3C;
-    --lp-text-strong: #1F1F1F;
-    --lp-text-sub: #777777;
-    --lp-gray-node: #E9EAEC;
-    --lp-gray-icon: #8A8F98;
-    --lp-dashed: #D8D9DC;
-    --lp-card-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-    --lp-day-circle: 60px;
-    --lp-day-gap: 30px;
+    --lp-green-bg: #F0FCE8;
+    --lp-text: #161616;
+    --lp-text-sub: #606060;
+    --lp-text-weak: #8A8A8A;
+    --lp-gray-line: #D5D8DB;
+    --lp-gray-bg: #F5F5F5;
+    --lp-gray-icon: #B8BCC2;
+    --lp-divider: #EAEAEC;
+    --lp-card-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    --lp-radius-card: 22px;
+    --lp-radius-banner: 28px;
+    --lp-icon-size: 74px;
+    --lp-node-size: 28px;
+    --lp-node-current: 36px;
+    --lp-row-gap: 18px;
 }
 
 /* ===== 页面容器 ===== */
@@ -21,19 +27,20 @@
     height: 100%;
     overflow: hidden;
     background: #FFFFFF;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans", "MiSans", "Microsoft YaHei", sans-serif;
     color: var(--lp-text);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* ===== 可滚动区域（底部为 tab bar 留出空间） ===== */
+/* ===== 可滚动区域 ===== */
 .lp-scroll {
     position: absolute;
     inset: 0;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    padding: 14px 16px 110px;
+    padding: 0 16px 110px;
     box-sizing: border-box;
 }
 
@@ -46,13 +53,21 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 6px 8px 14px;
+    padding: 20px 4px 16px;
 }
 
 .lp-stat-item {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 3px;
+    flex: 1;
+}
+
+.lp-stat-top {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .lp-stat-icon {
@@ -63,361 +78,415 @@
 }
 
 .lp-stat-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     display: block;
 }
 
 .lp-stat-value {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 800;
     color: var(--lp-green);
+    line-height: 1.2;
 }
 
-/* ===== 绿色主题横幅卡 ===== */
+.lp-stat-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--lp-text-sub);
+}
+
+.lp-stat-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--lp-divider);
+    flex-shrink: 0;
+}
+
+/* ===== 课程进度 Banner ===== */
 .lp-banner {
-    display: flex;
-    align-items: stretch;
-    background: linear-gradient(135deg, var(--lp-green-light) 0%, var(--lp-green) 60%, var(--lp-green-dark) 100%);
-    border-radius: 20px;
+    position: relative;
+    margin: 12px 0 0;
+    width: calc(100% - 32px);
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: var(--lp-radius-banner);
     overflow: hidden;
-    box-shadow: 0 4px 0 var(--lp-green-dark), 0 8px 18px rgba(88, 204, 2, 0.22);
+    background: linear-gradient(135deg, #6BDB14 0%, #58CC02 50%, #4AB002 100%);
+    box-shadow: 0 4px 0 var(--lp-green-dark), 0 8px 24px rgba(88, 204, 2, 0.15);
 }
 
-.lp-banner-text {
-    flex: 1;
-    padding: 16px 18px;
-    min-width: 0;
+.lp-banner-content {
+    position: relative;
+    z-index: 2;
+    padding: 18px 20px 20px;
 }
 
 .lp-banner-tag {
-    font-size: 13px;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 4px;
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
 }
 
 .lp-banner-title {
-    font-size: 23px;
-    font-weight: 800;
-    color: #FFFFFF;
-    letter-spacing: 0.5px;
-    line-height: 1.25;
-}
-
-.lp-banner-list-btn {
-    width: 62px;
-    border: none;
-    border-left: 2px solid rgba(0, 0, 0, 0.08);
-    background: rgba(255, 255, 255, 0.18);
-    color: #FFFFFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.15s ease;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.lp-banner-list-btn:active {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-.lp-banner-list-btn svg {
-    width: 28px;
-    height: 28px;
-}
-
-/* ===== 白色内容大卡 ===== */
-.lp-card {
-    display: flex;
-    gap: 10px;
-    margin-top: 18px;
-    background: #FFFFFF;
-    border-radius: 24px;
-    box-shadow: var(--lp-card-shadow);
-    border: 1px solid #F0F0F0;
-    padding: 20px 16px 24px;
-    box-sizing: border-box;
-}
-
-/* ----- 左栏 ----- */
-.lp-card-left {
-    flex: 0 0 52%;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.lp-chip {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 8px;
-    background: #E9F8D4;
-    color: var(--lp-green);
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.lp-card-title {
-    margin: 10px 0 0;
     font-size: 24px;
     font-weight: 800;
-    color: var(--lp-text-strong);
-    line-height: 1.3;
-    letter-spacing: 0.5px;
-}
-
-.lp-mascot-wrap {
-    position: relative;
-    width: 100%;
-    margin: 14px 0 6px;
-    display: flex;
-    justify-content: center;
-}
-
-.lp-mascot {
-    width: 82%;
-    max-width: 190px;
-    display: block;
-    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.1));
-}
-
-.lp-sparkle {
-    position: absolute;
-    color: #FFC800;
-    z-index: 1;
-    animation: lp-sparkle-blink 2.2s ease-in-out infinite;
-}
-
-.lp-sparkle svg {
-    display: block;
-}
-
-.lp-sparkle-1 {
-    top: 6%;
-    left: 2%;
-    width: 18px;
-}
-
-.lp-sparkle-1 svg { width: 18px; height: 18px; }
-
-.lp-sparkle-2 {
-    top: 16%;
-    right: 0;
-    width: 14px;
-    animation-delay: 0.8s;
-}
-
-.lp-sparkle-2 svg { width: 14px; height: 14px; }
-
-@keyframes lp-sparkle-blink {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.45; transform: scale(0.78); }
-}
-
-.lp-tip-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-top: 8px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background: #F2F9EA;
-    box-sizing: border-box;
-}
-
-.lp-tip-icon {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--lp-green);
     color: #FFFFFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    line-height: 1.25;
+    letter-spacing: 0.3px;
 }
 
-.lp-tip-icon svg {
-    width: 11px;
-    height: 11px;
-}
-
-.lp-tip-text {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--lp-text);
-    line-height: 1.5;
-}
-
-.lp-empty-stars {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    width: 100%;
-    margin-top: 16px;
-    color: #E3E4E6;
-}
-
-.lp-empty-stars svg {
-    width: 30px;
-    height: 30px;
-    flex-shrink: 0;
-}
-
-/* ----- 右栏 Day 列表 ----- */
-.lp-card-right {
-    flex: 1;
-    min-width: 0;
-}
-
-.lp-day-list {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-top: 4px;
-}
-
-.lp-day-item {
-    position: relative;
+.lp-banner-progress {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-top: 10px;
+}
+
+.lp-banner-progress-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    white-space: nowrap;
+}
+
+.lp-banner-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.lp-banner-bar-fill {
+    height: 100%;
+    background: #FFFFFF;
+    border-radius: 4px;
+    transition: width 500ms ease;
+}
+
+/* Banner 半透明装饰词卡 */
+.lp-banner-deco {
+    position: absolute;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    z-index: 1;
+}
+
+.lp-banner-deco-1 {
+    width: 70px;
+    height: 90px;
+    right: 18px;
+    top: 12px;
+    transform: rotate(8deg);
+}
+
+.lp-banner-deco-2 {
+    width: 60px;
+    height: 80px;
+    right: 38px;
+    bottom: 10px;
+    transform: rotate(-5deg);
+}
+
+/* ===== 时间轴容器 ===== */
+.lp-card {
+    background: transparent;
+    margin-top: 48px;
+    padding: 0;
+}
+
+.lp-timeline {
+    position: relative;
+    width: 100%;
+}
+
+/* ===== 时间轴线 ===== */
+.lp-timeline-line {
+    position: absolute;
+    left: 50%;
+    width: 8px;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    z-index: 0;
+}
+
+/* 已完成段（绿）：从 Day1 节点中心到当前节点中心，行高 140px 故 top/bottom 各 70px */
+.lp-line-done {
+    background: var(--lp-green);
+    top: 70px;
+    z-index: 1;
+}
+
+/* 未完成段（灰） */
+.lp-line-future {
+    background: var(--lp-gray-line);
+    top: 70px;
+    bottom: 70px;
+}
+
+/* ===== 时间轴行：每行占满全宽，节点垂直间距 140px ===== */
+.lp-timeline-row {
+    position: relative;
+    width: 100%;
+    height: 140px;
+}
+
+/* ===== 时间轴节点：固定钉在行内垂直中心与页面水平中心 ===== */
+.lp-timeline-node {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: var(--lp-node-size);
+    height: var(--lp-node-size);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 4px #FFFFFF;
+}
+
+/* 已完成节点 */
+.lp-node-completed {
+    background: var(--lp-green);
+    color: #FFFFFF;
+}
+
+.lp-node-completed svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* 当前节点 */
+.lp-node-current {
+    width: var(--lp-node-current);
+    height: var(--lp-node-current);
+    background: #FFFFFF;
+    border: 4px solid var(--lp-green);
+    box-shadow: 0 0 0 4px #FFFFFF, 0 2px 8px rgba(88, 204, 2, 0.2);
+}
+
+/* 锁定节点 */
+.lp-node-locked {
+    background: var(--lp-gray-line);
+}
+
+/* ===== 关卡卡片：绝对定位围绕中央轴，宽大规整 ===== */
+.lp-day-card {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    width: min(38vw, 190px);
+    min-width: 170px;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 }
 
-.lp-day-item + .lp-day-item {
-    margin-top: var(--lp-day-gap);
+.lp-day-card:active {
+    transform: translateY(-50%) scale(0.98);
 }
 
-/* 节点之间的纵向虚线 */
-.lp-day-item + .lp-day-item::before {
-    content: "";
-    position: absolute;
-    left: calc(var(--lp-day-circle) / 2);
-    top: calc(-1 * var(--lp-day-gap));
-    height: var(--lp-day-gap);
-    border-left: 3px dashed var(--lp-dashed);
+/* 左侧卡片：右缘距中轴 18px */
+.lp-card-left-side {
+    right: calc(50% + 18px);
 }
 
-.lp-day-circle {
+/* 右侧卡片：左缘距中轴 18px */
+.lp-card-right-side {
+    left: calc(50% + 18px);
+}
+
+.lp-day-card-inner {
+    background: #FFFFFF;
+    border-radius: var(--lp-radius-card);
+    box-shadow: var(--lp-card-shadow);
+    padding: 14px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     position: relative;
-    width: var(--lp-day-circle);
-    height: var(--lp-day-circle);
+}
+
+/* 当前关卡描边 */
+.lp-day-current .lp-day-card-inner {
+    border: 2px solid var(--lp-green);
+    box-shadow: 0 6px 20px rgba(88, 204, 2, 0.12);
+}
+
+/* 锁定关卡降对比度 */
+.lp-day-locked .lp-day-card-inner {
+    opacity: 0.72;
+}
+
+/* ===== 图标圆形背景：固定 60px，不随父级缩放 ===== */
+.lp-day-icon-wrap {
+    flex: 0 0 60px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    background: var(--lp-gray-node);
-    color: var(--lp-gray-icon);
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.06);
-    transition: transform 0.12s ease;
 }
 
-.lp-day-item:active .lp-day-circle {
-    transform: scale(0.93);
-}
-
-.lp-day-circle svg {
-    width: 26px;
-    height: 26px;
-}
-
-/* 已完成：绿色 + 对勾 */
-.lp-day-completed .lp-day-circle {
-    background: var(--lp-green);
-    color: #FFFFFF;
-    box-shadow: 0 3px 0 var(--lp-green-dark);
-}
-
-/* 当前：绿色大圆 + 白星 + 呼吸光圈 */
-.lp-day-current .lp-day-circle {
-    width: calc(var(--lp-day-circle) + 12px);
-    height: calc(var(--lp-day-circle) + 12px);
-    background: linear-gradient(180deg, var(--lp-green-light) 0%, var(--lp-green) 100%);
-    color: #FFFFFF;
-    box-shadow: 0 4px 0 var(--lp-green-dark), 0 6px 14px rgba(88, 204, 2, 0.3);
-    animation: lp-current-pulse 2.2s ease-in-out infinite;
-}
-
-.lp-day-current .lp-day-circle svg {
+.lp-day-icon-wrap svg {
     width: 32px;
     height: 32px;
 }
 
-@keyframes lp-current-pulse {
-    0%, 100% { box-shadow: 0 4px 0 var(--lp-green-dark), 0 0 0 0 rgba(88, 204, 2, 0.35); }
-    50% { box-shadow: 0 4px 0 var(--lp-green-dark), 0 0 0 12px rgba(88, 204, 2, 0); }
-}
-
-.lp-day-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 0;
-}
-
-.lp-day-start {
-    font-size: 12px;
-    font-weight: 800;
+/* 已完成图标 */
+.lp-icon-done {
+    background: var(--lp-green-bg);
     color: var(--lp-green);
-    letter-spacing: 1px;
 }
 
-.lp-day-label-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.lp-day-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #C9CACD;
-    flex-shrink: 0;
-}
-
-.lp-day-current .lp-day-dot {
+/* 当前关卡图标（绿色圆形按钮 + 白星） */
+.lp-icon-current {
     background: var(--lp-green);
+    color: #FFFFFF;
+    width: 64px;
+    height: 64px;
+    box-shadow: 0 3px 0 var(--lp-green-dark);
 }
 
-.lp-day-label {
-    font-size: 16px;
-    font-weight: 700;
-    color: #4B4B4B;
+.lp-icon-current svg {
+    width: 36px;
+    height: 36px;
+}
+
+/* 锁定图标 */
+.lp-icon-locked {
+    background: var(--lp-gray-bg);
+    color: var(--lp-gray-icon);
+}
+
+/* ===== 卡片文字 ===== */
+.lp-day-card-text {
+    flex: 1;
+    min-width: 0;
+    padding-right: 4px;
+}
+
+.lp-day-card-title,
+.lp-day-card-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.lp-day-current .lp-day-label {
-    color: var(--lp-text-strong);
+.lp-day-card-title {
+    font-size: 16px;
     font-weight: 800;
+    color: var(--lp-text);
+    line-height: 1.3;
+}
+
+.lp-day-card-sub {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--lp-text-sub);
+    margin-top: 2px;
+}
+
+.lp-day-locked .lp-day-card-title {
+    color: var(--lp-text-sub);
+}
+
+.lp-day-locked .lp-day-card-sub {
+    color: var(--lp-text-weak);
+}
+
+/* ===== 右上角状态角标 ===== */
+.lp-day-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lp-day-badge svg {
+    width: 12px;
+    height: 12px;
+}
+
+.lp-badge-done {
+    background: var(--lp-green);
+    color: #FFFFFF;
+}
+
+.lp-badge-locked {
+    background: var(--lp-gray-bg);
+    color: var(--lp-gray-icon);
+}
+
+/* ===== 卡片三角尖角 ===== */
+.lp-day-card-arrow {
+    position: absolute;
+    top: 50%;
+    width: 0;
+    height: 0;
+    transform: translateY(-50%);
+    z-index: 3;
+}
+
+/* 左侧卡片：尖角指向右（时间轴方向） */
+.lp-arrow-right {
+    right: -8px;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 10px solid #FFFFFF;
+    filter: drop-shadow(2px 0 1px rgba(0, 0, 0, 0.03));
+}
+
+/* 右侧卡片：尖角指向左 */
+.lp-arrow-left {
+    left: -8px;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-right: 10px solid #FFFFFF;
+    filter: drop-shadow(-2px 0 1px rgba(0, 0, 0, 0.03));
 }
 
 /* ===== 响应式适配 ===== */
 @media (max-width: 360px) {
-    :root {
-        --lp-day-circle: 52px;
-        --lp-day-gap: 26px;
+    .lp-day-card {
+        min-width: 150px;
     }
     .lp-banner-title {
-        font-size: 20px;
+        font-size: 21px;
     }
-    .lp-card-title {
-        font-size: 20px;
+    .lp-stat-value {
+        font-size: 16px;
     }
-    .lp-day-label {
-        font-size: 14px;
+    .lp-day-card-title {
+        font-size: 15px;
     }
-    .lp-stat-item span {
-        font-size: 14px;
+    .lp-day-card-sub {
+        font-size: 12px;
     }
-    .lp-empty-stars svg {
-        width: 26px;
-        height: 26px;
+    .lp-day-icon-wrap svg {
+        width: 28px;
+        height: 28px;
     }
+    .lp-icon-current svg {
+        width: 32px;
+        height: 32px;
+    }
+    .lp-banner-deco-1 { width: 56px; height: 76px; }
+    .lp-banner-deco-2 { width: 48px; height: 66px; }
 }

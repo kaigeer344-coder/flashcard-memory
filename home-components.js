@@ -477,7 +477,7 @@
         const tabs = [
             { id: 'home', label: '首页', icon: TASK_ICON_SVGS.home },
             { id: 'wordbook', label: '单词本', icon: TASK_ICON_SVGS.wordbook },
-            { id: 'stats', label: '成果', icon: TASK_ICON_SVGS.trophy },
+            { id: 'stats', label: '任务', icon: TASK_ICON_SVGS.target },
             { id: 'profile', label: '我的', icon: TASK_ICON_SVGS.profile }
         ];
         return `
