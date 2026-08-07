@@ -58,6 +58,8 @@
     };
 
     // ===== 课程进度 Banner =====
+    // u.tag: 标签文案(冲刺模式传'冲刺模式',自由模式传'四级词汇'等)
+    // u.progressLabel: 进度单位('天'/'关'),默认'天'
     window.renderUnitBanner = function(unit) {
         const u = unit || { tag: '四级词汇', title: '四级核心词汇', done: 4, total: 7 };
         const pct = Math.round((u.done / u.total) * 100);
@@ -69,7 +71,7 @@
                     <div class="lp-banner-tag">${u.tag}</div>
                     <div class="lp-banner-title">${u.title}</div>
                     <div class="lp-banner-progress">
-                        <span class="lp-banner-progress-text">已完成 ${u.done}/${u.total} 天</span>
+                        <span class="lp-banner-progress-text">已完成 ${u.done}/${u.total} ${u.progressLabel || '天'}</span>
                         <div class="lp-banner-bar">
                             <div class="lp-banner-bar-fill" style="width:${pct}%"></div>
                         </div>
@@ -142,23 +144,27 @@
             </div>`;
     }
 
-    // ===== 时间轴 + 卡片组合（按类型分组，每组开头分隔文字） =====
+    // ===== 时间轴 + 卡片组合(按分组,每组开头分隔文字) =====
+    // 分组键:冲刺模式按词汇类型(level.type),自由模式按周(level.week)
     window.renderTimeline = function(levels) {
         const items = levels || getDefaultLevels();
 
         let html = '';
-        let prevType = null;
+        let prevGroupKey = null;
         let group = [];
         items.forEach(level => {
-            if (prevType !== null && level.type !== prevType) {
+            const groupKey = level.week ? 'week' + level.week : level.type;
+            if (prevGroupKey !== null && groupKey !== prevGroupKey) {
                 html += renderTimelineGroup(group); // 先渲染上一组
                 group = [];
             }
-            if (level.type !== prevType) {
-                // 每组开头插入分隔文字：--- 听力词汇 --- / --- 阅读词汇 ---
-                const title = level.type.endsWith('词汇') ? level.type : level.type + '词汇';
+            if (groupKey !== prevGroupKey) {
+                // 每组开头插入分隔文字:--- 第 X 周 --- / --- 听力词汇 --- / --- 阅读词汇 ---
+                const title = level.week
+                    ? `第 ${level.week} 周`
+                    : (level.type.endsWith('词汇') ? level.type : level.type + '词汇');
                 html += `<div class="lp-group-divider"><span>${title}</span></div>`;
-                prevType = level.type;
+                prevGroupKey = groupKey;
             }
             group.push(level);
         });

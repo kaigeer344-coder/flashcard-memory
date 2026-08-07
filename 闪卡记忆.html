@@ -6174,50 +6174,8 @@
             </div>
         </div>
 
-        <div class="screen start-screen active" id="startScreen">
-            <!-- V2.0 进度阶梯首页(由 renderStartScreenV2 动态渲染) -->
-            <div id="v2Ladder" class="v2-ladder-empty"></div>
-            <div class="level-selector">
-                <div class="level-btn selected" data-level="cet4" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
-                    <div class="level-icon"><img src="assets/icon-cet4.png" alt=""></div>
-                    <div class="level-name">四级词汇</div>
-                    <div class="level-desc">基础必备</div>
-                </div>
-                <div class="level-btn" data-level="cet6" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
-                    <div class="level-icon"><img src="assets/icon-cet6.png" alt=""></div>
-                    <div class="level-name">六级词汇</div>
-                    <div class="level-desc">进阶提升</div>
-                </div>
-                <div class="level-btn" data-level="toefl" ontouchstart="unlockAudio()" onclick="selectLevel(this)">
-                    <div class="level-icon"><img src="assets/icon-toefl.png" alt=""></div>
-                    <div class="level-name">托福词汇</div>
-                    <div class="level-desc">留学必备</div>
-                </div>
-            </div>
-
-            <div class="word-count-section">
-                <div class="section-label">今日学习新词数</div>
-                <div class="word-count-selector">
-                    <button class="count-btn" onclick="changeDailyNewWords(-1)">−</button>
-                    <div class="count-display">
-                        <span class="count-number" id="dailyNewWordsNum">10</span>
-                        <span class="count-unit">个/天</span>
-                    </div>
-                    <button class="count-btn" onclick="changeDailyNewWords(1)">+</button>
-                </div>
-                <div class="order-toggle">
-                    <span>顺序</span>
-                    <button class="filter-tab" id="orderSeqBtn" onclick="setWordOrder('sequential')">A→Z</button>
-                    <button class="filter-tab active" id="orderRandBtn" onclick="setWordOrder('random')"><img class="ui-icon" src="assets/generated-icons/item-shuffle.png" alt=""> 乱序</button>
-                </div>
-                <div class="time-estimate" id="timeEstimate">
-                    词库共 <span id="totalWordsCount">100</span> 词，剩余词数约需 <strong id="daysEstimate">4</strong> 天学完
-                    <div id="progressStats"></div>
-                </div>
-            </div>
-
-            <button class="btn-primary" ontouchstart="unlockAudio()" onclick="startTodayTask()">开始今日任务</button>
-        </div>
+        <!-- 原首页已移除:学习地图为默认首页,startScreen 仅保留空壳兼容旧跳转 -->
+        <div class="screen start-screen" id="startScreen"></div>
 
         <!-- V2.0 计划详情页(关卡地图) apple-design 审查落地 -->
         <div class="screen plan-detail-screen" id="planDetailScreen">
@@ -6225,8 +6183,8 @@
             <div id="planDetailBody"></div>
         </div>
 
-        <!-- V2.1 独立学习地图页 -->
-        <div class="screen learning-map-screen" id="learningMapScreen">
+        <!-- V2.1 独立学习地图页(默认首页) -->
+        <div class="screen learning-map-screen active" id="learningMapScreen">
             <div id="learningMapRoot"></div>
         </div>
 
@@ -6759,7 +6717,7 @@
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
-    <script src="map-components.js?v=6.8"></script>
+    <script src="map-components.js?v=6.9"></script>
     <script src="js/achievements/data.js?v=1.0"></script>
     <script src="js/achievements/achievement-card.js?v=1.0"></script>
     <script src="js/achievements/achievement-grid.js?v=1.0"></script>
@@ -8121,13 +8079,10 @@
                 console.error('V2.0 onboarding 配置失败:', e);
             }
             document.getElementById('onboardOverlay').classList.remove('show');
-            // 引导结束后刷新首页
-            if (typeof refreshStartScreen === 'function') refreshStartScreen();
-            // 从设置页重新配置模式:配置完成后直接跳转首页查看新模式
-            if (window._reconfigOnboarding) {
-                window._reconfigOnboarding = false;
-                if (typeof showScreen === 'function') showScreen('startScreen');
-            }
+            // 学习地图为默认首页:引导结束后直接进入学习地图
+            if (typeof showHomeScreen === 'function') showHomeScreen();
+            // 从设置页重新配置模式:配置完成后直接跳转首页(学习地图)查看新模式
+            window._reconfigOnboarding = false;
             if (checkStreak()) showStreakReward();
         }
 
@@ -8141,15 +8096,12 @@
             }
         }
 
-        // 多邻国式:✕ 关闭引导(回到主界面)
+        // 多邻国式:✕ 关闭引导(回到默认首页学习地图)
         function closeOnboarding() {
             SFX.click();
             document.getElementById('onboardOverlay').classList.remove('show');
-            if (typeof refreshStartScreen === 'function') refreshStartScreen();
-            if (window._reconfigOnboarding) {
-                window._reconfigOnboarding = false;
-                if (typeof showScreen === 'function') showScreen('startScreen');
-            }
+            if (typeof showHomeScreen === 'function') showHomeScreen();
+            window._reconfigOnboarding = false;
         }
 
         // V2.0:跳过引导(在未选模式时跳到模式选择页,不允许直接跳过)
@@ -9088,49 +9040,96 @@
 
         function hideLearningMap() {
             SFX.click();
-            showScreen(_learningMapPreviousScreen || 'startScreen');
+            const prev = _learningMapPreviousScreen;
+            if (prev && prev !== 'startScreen') {
+                showScreen(prev);
+            } else {
+                // 默认首页 = 学习地图
+                showHomeScreen();
+            }
         }
+
+        // 学习地图当前渲染的关卡列表(供点击事件复用,避免读取静态默认数据)
+        let _currentMapLevels = [];
 
         function renderLearningMapScreen() {
             const root = document.getElementById('learningMapRoot');
             if (!root) return;
 
-            // 模拟数据系统：当前进度为第5天，已完成1-4天，共7天
-            const totalDays = 7;
-            const currentDay = 5;
-            const completed = [1, 2, 3, 4];
-            const kinds = ['book', 'headphone', 'chat', 'book', 'headphone', 'chest', 'final'];
+            const settings = LearningSystem.getSettings();
+            const mode = settings.mode || 'free';
+            const bookNames = { cet4: '四级', cet6: '六级', kaoyan: '考研', ielts: '雅思', toefl: '托福' };
+            const stats = LearningSystem.getGlobalStats();
+            const meta = _safeGetTodayMeta();
 
-            const levels = [];
-            for (let i = 1; i <= totalDays; i++) {
-                let status = 'locked';
-                if (completed.includes(i)) status = 'completed';
-                else if (i === currentDay) status = 'current';
-                levels.push({
-                    day: i,
-                    status,
-                    stars: completed.includes(i) ? 3 : 0,
-                    kind: kinds[i - 1] || 'book',
-                    isFinal: i === totalDays
-                });
+            let levels = [];
+            let unit = {};
+
+            if (mode === 'sprint') {
+                // ===== 冲刺模式:按计划天数生成关卡,先听力词汇(Day1-4)后阅读词汇,不交叉 =====
+                const plan = LearningSystem.getActivePlan();
+                const bookId = plan ? plan.type : (settings.activeBookId || 'cet4');
+                const bookName = bookNames[bookId] || '四级';
+                const totalDays = plan ? Math.max(1, plan.planDays || 14) : 14;
+                const completedDays = plan && Array.isArray(plan.completedDays) ? plan.completedDays : [];
+                const currentDay = plan ? Math.min(totalDays, Math.max(1, plan.currentDay || 1)) : 1;
+                for (let i = 1; i <= totalDays; i++) {
+                    let status = 'locked';
+                    if (completedDays.includes(i)) status = 'completed';
+                    else if (i === currentDay) status = 'current';
+                    const type = i <= 4 ? '听力' : '阅读词汇';
+                    levels.push({ day: i, status, type, icon: type === '听力' ? 'headphone' : 'book' });
+                }
+                unit = {
+                    tag: '冲刺模式',
+                    title: `${bookName}核心词汇`,
+                    done: completedDays.length,
+                    total: totalDays,
+                    progressLabel: '天'
+                };
+            } else {
+                // ===== 自由模式:按周划分学习单元(每周 5 个学习日),统一为单一词汇内容 =====
+                const bookId = settings.activeBookId || 'cet4';
+                const bookName = bookNames[bookId] || '四级';
+                const bank = wordDB[bookId] || [];
+                const totalWords = bank.length || 1;
+                const dailyTarget = settings.dailyTarget || 20;
+                // 关卡数量 = 词库词汇量 / 每日学习量,动态计算生成
+                const totalLevels = Math.max(1, Math.ceil(totalWords / dailyTarget));
+                // 当前进度:以该词库已学词数推算当前所在关卡
+                const ladder = LearningSystem.calculateLadderProgress();
+                const prog = ladder[bookId] || { all: { learned: 0 } };
+                const learnedCount = (prog.all && prog.all.learned) || 0;
+                const allDone = learnedCount >= totalWords;
+                const currentLevel = allDone ? totalLevels + 1 : Math.min(totalLevels, Math.floor(learnedCount / dailyTarget) + 1);
+                for (let i = 1; i <= totalLevels; i++) {
+                    let status = 'locked';
+                    if (allDone || i < currentLevel) status = 'completed';
+                    else if (i === currentLevel) status = 'current';
+                    levels.push({
+                        day: i,
+                        status,
+                        type: '词汇学习',
+                        icon: 'book',
+                        week: Math.ceil(i / 5)   // 每周 5 个学习日
+                    });
+                }
+                unit = {
+                    tag: `${bookName}词汇`,
+                    title: `${bookName}核心词汇`,
+                    done: Math.max(0, currentLevel - 1),
+                    total: totalLevels,
+                    progressLabel: '关'
+                };
             }
 
-            // 标题按当前词库动态生成
-            const bookNames = { cet4: '四级', cet6: '六级', kaoyan: '考研', ielts: '雅思', toefl: '托福' };
-            const bookName = bookNames[state.level] || '四级';
-            const week = Math.max(1, Math.ceil(currentDay / 7));
+            _currentMapLevels = levels;
 
             root.innerHTML = renderLearningMapPage({
-                stats: { words: 20, reset: 1, hourglass: 570, hint: 24 },
-                unit: { tag: `${bookName}词汇`, title: `${bookName}核心词汇`, done: completed.length, total: totalDays },
+                stats: { words: meta.newWordsToday || 0, reset: 1, hourglass: 570, hint: 24 },
+                unit,
                 tip: '跟着 Cici 每天 10 分钟，轻松拿下核心词！',
-                levels: levels.map(l => ({
-                    day: l.day,
-                    status: l.status,
-                    // 先学听力词汇（Day1-4），学完再学阅读词汇（Day5-7），不交叉
-                    type: l.day <= 4 ? '听力' : '阅读词汇',
-                    icon: l.day <= 4 ? 'headphone' : 'book'
-                }))
+                levels
             });
         }
 
@@ -9140,11 +9139,21 @@
         function getLevelLearnedWords(day) {
             let allWords = [];
             try {
+                const s = LearningSystem.getSettings();
+                const plan = LearningSystem.getActivePlan();
+                const bookId = s.mode === 'sprint'
+                    ? ((plan && plan.type) || 'cet4')
+                    : (s.activeBookId || 'cet4');
                 allWords = (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords)
-                    ? MemorySystem.getAllWords('cet4')
+                    ? MemorySystem.getAllWords(bookId)
                     : (window.CET4_WORDS || []).map(w => ({ ...w }));
             } catch (e) {}
-            const perLevel = 10;
+            // 每关词量:自由模式=每日学习量,冲刺模式=每关 10 词
+            let perLevel = 10;
+            try {
+                const s = LearningSystem.getSettings();
+                if (s.mode === 'free') perLevel = s.dailyTarget || 20;
+            } catch (e) {}
             const learned = allWords.filter(w => w.memoryData && w.memoryData.reviewCount > 0);
             // 有真实学习记录时按关卡分片,否则用词库切片模拟该关卡的单词
             const source = learned.length >= 5 ? learned : allWords;
@@ -9182,7 +9191,7 @@
 
         window.onLearningMapNodeClick = function(day) {
             SFX.click();
-            const level = getDefaultLevels().find(l => l.day === day);
+            const level = _currentMapLevels.find(l => l.day === day);
             if (level && level.status === 'completed') {
                 openLevelWords(day);
             } else if (level && level.status === 'current') {
@@ -9203,169 +9212,23 @@
             showToast('学习清单功能接入中', 'info');
         };
 
-        // V2.0:首次配置完成后刷新首页(显示当前模式状态)
-        // 阶段3 扩展为渲染进度阶梯首页
+        // ===== 首页 = 学习地图 =====
+        // 学习地图已作为应用默认首页,原有首页界面移除。
+        // 任何"刷新首页"入口统一改为刷新学习地图。
         function refreshStartScreen() {
-            renderStartScreenV2();
+            renderLearningMapScreen();
         }
 
-        // V2.0 进度阶梯首页渲染
-        let _v2View = 'core';  // 'core' | 'all'
+        // 兼容旧调用入口:原首页渲染逻辑已移除,统一渲染学习地图
+        let _v2View = 'core';  // 保留(旧首页视图切换状态,不再使用)
         function renderStartScreenV2() {
-            const v2El = document.getElementById('v2Ladder');
-            const startScreen = document.getElementById('startScreen');
-            if (!v2El || !startScreen) return;
-            try {
-                const settings = LearningSystem.getSettings();
-                const mode = settings.mode;
-                if (!mode) {
-                    // 未配置模式:显示 V1 首页
-                    startScreen.classList.remove('v2-active');
-                    v2El.className = 'v2-ladder-empty';
-                    v2El.innerHTML = '';
-                    return;
-                }
-                // 冲刺模式:渲染新版游戏化首页
-                if (mode === 'sprint') {
-                    startScreen.classList.add('v2-active');
-                    v2El.className = 'hp-home-root';
-                    v2El.innerHTML = _renderNewHomeHTML(settings);
-                    return;
-                }
-                // 自由学习模式:统一走新版首页组件(与冲刺模式同布局)
-                startScreen.classList.add('v2-active');
-                v2El.className = 'hp-home-root';
-                v2El.innerHTML = _renderNewHomeHTML(settings);
-                return;
-            } catch (e) {
-                console.error('renderStartScreenV2 失败:', e);
-            }
+            try { renderLearningMapScreen(); } catch (e) { console.error('renderStartScreenV2 失败:', e); }
         }
 
-        // 新版首页数据准备与渲染
-        function _renderNewHomeHTML(settings) {
-            const ladder = LearningSystem.calculateLadderProgress();
-            const stats = LearningSystem.getGlobalStats();
-            const meta = _safeGetTodayMeta();
-            const mode = settings.mode;
-
-            // 词库顺序与配色（两模式共用）
-            const levelOrder = [
-                { id: 'cet4', name: '四级', color: '#58CC02' },
-                { id: 'cet6', name: '六级', color: '#1CB0F6' },
-                { id: 'kaoyan', name: '考研', color: '#FFB020' },
-                { id: 'ielts', name: '雅思', color: '#8A5CF6' },
-                { id: 'toefl', name: '托福', color: '#FF6262' }
-            ];
-
-            // 词汇金字塔数据（两模式共用，从 ladder 实时计算）
-            const vpItems = levelOrder.map(item => {
-                const prog = ladder[item.id] || { core: { learned: 0, total: 1 } };
-                // 用词库实际词汇量作为 total，保证排序和槽高反映真实词量
-                const dbWords = wordDB[item.id] || [];
-                const total = dbWords.length || prog.core.total || 1;
-                const learned = prog.core.learned || 0;
-                return {
-                    id: item.id,
-                    name: item.name,
-                    color: item.color,
-                    learned: learned,
-                    total: total,
-                    progress: Math.min(1, learned / total)
-                };
-            });
-
-            // 通用 header
-            const headerData = { brandName: '闪卡记忆', energy: 10 };
-
-            if (mode === 'free') {
-                // ===== 自由学习模式 =====
-                const bookInfo = LearningSystem.getBookInfo(settings.activeBookId);
-                const newWords = meta.newWordsToday || 0;
-                const reviewWords = meta.reviewWordsToday || 0;
-                const dailyTarget = settings.dailyTarget || 10;
-                const streak = stats.currentStreak || 0;
-                const mastered = stats.totalMasteredWords || 0;
-                const completedToday = newWords >= dailyTarget && dailyTarget > 0;
-
-                // 个性化推荐规则
-                let recommendation;
-                if (streak === 0) {
-                    recommendation = '今天开始第一天，Cici 陪你';
-                } else if (reviewWords > 20) {
-                    recommendation = `有 ${reviewWords} 个词待复习，先巩固一下吧`;
-                } else {
-                    const cur = vpItems.find(it => it.id === settings.activeBookId);
-                    if (cur && cur.progress >= 0.8) {
-                        recommendation = `${cur.name}即将通关，准备挑战下一阶段`;
-                    } else {
-                        recommendation = '按自己的节奏，每天进步一点点';
-                    }
-                }
-
-                return renderHomePage({
-                    mode: 'free',
-                    header: headerData,
-                    freeOverview: {
-                        bookName: bookInfo ? bookInfo.name : '自由学习',
-                        dailyTarget: dailyTarget,
-                        streak: streak,
-                        learnedToday: newWords,
-                        reviewToday: reviewWords,
-                        mastered: mastered,
-                        recommendation: recommendation,
-                        completed: completedToday
-                    },
-                    vocabularyProgress: {
-                        title: '词汇金字塔',
-                        items: vpItems
-                    },
-                    activeTab: 'home'
-                });
-            }
-
-            // ===== 冲刺模式（原逻辑保留）=====
-            const plan = LearningSystem.getActivePlan();
-            const currentDay = plan ? (plan.currentDay || 1) : 1;
-            const totalDays = plan ? (plan.planDays || 14) : 14;
-            const progress = totalDays > 0 ? Math.min(1, Math.max(0, (currentDay - 1) / totalDays)) : 0;
-            const newWords = meta.newWordsToday || 0;
-            const reviewWords = meta.reviewWordsToday || 0;
-            const estimatedMinutes = Math.max(5, Math.round((newWords + reviewWords) * 0.6));
-            const rewardXp = (newWords + reviewWords) > 0 ? newWords * 10 + reviewWords * 5 : 80;
-            // 今日任务完成 = 今天学到的新词达到计划目标;未学习时显示"开始学习"
-            const dailyNewWords = plan ? (plan.dailyNewWords || 20) : 20;
-            const completedToday = newWords >= dailyNewWords && dailyNewWords > 0;
-
-            return renderHomePage({
-                mode: 'sprint',
-                header: headerData,
-                courseTask: {
-                    courseTitle: plan ? plan.name : '四级冲刺',
-                    tagLabel: '极限冲刺',
-                    tagIcon: '🔥',
-                    currentDay: currentDay,
-                    totalDays: totalDays,
-                    progress: progress,
-                    newWords: newWords,
-                    reviewWords: reviewWords,
-                    estimatedMinutes: estimatedMinutes,
-                    rewardXp: rewardXp,
-                    completed: completedToday
-                },
-                ciciSpeech: `还剩 ${Math.max(0, totalDays - currentDay)} 天，Cici 陪你一起冲！`,
-                vocabularyProgress: {
-                    title: '词汇金字塔',
-                    items: vpItems
-                },
-                studyStats: {
-                    streak: stats.streakDays || 3,
-                    learned: stats.totalLearned || 245,
-                    goalCurrent: stats.weeklyGoalCurrent || 2,
-                    goalTotal: stats.weeklyGoalTotal || 5
-                },
-                activeTab: 'home'
-            });
+        // 显示默认首页(学习地图):渲染并切换界面
+        function showHomeScreen() {
+            try { renderLearningMapScreen(); } catch (e) { console.error('showHomeScreen 失败:', e); }
+            showScreen('learningMapScreen');
         }
 
         // 新版首页交互回调
@@ -9858,8 +9721,7 @@
             // 离开学习地图时恢复全局绿色顶部栏
             const gameHeader = document.getElementById('gameHeader');
             if (gameHeader) gameHeader.classList.remove('hidden-on-detail');
-            renderStartScreenV2();
-            showScreen('startScreen');
+            showHomeScreen();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -10543,7 +10405,8 @@
             }
             if (screenId === 'startScreen' && mode) {
                 if (typeof settingsChangeMode === 'function') settingsChangeMode(mode);
-                showScreen('startScreen');
+                // 默认首页 = 学习地图
+                showHomeScreen();
                 return;
             }
             if (screenId === 'learningMapScreen' && variant === 'path') {
@@ -10645,7 +10508,8 @@
                 item.classList.toggle('active', item.dataset.tab === navTab);
             });
             if (tab === 'home') {
-                showScreen('startScreen');
+                // 默认首页 = 学习地图
+                showHomeScreen();
             } else if (tab === 'wordbook') {
                 renderWordbookScreen();
                 showScreen('wordbookScreen');
@@ -10707,16 +10571,20 @@
             SFX.click();
             state.wordOrder = order;
             try { localStorage.setItem(WORD_ORDER_KEY, order); } catch (e) {}
-            document.getElementById('orderSeqBtn').classList.toggle('active', order === 'sequential');
-            document.getElementById('orderRandBtn').classList.toggle('active', order === 'random');
+            const seqBtn = document.getElementById('orderSeqBtn');
+            const randBtn = document.getElementById('orderRandBtn');
+            if (seqBtn) seqBtn.classList.toggle('active', order === 'sequential');
+            if (randBtn) randBtn.classList.toggle('active', order === 'random');
         }
         function loadWordOrder() {
             try {
                 const saved = localStorage.getItem(WORD_ORDER_KEY);
+                const seqBtn = document.getElementById('orderSeqBtn');
+                const randBtn = document.getElementById('orderRandBtn');
                 if (saved === 'random' || saved === 'sequential') {
                     state.wordOrder = saved;
-                    document.getElementById('orderSeqBtn').classList.toggle('active', saved === 'sequential');
-                    document.getElementById('orderRandBtn').classList.toggle('active', saved === 'random');
+                    if (seqBtn) seqBtn.classList.toggle('active', saved === 'sequential');
+                    if (randBtn) randBtn.classList.toggle('active', saved === 'random');
                 }
             } catch (e) {}
         }
@@ -10947,8 +10815,10 @@
             const days = Math.ceil(Math.max(remainingWords, 1) / Math.max(wordsPerDay, 1));
             const estimatedMinutes = Math.max(3, Math.ceil((state.dailyNewWords * 35 + state.reviewDebtCount * 20) / 60));
 
-            document.getElementById('totalWordsCount').textContent = totalWords;
-            document.getElementById('daysEstimate').textContent = remainingWords > 0 ? days : '已完成';
+            const totalWordsEl = document.getElementById('totalWordsCount');
+            if (totalWordsEl) totalWordsEl.textContent = totalWords;
+            const daysEstimateEl = document.getElementById('daysEstimate');
+            if (daysEstimateEl) daysEstimateEl.textContent = remainingWords > 0 ? days : '已完成';
 
             const progressDiv = document.getElementById('progressStats');
             if (progressDiv) {
@@ -11075,7 +10945,8 @@
 
         function goBackFromLearning() {
             SFX.click();
-            showScreen('startScreen');
+            // 默认首页 = 学习地图
+            showHomeScreen();
             updateBottomNavVisibility();
         }
 
@@ -13124,7 +12995,7 @@
             hideMegaCombo();
             renderHeaderStats();
             updateEstimate();
-            showScreen('startScreen');
+            showHomeScreen();
         }
 
         function hideMegaCombo() {
@@ -14118,10 +13989,10 @@
             requestAnimationFrame(() => {
                 setTimeout(updateEstimate, 0);
             });
-            // V2.0:已配置模式时渲染进度阶梯首页(异步执行,不阻塞首屏绘制)
+            // 学习地图为默认首页:已配置模式时直接渲染并进入学习地图(异步执行,不阻塞首屏绘制)
             if (LearningSystem.isOnboarded()) {
                 requestAnimationFrame(() => {
-                    try { renderStartScreenV2(); } catch (e) { console.error('renderStartScreenV2 init 失败:', e); }
+                    try { showHomeScreen(); } catch (e) { console.error('showHomeScreen init 失败:', e); }
                 });
             }
             // 启动流程：V2 onboarding 优先级最高
