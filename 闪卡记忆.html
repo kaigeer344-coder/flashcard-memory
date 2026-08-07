@@ -8869,46 +8869,32 @@
             const totalDays = 7;
             const currentDay = 5;
             const completed = [1, 2, 3, 4];
-            const maxPathDay = 7;
+            const kinds = ['book', 'headphone', 'chat', 'book', 'headphone', 'chest', 'final'];
 
-            // 纵向斜向蛇形坐标（与 map-components.js getDefaultLevels 一致，距离压缩至 2/3）
-            const coords = [
-                { x: 32, y: 86 },
-                { x: 68, y: 72 },
-                { x: 50, y: 58 },
-                { x: 32, y: 44 },
-                { x: 50, y: 30 },
-                { x: 32, y: 16 },
-                { x: 68, y: 4 }
-            ];
             const levels = [];
             for (let i = 1; i <= totalDays; i++) {
-                const c = coords[i - 1] || { x: 50, y: 50 };
                 let status = 'locked';
                 if (completed.includes(i)) status = 'completed';
                 else if (i === currentDay) status = 'current';
-                const stars = completed.includes(i) ? 3 : 0;
-                levels.push({ day: i, status, stars, x: c.x, y: c.y, isFinal: i === totalDays });
+                levels.push({
+                    day: i,
+                    status,
+                    stars: completed.includes(i) ? 3 : 0,
+                    kind: kinds[i - 1] || 'book',
+                    isFinal: i === totalDays
+                });
             }
 
-            root.innerHTML = renderLearningMapPage({
-                background: 'assets/map.png',
-                header: { progress: { current: completed.length * 3, total: totalDays * 3 } },
-                levels: levels,
-                maxPathDay: maxPathDay,
-                startLabel: '开始学习'
-            });
+            // 标题按当前词库动态生成
+            const bookNames = { cet4: '四级', cet6: '六级', kaoyan: '考研', ielts: '雅思', toefl: '托福' };
+            const bookName = bookNames[state.level] || '四级';
+            const week = Math.max(1, Math.ceil(currentDay / 7));
 
-            // 默认将当前关卡滚动到可视区域（偏下方位置，向上滑动查看后续关卡）
-            requestAnimationFrame(() => {
-                const scroll = document.querySelector('.lp-scroll');
-                const current = document.querySelector('.lp-node-current');
-                if (scroll && current) {
-                    const nodeTop = current.offsetTop;
-                    const nodeHeight = current.offsetHeight;
-                    const scrollHeight = scroll.clientHeight;
-                    scroll.scrollTop = nodeTop - scrollHeight * 0.35 + nodeHeight / 2;
-                }
+            root.innerHTML = renderLearningMapPage({
+                stats: { words: 20, streak: 1, gems: 570, energy: 24 },
+                unit: { tag: `${bookName} · Week ${week}`, title: `${bookName}核心词汇` },
+                tip: '跟着 Cici 每天 10 分钟，轻松拿下核心词！',
+                levels: levels
             });
         }
 
@@ -8964,7 +8950,8 @@
             if (level && level.status === 'completed') {
                 openLevelWords(day);
             } else if (level && level.status === 'current') {
-                showToast(`Day ${day} 学习流程接入中`, 'info');
+                // 当前关卡（START）：直接进入闪卡学习
+                startLearning();
             } else {
                 showToast(`Day ${day} 尚未解锁`, 'warning');
             }
@@ -8973,6 +8960,11 @@
             SFX.click();
             // 跳到闪卡学习界面
             startLearning();
+        };
+        // 横幅卡右侧「学习清单」按钮
+        window.onLearningMapGuideClick = function() {
+            SFX.click();
+            showToast('学习清单功能接入中', 'info');
         };
 
         // V2.0:首次配置完成后刷新首页(显示当前模式状态)
@@ -10293,9 +10285,10 @@
             }, 2400);
         }
 
-        const HIDDEN_NAV_SCREENS = ['learningScreen', 'gameScreen', 'planDetailScreen', 'learningMapScreen', 'completionScreen'];
+        const HIDDEN_NAV_SCREENS = ['learningScreen', 'gameScreen', 'planDetailScreen', 'completionScreen'];
         // 需要底部导航的页面 → 对应高亮 tab(设置/会员是「我的」的子页,结果页归首页)
         const NAV_TAB_MAP = {
+            learningMapScreen: 'home',
             wordbookScreen: 'wordbook',
             statsScreen: 'stats',
             profileScreen: 'profile',
