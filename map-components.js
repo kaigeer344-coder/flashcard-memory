@@ -119,20 +119,18 @@
             </div>`;
     }
 
-    // ===== 时间轴 + 卡片组合 =====
-    window.renderTimeline = function(levels) {
-        const items = levels || getDefaultLevels();
-        const currentDay = items.find(l => l.status === 'current')?.day || 5;
-        const total = items.length;
-        const doneRatio = (currentDay - 1) / (total - 1);
-
-        // 线从首节点中心延伸到当前节点中心（已完成段绿色）
-        // 行高统一 92px，首末节点中心在 46px 处，故线 top/bottom 各缩 46px
+    // ===== 单个分组的时间轴（组内独立线，互不相连） =====
+    function renderTimelineGroup(group) {
+        const n = group.length;
+        const currentIdx = group.findIndex(l => l.status === 'current');
+        // 无当前节点时取最后已完成节点，保证全完成组显示全绿线
+        const doneIdx = currentIdx >= 0 ? currentIdx : (n > 1 ? n - 1 : 0);
+        const doneRatio = n > 1 ? doneIdx / (n - 1) : 0;
         return `
-            <div class="lp-timeline">
+            <div class="lp-timeline-group">
                 <div class="lp-timeline-line lp-line-done" style="height: calc((100% - 92px) * ${doneRatio})"></div>
                 <div class="lp-timeline-line lp-line-future"></div>
-                ${items.map(level => {
+                ${group.map(level => {
                     const isLeft = level.day % 2 === 1;
                     return `
                         <div class="lp-timeline-row ${isLeft ? 'lp-row-left' : 'lp-row-right'}">
@@ -142,6 +140,31 @@
                         </div>`;
                 }).join('')}
             </div>`;
+    }
+
+    // ===== 时间轴 + 卡片组合（按类型分组，每组开头分隔文字） =====
+    window.renderTimeline = function(levels) {
+        const items = levels || getDefaultLevels();
+
+        let html = '';
+        let prevType = null;
+        let group = [];
+        items.forEach(level => {
+            if (prevType !== null && level.type !== prevType) {
+                html += renderTimelineGroup(group); // 先渲染上一组
+                group = [];
+            }
+            if (level.type !== prevType) {
+                // 每组开头插入分隔文字：--- 听力词汇 --- / --- 阅读词汇 ---
+                const title = level.type.endsWith('词汇') ? level.type : level.type + '词汇';
+                html += `<div class="lp-group-divider"><span>${title}</span></div>`;
+                prevType = level.type;
+            }
+            group.push(level);
+        });
+        html += renderTimelineGroup(group);
+
+        return `<div class="lp-timeline">${html}</div>`;
     };
 
     // ===== 白色内容大卡（全宽时间轴） =====

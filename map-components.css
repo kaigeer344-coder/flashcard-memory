@@ -209,6 +209,35 @@
     width: 100%;
 }
 
+/* ===== 分组时间轴容器：每组独立，线在组内首末节点之间 ===== */
+.lp-timeline-group {
+    position: relative;
+    width: 100%;
+}
+
+/* ===== 分组分隔文字：--- 阅读词汇 ---，上下各留 20px ===== */
+.lp-group-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 0;
+}
+
+.lp-group-divider::before,
+.lp-group-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--lp-gray-line);
+}
+
+.lp-group-divider span {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--lp-text-sub);
+    white-space: nowrap;
+}
+
 /* ===== 时间轴线：6px 细线，节点更醒目 ===== */
 .lp-timeline-line {
     position: absolute;
