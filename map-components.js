@@ -26,12 +26,12 @@
     window.getDefaultLevels = function() {
         return [
             { day: 1, status: 'completed', type: '听力', icon: 'headphone' },
-            { day: 2, status: 'completed', type: '阅读词汇', icon: 'book' },
+            { day: 2, status: 'completed', type: '听力', icon: 'headphone' },
             { day: 3, status: 'completed', type: '听力', icon: 'headphone' },
-            { day: 4, status: 'completed', type: '阅读词汇', icon: 'book' },
-            { day: 5, status: 'current',   type: '听力', icon: 'headphone' },
+            { day: 4, status: 'completed', type: '听力', icon: 'headphone' },
+            { day: 5, status: 'current',   type: '阅读词汇', icon: 'book' },
             { day: 6, status: 'locked',    type: '阅读词汇', icon: 'book' },
-            { day: 7, status: 'locked',    type: '听力', icon: 'headphone' }
+            { day: 7, status: 'locked',    type: '阅读词汇', icon: 'book' }
         ];
     };
 
@@ -85,14 +85,6 @@
         const statusClass = `lp-day-${level.status}`;
         const iconSvg = LP_ICONS[level.icon] || LP_ICONS.book;
 
-        // 右上角状态角标
-        let badge = '';
-        if (level.status === 'completed') {
-            badge = `<span class="lp-day-badge lp-badge-done">${LP_ICONS.checkSmall}</span>`;
-        } else if (level.status === 'locked') {
-            badge = `<span class="lp-day-badge lp-badge-locked">${LP_ICONS.lock}</span>`;
-        }
-
         // 卡片内图标
         const iconWrap = level.status === 'current'
             ? `<div class="lp-day-icon-wrap lp-icon-current">${LP_ICONS.starOutline}</div>`
@@ -110,7 +102,6 @@
                         <div class="lp-day-card-title">Day ${level.day}</div>
                         <div class="lp-day-card-sub">${level.type}</div>
                     </div>
-                    ${badge}
                 </div>
                 <div class="lp-day-card-arrow ${isLeft ? 'lp-arrow-right' : 'lp-arrow-left'}"></div>
             </div>`;
@@ -136,10 +127,10 @@
         const doneRatio = (currentDay - 1) / (total - 1);
 
         // 线从首节点中心延伸到当前节点中心（已完成段绿色）
-        // 行高统一 140px，首末节点中心在 70px 处，故线 top/bottom 各缩 70px
+        // 行高统一 92px，首末节点中心在 46px 处，故线 top/bottom 各缩 46px
         return `
             <div class="lp-timeline">
-                <div class="lp-timeline-line lp-line-done" style="height: calc((100% - 140px) * ${doneRatio})"></div>
+                <div class="lp-timeline-line lp-line-done" style="height: calc((100% - 92px) * ${doneRatio})"></div>
                 <div class="lp-timeline-line lp-line-future"></div>
                 ${items.map(level => {
                     const isLeft = level.day % 2 === 1;

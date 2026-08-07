@@ -9,7 +9,7 @@
     <title>闪卡记忆</title>
     <link rel="icon" href="assets/generated-icons/app-logo.png">
     <link rel="stylesheet" href="home-components.css?v=7.7">
-    <link rel="stylesheet" href="map-components.css?v=6.2">
+    <link rel="stylesheet" href="map-components.css?v=7.7">
     <link rel="stylesheet" href="css/achievements.css?v=1.0">
     <style>
         :root {
@@ -6759,7 +6759,7 @@
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
-    <script src="map-components.js?v=6.1"></script>
+    <script src="map-components.js?v=6.6"></script>
     <script src="js/achievements/data.js?v=1.0"></script>
     <script src="js/achievements/achievement-card.js?v=1.0"></script>
     <script src="js/achievements/achievement-grid.js?v=1.0"></script>
@@ -9127,9 +9127,9 @@
                 levels: levels.map(l => ({
                     day: l.day,
                     status: l.status,
-                    // 奇数为听力(耳机)，偶数为阅读词汇(书本)
-                    type: l.day % 2 === 1 ? '听力' : '阅读词汇',
-                    icon: l.day % 2 === 1 ? 'headphone' : 'book'
+                    // 先学听力词汇（Day1-4），学完再学阅读词汇（Day5-7），不交叉
+                    type: l.day <= 4 ? '听力' : '阅读词汇',
+                    icon: l.day <= 4 ? 'headphone' : 'book'
                 }))
             });
         }
