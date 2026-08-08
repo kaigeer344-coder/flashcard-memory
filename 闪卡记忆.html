@@ -882,13 +882,14 @@
         /* ===== 任务中心(多邻国风) ===== */
         .tc-hero {
             position: relative;
-            margin: 0 auto 28px;
-            width: 100%;
+            /* 打破屏内边距:左右贴边、顶部贴齐页面 */
+            margin: -24px -20px 16px;
+            width: auto;
             box-sizing: border-box;
-            border-radius: 22px;
+            border-radius: 0;
             overflow: hidden;
             background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 50%, #7c3aed 100%);
-            padding: 22px 22px 24px;
+            padding: 24px 22px 26px;
             color: #fff;
             display: flex;
             align-items: center;
