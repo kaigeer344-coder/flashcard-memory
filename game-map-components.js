@@ -17,7 +17,7 @@
 
     // ===== 可调布局参数(页面清单滑块实时控制) =====
     // PHASE=π/2 使每步移动恰好 1 个振幅单位,间距完全均匀
-    const DEFAULTS = { START_Y: 130, ROW_GAP: 170, PHASE: Math.PI / 2, AMP: 0.35, NODE_D: 92, EDGE: 16 };
+    const DEFAULTS = { START_Y: 130, ROW_GAP: 103, PHASE: Math.PI / 2, AMP: 0.23, NODE_D: 83, EDGE: 60 };
     window.GM_CONFIG = Object.assign({}, DEFAULTS);
 
     window.resetGmConfig = function() {
