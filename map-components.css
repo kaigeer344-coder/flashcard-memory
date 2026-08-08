@@ -280,32 +280,16 @@
     box-shadow: 0 0 0 4px #FFFFFF;
 }
 
-/* 已完成节点：干净的绿色圆点 + 柔和外圈光晕，勾在右上角独立徽章上 */
+/* 已完成节点：绿底白勾 + 柔和外圈光晕 */
 .lp-node-completed {
     background: var(--lp-green);
+    color: #FFFFFF;
     box-shadow: 0 0 0 4px #FFFFFF, 0 0 0 8px rgba(88, 204, 2, 0.16);
 }
 
-/* 完成勾徽章：节点右上角白色小圆 + 绿色勾 */
-.lp-node-check {
-    position: absolute;
-    top: -7px;
-    right: -7px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #FFFFFF;
-    color: var(--lp-green);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-    z-index: 3;
-}
-
-.lp-node-check svg {
-    width: 12px;
-    height: 12px;
+.lp-node-completed svg {
+    width: 16px;
+    height: 16px;
 }
 
 /* 当前节点：白底绿圈 + 呼吸脉动光晕 */
@@ -339,7 +323,7 @@
     top: 50%;
     transform: translateY(-50%);
     z-index: 1;
-    min-width: 148px;
+    min-width: 170px;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 }
@@ -348,15 +332,15 @@
     transform: translateY(-50%) scale(0.98);
 }
 
-/* 左侧卡片：右缘退到中线左侧 22px,为波浪时间轴留出走廊 */
+/* 左侧卡片：左缘与 Banner 左缘对齐（贴行左缘），右缘距中轴 18px */
 .lp-card-left-side {
     left: 0;
-    right: calc(50% + 22px);
+    right: calc(50% + 18px);
 }
 
-/* 右侧卡片：左缘从中线右侧 22px 开始,走廊与左侧对称 */
+/* 右侧卡片：右缘与 Banner 右缘对齐，左缘距中轴 18px */
 .lp-card-right-side {
-    left: calc(50% + 22px);
+    left: calc(50% + 18px);
     right: 0;
 }
 
@@ -365,10 +349,10 @@
     border-radius: var(--lp-radius-card);
     border: 1px solid #e0e0e0;
     box-shadow: var(--lp-card-shadow);
-    padding: 10px 12px;
+    padding: 12px 14px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     position: relative;
 }
 
@@ -383,11 +367,11 @@
     opacity: 0.72;
 }
 
-/* ===== 图标圆形背景：固定 48px，不随父级缩放（窄卡适配） ===== */
+/* ===== 图标圆形背景：固定 58px，不随父级缩放 ===== */
 .lp-day-icon-wrap {
-    flex: 0 0 48px;
-    width: 48px;
-    height: 48px;
+    flex: 0 0 58px;
+    width: 58px;
+    height: 58px;
     border-radius: 50%;
     flex-shrink: 0;
     display: flex;
@@ -396,8 +380,8 @@
 }
 
 .lp-day-icon-wrap svg {
-    width: 26px;
-    height: 26px;
+    width: 32px;
+    height: 32px;
 }
 
 /* 已完成图标 */
@@ -410,14 +394,14 @@
 .lp-icon-current {
     background: var(--lp-green);
     color: #FFFFFF;
-    width: 48px;
-    height: 48px;
+    width: 58px;
+    height: 58px;
     box-shadow: 0 3px 0 var(--lp-green-dark);
 }
 
 .lp-icon-current svg {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
 }
 
 /* 锁定图标 */
