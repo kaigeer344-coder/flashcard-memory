@@ -1139,6 +1139,76 @@
             color: #2b6cb0;
         }
         .screen-nav-item.test:hover { background: #dbe9ff; color: #1a4f8f; }
+
+        /* 关卡地图调试面板 */
+        .gm-debug-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px 8px;
+            background: #f7f7f7;
+            border-radius: 12px;
+        }
+        .gm-slider-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .gm-slider-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--muted);
+            flex: 0 0 52px;
+        }
+        .gm-slider-val {
+            font-size: 12px;
+            font-weight: 1000;
+            color: var(--primary-dark);
+            min-width: 28px;
+            text-align: right;
+        }
+        .gm-slider {
+            flex: 1 1 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #d9d9d9;
+            outline: none;
+            cursor: pointer;
+        }
+        .gm-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            cursor: pointer;
+        }
+        .gm-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid #fff;
+            cursor: pointer;
+        }
+        .gm-debug-reset {
+            border: none;
+            border-radius: 8px;
+            padding: 6px;
+            font-size: 12px;
+            font-weight: 800;
+            background: #e0e0e0;
+            color: #555;
+            cursor: pointer;
+        }
+        .gm-debug-reset:hover { background: #d0d0d0; }
+
         @media (max-width: 900px) {
             .screen-nav-sidebar { display: none; }
         }
@@ -6728,6 +6798,25 @@
             <button class="screen-nav-item" data-screen="settingsScreen">设置</button>
             <button class="screen-nav-item" data-screen="vipScreen">会员中心</button>
             <button class="screen-nav-item" data-screen="learningMapScreen" data-variant="path">学习路径图</button>
+            <div class="screen-nav-group-title">关卡地图调试</div>
+            <div class="gm-debug-panel">
+                <label class="gm-slider-row">
+                    <span class="gm-slider-label">按钮大小</span>
+                    <span class="gm-slider-val" id="gmValNodeD">92</span>
+                    <input type="range" id="gmSliderNodeD" min="60" max="120" value="92" class="gm-slider">
+                </label>
+                <label class="gm-slider-row">
+                    <span class="gm-slider-label">节点间距</span>
+                    <span class="gm-slider-val" id="gmValRowGap">170</span>
+                    <input type="range" id="gmSliderRowGap" min="100" max="260" value="170" class="gm-slider">
+                </label>
+                <label class="gm-slider-row">
+                    <span class="gm-slider-label">距边距离</span>
+                    <span class="gm-slider-val" id="gmValEdge">16</span>
+                    <input type="range" id="gmSliderEdge" min="0" max="60" value="16" class="gm-slider">
+                </label>
+                <button class="gm-debug-reset" id="gmDebugReset">恢复默认</button>
+            </div>
             <div class="screen-nav-group-title">模拟测试数据</div>
             <button class="screen-nav-item test" onclick="loadTestScenario('fresh')">① 全新用户 · 无任何数据</button>
             <button class="screen-nav-item test" onclick="loadTestScenario('sprint9')">② 冲刺 · 四级14天 · 第9天</button>
@@ -9315,6 +9404,45 @@
         }
 
         window.onLearningMapBack = function() { hideLearningMap(); };
+
+        // ===== 关卡地图调试滑块(页面清单内,实时控制节点大小/间距/边距) =====
+        (function initGmDebugSliders() {
+            const sliders = [
+                { id: 'gmSliderNodeD', valId: 'gmValNodeD', key: 'NODE_D' },
+                { id: 'gmSliderRowGap', valId: 'gmValRowGap', key: 'ROW_GAP' },
+                { id: 'gmSliderEdge', valId: 'gmValEdge', key: 'EDGE' }
+            ];
+            sliders.forEach(s => {
+                const el = document.getElementById(s.id);
+                const val = document.getElementById(s.valId);
+                if (!el || !val) return;
+                el.addEventListener('input', () => {
+                    window.GM_CONFIG[s.key] = parseInt(el.value, 10);
+                    val.textContent = el.value;
+                    // 仅替换地图 DOM,不重建整页,保持滚动位置
+                    const mapEl = document.querySelector('.gm-map');
+                    if (mapEl && window.renderLessonMap && _currentMapLevels) {
+                        mapEl.outerHTML = window.renderLessonMap(_currentMapLevels, {});
+                    }
+                });
+            });
+            const resetBtn = document.getElementById('gmDebugReset');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    window.resetGmConfig();
+                    sliders.forEach(s => {
+                        const el = document.getElementById(s.id);
+                        const val = document.getElementById(s.valId);
+                        if (el) el.value = window.GM_CONFIG[s.key];
+                        if (val) val.textContent = window.GM_CONFIG[s.key];
+                    });
+                    const mapEl = document.querySelector('.gm-map');
+                    if (mapEl && window.renderLessonMap && _currentMapLevels) {
+                        mapEl.outerHTML = window.renderLessonMap(_currentMapLevels, {});
+                    }
+                });
+            }
+        })();
 
         // 获取某关卡学到的单词:优先读真实学习记录,无记录时用词库切片模拟
         function getLevelLearnedWords(day) {

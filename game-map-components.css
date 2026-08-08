@@ -5,11 +5,11 @@
     --gm-node-d: 92px;   /* 关卡圆形按钮直径 88~96px */
 }
 
-/* ===== 地图容器: 透明底,直接透出页面浅绿背景 ===== */
+/* ===== 地图容器: 透明底,直接透出页面浅绿背景 =====
+   width/margin-left/margin-right 由 JS 按滑块配置写入 inline style */
 .gm-map {
     position: relative;
     margin: 20px auto 0;
-    width: calc(100% - 32px);   /* 与 Banner 同宽居中 */
     box-sizing: border-box;
 }
 

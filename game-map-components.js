@@ -15,11 +15,13 @@
 (function() {
     'use strict';
 
-    // ===== 布局常量 =====
-    const START_Y = 130;   // 首节点距容器顶部(px)
-    const ROW_GAP = 170;   // 节点垂直间距(px)
-    const PHASE = 0.85;    // 蛇形相位
-    const AMP = 0.20;      // 左右摆动幅度(相对容器宽度)
+    // ===== 可调布局参数(页面清单滑块实时控制) =====
+    const DEFAULTS = { START_Y: 130, ROW_GAP: 170, PHASE: 0.85, AMP: 0.20, NODE_D: 92, EDGE: 16 };
+    window.GM_CONFIG = Object.assign({}, DEFAULTS);
+
+    window.resetGmConfig = function() {
+        window.GM_CONFIG = Object.assign({}, DEFAULTS);
+    };
 
     // ===== 图标库 =====
     const GM_ICONS = {
@@ -43,9 +45,10 @@
 
     // ===== 计算全部节点坐标 =====
     function computeGeom(levels) {
+        const C = window.GM_CONFIG;
         return levels.map((lv, i) => ({
-            x: 50 + Math.sin(i * PHASE) * AMP * 100 + (Number(lv.xOffset) || 0),
-            y: START_Y + i * ROW_GAP
+            x: 50 + Math.sin(i * C.PHASE) * C.AMP * 100 + (Number(lv.xOffset) || 0),
+            y: C.START_Y + i * C.ROW_GAP
         }));
     }
 
@@ -154,10 +157,12 @@
         const nodeHtml = items.map((lv, i) => LevelNode(lv, geom[i], i)).join('');
 
         // 容器高度:首节点偏移 + 末节点位置 + 底部留白(标签/阴影)
-        const height = START_Y + (items.length - 1) * ROW_GAP + 130;
+        const C = window.GM_CONFIG;
+        const height = C.START_Y + (items.length - 1) * C.ROW_GAP + 130;
 
+        // 节点直径和边距通过 CSS 变量传入,实时控制
         return `
-            <div class="gm-map" style="height:${height}px;">
+            <div class="gm-map" style="height:${height}px;--gm-node-d:${C.NODE_D}px;width:calc(100% - ${C.EDGE * 2}px);margin-left:${C.EDGE}px;margin-right:${C.EDGE}px;">
                 ${dots}
                 ${decoHtml}
                 ${nodeHtml}
