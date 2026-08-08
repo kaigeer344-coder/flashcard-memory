@@ -16,7 +16,8 @@
     'use strict';
 
     // ===== 可调布局参数(页面清单滑块实时控制) =====
-    const DEFAULTS = { START_Y: 130, ROW_GAP: 170, PHASE: 0.85, AMP: 0.20, NODE_D: 92, EDGE: 16 };
+    // PHASE=π/3 使节点按 60° 递增,形成均匀交替的 S 型曲线
+    const DEFAULTS = { START_Y: 130, ROW_GAP: 170, PHASE: Math.PI / 3, AMP: 0.35, NODE_D: 92, EDGE: 16 };
     window.GM_CONFIG = Object.assign({}, DEFAULTS);
 
     window.resetGmConfig = function() {
@@ -108,42 +109,20 @@
             </div>`;
     }
 
-    // ===== 重映射节点 X 坐标: 使最左/最右节点恰好贴住目标边距 =====
-    // 原始 x 为 50±sin*AMP*100, 映射后最左节点中心 = nodeD/2, 最右 = mapW - nodeD/2
-    function rescaleX(geom, mapW, nodeD) {
-        let xMin = Infinity, xMax = -Infinity;
-        geom.forEach(g => {
-            if (g.x < xMin) xMin = g.x;
-            if (g.x > xMax) xMax = g.x;
-        });
-        if (xMax <= xMin) return geom.map(g => ({ x: 50, y: g.y }));
-        const leftPx = nodeD / 2;
-        const rightPx = mapW - nodeD / 2;
-        const leftPct = (leftPx / mapW) * 100;
-        const rightPct = (rightPx / mapW) * 100;
-        return geom.map(g => ({
-            x: leftPct + ((g.x - xMin) / (xMax - xMin)) * (rightPct - leftPct),
-            y: g.y
-        }));
-    }
-
     // ===== LessonMap: 地图容器,渲染全部节点/引导点 =====
     function LessonMap(levels, opts) {
         const items = (levels && levels.length) ? levels : window.getDefaultLevels();
         const C = window.GM_CONFIG;
-        let geom = computeGeom(items);
+        const geom = computeGeom(items);
 
         // 滚动容器可见宽度(含 padding = 视口宽度)
         const scrollEl = document.querySelector('.lp-scroll');
         const viewW = (scrollEl && scrollEl.clientWidth) || window.innerWidth || 390;
 
         // 地图宽度与偏移: margin = EDGE-16 抵消 .lp-scroll 16px 内边距
-        // EDGE=0 时地图满宽贴住屏幕左右边缘
+        // EDGE=0 时地图满宽贴住屏幕左右边缘;EDGE 增大则两侧对称收窄
         const mapW = Math.max(viewW - 2 * C.EDGE, C.NODE_D + 20);
         const mapMargin = C.EDGE - 16;
-
-        // 重映射 X 使两端节点贴住 EDGE 边距
-        geom = rescaleX(geom, mapW, C.NODE_D);
 
         // 路线引导小圆点:每两关之间 4 个
         let dots = '';
