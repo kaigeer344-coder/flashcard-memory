@@ -16,8 +16,8 @@
     'use strict';
 
     // ===== 可调布局参数(页面清单滑块实时控制) =====
-    // PHASE=π/3 使节点按 60° 递增,形成均匀交替的 S 型曲线
-    const DEFAULTS = { START_Y: 130, ROW_GAP: 170, PHASE: Math.PI / 3, AMP: 0.35, NODE_D: 92, EDGE: 16 };
+    // PHASE=π/2 使每步移动恰好 1 个振幅单位,间距完全均匀
+    const DEFAULTS = { START_Y: 130, ROW_GAP: 170, PHASE: Math.PI / 2, AMP: 0.35, NODE_D: 92, EDGE: 16 };
     window.GM_CONFIG = Object.assign({}, DEFAULTS);
 
     window.resetGmConfig = function() {
@@ -42,14 +42,12 @@
     }
 
     // ===== 计算全部节点坐标 =====
-    // 使用固定 8 位置循环替代 sin,保证每对相邻节点水平间距完全相等
-    // 模式: 中→右半→最右→右半→中→左半→最左→左半 (循环)
-    // 每步移动恰好 0.5 单位,消除 sin 波峰/波谷处间距不均的问题
+    // PHASE=π/2 使每步移动恰好 1 个振幅单位,既保证均匀间距又是真正的正弦 S 曲线
+    // 路线: 中→右→中→左→中→右→中→左... (经典游戏地图蜿蜒路径)
     function computeGeom(levels) {
         const C = window.GM_CONFIG;
-        const PATTERN = [0, 0.5, 1.0, 0.5, 0, -0.5, -1.0, -0.5];
         return levels.map((lv, i) => ({
-            x: 50 + PATTERN[i % 8] * C.AMP * 100 + (Number(lv.xOffset) || 0),
+            x: 50 + Math.sin(i * C.PHASE) * C.AMP * 100 + (Number(lv.xOffset) || 0),
             y: C.START_Y + i * C.ROW_GAP
         }));
     }
