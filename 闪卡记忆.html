@@ -12635,7 +12635,21 @@
                 { name: '连击新星', current: maxCombo, target: 10 },
                 { name: '闪卡王者', current: maxCombo, target: 20 }
             ];
+            // 成就徽章素材图(assets/个人中心),无素材的徽章保留 SVG 占位
+            const BADGE_IMAGES = {
+                '3天连击': 'assets/个人中心/3天打卡.png',
+                '7天连击': 'assets/个人中心/7天打卡.png',
+                '30天连击': 'assets/个人中心/30天打卡.png',
+                '60天连击': 'assets/个人中心/60天打卡.png',
+                '初学乍练': 'assets/个人中心/初学乍练.png',
+                '词汇达人': 'assets/个人中心/词汇达人.png',
+                '渐入佳境': 'assets/个人中心/渐入佳境.png',
+                '夜读之星': 'assets/个人中心/夜读之星.png',
+                '早起达人': 'assets/个人中心/早起达人.png'
+            };
             const BADGE_PLACEHOLDER = (name, unlocked) => {
+                const src = BADGE_IMAGES[name];
+                if (src) return `<img src="${src}" alt="${name}">`;
                 const color = unlocked ? '#ffc800' : '#d8d8d8';
                 return `
                     <svg viewBox="0 0 100 100" width="72" height="72" aria-label="${name}占位">
