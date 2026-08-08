@@ -117,15 +117,6 @@
         const C = window.GM_CONFIG;
         const geom = computeGeom(items);
 
-        // 滚动容器可见宽度(含 padding = 视口宽度)
-        const scrollEl = document.querySelector('.lp-scroll');
-        const viewW = (scrollEl && scrollEl.clientWidth) || window.innerWidth || 390;
-
-        // 地图宽度与偏移: margin = EDGE-16 抵消 .lp-scroll 16px 内边距
-        // EDGE=0 时地图满宽贴住屏幕左右边缘;EDGE 增大则两侧对称收窄
-        const mapW = Math.max(viewW - 2 * C.EDGE, C.NODE_D + 20);
-        const mapMargin = C.EDGE - 16;
-
         // 路线引导小圆点:每两关之间 4 个
         let dots = '';
         for (let i = 0; i < items.length - 1; i++) {
@@ -138,8 +129,9 @@
         // 容器高度:首节点偏移 + 末节点位置 + 底部留白(标签/阴影)
         const height = C.START_Y + (items.length - 1) * C.ROW_GAP + 130;
 
+        // 宽度/边距全部用 CSS 变量,不读 DOM clientWidth,避免隐藏页面渲染时宽 0 → 回退 innerWidth
         return `
-            <div class="gm-map" style="height:${height}px;--gm-node-d:${C.NODE_D}px;width:${mapW.toFixed(1)}px;margin-left:${mapMargin.toFixed(1)}px;margin-right:${mapMargin.toFixed(1)}px;">
+            <div class="gm-map" style="height:${height}px;--gm-node-d:${C.NODE_D}px;--gm-edge:${C.EDGE}px;">
                 ${dots}
                 ${nodeHtml}
             </div>`;

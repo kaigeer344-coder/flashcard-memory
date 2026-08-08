@@ -6,10 +6,14 @@
 }
 
 /* ===== 地图容器: 透明底,直接透出页面浅绿背景 =====
-   width/margin-left/margin-right 由 JS 按滑块配置写入 inline style */
+   宽度/边距纯 CSS 计算,不依赖 JS 读 clientWidth */
 .gm-map {
     position: relative;
     margin: 20px auto 0;
+    /* EDGE 抵消 .lp-scroll 的 16px 左右内边距;EDGE=0 时贴满屏幕 */
+    width: calc(100% - var(--gm-edge, 16px) * 2 + 32px);
+    margin-left: calc(var(--gm-edge, 16px) - 16px);
+    margin-right: calc(var(--gm-edge, 16px) - 16px);
     box-sizing: border-box;
 }
 
