@@ -876,19 +876,18 @@
         /* Bottom Navigation(统一使用 home-components 中的 hp-bottom-nav 模板) */
         .game-container { padding-bottom: 110px; }
         .stats-screen, .settings-screen { padding-bottom: 90px; position: relative; }
-        #statsScreen { padding-left: 0; padding-right: 0; background: #ffffff; }
+        #statsScreen { background: #ffffff; }
 
-        /* ===== 任务中心 ===== */
+        /* ===== 任务中心(多邻国风) ===== */
         .tc-hero {
             position: relative;
-            margin: 0 auto 16px;
+            margin: 0 auto 20px;
             width: 100%;
-            max-width: 460px;
             box-sizing: border-box;
-            border-radius: 20px;
+            border-radius: 22px;
             overflow: hidden;
             background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 50%, #7c3aed 100%);
-            padding: 20px 20px 22px;
+            padding: 22px 22px 24px;
             color: #fff;
             display: flex;
             align-items: center;
@@ -897,61 +896,63 @@
         }
         .tc-hero-content { z-index: 2; flex: 1; min-width: 0; }
         .tc-hero-title {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 1000;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            letter-spacing: 0.3px;
         }
         .tc-hero-sub {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
-            opacity: 0.92;
-            line-height: 1.4;
+            opacity: 0.95;
+            line-height: 1.45;
         }
         .tc-hero-mascot {
-            width: 90px;
+            width: 92px;
             height: auto;
             flex-shrink: 0;
-            margin-left: 12px;
+            margin-left: 14px;
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
             z-index: 2;
         }
         .tc-section {
-            margin: 0 auto 16px;
+            margin: 0 auto 20px;
             width: 100%;
-            max-width: 460px;
             box-sizing: border-box;
         }
         .tc-section-head {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             padding: 0 2px;
         }
         .tc-section-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 900;
             color: var(--dark);
+            letter-spacing: 0.2px;
         }
         .tc-section-timer {
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
             color: #fff;
-            background: #ff4b4b;
-            padding: 2px 8px;
-            border-radius: 8px;
+            background: #d32f2f;
+            padding: 3px 10px;
+            border-radius: 9px;
             line-height: 1.4;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
         }
         .tc-task-card {
             background: #fff;
             border: 2px solid #e5e5e5;
-            border-radius: 14px;
-            padding: 12px 14px;
-            margin-bottom: 8px;
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             cursor: pointer;
             transition: transform 120ms ease;
             box-shadow: 0 4px 0 #e5e5e5;
@@ -959,6 +960,29 @@
         }
         .tc-task-card:active { transform: scale(0.98); }
         .tc-task-card:last-child { margin-bottom: 0; }
+        /* 任务左侧图标泡泡 */
+        .tc-task-icon {
+            flex: 0 0 44px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .tc-task-icon svg { width: 24px; height: 24px; display: block; }
+        /* 周挑战(白底绿火焰) */
+        .tc-icon-flame {
+            background: #ffffff;
+            color: var(--primary);
+            box-shadow: 0 2px 0 rgba(88, 204, 2, 0.25);
+        }
+        /* 每日任务(绿底绿书本) */
+        .tc-icon-book {
+            background: rgba(88, 204, 2, 0.12);
+            color: var(--primary);
+        }
         .tc-task-featured {
             background: linear-gradient(135deg, #d7ffb8 0%, #c8f5a0 100%);
             border-color: #a3d97a;
@@ -966,34 +990,34 @@
         }
         .tc-task-info { flex: 1; min-width: 0; }
         .tc-task-name {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 800;
             color: var(--dark);
-            margin-bottom: 6px;
+            margin-bottom: 7px;
             line-height: 1.3;
         }
         .tc-task-progress {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 9px;
         }
         .tc-progress-bar {
             flex: 1;
-            height: 8px;
+            height: 10px;
             background: #e5e5e5;
-            border-radius: 4px;
+            border-radius: 5px;
             overflow: hidden;
         }
         .tc-task-featured .tc-progress-bar { background: rgba(88, 204, 2, 0.2); }
         .tc-progress-fill {
             height: 100%;
             background: var(--primary);
-            border-radius: 4px;
+            border-radius: 5px;
             transition: width 400ms ease;
             width: 0%;
         }
         .tc-progress-text {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 800;
             color: var(--muted);
             white-space: nowrap;
@@ -1001,15 +1025,16 @@
         .tc-task-reward {
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 4px;
             flex-shrink: 0;
             background: #fff8e1;
-            border: 1.5px solid #ffc800;
-            border-radius: 10px;
-            padding: 4px 8px;
+            border: 2px solid #ffc800;
+            border-radius: 11px;
+            padding: 5px 10px;
             font-size: 13px;
-            font-weight: 800;
-            color: #e0a800;
+            font-weight: 900;
+            color: #b87300;
+            box-shadow: 0 2px 0 rgba(224, 168, 0, 0.25);
         }
         .tc-task-reward img { width: 16px; height: 16px; }
         .tc-task-card.tc-completed .tc-task-reward {
@@ -1045,8 +1070,9 @@
         }
         .tc-reward-locked svg { width: 20px; height: 20px; }
         @media (max-width: 360px) {
-            .tc-hero-mascot { width: 70px; }
-            .tc-hero-title { font-size: 22px; }
+            .tc-hero-mascot { width: 72px; }
+            .tc-hero-title { font-size: 24px; }
+            .tc-task-icon { flex-basis: 40px; width: 40px; height: 40px; }
         }
 
         #statsScreen .ach-hero,
@@ -6344,6 +6370,9 @@
                     <span class="tc-section-timer" id="tcWeeklyTimer">2 天</span>
                 </div>
                 <div class="tc-task-card tc-task-featured" id="tcWeeklyCard" onclick="onTaskClick('weekly')">
+                    <div class="tc-task-icon tc-icon-flame" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5c.7 2.6-1.2 4.4-2.2 6C8.8 10 8 11.6 8 13.5a4 4 0 0 0 8 0c0-1.3-.4-2.4-1-3.4-.4 1.1-1.2 1.9-2.3 2.2-.2-2.6-.3-5.6-.7-9.8z"/><path d="M12 22a6 6 0 0 1-6-6c0-2 .7-3.4 1.7-4.6.3 2.2 1.4 3.7 3 4.4-.4-2.4.1-4.7 1.3-6.3 2.3 1 4 3.4 4 6.5a6 6 0 0 1-6 6z"/></svg>
+                    </div>
                     <div class="tc-task-info">
                         <div class="tc-task-name" id="tcWeeklyName">连续打卡 3 天</div>
                         <div class="tc-task-progress">
@@ -6364,6 +6393,9 @@
                     <span class="tc-section-timer" id="tcDailyTimer">3 小时</span>
                 </div>
                 <div class="tc-task-card" id="tcDailyCard" onclick="onTaskClick('daily')">
+                    <div class="tc-task-icon tc-icon-book" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h7a2 2 0 0 1 2 2v14a1 1 0 0 0-1-1H4z"/><path d="M20 4h-7a2 2 0 0 0-2 2v14a1 1 0 0 1 1-1h8z"/></svg>
+                    </div>
                     <div class="tc-task-info">
                         <div class="tc-task-name" id="tcDailyName">完成接下来的 1 个单元</div>
                         <div class="tc-task-progress">
