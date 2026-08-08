@@ -60,7 +60,6 @@
                             <span class="lp-stat-icon">${it.icon}</span>
                             <span class="lp-stat-value">${it.value}</span>
                         </div>
-                        <span class="lp-stat-label">${it.label}</span>
                     </div>${i < items.length - 1 ? '<div class="lp-stat-divider"></div>' : ''}`).join('')}
             </div>`;
     };
