@@ -231,6 +231,31 @@
     50% { transform: scale(1.08); }
 }
 
+/* ===== 终点节点:最后一个关卡,显示为「终点」素材图 ===== */
+/* 素材自身已含白色圆边,不再叠加白描边 */
+.gm-node-endnode .gm-node-btn {
+    overflow: hidden;
+    border: none;
+    background: transparent;
+}
+.gm-node-endnode-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+}
+/* 已完成:绿色硬阴影 + 呼吸脉冲 */
+.gm-node-endnode-ready .gm-node-btn {
+    box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.06), 0 5px 0 #3E9300, 0 8px 18px rgba(88, 204, 2, 0.28);
+}
+.gm-node-endnode-ready { animation: chestPulse 1.6s ease-in-out infinite; }
+/* 未解锁:降透明度 */
+.gm-node-endnode-locked { opacity: 0.55; }
+.gm-node-endnode-locked .gm-node-btn {
+    box-shadow: 0 4px 0 #E0E0E0;
+}
+
 /* ===== 响应式: 小屏节点微缩 ===== */
 @media (max-width: 360px) {
     :root { --gm-node-d: 88px; }

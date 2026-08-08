@@ -73,7 +73,7 @@
     // ===== LevelNode: 单个圆形关卡按钮 =====
     // 状态: active 绿底白icon强阴影 / available 白底灰icon浅绿阴影
     //       locked 降透明度灰icon / completed 绿色描边+完成勾
-    function LevelNode(level, geom, i) {
+    function LevelNode(level, geom, i, isLast) {
         const status = normalizeStatus(level.status);
         const n = (level.day !== undefined ? level.day : i + 1);
         const type = level.type || '';
@@ -91,6 +91,22 @@
                     <img class="gm-node-chestnode-img" src="assets/home/宝箱.png" alt="宝箱">
                 </button>
                 <div class="gm-node-label">宝箱</div>
+            </div>`;
+        }
+
+        // 最后一个关卡:显示为「终点」素材图按钮,点击进入学习
+        // 素材自身已含白色圆边,不再叠加白描边
+        if (isLast) {
+            const cls = status === 'completed' ? 'ready' : 'locked';
+            return `
+            <div class="gm-node gm-node-endnode gm-node-endnode-${cls}" style="left:${geom.x.toFixed(1)}%;top:${Math.round(geom.y)}px;">
+                <button class="gm-node-btn" type="button" role="button" tabindex="0"
+                        data-day="${n}"
+                        aria-label="Day ${n} 终点"
+                        onclick="window.onLearningMapNodeClick && window.onLearningMapNodeClick(${n})">
+                    <img class="gm-node-endnode-img" src="assets/home/终点.png" alt="终点">
+                </button>
+                <div class="gm-node-label">终点</div>
             </div>`;
         }
 
@@ -141,7 +157,7 @@
         }
 
         // 节点层
-        const nodeHtml = items.map((lv, i) => LevelNode(lv, geom[i], i)).join('');
+        const nodeHtml = items.map((lv, i) => LevelNode(lv, geom[i], i, i === items.length - 1)).join('');
 
         // 容器高度:首节点偏移 + 末节点位置 + 底部留白(标签/阴影)
         const height = C.START_Y + (items.length - 1) * C.ROW_GAP + 130;
