@@ -2826,7 +2826,7 @@
             /* 正方形卡片:宽高 1:1 */
             aspect-ratio: 1 / 1;
             min-height: 0;
-            padding: 14px 12px 16px;
+            padding: 14px 12px 12px;
             border: 2px solid var(--border);
             border-radius: 20px;
             background: var(--surface);
@@ -2856,12 +2856,12 @@
             box-shadow: 0 6px 0 #d6a900, 0 10px 18px rgba(255, 200, 0, 0.22);
         }
         .onboard-mode-icon {
-            width: 56px; height: 56px;
-            margin-bottom: 8px;
+            width: 72px; height: 72px;
+            margin-bottom: 4px;
             display: grid; place-items: center;
         }
-        .onboard-mode-icon img { width: 36px; height: 36px; object-fit: contain; }
-        .onboard-mode-name { font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 4px; }
+        .onboard-mode-icon img { width: 72px; height: 72px; object-fit: contain; }
+        .onboard-mode-name { font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 2px; }
         .onboard-mode-desc {
             font-size: 12px;
             color: #5e5e5e;  /* 修复 C-3 */
@@ -2870,9 +2870,9 @@
         }
         /* 窄屏:正方形内压缩内容防止溢出 */
         @media (max-width: 360px) {
-            .onboard-mode-card { padding: 10px 8px 12px; }
-            .onboard-mode-icon { width: 44px; height: 44px; margin-bottom: 6px; }
-            .onboard-mode-icon img { width: 28px; height: 28px; }
+            .onboard-mode-card { padding: 10px 8px 10px; }
+            .onboard-mode-icon { width: 56px; height: 56px; margin-bottom: 4px; }
+            .onboard-mode-icon img { width: 56px; height: 56px; }
             .onboard-mode-name { font-size: 15px; }
             .onboard-mode-desc { font-size: 11px; }
         }
