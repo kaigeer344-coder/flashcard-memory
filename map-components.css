@@ -420,11 +420,30 @@
     margin-top: 2px;
 }
 
+.lp-day-card-meta {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--lp-green);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.lp-day-card-meta .lp-day-stars {
+    color: #ffc800;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
 .lp-day-locked .lp-day-card-title {
     color: var(--lp-text-sub);
 }
 
 .lp-day-locked .lp-day-card-sub {
+    color: var(--lp-text-weak);
+}
+
+.lp-day-locked .lp-day-card-meta {
     color: var(--lp-text-weak);
 }
 

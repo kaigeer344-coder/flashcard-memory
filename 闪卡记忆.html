@@ -9200,16 +9200,22 @@
                 const chestMap = {};
                 getChestLevels(totalDays).forEach(c => { chestMap[c.level] = c.big; });
                 const chestProps = buildChestProps(chestMap);
+                const perLevel = 10; // 冲刺模式每关 10 词
                 for (let i = 1; i <= totalDays; i++) {
                     let status = 'locked';
                     if (completedDays.includes(i)) status = 'completed';
                     else if (i === currentDay) status = 'current';
+                    const done = status === 'completed';
+                    const cur = status === 'current';
+                    const learned = done ? perLevel : (cur ? countLevelLearned(i, perLevel) : 0);
                     levels.push({
                         day: i,
                         status,
                         type: '词汇学习',
                         icon: 'book',
                         week: Math.ceil(i / 7),   // 每周 7 天(一周)
+                        learned,
+                        stars: done ? 3 : (cur && learned > 0 ? 1 : 0),
                         ...chestProps(i)
                     });
                 }
@@ -9242,12 +9248,17 @@
                     let status = 'locked';
                     if (allDone || i < currentLevel) status = 'completed';
                     else if (i === currentLevel) status = 'current';
+                    const done = status === 'completed';
+                    const cur = status === 'current';
+                    const learned = done ? dailyTarget : (cur ? countLevelLearned(i, dailyTarget) : 0);
                     levels.push({
                         day: i,
                         status,
                         type: '词汇学习',
                         icon: 'book',
                         week: Math.ceil(i / 7),   // 每周 7 天(一周)
+                        learned,
+                        stars: done ? 3 : (cur && learned > 0 ? 1 : 0),
                         ...chestProps(i)
                     });
                 }
@@ -9309,6 +9320,22 @@
             const source = learned.length >= 5 ? learned : allWords;
             const start = (day - 1) * perLevel;
             return source.slice(start, start + perLevel);
+        }
+
+        // 统计某关卡范围内已学的单词数(用于地图卡片展示"当日学习量")
+        function countLevelLearned(day, perLevel) {
+            try {
+                const s = LearningSystem.getSettings();
+                const plan = LearningSystem.getActivePlan();
+                const bookId = s.mode === 'sprint'
+                    ? ((plan && plan.type) || 'cet4')
+                    : (s.activeBookId || 'cet4');
+                const allWords = (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords)
+                    ? MemorySystem.getAllWords(bookId) : [];
+                const start = (day - 1) * perLevel;
+                return allWords.slice(start, start + perLevel)
+                    .filter(w => w.memoryData && w.memoryData.reviewCount > 0).length;
+            } catch (e) { return 0; }
         }
 
         window.openLevelWords = function(day) {

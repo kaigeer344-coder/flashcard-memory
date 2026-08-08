@@ -98,6 +98,13 @@
                 ? `<div class="lp-day-icon-wrap lp-icon-locked">${LP_ICONS.lock}</div>`
                 : `<div class="lp-day-icon-wrap lp-icon-done">${iconSvg}</div>`;
 
+        // 关卡附加信息:当日学习词数 + 星级
+        const metaParts = [];
+        if (typeof level.learned === 'number') metaParts.push(`${level.learned} 词`);
+        if (level.stars) metaParts.push(`<b class="lp-day-stars">${'★'.repeat(level.stars)}</b>`);
+        const metaText = metaParts.length
+            ? `<div class="lp-day-card-meta">${metaParts.join(' · ')}</div>` : '';
+
         return `
             <div class="lp-day-card ${sideClass} ${statusClass}"
                  onclick="onLearningMapNodeClick && onLearningMapNodeClick(${level.day})"
@@ -107,6 +114,7 @@
                     <div class="lp-day-card-text">
                         <div class="lp-day-card-title">Day ${level.day}</div>
                         <div class="lp-day-card-sub">${level.type}</div>
+                        ${metaText}
                     </div>
                 </div>
                 ${level.chest ? `
