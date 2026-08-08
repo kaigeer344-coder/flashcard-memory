@@ -8667,7 +8667,7 @@
         }
 
         function loadProgress() {
-            const defaults = { totalScore: 0, coins: 0, gems: 0, level: 1, maxCombo: 0, gameTotalAttempts: 0, gameTotalCorrectAttempts: 0, hints: 3, timeBonuses: 2, shuffles: 1 };
+            const defaults = { totalScore: 0, coins: 0, gems: 0, level: 1, maxCombo: 0, gameTotalAttempts: 0, gameTotalCorrectAttempts: 0, hints: 3, timeBonuses: 2, shuffles: 1, gamesCompleted: 0 };
             try {
                 migrateLegacyEconomy();
                 const stored = localStorage.getItem(PROGRESS_KEY);
@@ -8686,6 +8686,7 @@
                         merged.hints = Number(merged.hints) || 0;
                         merged.timeBonuses = Number(merged.timeBonuses) || 0;
                         merged.shuffles = Number(merged.shuffles) || 0;
+                        merged.gamesCompleted = Number(merged.gamesCompleted) || 0;
                         return merged;
                     }
                 }
@@ -12294,6 +12295,7 @@
             progress.maxCombo = Math.max(progress.maxCombo, state.totalGameMaxCombo);
             progress.gameTotalAttempts += state.totalGameAttempts;
             progress.gameTotalCorrectAttempts += state.totalGameCorrectAttempts;
+            progress.gamesCompleted = (progress.gamesCompleted || 0) + 1; // 成就徽章:累计完成局数
             saveProgress();
             renderHeaderStats();
             // 记录今日完成的学习单元(供任务中心统计)
@@ -12407,7 +12409,24 @@
             }, 2000);
         }
 
+        // 记录当日学习完成的时段,供「早起达人/夜读之星」徽章判定(每时段终身仅解锁一次)
+        function recordStudySlot() {
+            try {
+                const h = new Date().getHours();
+                const slot = (h >= 5 && h < 9) ? 'early' : (h >= 21 ? 'night' : '');
+                if (!slot) return;
+                const key = 'wordmatch_study_slots';
+                const slots = JSON.parse(localStorage.getItem(key) || '[]');
+                if (slots.indexOf(slot) < 0) {
+                    slots.push(slot);
+                    localStorage.setItem(key, JSON.stringify(slots));
+                }
+            } catch (e) {}
+        }
+
         function showCompletionSummary(gameResult) {
+            // 完成当日学习即记录学习时段(供成就徽章判定)
+            recordStudySlot();
             // 结果页新设计：只显示标题、吉祥物占位、得分、奖励卡片
             const scoreEl = document.getElementById('gameResultScore');
             const energyEl = document.getElementById('completionEnergyValue');
@@ -12582,24 +12601,54 @@
             const wordEl = document.getElementById('achWordBadges');
             if (wordEl) wordEl.innerHTML = wordHtml;
 
-            // 成就徽章
+            // 成就徽章:进度与解锁状态全部按真实数据实时计算,不再写死占位
+            const streakCount = getStreakData().count;
+            // 学习时段(早起/夜读)终身记录
+            let studySlots = [];
+            try { studySlots = JSON.parse(localStorage.getItem('wordmatch_study_slots') || '[]'); } catch (e) {}
+            const hasEarly = studySlots.indexOf('early') >= 0;
+            const hasNight = studySlots.indexOf('night') >= 0;
+            // 跨词库累计学习/掌握词数(词库间共享进度)
+            let totalLearned = 0, totalMastered = 0;
+            try {
+                Object.keys(wordDB).forEach(k => {
+                    const st = MemorySystem.getLearningStats(k);
+                    totalLearned += (st.mastered || 0) + (st.learning || 0);
+                    totalMastered += (st.mastered || 0);
+                });
+            } catch (e) {}
+            const gamesCompleted = progress.gamesCompleted || 0;
+            const maxCombo = progress.maxCombo || 0;
+            // 冲刺计划:完成数 + 是否提前 ≥3 天完成(实际用天数 ≤ planDays - 3)
+            const _todayStr = new Date().toISOString().slice(0, 10);
+            let sprintCompleted = 0, sprintFast = false;
+            try {
+                allPlans.forEach(p => {
+                    const days = (p.completedDays || []).length;
+                    const total = p.planDays || 0;
+                    if (total <= 0 || days < total) return;
+                    sprintCompleted++;
+                    const used = p.startDate ? (daysBetween(p.startDate, _todayStr) + 1) : total;
+                    if (used <= total - 3) sprintFast = true;
+                });
+            } catch (e) {}
             const COLLECTION_BADGES = [
-                { name: '3天连击', current: 2, target: 3 },
-                { name: '7天连击', current: 2, target: 7 },
-                { name: '30天连击', current: 2, target: 30 },
-                { name: '百日大师', current: 2, target: 100 },
-                { name: '早起达人', current: 0, target: 1 },
-                { name: '夜读之星', current: 0, target: 1 },
-                { name: '初学乍练', current: 120, target: 50 },
-                { name: '渐入佳境', current: 120, target: 300 },
-                { name: '词汇达人', current: 120, target: 1000 },
-                { name: '词汇大师', current: 80, target: 500 },
-                { name: '初露锋芒', current: 1, target: 1 },
-                { name: '连连高手', current: 1, target: 10 },
-                { name: '连击新星', current: 6, target: 10 },
-                { name: '闪卡王者', current: 6, target: 20 },
-                { name: '首战告捷', current: 0, target: 1 },
-                { name: '全速冲刺', current: 0, target: 1 }
+                { name: '3天连击', current: streakCount, target: 3 },
+                { name: '7天连击', current: streakCount, target: 7 },
+                { name: '30天连击', current: streakCount, target: 30 },
+                { name: '百日大师', current: streakCount, target: 100 },
+                { name: '早起达人', current: hasEarly ? 1 : 0, target: 1 },
+                { name: '夜读之星', current: hasNight ? 1 : 0, target: 1 },
+                { name: '初学乍练', current: totalLearned, target: 50 },
+                { name: '渐入佳境', current: totalLearned, target: 300 },
+                { name: '词汇达人', current: totalLearned, target: 1000 },
+                { name: '词汇大师', current: totalMastered, target: 500 },
+                { name: '初露锋芒', current: gamesCompleted, target: 1 },
+                { name: '连连高手', current: gamesCompleted, target: 10 },
+                { name: '连击新星', current: maxCombo, target: 10 },
+                { name: '闪卡王者', current: maxCombo, target: 20 },
+                { name: '首战告捷', current: sprintCompleted, target: 1 },
+                { name: '全速冲刺', current: sprintFast ? 1 : 0, target: 1 }
             ];
             const BADGE_PLACEHOLDER = (name, unlocked) => {
                 const color = unlocked ? '#ffc800' : '#d8d8d8';
