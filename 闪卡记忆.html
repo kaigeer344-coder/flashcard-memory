@@ -10887,12 +10887,26 @@
         }
         // ============ VIP 状态管理 END ============
 
+        // 当前每日新词目标:与 V2 学习系统同步(自由=每日目标,冲刺=计划每日新词),旧版设置兜底。
+        // 首页/地图显示的「今日单词」即此值,闪卡学习队列需与其一致,避免"显示 20 实际学 10"的不同步。
+        function getV2DailyGoal() {
+            try {
+                const s = LearningSystem.getSettings();
+                if (s && s.mode === 'free') return Number(s.dailyTarget) || state.dailyNewWords;
+                if (s && s.mode === 'sprint') {
+                    const plan = LearningSystem.getActivePlan();
+                    return (plan && Number(plan.dailyNewWords)) || state.dailyNewWords;
+                }
+            } catch (e) {}
+            return state.dailyNewWords;
+        }
+
         function buildTodayQueue(level) {
             const words = MemorySystem.getAllWords(level);
             const now = Date.now();
             const stats = MemorySystem.getLearningStats(level);
             state.reviewDebtCount = stats.dueForReview + stats.lapsed;
-            state.newWordQuota = Math.min(state.dailyNewWords, stats.new);
+            state.newWordQuota = Math.min(getV2DailyGoal(), stats.new);
             const queued = new Map();
 
             const addWord = (word, reason, isNew) => {
@@ -10976,7 +10990,7 @@
         function renderHeaderStats() {
             // 刷新顶部新词数显示
             const newWordsEl = document.getElementById('headerNewWords');
-            if (newWordsEl) newWordsEl.innerHTML = `${iconImg('dailyWords', 'header-stat-icon')}${state.dailyNewWords}`;
+            if (newWordsEl) newWordsEl.innerHTML = `${iconImg('dailyWords', 'header-stat-icon')}${getV2DailyGoal()}`;
 
             // 若我的/设置页打开，也刷新
             const profileScreen = document.getElementById('profileScreen');
@@ -10992,13 +11006,13 @@
 
         function updateEstimate() {
             const totalWords = wordDB[state.level].length;
-            const wordsPerDay = state.dailyNewWords * state.dailyRounds;
+            const wordsPerDay = getV2DailyGoal() * state.dailyRounds;
             const stats = MemorySystem.getLearningStats(state.level);
             state.reviewDebtCount = stats.dueForReview + stats.lapsed;
-            state.newWordQuota = Math.min(state.dailyNewWords, stats.new);
+            state.newWordQuota = Math.min(getV2DailyGoal(), stats.new);
             const remainingWords = stats.new + stats.learning + stats.dueForReview;
             const days = Math.ceil(Math.max(remainingWords, 1) / Math.max(wordsPerDay, 1));
-            const estimatedMinutes = Math.max(3, Math.ceil((state.dailyNewWords * 35 + state.reviewDebtCount * 20) / 60));
+            const estimatedMinutes = Math.max(3, Math.ceil((getV2DailyGoal() * 35 + state.reviewDebtCount * 20) / 60));
 
             const totalWordsEl = document.getElementById('totalWordsCount');
             if (totalWordsEl) totalWordsEl.textContent = totalWords;
