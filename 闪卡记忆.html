@@ -945,19 +945,19 @@
             box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
         }
         .tc-task-card {
-            background: #fff;
-            border: 2px solid #e5e5e5;
-            border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 10px;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 8px 2px;
             display: flex;
             align-items: center;
             gap: 14px;
             cursor: pointer;
             transition: transform 120ms ease;
-            box-shadow: 0 4px 0 #e5e5e5;
             -webkit-tap-highlight-color: transparent;
         }
+        .tc-task-card:not(:last-child) { border-bottom: 1px solid #f0f0f0; }
         .tc-task-card:active { transform: scale(0.98); }
         .tc-task-card:last-child { margin-bottom: 0; }
         /* 任务左侧图标泡泡 */
@@ -984,9 +984,9 @@
             color: var(--primary);
         }
         .tc-task-featured {
-            background: linear-gradient(135deg, #d7ffb8 0%, #c8f5a0 100%);
-            border-color: #a3d97a;
-            box-shadow: 0 4px 0 #a3d97a;
+            background: transparent;
+            border: none;
+            box-shadow: none;
         }
         .tc-task-info { flex: 1; min-width: 0; }
         .tc-task-name {
@@ -1057,9 +1057,9 @@
             pointer-events: none;
         }
         .tc-task-card.tc-locked {
-            background: #f5f5f5;
-            border-color: #e0e0e0;
-            box-shadow: 0 4px 0 #e0e0e0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
             cursor: default;
             opacity: 0.65;
         }
