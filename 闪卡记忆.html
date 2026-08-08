@@ -6816,7 +6816,7 @@
                     <div class="wbp-stat">
                         <div class="wbp-stat-label">
                             <svg viewBox="0 0 24 24" fill="none" stroke="#58cc02" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                            全部词库
+                            <span id="wbpTotalLabel">全部词库</span>
                         </div>
                         <div class="wbp-stat-num" id="wbpTotal">0<span>词</span></div>
                     </div>
@@ -13372,19 +13372,30 @@
 
         function updateWordbookPreviewStats() {
             try {
+                // 跟随下方词库按钮:全部 统计全部词库,单个 只统计该词库
+                const level = wordbookState.level;
                 let total = 0, mastered = 0, due = 0;
-                Object.keys(LEVEL_NAMES).forEach(level => {
+                if (level === 'all') {
+                    Object.keys(LEVEL_NAMES).forEach(l => {
+                        const stats = MemorySystem.getLearningStats(l);
+                        total += stats.total || 0;
+                        mastered += stats.mastered || 0;
+                        due += stats.dueForReview || 0;
+                    });
+                } else {
                     const stats = MemorySystem.getLearningStats(level);
-                    total += stats.total || 0;
-                    mastered += stats.mastered || 0;
-                    due += stats.dueForReview || 0;
-                });
+                    total = stats.total || 0;
+                    mastered = stats.mastered || 0;
+                    due = stats.dueForReview || 0;
+                }
                 const elTotal = document.getElementById('wbpTotal');
                 const elMastered = document.getElementById('wbpMastered');
                 const elDue = document.getElementById('wbpDue');
+                const elLabel = document.getElementById('wbpTotalLabel');
                 if (elTotal) elTotal.innerHTML = `${total}<span>词</span>`;
                 if (elMastered) elMastered.textContent = mastered;
                 if (elDue) elDue.textContent = due;
+                if (elLabel) elLabel.textContent = level === 'all' ? '全部词库' : `${LEVEL_NAMES[level] || ''}词库`;
             } catch (e) {
                 console.error('updateWordbookPreviewStats 失败:', e);
             }
@@ -13404,6 +13415,8 @@
             document.querySelectorAll('.wordbook-filter-btn').forEach(b => {
                 b.classList.toggle('active', b.dataset.sort === 'frequency');
             });
+            // 顶部统计随词库按钮同步切换
+            updateWordbookPreviewStats();
             renderWordbook();
         }
 
