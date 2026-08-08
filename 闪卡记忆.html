@@ -1715,15 +1715,16 @@
         .profile-header-card {
             position: relative;
             background: linear-gradient(135deg, #8fe85f 0%, #58cc02 60%, #45b300 100%);
-            border-radius: 24px;
+            border-radius: 0;
             padding: 22px 20px 18px;
-            margin-bottom: 4px;
+            /* 打破屏内边距:左右贴边、顶部贴齐页面 */
+            margin: -24px -20px 16px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             gap: 16px;
-            box-shadow: 0 6px 0 #3d8a02;
+            box-shadow: none;
         }
         .profile-header-card::after {
             content: '';
@@ -1776,11 +1777,16 @@
         }
         .profile-header-xp .xp-progress-section {
             margin-bottom: 0;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.95);
-            padding: 12px 14px;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+            border-radius: 0;
+            /* 白卡去掉:直接嵌绿底 */
+            background: transparent;
+            padding: 0;
+            box-shadow: none;
         }
+        .profile-header-xp .xp-progress-label { color: rgba(255,255,255,0.92); }
+        .profile-header-xp .xp-progress-value { color: #ffffff; }
+        .profile-header-xp .xp-progress-bar { background: rgba(255,255,255,0.3); }
+        .profile-header-xp .xp-progress-fill { background: #ffffff; box-shadow: none; }
         .profile-header-content {
             display: flex;
             align-items: center;
