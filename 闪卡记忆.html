@@ -9383,6 +9383,7 @@
             }
 
             _currentMapLevels = levels;
+            window._currentMapLevels = levels; // 供 game-map-components 窗口缩放时重渲染
 
             // 今日单词与设定的每日目标同步;无计划数据时回退到设定目标(冲刺=计划每日新词,自由=每日目标)
             const todayWords = (meta.newWordsToday || 0)

@@ -108,6 +108,23 @@
             </div>`;
     }
 
+    // ===== 地图尺寸计算: 使最左/最右关卡按钮距页面左右边缘恰好 EDGE px =====
+    // viewW: 滚动区实际宽度; nodeD: 节点直径; 返回 { width, marginLeft }
+    // 地图宽度可超出视口,左右对称溢出,保证整条路线水平居中且两端贴边可控
+    function resolveMapSize(geom, viewW, edge, nodeD) {
+        let xMin = 100, xMax = 0;
+        geom.forEach(g => {
+            if (g.x < xMin) xMin = g.x;
+            if (g.x > xMax) xMax = g.x;
+        });
+        const span = (xMax - xMin) / 100;
+        if (span <= 0 || viewW <= 0) return { width: viewW, marginLeft: 0 };
+        const width = (viewW - 2 * edge - nodeD) / span;
+        // -16 抵消 .lp-scroll 自带左内边距,使 marginLeft 为相对屏幕的偏移
+        const marginLeft = edge - (xMin / 100) * width + nodeD / 2 - 16;
+        return { width, marginLeft };
+    }
+
     // ===== LessonMap: 地图容器,渲染全部节点/引导点 =====
     function LessonMap(levels, opts) {
         const items = (levels && levels.length) ? levels : window.getDefaultLevels();
@@ -126,16 +143,30 @@
         const C = window.GM_CONFIG;
         const height = C.START_Y + (items.length - 1) * C.ROW_GAP + 130;
 
-        // 边距换算:抵消 .lp-scroll 自带 16px 左右内边距,使 EDGE=0 时地图真正贴住屏幕边缘
-        const pad = C.EDGE - 16;
+        // 滚动容器实际宽度(响应式,随视口变化重算)
+        const scrollEl = document.querySelector('.lp-scroll');
+        const viewW = (scrollEl && scrollEl.clientWidth) || window.innerWidth || 390;
+        const size = resolveMapSize(geom, viewW, C.EDGE, C.NODE_D);
 
-        // 节点直径和边距通过 CSS 变量传入,实时控制
+        // 节点直径与地图宽度/偏移实时写入,滑块与窗口缩放均生效
         return `
-            <div class="gm-map" style="height:${height}px;--gm-node-d:${C.NODE_D}px;width:calc(100% - ${C.EDGE * 2}px);margin-left:${pad}px;margin-right:${pad}px;">
+            <div class="gm-map" style="height:${height}px;--gm-node-d:${C.NODE_D}px;width:${size.width.toFixed(1)}px;margin-left:${size.marginLeft.toFixed(1)}px;">
                 ${dots}
                 ${nodeHtml}
             </div>`;
     }
+
+    // 窗口尺寸变化时重算地图宽度,保持两端按钮贴边比例
+    let gmResizeTimer = 0;
+    window.addEventListener('resize', () => {
+        clearTimeout(gmResizeTimer);
+        gmResizeTimer = setTimeout(() => {
+            const mapEl = document.querySelector('.gm-map');
+            if (mapEl && window.renderLessonMap && window._currentMapLevels) {
+                mapEl.outerHTML = window.renderLessonMap(window._currentMapLevels, {});
+            }
+        }, 150);
+    });
 
     window.renderLessonMap = LessonMap;
 })();
