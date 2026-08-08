@@ -7804,7 +7804,7 @@
                 btn.textContent = '下一步';
                 btn.disabled = !onboardState.mode;
                 btn.style.opacity = onboardState.mode ? '1' : '0.5';
-                dynEl.innerHTML = _renderQProgressHTML(['intro', 'intro', 'intro', 'mode'], 3, 'mode', false) + _renderModeSelectHTML();
+                dynEl.innerHTML = _renderQProgressHTML(['mode', 'book', 'daily', 'confirm'], 0, 'mode', false) + _renderModeSelectHTML();
             } else if (page.type === 'mode-config') {
                 // 全屏引导:IP 形象 + 对话气泡
                 if (overlay) overlay.classList.add('onboard-full');
