@@ -130,11 +130,13 @@
     function renderTimelineNode(level) {
         const isCurrent = level.status === 'current';
         const nodeClass = isCurrent ? 'lp-node-current' : `lp-node-${level.status}`;
-        const innerSvg = level.status === 'completed' ? LP_ICONS.checkSmall : '';
+        // 完成勾放在节点右上角的独立白色小徽章上,节点本体保持干净的圆点
+        const checkBadge = level.status === 'completed'
+            ? `<span class="lp-node-check">${LP_ICONS.checkSmall}</span>` : '';
 
         return `
             <div class="lp-timeline-node ${nodeClass}">
-                ${innerSvg}
+                ${checkBadge}
             </div>`;
     }
 
@@ -154,7 +156,7 @@
         }
 
         // 波浪路径:相邻节点(行高 92px,节点中心 y=46+i*92)用贝塞尔曲线连接,奇偶行左右交替弯曲
-        const ROW = 92, HALF = 46, AMP = 14;
+        const ROW = 92, HALF = 46, AMP = 8;
         let doneD = '', futureD = '', prev = null;
         for (let i = 0; i < n; i++) {
             const y = HALF + i * ROW;
