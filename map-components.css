@@ -84,6 +84,14 @@
     display: block;
 }
 
+/* 统计条图片图标(如重置素材图):与 svg 图标同尺寸 */
+.lp-stat-icon-img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
+}
+
 .lp-stat-value {
     font-size: 18px;
     font-weight: 800;
