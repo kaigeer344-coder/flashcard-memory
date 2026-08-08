@@ -10,7 +10,7 @@
     <link rel="icon" href="assets/generated-icons/app-logo.png">
     <link rel="stylesheet" href="home-components.css?v=7.7">
     <link rel="stylesheet" href="map-components.css?v=7.9">
-    <link rel="stylesheet" href="game-map-components.css?v=1.5">
+    <link rel="stylesheet" href="game-map-components.css?v=1.6">
     <link rel="stylesheet" href="css/achievements.css?v=1.0">
     <style>
         :root {
@@ -7051,7 +7051,7 @@
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
     <script src="map-components.js?v=7.4"></script>
-    <script src="game-map-components.js?v=1.0"></script>
+    <script src="game-map-components.js?v=1.1"></script>
     <script src="js/achievements/data.js?v=1.0"></script>
     <script src="js/achievements/achievement-card.js?v=1.0"></script>
     <script src="js/achievements/achievement-grid.js?v=1.0"></script>
@@ -9542,6 +9542,28 @@
                 };
             }
 
+            // 宝箱由"关卡右上角小徽章"改为"独立等大关卡节点":
+            // 每个宝箱关之后插入一个 chestNode 节点,用宝箱素材图渲染
+            const expanded = [];
+            for (const lv of levels) {
+                const plain = { ...lv };
+                delete plain.chest; delete plain.chestBig; delete plain.chestClaimed;
+                expanded.push(plain);
+                if (lv.chest) {
+                    // 宝箱节点状态:对应关卡已完成→可领取(completed),否则未解锁(locked)
+                    expanded.push({
+                        day: lv.day,
+                        chestNode: true,
+                        chest: true,
+                        chestBig: lv.chestBig,
+                        chestClaimed: !!lv.chestClaimed,
+                        type: '宝箱',
+                        status: lv.status === 'completed' ? 'completed' : 'locked'
+                    });
+                }
+            }
+            levels = expanded;
+
             _currentMapLevels = levels;
             window._currentMapLevels = levels; // 供 game-map-components 窗口缩放时重渲染
 
@@ -9750,7 +9772,9 @@
         }
         window.onLevelChestClick = function(day) {
             SFX.click();
-            const level = _currentMapLevels.find(l => l.day === day);
+            // chestNode 是独立的宝箱节点;day 与对应学习关卡相同,故须先匹配 chestNode
+            const level = _currentMapLevels.find(l => l.chestNode && l.day === day)
+                || _currentMapLevels.find(l => l.day === day);
             if (!level || !level.chest) return;
             if (level.status === 'locked') {
                 showToast(`继续学习解锁 Day ${day} 宝箱`, 'warning');
@@ -9784,11 +9808,11 @@
             if (reward.type === 'coins') { SFX.coin(); }
             else { SFX.correct(); }
             showToast(`🎁 ${level.chestBig ? '大宝箱' : '宝箱'}盲盒开出：${rewardText}！`, 'success');
-            // 就地更新宝箱为已领取态,不整页重绘
-            const badge = document.querySelector(`.gm-node-chest[data-day="${day}"]`) || document.querySelector(`.lp-day-chest[data-day="${day}"]`);
+            // 就地更新宝箱节点为已领取态,不整页重绘
+            const badge = document.querySelector(`.gm-node-chestnode[data-day="${day}"]`);
             if (badge) {
-                badge.classList.remove('gm-chest-claimable', 'lp-chest-claimable');
-                badge.classList.add('gm-chest-claimed', 'lp-chest-claimed');
+                badge.classList.remove('gm-node-chestnode-ready');
+                badge.classList.add('gm-node-chestnode-claimed');
             }
             // 道具数量变化时同步刷新地图顶部统计条
             if (reward.type === 'item') {

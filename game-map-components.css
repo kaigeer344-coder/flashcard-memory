@@ -194,42 +194,41 @@
 }
 .gm-node-stars svg { width: 11px; height: 11px; display: block; }
 
-/* ===== 宝箱奖励徽章 ===== */
-.gm-node-chest {
-    position: absolute;
-    top: -12px;
-    right: -10px;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: 2px solid #FFFFFF;
-    padding: 0;
-    background: linear-gradient(135deg, #FFE08A, #FFC928);
-    color: #8A5A00;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    z-index: 3;
-    -webkit-tap-highlight-color: transparent;
+/* ===== 独立宝箱节点:与其他关卡等大的圆形按钮,内容为宝箱素材图 ===== */
+/* 复用 .gm-node / .gm-node-btn 圆形容器定位与白描边;图片铺满圆形 */
+.gm-node-chestnode .gm-node-btn {
+    overflow: hidden;
+    border: 4px solid #FFFFFF;
+    background: #FFFFFF;
 }
-.gm-node-chest svg { width: 20px; height: 20px; display: block; }
-
-.gm-chest-big {
-    width: 42px;
-    height: 42px;
-    background: linear-gradient(135deg, #FFD84D, #FF9F1A);
-    box-shadow: 0 3px 10px rgba(255, 159, 26, 0.45);
+.gm-node-chestnode-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
 }
-.gm-chest-big svg { width: 26px; height: 26px; }
-
-.gm-chest-claimable { animation: chestPulse 1.6s ease-in-out infinite; }
-
-.gm-chest-claimed {
-    background: #E2E4E8;
-    color: #B0B4BA;
+/* 可领取:绿色硬阴影 + 呼吸脉冲 */
+.gm-node-chestnode-ready .gm-node-btn {
+    box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.06), 0 5px 0 #3E9300, 0 8px 18px rgba(88, 204, 2, 0.28);
+}
+.gm-node-chestnode-ready { animation: chestPulse 1.6s ease-in-out infinite; }
+/* 未解锁:降透明度 */
+.gm-node-chestnode-locked { opacity: 0.55; }
+.gm-node-chestnode-locked .gm-node-btn {
+    box-shadow: 0 4px 0 #E0E0E0;
+    background: #F2F2F2;
+}
+/* 已领取:灰化 */
+.gm-node-chestnode-claimed .gm-node-btn {
     box-shadow: none;
+    filter: grayscale(0.75);
+    opacity: 0.7;
+}
+
+@keyframes chestPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
 }
 
 /* ===== 响应式: 小屏节点微缩 ===== */

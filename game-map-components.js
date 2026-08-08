@@ -77,6 +77,24 @@
         const status = normalizeStatus(level.status);
         const n = (level.day !== undefined ? level.day : i + 1);
         const type = level.type || '';
+
+        // 独立宝箱节点:与其他关卡等大的圆形按钮,内容为宝箱素材图
+        // 点击直接开箱,不渲染右上角小徽章
+        if (level.chestNode) {
+            const st = normalizeStatus(level.status);
+            const cls = level.chestClaimed ? 'claimed' : (st === 'completed' ? 'ready' : 'locked');
+            return `
+            <div class="gm-node gm-node-chestnode gm-node-chestnode-${cls}" style="left:${geom.x.toFixed(1)}%;top:${Math.round(geom.y)}px;">
+                <button class="gm-node-btn" type="button" role="button" tabindex="0"
+                        data-day="${n}"
+                        aria-label="Day ${n} 宝箱奖励"
+                        onclick="window.onLevelChestClick && window.onLevelChestClick(${n})">
+                    <img class="gm-node-chestnode-img" src="assets/home/宝箱.png" alt="宝箱">
+                </button>
+                <div class="gm-node-label">宝箱</div>
+            </div>`;
+        }
+
         const icon = GM_ICONS[level.icon] || GM_ICONS.book;
         const iconSvg = status === 'locked' ? GM_ICONS.lock : icon;
 
@@ -95,13 +113,6 @@
             starsHtml = `<div class="gm-node-stars">${starRow}</div>`;
         }
 
-        // 宝箱奖励徽章(与旧版交互一致)
-        const chestHtml = level.chest ? `
-            <button class="gm-node-chest ${level.chestBig ? 'gm-chest-big' : ''} ${level.status === 'completed' && !level.chestClaimed ? 'gm-chest-claimable' : ''} ${level.chestClaimed ? 'gm-chest-claimed' : ''}"
-                    data-day="${n}"
-                    onclick="event.stopPropagation(); window.onLevelChestClick && window.onLevelChestClick(${n})"
-                    aria-label="Day ${n} 宝箱奖励">${GM_ICONS.chest}</button>` : '';
-
         // 完成标记勾已移除(右上角勾影响视觉),仅保留绿描边+星星表达已完成
         const checkHtml = '';
 
@@ -113,7 +124,6 @@
                     ${innerIcon}
                     ${checkHtml}
                 </button>
-                ${chestHtml}
                 <div class="gm-node-label">Day ${n}</div>
                 ${starsHtml}
             </div>`;
