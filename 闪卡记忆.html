@@ -6599,7 +6599,6 @@
             <div class="tc-section">
                 <div class="tc-section-head">
                     <span class="tc-section-title">周末大挑战</span>
-                    <span class="tc-section-timer" id="tcWeeklyTimer">2 天</span>
                 </div>
                 <div class="tc-task-card tc-task-featured" id="tcWeeklyCard" onclick="onTaskClick('weekly')">
                     <div class="tc-task-icon tc-icon-flame" aria-hidden="true">
@@ -6622,7 +6621,6 @@
             <div class="tc-section">
                 <div class="tc-section-head">
                     <span class="tc-section-title">每日特别任务</span>
-                    <span class="tc-section-timer" id="tcDailyTimer">3 小时</span>
                 </div>
                 <div class="tc-task-card" id="tcDailyCard" onclick="onTaskClick('daily')">
                     <div class="tc-task-icon tc-icon-book" aria-hidden="true">
@@ -12700,10 +12698,8 @@
             const wProg = document.getElementById('tcWeeklyProgress');
             const wCard = document.getElementById('tcWeeklyCard');
             const wReward = document.getElementById('tcWeeklyReward');
-            const wTimer = document.getElementById('tcWeeklyTimer');
             const wName = document.getElementById('tcWeeklyName');
             if (wName) wName.textContent = weekly.name;
-            if (wTimer) wTimer.textContent = weekly.timer;
             if (wFill) wFill.style.width = weeklyPct + '%';
             if (wProg) wProg.textContent = weeklyCurrent + '/' + weekly.target;
             if (wReward) wReward.querySelector('span').textContent = weekly.reward;
@@ -12727,10 +12723,8 @@
             const dProg = document.getElementById('tcDailyProgress');
             const dCard = document.getElementById('tcDailyCard');
             const dReward = document.getElementById('tcDailyReward');
-            const dTimer = document.getElementById('tcDailyTimer');
             const dName = document.getElementById('tcDailyName');
             if (dName) dName.textContent = daily.name;
-            if (dTimer) dTimer.textContent = daily.timer;
             if (dFill) dFill.style.width = dailyPct + '%';
             if (dProg) dProg.textContent = dailyCurrent + '/' + daily.target;
             if (dReward) dReward.querySelector('span').textContent = daily.reward;
