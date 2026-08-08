@@ -57,10 +57,11 @@
     z-index: 2;
 }
 
+/* ===== 多邻国风格按钮: 粗白描边 + 3D 硬阴影 + 底部内阴影 ===== */
 .gm-node-btn {
     position: absolute;
     inset: 0;
-    border: none;
+    border: 4px solid #FFFFFF;   /* 多邻国标志性粗白描边 */
     border-radius: 50%;
     padding: 0;
     margin: 0;
@@ -69,11 +70,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.15s ease;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
     background: transparent;
     font: inherit;
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
 }
-.gm-node-btn:active { transform: scale(0.93); }
+/* 按压:整体下沉 + 阴影压扁,模拟物理按键 */
+.gm-node-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12) !important;
+}
 .gm-node-btn:focus-visible {
     outline: 3px solid rgba(88, 204, 2, 0.55);
     outline-offset: 3px;
@@ -89,13 +95,15 @@
     width: 40px;
     height: 40px;
     display: block;
+    stroke-width: 2.6;   /* 更粗线条,更有分量 */
 }
 
 /* ===== 状态 1: active 当前关卡 =====
-   绿色渐变按钮 + 白色 icon + 明显阴影 + 呼吸光圈 */
+   多邻国实心绿: 绿色渐变 + 底部深绿硬阴影 + 内阴影立体感 + 呼吸光圈 */
 .gm-node-active .gm-node-btn {
-    background: linear-gradient(180deg, #7EE23F 0%, #58CC02 60%, #46A302 100%);
-    box-shadow: 0 5px 0 #3E9300, 0 12px 26px rgba(88, 204, 2, 0.4);
+    background: linear-gradient(180deg, #7EE23F 0%, #58CC02 55%, #46A302 100%);
+    border-color: #FFFFFF;
+    box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.12), 0 6px 0 #3E9300, 0 12px 26px rgba(88, 204, 2, 0.4);
 }
 .gm-node-active .gm-node-icon { color: #FFFFFF; }
 .gm-node-active::before {
@@ -114,30 +122,30 @@
 }
 
 /* ===== 状态 2: available 可挑战 =====
-   白色按钮 + 灰色 icon + 浅绿色阴影 */
+   白色按钮 + 绿色粗描边 + 浅绿硬阴影 + 绿色图标 */
 .gm-node-available .gm-node-btn {
     background: #FFFFFF;
-    border: 2px solid #E9F3DA;
-    box-shadow: 0 4px 0 #E2F2CC, 0 8px 18px rgba(137, 226, 25, 0.18);
+    border-color: #9BE15D;
+    box-shadow: inset 0 -6px 0 #EAF6D9, 0 5px 0 #CBE9A0, 0 8px 18px rgba(137, 226, 25, 0.22);
 }
-.gm-node-available .gm-node-icon { color: #B8BCC2; }
+.gm-node-available .gm-node-icon { color: #8BD41A; }
 
 /* ===== 状态 3: locked 未解锁 =====
-   降低透明度 + 灰色 icon */
-.gm-node-locked { opacity: 0.55; }
+   灰色按钮 + 灰描边 + 灰图标 + 降低透明度 */
+.gm-node-locked { opacity: 0.6; }
 .gm-node-locked .gm-node-btn {
-    background: #FFFFFF;
-    border: 2px dashed #DDE1E4;
-    box-shadow: none;
+    background: #F2F2F2;
+    border-color: #DADADA;
+    box-shadow: 0 4px 0 #E0E0E0;
 }
-.gm-node-locked .gm-node-icon { color: #B8BCC2; }
+.gm-node-locked .gm-node-icon { color: #C4C4C4; }
 
 /* ===== 状态 4: completed 已完成 =====
-   绿色描边 + 完成标记 + 绿色 icon */
+   白色按钮 + 绿色粗描边 + 绿色图标 */
 .gm-node-completed .gm-node-btn {
     background: #FFFFFF;
-    border: 3px solid var(--lp-green);
-    box-shadow: 0 4px 0 #D9F2BE, 0 8px 18px rgba(88, 204, 2, 0.14);
+    border: 4px solid var(--lp-green);
+    box-shadow: inset 0 -6px 0 #EAF6D9, 0 5px 0 #CBE9A0, 0 8px 18px rgba(88, 204, 2, 0.16);
 }
 .gm-node-completed .gm-node-icon { color: var(--lp-green); }
 
