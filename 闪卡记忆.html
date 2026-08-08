@@ -2241,9 +2241,13 @@
             display: block;
         }
         .game-hud-row-wrapper {
-            flex: 0 0 350px;
-            width: 350px;
-            height: 150px;
+            /* 自适应:占据剩余宽度,窄屏可收缩,桌面最多 350px */
+            flex: 1 1 auto;
+            width: auto;
+            min-width: 0;
+            max-width: 350px;
+            height: auto;
+            min-height: 150px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -2344,6 +2348,8 @@
             font-size: 14px;
             font-weight: 800;
             color: #7cb342;
+            text-align: center;
+            line-height: 1.35;
         }
         .game-hud-hint svg {
             width: 16px;
@@ -2539,12 +2545,22 @@
             .completion-score-value { font-size: 64px; }
             .completion-reward-card { padding: 14px 18px; }
             .game-hud { padding: 12px 14px 14px; margin-bottom: 12px; }
+            .game-hud-mascot { width: 88px; height: 104px; margin-right: -8px; }
             .hud-value { font-size: 24px; }
             .game-hud-item { min-width: 54px; }
             .game-board { gap: 8px; }
             .match-card { border-radius: 14px; padding: 6px; }
             .match-card .card-text { font-size: 12px; -webkit-line-clamp: 2; }
             .match-card.en-card .card-text { font-size: 13px; }
+        }
+        @media (max-width: 360px) {
+            .game-hud-mascot { width: 70px; height: 84px; margin-right: -6px; }
+            .game-hud-row-wrapper { min-height: 132px; padding: 12px 12px 12px; border-radius: 22px; }
+            .hud-value { font-size: 22px; }
+            .game-hud-item { min-width: 42px; gap: 3px; }
+            .hud-label { font-size: 12px; }
+            .game-hud-hint { font-size: 13px; }
+            .game-hud-divider { margin: 10px 0 9px; }
         }
         @media (prefers-reduced-motion: reduce) {
             .screen { animation: none; }
