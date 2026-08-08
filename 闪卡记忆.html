@@ -6736,7 +6736,7 @@
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
-    <script src="map-components.js?v=7.3"></script>
+    <script src="map-components.js?v=7.4"></script>
     <script src="js/achievements/data.js?v=1.0"></script>
     <script src="js/achievements/achievement-card.js?v=1.0"></script>
     <script src="js/achievements/achievement-grid.js?v=1.0"></script>
@@ -9093,6 +9093,29 @@
             }
         }
 
+        // 递增里程碑宝箱关:5,15,30,50,75,105...(间隔 5,10,15,20...递增)
+        // 前几个宝箱来得快(快速建立激励),间隔逐步拉大保证稀缺性
+        // 每 3 个里程碑为一个大宝箱(更高奖励)
+        function getChestLevels(total) {
+            const result = [];
+            let k = 1;
+            while (true) {
+                const lv = Math.round(5 * k * (k + 1) / 2);
+                if (lv > total) break;
+                result.push({ level: lv, big: k % 3 === 0 });
+                k++;
+            }
+            return result;
+        }
+
+        // 已领取的宝箱关卡记录(防重复领取)
+        function getClaimedChests() {
+            try {
+                const raw = JSON.parse(localStorage.getItem('wordmatch_chest_claimed') || '{}');
+                return raw && typeof raw === 'object' ? raw : {};
+            } catch (e) { return {}; }
+        }
+
         function renderLearningMapScreen() {
             const root = document.getElementById('learningMapRoot');
             if (!root) return;
@@ -9106,6 +9129,13 @@
             let levels = [];
             let unit = {};
 
+            // 已领取宝箱记录(防重复领取)
+            const claimedChests = getClaimedChests();
+            // 标记宝箱关:chest=true / chestBig(大宝箱) / chestClaimed(已领取)
+            const buildChestProps = (chestMap) => (i) => (chestMap[i] !== undefined
+                ? { chest: true, chestBig: chestMap[i], chestClaimed: !!claimedChests[i] }
+                : {});
+
             if (mode === 'sprint') {
                 // ===== 冲刺模式:按计划天数生成关卡,先听力词汇(Day1-4)后阅读词汇,不交叉 =====
                 const plan = LearningSystem.getActivePlan();
@@ -9114,12 +9144,15 @@
                 const totalDays = plan ? Math.max(1, plan.planDays || 14) : 14;
                 const completedDays = plan && Array.isArray(plan.completedDays) ? plan.completedDays : [];
                 const currentDay = plan ? Math.min(totalDays, Math.max(1, plan.currentDay || 1)) : 1;
+                const chestMap = {};
+                getChestLevels(totalDays).forEach(c => { chestMap[c.level] = c.big; });
+                const chestProps = buildChestProps(chestMap);
                 for (let i = 1; i <= totalDays; i++) {
                     let status = 'locked';
                     if (completedDays.includes(i)) status = 'completed';
                     else if (i === currentDay) status = 'current';
                     const type = i <= 4 ? '听力' : '阅读词汇';
-                    levels.push({ day: i, status, type, icon: type === '听力' ? 'headphone' : 'book' });
+                    levels.push({ day: i, status, type, icon: type === '听力' ? 'headphone' : 'book', ...chestProps(i) });
                 }
                 unit = {
                     tag: '冲刺模式',
@@ -9143,6 +9176,9 @@
                 const learnedCount = (prog.all && prog.all.learned) || 0;
                 const allDone = learnedCount >= totalWords;
                 const currentLevel = allDone ? totalLevels + 1 : Math.min(totalLevels, Math.floor(learnedCount / dailyTarget) + 1);
+                const chestMap = {};
+                getChestLevels(totalLevels).forEach(c => { chestMap[c.level] = c.big; });
+                const chestProps = buildChestProps(chestMap);
                 for (let i = 1; i <= totalLevels; i++) {
                     let status = 'locked';
                     if (allDone || i < currentLevel) status = 'completed';
@@ -9152,7 +9188,8 @@
                         status,
                         type: '词汇学习',
                         icon: 'book',
-                        week: Math.ceil(i / 5)   // 每周 5 个学习日
+                        week: Math.ceil(i / 5),   // 每周 5 个学习日
+                        ...chestProps(i)
                     });
                 }
                 const closestTask = getClosestTaskInfo();
@@ -9248,6 +9285,42 @@
             SFX.click();
             // 跳到闪卡学习界面
             startLearning();
+        };
+
+        // 点击关卡宝箱:已完成关卡可领取金币奖励(普通 60 / 大宝箱 150),防重复领取
+        window.onLevelChestClick = function(day) {
+            SFX.click();
+            const level = _currentMapLevels.find(l => l.day === day);
+            if (!level || !level.chest) return;
+            if (level.status === 'locked') {
+                showToast(`继续学习解锁 Day ${day} 宝箱`, 'warning');
+                return;
+            }
+            if (level.status === 'current') {
+                showToast('完成本关即可领取宝箱', 'info');
+                return;
+            }
+            const claimed = getClaimedChests();
+            if (claimed[day]) {
+                showToast('宝箱已领取', 'info');
+                return;
+            }
+            const coins = level.chestBig ? 150 : 60;
+            try {
+                progress.coins = (progress.coins || 0) + coins;
+                saveProgress();
+                renderHeaderStats();
+            } catch (e) {}
+            claimed[day] = true;
+            try { localStorage.setItem('wordmatch_chest_claimed', JSON.stringify(claimed)); } catch (e) {}
+            SFX.coin();
+            showToast(level.chestBig ? `🎁 大宝箱 +${coins} 金币！` : `🎁 宝箱 +${coins} 金币！`, 'success');
+            // 就地更新宝箱为已领取态,不整页重绘
+            const badge = document.querySelector(`.lp-day-chest[data-day="${day}"]`);
+            if (badge) {
+                badge.classList.remove('lp-chest-claimable');
+                badge.classList.add('lp-chest-claimed');
+            }
         };
         // 横幅卡右侧「学习清单」按钮
         window.onLearningMapGuideClick = function() {

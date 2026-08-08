@@ -456,6 +456,67 @@
     border-right: 7px solid #FFFFFF;
 }
 
+/* ===== 关卡宝箱徽章(递增里程碑奖励) ===== */
+.lp-day-chest {
+    position: absolute;
+    top: -12px;
+    right: -6px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid #FFFFFF;
+    background: linear-gradient(135deg, #FFE08A, #FFC928);
+    color: #8A5A00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 4;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.lp-day-chest svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+/* 大宝箱:更大更高亮 */
+.lp-chest-big {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #FFD84D, #FF9F1A);
+    box-shadow: 0 3px 10px rgba(255, 159, 26, 0.45);
+}
+
+.lp-chest-big svg {
+    width: 26px;
+    height: 26px;
+}
+
+/* 已完成未领取:呼吸脉冲吸引点击 */
+.lp-chest-claimable {
+    animation: chestPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes chestPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+}
+
+/* 已领取:置灰 */
+.lp-chest-claimed {
+    background: #E2E4E8;
+    color: #B0B4BA;
+    box-shadow: none;
+}
+
+.lp-chest-claimed svg {
+    opacity: 0.7;
+}
+
 /* ===== 响应式适配 ===== */
 @media (max-width: 360px) {
     .lp-day-card {

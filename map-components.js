@@ -19,7 +19,8 @@
         check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 18 19 6.5"/></svg>`,
         starOutline: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>`,
         lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`,
-        checkSmall: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 18 19 6.5"/></svg>`
+        checkSmall: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 18 19 6.5"/></svg>`,
+        chest: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="18" height="11" rx="2"/><path d="M4 10 5.5 6a7 7 0 0 1 13 0L20 10"/><path d="M3 15h18"/><rect x="10.5" y="13.5" width="3" height="3" rx="0.6"/></svg>`
     };
 
     // ===== 关卡数据 =====
@@ -108,6 +109,11 @@
                         <div class="lp-day-card-sub">${level.type}</div>
                     </div>
                 </div>
+                ${level.chest ? `
+                    <button class="lp-day-chest ${level.chestBig ? 'lp-chest-big' : ''} ${level.status === 'completed' && !level.chestClaimed ? 'lp-chest-claimable' : ''} ${level.chestClaimed ? 'lp-chest-claimed' : ''}"
+                            data-day="${level.day}"
+                            onclick="event.stopPropagation(); onLevelChestClick && onLevelChestClick(${level.day})"
+                            aria-label="Day ${level.day} 宝箱奖励">${LP_ICONS.chest}</button>` : ''}
                 <div class="lp-day-card-arrow ${isLeft ? 'lp-arrow-right' : 'lp-arrow-left'}"></div>
             </div>`;
     }
