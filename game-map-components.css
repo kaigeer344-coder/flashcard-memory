@@ -91,25 +91,6 @@
     display: block;
 }
 
-/* 完成勾徽章(右上角绿色圆) */
-.gm-node-check {
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    width: 27px;
-    height: 27px;
-    border-radius: 50%;
-    background: var(--lp-green);
-    border: 2px solid #FFFFFF;
-    color: #FFFFFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 6px rgba(88, 204, 2, 0.4);
-    pointer-events: none;
-}
-.gm-node-check svg { width: 14px; height: 14px; }
-
 /* ===== 状态 1: active 当前关卡 =====
    绿色渐变按钮 + 白色 icon + 明显阴影 + 呼吸光圈 */
 .gm-node-active .gm-node-btn {

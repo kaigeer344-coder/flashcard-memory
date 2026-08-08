@@ -94,8 +94,8 @@
                     onclick="event.stopPropagation(); window.onLevelChestClick && window.onLevelChestClick(${n})"
                     aria-label="Day ${n} 宝箱奖励">${GM_ICONS.chest}</button>` : '';
 
-        const checkHtml = status === 'completed'
-            ? `<span class="gm-node-check">${GM_ICONS.check}</span>` : '';
+        // 完成标记勾已移除(右上角勾影响视觉),仅保留绿描边+星星表达已完成
+        const checkHtml = '';
 
         return `
             <div class="gm-node gm-node-${status}" style="left:${geom.x.toFixed(1)}%;top:${Math.round(geom.y)}px;">
