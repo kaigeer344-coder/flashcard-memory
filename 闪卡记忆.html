@@ -7804,7 +7804,7 @@
                 btn.textContent = '下一步';
                 btn.disabled = !onboardState.mode;
                 btn.style.opacity = onboardState.mode ? '1' : '0.5';
-                dynEl.innerHTML = _renderQProgressHTML(['mode', 'book', 'daily', 'confirm'], 0, 'mode', false) + _renderModeSelectHTML();
+                dynEl.innerHTML = _renderQProgressHTML(['mode', 'book', 'daily', 'confirm'], 1, 'mode', false) + _renderModeSelectHTML();
             } else if (page.type === 'mode-config') {
                 // 全屏引导:IP 形象 + 对话气泡
                 if (overlay) overlay.classList.add('onboard-full');
@@ -7813,15 +7813,15 @@
                 titleEl.style.display = 'none';
                 descEl.style.display = 'none';
                 dotsEl.style.display = 'none';  // 进度条代替圆点
-                const flow = _getQuestionFlow();
-                const step = flow[onboardQIndex] || flow[flow.length - 1];
+                const flow = ['mode', ..._getQuestionFlow()];
+                const step = flow[onboardQIndex + 1] || flow[flow.length - 1];
                 skipBtn.style.display = 'none';
-                const isLast = onboardQIndex >= flow.length - 1;
+                const isLast = onboardQIndex >= flow.length - 2;
                 btn.textContent = isLast ? '开始学习' : '继续';
                 const valid = _isQValid(step);
                 btn.disabled = !valid;
                 btn.style.opacity = valid ? '1' : '0.5';
-                dynEl.innerHTML = _renderQProgressHTML(flow, onboardQIndex, step) + _renderQHTML(step);
+                dynEl.innerHTML = _renderQProgressHTML(flow, onboardQIndex + 2, step) + _renderQHTML(step);
                 _afterConfigRender();
             }
 
@@ -7865,8 +7865,9 @@
         }
 
         // 顶部进度条 + IP 形象 + 对话气泡(showClose=false 时无关闭按钮)
-        function _renderQProgressHTML(flow, qIndex, step, showClose = true) {
-            const pct = Math.round(((qIndex + 1) / flow.length) * 100);
+        function _renderQProgressHTML(flow, pos, step, showClose = true) {
+            // pos: 当前第几步(含模式选择页,1 起)
+            const pct = Math.round((pos / flow.length) * 100);
             const q = ONBOARD_Q[step];
             return `
                 <div class="onboard-q-topbar">
