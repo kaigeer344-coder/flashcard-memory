@@ -1124,6 +1124,19 @@
         }
         .screen-nav-item:hover { background: #eef8ea; color: var(--primary-dark); }
         .screen-nav-item.active { background: var(--primary); color: #ffffff; }
+        .screen-nav-group-title {
+            font-size: 12px;
+            font-weight: 1000;
+            color: var(--muted);
+            margin: 14px 0 6px;
+            padding-left: 6px;
+            letter-spacing: 0.4px;
+        }
+        .screen-nav-item.test {
+            background: #eef4ff;
+            color: #2b6cb0;
+        }
+        .screen-nav-item.test:hover { background: #dbe9ff; color: #1a4f8f; }
         @media (max-width: 900px) {
             .screen-nav-sidebar { display: none; }
         }
@@ -6713,6 +6726,10 @@
             <button class="screen-nav-item" data-screen="settingsScreen">设置</button>
             <button class="screen-nav-item" data-screen="vipScreen">会员中心</button>
             <button class="screen-nav-item" data-screen="learningMapScreen" data-variant="path">学习路径图</button>
+            <div class="screen-nav-group-title">模拟测试数据</div>
+            <button class="screen-nav-item test" onclick="loadTestScenario('fresh')">① 全新用户 · 无任何数据</button>
+            <button class="screen-nav-item test" onclick="loadTestScenario('sprint9')">② 冲刺 · 四级14天 · 第9天</button>
+            <button class="screen-nav-item test" onclick="loadTestScenario('free10')">③ 自由 · 四级 · Day10 · 20词/天</button>
         </nav>
     </aside>
 
@@ -10673,12 +10690,105 @@
             showScreen(screenId);
         }
 
+        // ===== 模拟测试数据(页面清单侧栏入口,方便开发/测试) =====
+        // 把指定词库前 count 个词标记为已学(用于模拟学习进度)
+        function simulateLearnedWords(bookId, count) {
+            try {
+                const words = MemorySystem.getAllWords(bookId);
+                const now = Date.now();
+                const n = Math.min(count, words.length);
+                for (let i = 0; i < n; i++) {
+                    const w = words[i];
+                    MemorySystem.saveWordMemory(w.wordId, {
+                        algorithmVersion: 2,
+                        status: 'learning',
+                        reviewCount: 2,
+                        stability: 12,
+                        difficulty: 4,
+                        familiarity: 3,
+                        consecutiveCorrect: 2,
+                        lastReview: now - 24 * 3600000,
+                        nextReview: now + 24 * 3600000
+                    });
+                }
+                return n;
+            } catch (e) {
+                console.error('simulateLearnedWords 失败:', e);
+                return 0;
+            }
+        }
+
+        window.loadTestScenario = function(scenario) {
+            try {
+                if (scenario === 'fresh') {
+                    // ① 全新用户:清除 V2 设置/计划与全部单词记忆,恢复首次使用状态
+                    LearningSystem.resetAllV2Data();
+                    const toRemove = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const k = localStorage.key(i);
+                        if (k && (k.indexOf('wordmatch_mem_') === 0 || k.indexOf('wordmem_') === 0)) toRemove.push(k);
+                    }
+                    toRemove.forEach(k => localStorage.removeItem(k));
+                    MemorySystem._allWordsCache = {};
+                    MemorySystem._memoryCache = null;
+                    MemorySystem._statsCache = {};
+                    MemorySystem._wordIdIndex = null;
+                    MemorySystem._allMemoryPreloaded = false;
+                    showToast('已载入:全新用户(无任何数据)', 'success');
+                    startOnboarding();
+                    return;
+                }
+                if (scenario === 'sprint9') {
+                    // ② 冲刺模式:四级 14 天后考试,已学到第 9 天(完成 1-8 天)
+                    LearningSystem.resetAllV2Data();
+                    LearningSystem.switchMode('sprint');
+                    const future = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+                    const plan = LearningSystem.createSprintPlan('cet4', future);
+                    LearningSystem.updateSettings({ mode: 'sprint', activeRoleId: plan.id });
+                    const roles = JSON.parse(localStorage.getItem('wordmatch_roles') || '[]');
+                    const p = roles.find(r => r.id === plan.id);
+                    if (p) {
+                        p.completedDays = [1, 2, 3, 4, 5, 6, 7, 8];
+                        p.currentDay = 9;
+                        if (p.plan && Array.isArray(p.plan.wordPool)) {
+                            p.plan.progress = p.plan.progress || {};
+                            p.plan.progress.learnedWordIds = p.plan.wordPool.slice(0, 80).map(w => w.wordId);
+                            p.plan.progress.masteredCount = 80;
+                            p.plan.progress.lastStudyDate = new Date().toISOString().slice(0, 10);
+                        }
+                    }
+                    localStorage.setItem('wordmatch_roles', JSON.stringify(roles));
+                    localStorage.setItem('wordmatch_onboarded', '1');
+                    LearningSystem.load();
+                    simulateLearnedWords('cet4', 80);
+                    showToast('已载入:冲刺模式 · 四级14天 · 第9天', 'success');
+                    showHomeScreen();
+                    return;
+                }
+                if (scenario === 'free10') {
+                    // ③ 自由模式:四级词库,每天 20 词,进行到第 10 天(已学 200 词)
+                    LearningSystem.resetAllV2Data();
+                    LearningSystem.updateSettings({ mode: 'free', activeRoleId: null, activeBookId: 'cet4', dailyTarget: 20 });
+                    localStorage.setItem('wordmatch_onboarded', '1');
+                    LearningSystem.load();
+                    simulateLearnedWords('cet4', 200);
+                    showToast('已载入:自由模式 · 四级 · Day10 · 20词/天', 'success');
+                    showHomeScreen();
+                    return;
+                }
+            } catch (e) {
+                console.error('loadTestScenario 失败:', e);
+                showToast('模拟数据加载失败', 'warning');
+            }
+        };
+
         function initScreenNavSidebar() {
             const sidebar = document.getElementById('screenNavSidebar');
             if (!sidebar) return;
             sidebar.addEventListener('click', (e) => {
                 const item = e.target.closest('.screen-nav-item');
-                if (!item) return;
+                // 测试数据按钮无 data-screen,由自身 onclick 处理,跳过这里
+                if (!item || !item.dataset.screen) return;
                 navigateToScreen(item.dataset.screen, {
                     mode: item.dataset.mode,
                     variant: item.dataset.variant,
