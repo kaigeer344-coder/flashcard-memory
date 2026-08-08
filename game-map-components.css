@@ -36,16 +36,16 @@
     background: radial-gradient(circle, rgba(137, 226, 25, 0.13) 0%, rgba(137, 226, 25, 0) 70%);
 }
 
-/* ===== 路线引导小圆点: 浅绿色, 沿贝塞尔曲线分布 ===== */
+/* ===== 路线引导小圆点: 绿色, 沿贝塞尔曲线分布 ===== */
 .gm-dot {
     position: absolute;
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background: #C3E89F;
+    background: #9BE15D;
     transform: translate(-50%, -50%);
     z-index: 0;
-    box-shadow: 0 1px 3px rgba(88, 204, 2, 0.15);
+    box-shadow: 0 1px 4px rgba(88, 204, 2, 0.35);
 }
 
 /* ===== 关卡节点: 绝对定位, 节点中心对齐坐标点 ===== */
