@@ -160,9 +160,12 @@
         const C = window.GM_CONFIG;
         const height = C.START_Y + (items.length - 1) * C.ROW_GAP + 130;
 
+        // 边距换算:抵消 .lp-scroll 自带 16px 左右内边距,使 EDGE=0 时地图真正贴住屏幕边缘
+        const pad = C.EDGE - 16;
+
         // 节点直径和边距通过 CSS 变量传入,实时控制
         return `
-            <div class="gm-map" style="height:${height}px;--gm-node-d:${C.NODE_D}px;width:calc(100% - ${C.EDGE * 2}px);margin-left:${C.EDGE}px;margin-right:${C.EDGE}px;">
+            <div class="gm-map" style="height:${height}px;--gm-node-d:${C.NODE_D}px;width:calc(100% - ${C.EDGE * 2}px);margin-left:${pad}px;margin-right:${pad}px;">
                 ${dots}
                 ${decoHtml}
                 ${nodeHtml}
