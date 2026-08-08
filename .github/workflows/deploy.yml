@@ -31,7 +31,7 @@ jobs:
       - name: 准备部署目录
         run: |
           mkdir -p _deploy
-          cp index.html 闪卡记忆.html home-components.js home-components.css map-components.js map-components.css _deploy/
+          cp index.html 闪卡记忆.html home-components.js home-components.css map-components.js map-components.css game-map-components.js game-map-components.css _deploy/
           cp -r assets data css js components _deploy/
 
       - name: 部署静态网站
