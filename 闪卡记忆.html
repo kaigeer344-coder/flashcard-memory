@@ -6736,7 +6736,7 @@
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
-    <script src="map-components.js?v=7.0"></script>
+    <script src="map-components.js?v=7.1"></script>
     <script src="js/achievements/data.js?v=1.0"></script>
     <script src="js/achievements/achievement-card.js?v=1.0"></script>
     <script src="js/achievements/achievement-grid.js?v=1.0"></script>
@@ -9071,6 +9071,23 @@
         // 学习地图当前渲染的关卡列表(供点击事件复用,避免读取静态默认数据)
         let _currentMapLevels = [];
 
+        // 自由模式 banner 打卡天数:按"今日视为已打卡"口径计算连续打卡天数
+        function getFreeStreakDays() {
+            try {
+                const s = getStreakData();
+                if (!s || !s.lastDate) return 0;
+                const today = new Date().toISOString().slice(0, 10);
+                const y = new Date();
+                y.setDate(y.getDate() - 1);
+                const yesterday = y.toISOString().slice(0, 10);
+                if (s.lastDate === today) return s.count || 1;
+                if (s.lastDate === yesterday) return (s.count || 1) + 1;
+                return 1;
+            } catch (e) {
+                return 0;
+            }
+        }
+
         function renderLearningMapScreen() {
             const root = document.getElementById('learningMapRoot');
             if (!root) return;
@@ -9138,7 +9155,10 @@
                     title: `${bookName}核心词汇`,
                     done: Math.max(0, currentLevel - 1),
                     total: totalLevels,
-                    progressLabel: '关'
+                    progressLabel: '关',
+                    // 自由模式不显示关卡进度,只显示打卡天数(连续打卡)
+                    progressText: `已连续打卡 ${getFreeStreakDays()} 天`,
+                    hideBar: true
                 };
             }
 

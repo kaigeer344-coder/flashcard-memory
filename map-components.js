@@ -60,9 +60,12 @@
     // ===== 课程进度 Banner =====
     // u.tag: 标签文案(冲刺模式传'冲刺模式',自由模式传'四级词汇'等)
     // u.progressLabel: 进度单位('天'/'关'),默认'天'
+    // u.progressText: 自定义进度文案(自由模式显示打卡天数)
+    // u.hideBar: true 时隐藏进度条
     window.renderUnitBanner = function(unit) {
         const u = unit || { tag: '四级词汇', title: '四级核心词汇', done: 4, total: 7 };
-        const pct = Math.round((u.done / u.total) * 100);
+        const pct = u.total > 0 ? Math.round((u.done / u.total) * 100) : 0;
+        const progressText = u.progressText || `已完成 ${u.done}/${u.total} ${u.progressLabel || '天'}`;
         return `
             <div class="lp-banner">
                 <div class="lp-banner-deco lp-banner-deco-1"></div>
@@ -71,10 +74,11 @@
                     <div class="lp-banner-tag">${u.tag}</div>
                     <div class="lp-banner-title">${u.title}</div>
                     <div class="lp-banner-progress">
-                        <span class="lp-banner-progress-text">已完成 ${u.done}/${u.total} ${u.progressLabel || '天'}</span>
+                        <span class="lp-banner-progress-text">${progressText}</span>
+                        ${u.hideBar ? '' : `
                         <div class="lp-banner-bar">
                             <div class="lp-banner-bar-fill" style="width:${pct}%"></div>
-                        </div>
+                        </div>`}
                     </div>
                 </div>
             </div>`;
