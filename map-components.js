@@ -124,10 +124,13 @@
     // ===== 单个分组的时间轴（组内独立线，互不相连） =====
     function renderTimelineGroup(group) {
         const n = group.length;
-        const currentIdx = group.findIndex(l => l.status === 'current');
-        // 无当前节点时取最后已完成节点，保证全完成组显示全绿线
-        const doneIdx = currentIdx >= 0 ? currentIdx : (n > 1 ? n - 1 : 0);
-        const doneRatio = n > 1 ? doneIdx / (n - 1) : 0;
+        // 绿色只覆盖已学(completed)节点:取最后一个已完成节点
+        // 无已完成节点(全未解锁/仅有当前节点)时绿线高度为 0,整组显示灰色
+        let doneIdx = -1;
+        for (let i = 0; i < n; i++) {
+            if (group[i].status === 'completed') doneIdx = i;
+        }
+        const doneRatio = (n > 1 && doneIdx >= 0) ? doneIdx / (n - 1) : 0;
         return `
             <div class="lp-timeline-group">
                 <div class="lp-timeline-line lp-line-done" style="height: calc((100% - 92px) * ${doneRatio})"></div>
