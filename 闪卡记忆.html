@@ -5487,6 +5487,131 @@
             -webkit-tap-highlight-color: transparent;
         }
         .level-words-close:active { transform: scale(0.92); }
+        /* ===== 今日学习确认弹窗(Duolingo 风格) ===== */
+        .today-start-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 210;
+            padding: 24px 18px;
+            animation: ngFadeIn 200ms ease;
+        }
+        .today-start-overlay.show { display: flex; }
+        .today-start-card {
+            width: 100%;
+            max-width: 380px;
+            background: var(--surface);
+            border-radius: 28px;
+            padding: 26px 22px 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 44px rgba(0,0,0,0.30);
+            animation: streakCardIn 320ms cubic-bezier(0.2, 0.9, 0.2, 1.1);
+        }
+        .today-start-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 120ms ease;
+        }
+        .today-start-close:active { transform: scale(0.92); }
+        .today-start-emoji {
+            width: 84px;
+            height: 84px;
+            margin: 2px auto 14px;
+            border-radius: 50%;
+            background: linear-gradient(160deg, #d7ffb8 0%, #b6f28a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 6px 0 #9fe26c, 0 10px 22px rgba(88, 204, 2, 0.22);
+        }
+        .today-start-title {
+            font-size: 23px;
+            font-weight: 900;
+            color: var(--dark);
+            letter-spacing: 0.2px;
+        }
+        .today-start-sub {
+            margin-top: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+        .today-start-sub b { color: var(--primary-dark); }
+        .today-start-stats {
+            display: flex;
+            gap: 10px;
+            margin: 18px 0 20px;
+        }
+        .today-start-stat {
+            flex: 1;
+            background: #f4fcec;
+            border: 2px solid #dff5c9;
+            border-radius: 18px;
+            padding: 14px 4px 12px;
+        }
+        .today-start-stat-value {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--primary-dark);
+            line-height: 1.15;
+        }
+        .today-start-stat-label {
+            margin-top: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #7a7a7a;
+        }
+        .today-start-btn {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 16px;
+            background: var(--primary);
+            box-shadow: 0 5px 0 var(--primary-dark);
+            color: #ffffff;
+            font-size: 17px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: transform 80ms ease, box-shadow 80ms ease;
+            -webkit-tap-highlight-color: transparent;
+            font-family: inherit;
+        }
+        .today-start-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 var(--primary-dark);
+        }
+        .today-start-skip {
+            margin-top: 12px;
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 6px 12px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         .level-words-title {
             font-size: 20px;
             font-weight: 900;
@@ -6842,6 +6967,32 @@
                 <div class="level-words-subtitle" id="levelWordsSubtitle">本关共学习 10 个单词</div>
             </div>
             <div class="level-words-list" id="levelWordsList"></div>
+        </div>
+    </div>
+
+    <!-- 今日学习确认弹窗(Duolingo 风格):点击当前关卡时先展示任务概要 -->
+    <div class="today-start-overlay" id="todayStartOverlay">
+        <div class="today-start-card">
+            <button class="today-start-close" onclick="closeTodayStart()" aria-label="关闭">✕</button>
+            <div class="today-start-emoji" id="todayStartEmoji">🎯</div>
+            <div class="today-start-title" id="todayStartTitle">开始今日学习</div>
+            <div class="today-start-sub" id="todayStartSub">今天的任务已完成 <b>0</b> 关</div>
+            <div class="today-start-stats">
+                <div class="today-start-stat">
+                    <div class="today-start-stat-value" id="todayStartWords">20</div>
+                    <div class="today-start-stat-label">今日单词</div>
+                </div>
+                <div class="today-start-stat">
+                    <div class="today-start-stat-value" id="todayStartGroups">5</div>
+                    <div class="today-start-stat-label">学习组数</div>
+                </div>
+                <div class="today-start-stat">
+                    <div class="today-start-stat-value" id="todayStartTime">5</div>
+                    <div class="today-start-stat-label">预计分钟</div>
+                </div>
+            </div>
+            <button class="today-start-btn" onclick="startFromTodayStart()">开始学习</button>
+            <button class="today-start-skip" onclick="closeTodayStart()">等一下再看</button>
         </div>
     </div>
 
@@ -9521,6 +9672,37 @@
         document.getElementById('levelWordsOverlay')?.addEventListener('click', (e) => {
             if (e.target === document.getElementById('levelWordsOverlay')) closeLevelWords();
         });
+        // 点击遮罩区域关闭今日学习确认弹窗
+        document.getElementById('todayStartOverlay')?.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('todayStartOverlay')) closeTodayStart();
+        });
+
+        // ===== 今日学习确认弹窗:展示单词数/组数/预计时间,再进入学习 =====
+        window.openTodayStart = function(day) {
+            SFX.click();
+            const overlay = document.getElementById('todayStartOverlay');
+            if (!overlay) { startLearning(); return; }
+            const goal = getV2DailyGoal() || 20;
+            // 组数估算:首组 4 词,后续每组 5 词
+            const groups = goal <= 4 ? 1 : 1 + Math.ceil((goal - 4) / 5);
+            // 预计时间:每个词约 15 秒,向上取整,最少 3 分钟
+            const minutes = Math.max(3, Math.ceil(goal * 15 / 60));
+            document.getElementById('todayStartWords').textContent = goal;
+            document.getElementById('todayStartGroups').textContent = groups;
+            document.getElementById('todayStartTime').textContent = minutes;
+            overlay.classList.add('show');
+        };
+
+        window.closeTodayStart = function() {
+            const overlay = document.getElementById('todayStartOverlay');
+            if (overlay) overlay.classList.remove('show');
+        };
+
+        window.startFromTodayStart = function() {
+            SFX.click();
+            closeTodayStart();
+            startLearning();
+        };
 
         window.onLearningMapNodeClick = function(day) {
             SFX.click();
@@ -9528,8 +9710,8 @@
             if (level && level.status === 'completed') {
                 openLevelWords(day);
             } else if (level && level.status === 'current') {
-                // 当前关卡（START）：直接进入闪卡学习
-                startLearning();
+                // 当前关卡:先弹确认框展示今日任务概要,点「开始学习」再进入闪卡
+                openTodayStart(day);
             } else {
                 showToast(`Day ${day} 尚未解锁`, 'warning');
             }
