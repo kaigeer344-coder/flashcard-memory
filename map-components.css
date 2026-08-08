@@ -337,6 +337,7 @@
     align-items: center;
     gap: 10px;
     position: relative;
+    min-height: 126px;
 }
 
 /* 当前关卡描边 */
