@@ -120,7 +120,8 @@
 .lp-banner-content {
     position: relative;
     z-index: 2;
-    padding: 14px 20px 16px;
+    /* 右侧预留主视觉素材图空间 */
+    padding: 14px 112px 16px 20px;
 }
 
 .lp-banner-tag {
@@ -171,29 +172,18 @@
     transition: width 500ms ease;
 }
 
-/* Banner 半透明装饰词卡 */
-.lp-banner-deco {
+/* Banner 右侧主视觉素材图(替换原占位装饰卡片) */
+.lp-banner-img {
     position: absolute;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1.5px solid rgba(255, 255, 255, 0.15);
-    z-index: 1;
-}
-
-.lp-banner-deco-1 {
-    width: 70px;
-    height: 90px;
-    right: 18px;
-    top: 12px;
-    transform: rotate(8deg);
-}
-
-.lp-banner-deco-2 {
-    width: 60px;
-    height: 80px;
-    right: 38px;
-    bottom: 10px;
-    transform: rotate(-5deg);
+    right: 14px;
+    bottom: 0;
+    height: 116px;
+    width: auto;
+    max-width: 100px;
+    object-fit: contain;
+    z-index: 2;
+    pointer-events: none;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.18));
 }
 
 /* ===== 时间轴容器：与 Banner 同宽居中，保证左右卡片与 Banner 边缘对齐 ===== */
@@ -491,6 +481,6 @@
         width: 32px;
         height: 32px;
     }
-    .lp-banner-deco-1 { width: 56px; height: 76px; }
-    .lp-banner-deco-2 { width: 48px; height: 66px; }
+    .lp-banner-img { height: 100px; max-width: 86px; right: 10px; }
+    .lp-banner-content { padding-right: 96px; }
 }

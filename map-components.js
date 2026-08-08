@@ -68,8 +68,7 @@
         const progressText = u.progressText || `已完成 ${u.done}/${u.total} ${u.progressLabel || '天'}`;
         return `
             <div class="lp-banner">
-                <div class="lp-banner-deco lp-banner-deco-1"></div>
-                <div class="lp-banner-deco lp-banner-deco-2"></div>
+                <img class="lp-banner-img" src="assets/首页素材.png" alt="" onerror="this.style.display='none'">
                 <div class="lp-banner-content">
                     <div class="lp-banner-tag">${u.tag}</div>
                     <div class="lp-banner-title">${u.title}</div>
