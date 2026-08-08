@@ -9408,17 +9408,12 @@
             }
         }
 
-        // 递增里程碑宝箱关:5,15,30,50,75,105...(间隔 5,10,15,20...递增)
-        // 前几个宝箱来得快(快速建立激励),间隔逐步拉大保证稀缺性
-        // 每 3 个里程碑为一个大宝箱(更高奖励)
+        // 每 7 天一个宝箱关:7,14,21,28...(每周一个宝箱)
+        // 每 3 个宝箱(即每 3 周)为一个大宝箱(更高奖励)
         function getChestLevels(total) {
             const result = [];
-            let k = 1;
-            while (true) {
-                const lv = Math.round(5 * k * (k + 1) / 2);
-                if (lv > total) break;
-                result.push({ level: lv, big: k % 3 === 0 });
-                k++;
+            for (let lv = 7; lv <= total; lv += 7) {
+                result.push({ level: lv, big: (lv / 7) % 3 === 0 });
             }
             return result;
         }
@@ -9734,7 +9729,25 @@
             startLearning();
         };
 
-        // 点击关卡宝箱:已完成关卡可领取金币奖励(普通 60 / 大宝箱 150),防重复领取
+        // 点击关卡宝箱:盲盒奖励——随机开出金币或道具(重置/时间加成/提示),防重复领取
+        // 盲盒概率:大宝箱 50% 道具,普通宝箱 30% 道具;道具在三种道具中随机
+        const BLIND_ITEM_POOL = [
+            { key: 'shuffles', name: '重新洗牌', min: 1, max: 2 },
+            { key: 'timeBonuses', name: '时间加成', min: 1, max: 2 },
+            { key: 'hints', name: '提示道具', min: 1, max: 3 }
+        ];
+        function rollBlindBoxReward(isBig) {
+            const isItem = Math.random() < (isBig ? 0.5 : 0.3);
+            if (isItem) {
+                const it = BLIND_ITEM_POOL[Math.floor(Math.random() * BLIND_ITEM_POOL.length)];
+                const n = it.min + Math.floor(Math.random() * (it.max - it.min + 1));
+                return { type: 'item', key: it.key, name: it.name, count: n };
+            }
+            const min = isBig ? 100 : 30;
+            const max = isBig ? 300 : 120;
+            const coins = min + Math.floor(Math.random() * (max - min + 1));
+            return { type: 'coins', count: coins };
+        }
         window.onLevelChestClick = function(day) {
             SFX.click();
             const level = _currentMapLevels.find(l => l.day === day);
@@ -9752,21 +9765,42 @@
                 showToast('宝箱已领取', 'info');
                 return;
             }
-            const coins = level.chestBig ? 150 : 60;
+            // 开盲盒:随机金币或道具
+            const reward = rollBlindBoxReward(level.chestBig);
+            let rewardText = '';
             try {
-                progress.coins = (progress.coins || 0) + coins;
+                if (reward.type === 'coins') {
+                    progress.coins = (progress.coins || 0) + reward.count;
+                    rewardText = `金币 ×${reward.count}`;
+                } else {
+                    progress[reward.key] = (progress[reward.key] || 0) + reward.count;
+                    rewardText = `道具「${reward.name}」×${reward.count}`;
+                }
                 saveProgress();
                 renderHeaderStats();
             } catch (e) {}
             claimed[day] = true;
             try { localStorage.setItem('wordmatch_chest_claimed', JSON.stringify(claimed)); } catch (e) {}
-            SFX.coin();
-            showToast(level.chestBig ? `🎁 大宝箱 +${coins} 金币！` : `🎁 宝箱 +${coins} 金币！`, 'success');
+            if (reward.type === 'coins') { SFX.coin(); }
+            else { SFX.correct(); }
+            showToast(`🎁 ${level.chestBig ? '大宝箱' : '宝箱'}盲盒开出：${rewardText}！`, 'success');
             // 就地更新宝箱为已领取态,不整页重绘
-            const badge = document.querySelector(`.lp-day-chest[data-day="${day}"]`);
+            const badge = document.querySelector(`.gm-node-chest[data-day="${day}"]`) || document.querySelector(`.lp-day-chest[data-day="${day}"]`);
             if (badge) {
-                badge.classList.remove('lp-chest-claimable');
-                badge.classList.add('lp-chest-claimed');
+                badge.classList.remove('gm-chest-claimable', 'lp-chest-claimable');
+                badge.classList.add('gm-chest-claimed', 'lp-chest-claimed');
+            }
+            // 道具数量变化时同步刷新地图顶部统计条
+            if (reward.type === 'item') {
+                const sb = document.querySelector('.lp-scroll .lp-statsbar');
+                if (sb && window.renderStatsBar) {
+                    sb.outerHTML = window.renderStatsBar({
+                        words: getTodayTaskEstimate() || 0,
+                        reset: progress.shuffles || 0,
+                        hourglass: progress.timeBonuses || 0,
+                        hint: progress.hints || 0
+                    });
+                }
             }
         };
         // 横幅卡右侧「学习清单」按钮
