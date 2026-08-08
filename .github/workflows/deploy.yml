@@ -27,14 +27,11 @@ jobs:
           TCB_ENV_ID: ${{ secrets.TCB_ENV_ID }}
         run: tcb login --cloudbase-api-key "$TCB_API_KEY" -e "$TCB_ENV_ID"
 
-      # 准备只含网站文件的临时目录，避免上传 .git / .github
+      # 复制整站文件(排除 .git/.github),应用依赖 data/ css/ js/ 与根组件文件
       - name: 准备部署目录
         run: |
-          mkdir -p _deploy/assets _deploy/data
-          cp index.html _deploy/
-          cp 闪卡记忆.html _deploy/
-          cp -r assets/* _deploy/assets/
-          cp -r data/* _deploy/data/
+          mkdir -p _deploy
+          rsync -a --exclude .git --exclude .github ./ _deploy/
 
       - name: 部署静态网站
         env:
