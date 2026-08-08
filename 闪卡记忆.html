@@ -7648,6 +7648,8 @@
         };
 
         // Game State
+        // 学习分组统一:每组固定 5 词(闪卡学习分组/弹窗组数/进度显示共用此口径)
+        const GROUP_WORDS = 5;
         let state = {
             level: 'cet4',
             dailyNewWords: 10,
@@ -9440,6 +9442,18 @@
 
             const settings = LearningSystem.getSettings();
             const mode = settings.mode || 'free';
+            // 学习词库与地图词库同步:闪卡学习 buildTodayQueue(state.level)
+            // 必须与地图显示的词库一致,避免"地图是六级,学习却抽四级词"
+            const mapBookId = (mode === 'sprint')
+                ? ((LearningSystem.getActivePlan() && LearningSystem.getActivePlan().type) || settings.activeBookId || 'cet4')
+                : (settings.activeBookId || 'cet4');
+            if (mapBookId !== state.level) {
+                state.level = mapBookId;
+                state.todayQueue = [];
+                state.completedToday.clear();
+                state.todayTaskTotal = 0;
+                state.todayTaskStarted = false;
+            }
             const bookNames = { cet4: '四级', cet6: '六级', kaoyan: '考研', ielts: '雅思', toefl: '托福' };
             const stats = LearningSystem.getGlobalStats();
             const meta = _safeGetTodayMeta();
@@ -9541,9 +9555,8 @@
             _currentMapLevels = levels;
             window._currentMapLevels = levels; // 供 game-map-components 窗口缩放时重渲染
 
-            // 今日单词与设定的每日目标同步;无计划数据时回退到设定目标(冲刺=计划每日新词,自由=每日目标)
-            const todayWords = (meta.newWordsToday || 0)
-                || (mode === 'sprint'
+            // 今日单词与闪卡学习队列同口径(新词配额+复习+遗忘),避免地图/弹窗/闪卡三处数字不一致
+            const todayWords = getTodayTaskEstimate() || (mode === 'sprint'
                     ? ((LearningSystem.getActivePlan() && LearningSystem.getActivePlan().dailyNewWords) || 0)
                     : (settings.dailyTarget || 20));
             root.innerHTML = renderLearningMapPage({
@@ -9678,16 +9691,20 @@
         });
 
         // ===== 今日学习确认弹窗:展示单词数/组数/预计时间,再进入学习 =====
+        // 数据与实际学习队列同源(先预构建今日队列),保证弹窗与闪卡页组数一致
         window.openTodayStart = function(day) {
             SFX.click();
             const overlay = document.getElementById('todayStartOverlay');
             if (!overlay) { startLearning(); return; }
-            const goal = getV2DailyGoal() || 20;
-            // 组数估算:首组 4 词,后续每组 5 词
-            const groups = goal <= 4 ? 1 : 1 + Math.ceil((goal - 4) / 5);
+            if (!state.todayTaskStarted || state.todayQueue.length === 0) {
+                buildTodayQueue(state.level);
+            }
+            const total = state.todayTaskTotal || getV2DailyGoal() || 20;
+            // 组数 = 总词数 / 每组固定 5 词,与闪卡页 renderLearningProgress 一致
+            const groups = Math.max(1, Math.ceil(total / GROUP_WORDS));
             // 预计时间:每个词约 15 秒,向上取整,最少 3 分钟
-            const minutes = Math.max(3, Math.ceil(goal * 15 / 60));
-            document.getElementById('todayStartWords').textContent = goal;
+            const minutes = Math.max(3, Math.ceil(total * 15 / 60));
+            document.getElementById('todayStartWords').textContent = total;
             document.getElementById('todayStartGroups').textContent = groups;
             document.getElementById('todayStartTime').textContent = minutes;
             overlay.classList.add('show');
@@ -11360,6 +11377,20 @@
             return state.dailyNewWords;
         }
 
+        // 今日任务总词数估算(新词配额 + 到期复习 + 遗忘词),与 buildTodayQueue 同口径。
+        // 地图统计条/弹窗/闪卡进度共用,保证三处数字一致。
+        function getTodayTaskEstimate() {
+            try {
+                const stats = MemorySystem.getLearningStats(state.level);
+                const goal = getV2DailyGoal() || 20;
+                const newQuota = Math.min(goal, stats.new || 0);
+                const review = (stats.dueForReview || 0) + (stats.lapsed || 0);
+                return newQuota + review;
+            } catch (e) {
+                return getV2DailyGoal() || 20;
+            }
+        }
+
         function buildTodayQueue(level) {
             const words = MemorySystem.getAllWords(level);
             const now = Date.now();
@@ -11540,8 +11571,8 @@
             }
             updateTodayProgressHeader();
 
-            // 微组大小：首组 4 个，后续组 5 个（含重学词）
-            const microBatchSize = state.currentGroupIndex === 0 ? 4 : 5;
+            // 微组大小：每组固定 5 个单词（含重学词）
+            const microBatchSize = GROUP_WORDS;
             const now = Date.now();
             const group = [];
             const usedIds = new Set();
@@ -11588,10 +11619,11 @@
 
         function renderLearningProgress() {
             const container = document.getElementById('learningProgress');
-            const groupTotal = state.currentGroupWords.length || state.wordsPerRound;
+            const groupTotal = state.currentGroupWords.length || GROUP_WORDS;
             const groupCompleted = state.groupWordIndex + 1;
             const pct = groupTotal > 0 ? Math.max(0, Math.min(100, Math.round((groupCompleted / groupTotal) * 100))) : 0;
-            const totalGroups = Math.ceil(state.todayTaskTotal / state.wordsPerRound) || 1;
+            // 组数 = 今日总词数 / 每组固定 5 词,与弹窗/地图口径一致
+            const totalGroups = Math.ceil(state.todayTaskTotal / GROUP_WORDS) || 1;
             const currentGroup = Math.min(state.currentGroupIndex + 1, totalGroups);
             container.innerHTML = `
                 <div class="learning-progress-info">第 ${currentGroup} 组(共${totalGroups}组) · ${groupCompleted}/${groupTotal}</div>
