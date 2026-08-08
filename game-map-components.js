@@ -1,5 +1,5 @@
 // ===== 闪卡记忆 - 手游式 S 型纵向关卡地图组件 =====
-// 组件: LessonMap / LevelNode / PathDots / MascotDecoration
+// 组件: LessonMap / LevelNode / PathDots
 //
 // 布局公式:
 //   y(px) = START_Y + index * ROW_GAP
@@ -30,11 +30,8 @@
         lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`,
         check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 18 19 6.5"/></svg>`,
         star: `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>`,
-        pencil: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>`,
         chest: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="18" height="11" rx="2"/><path d="M4 10 5.5 6a7 7 0 0 1 13 0L20 10"/><path d="M3 15h18"/><rect x="10.5" y="13.5" width="3" height="3" rx="0.6"/></svg>`
     };
-
-    const MASCOT_IMG = 'assets/characters/cici-mascot.png';
 
     // ===== 状态归一化(兼容旧数据 current→active) =====
     function normalizeStatus(status) {
@@ -68,22 +65,6 @@
             html += `<span class="gm-dot" style="left:${x.toFixed(1)}%;top:${Math.round(y)}px;"></span>`;
         }
         return html;
-    }
-
-    // ===== MascotDecoration: 装饰性 IP 插画,绝对定位,不参与布局 =====
-    // cfg: { index, side:'left'|'right', icon, img, offsetX, offsetY }
-    function MascotDecoration(cfg, geom) {
-        const g = geom[cfg.index];
-        if (!g) return '';
-        const dir = cfg.side === 'left' ? -1 : 1;
-        const x = g.x + dir * (cfg.offsetX || 0);
-        const y = g.y + (cfg.offsetY || 0);
-        const badge = cfg.icon && GM_ICONS[cfg.icon] ? `<span class="gm-mascot-badge">${GM_ICONS[cfg.icon]}</span>` : '';
-        return `
-            <div class="gm-mascot" style="left:${x.toFixed(1)}%;top:${Math.round(y)}px;" aria-hidden="true">
-                <img class="gm-mascot-img" src="${cfg.img || MASCOT_IMG}" alt="" onerror="this.style.display='none'">
-                ${badge}
-            </div>`;
     }
 
     // ===== LevelNode: 单个圆形关卡按钮 =====
@@ -127,20 +108,9 @@
             </div>`;
     }
 
-    // ===== 默认 IP 装饰占位 =====
-    // 第三个关卡左侧:拿铅笔的 IP / 最后两个关卡右侧:戴耳机的 IP
-    function defaultDecorations(count) {
-        const deco = [];
-        if (count >= 3) deco.push({ index: 2, side: 'left', icon: 'pencil', offsetX: 32, offsetY: -34 });
-        if (count >= 13) deco.push({ index: 12, side: 'right', icon: 'headphone', offsetX: 32, offsetY: 14 });
-        if (count >= 14) deco.push({ index: 13, side: 'right', icon: 'headphone', offsetX: 32, offsetY: -40 });
-        return deco;
-    }
-
-    // ===== LessonMap: 地图容器,渲染全部节点/引导点/装饰 =====
+    // ===== LessonMap: 地图容器,渲染全部节点/引导点 =====
     function LessonMap(levels, opts) {
         const items = (levels && levels.length) ? levels : window.getDefaultLevels();
-        const o = opts || {};
         const geom = computeGeom(items);
 
         // 路线引导小圆点:每两关之间 4 个
@@ -148,10 +118,6 @@
         for (let i = 0; i < items.length - 1; i++) {
             dots += PathDots(geom[i], geom[i + 1], 4);
         }
-
-        // IP 装饰层
-        const decos = o.decorations || defaultDecorations(items.length);
-        const decoHtml = decos.map(d => MascotDecoration(d, geom)).join('');
 
         // 节点层
         const nodeHtml = items.map((lv, i) => LevelNode(lv, geom[i], i)).join('');
@@ -167,7 +133,6 @@
         return `
             <div class="gm-map" style="height:${height}px;--gm-node-d:${C.NODE_D}px;width:calc(100% - ${C.EDGE * 2}px);margin-left:${pad}px;margin-right:${pad}px;">
                 ${dots}
-                ${decoHtml}
                 ${nodeHtml}
             </div>`;
     }

@@ -221,44 +221,10 @@
     box-shadow: none;
 }
 
-/* ===== IP 角色装饰层: 绝对定位, 不参与布局, 不影响节点 ===== */
-.gm-mascot {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.gm-mascot-img {
-    width: 74px;
-    height: auto;
-    display: block;
-    filter: drop-shadow(0 6px 12px rgba(88, 204, 2, 0.25));
-}
-.gm-mascot-badge {
-    position: absolute;
-    right: -2px;
-    bottom: -2px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #FFFFFF;
-    border: 2px solid var(--lp-green);
-    color: var(--lp-green);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-}
-.gm-mascot-badge svg { width: 15px; height: 15px; }
-
 /* ===== 响应式: 小屏节点微缩 ===== */
 @media (max-width: 360px) {
     :root { --gm-node-d: 88px; }
     .gm-node-icon svg { width: 36px; height: 36px; }
-    .gm-mascot-img { width: 64px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
