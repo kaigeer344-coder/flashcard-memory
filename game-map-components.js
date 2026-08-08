@@ -81,9 +81,12 @@
         const iconSvg = status === 'locked' ? GM_ICONS.lock : icon;
 
         // 已完成关卡:按钮内容替换为「已通过」素材图,不再显示文字图标
+        // 当天学习关卡(active):按钮内容替换为「选中」素材图
         const innerIcon = status === 'completed'
             ? `<img class="gm-node-pass-img" src="assets/home/已通过.png" alt="已通过">`
-            : `<span class="gm-node-icon">${iconSvg}</span>`;
+            : (status === 'active'
+                ? `<img class="gm-node-active-img" src="assets/home/选中.png" alt="今日学习">`
+                : `<span class="gm-node-icon">${iconSvg}</span>`);
 
         // 已完成关卡显示星星(学习质量)
         let starsHtml = '';

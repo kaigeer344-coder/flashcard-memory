@@ -99,11 +99,20 @@
 }
 
 /* ===== 状态 1: active 当前关卡 =====
-   多邻国实心绿: 绿色渐变 + 底部深绿硬阴影 + 内阴影立体感 + 呼吸光圈 */
+   按钮内容替换为「选中」素材图:圆形裁剪铺满,保留白色描边与深绿硬阴影 */
 .gm-node-active .gm-node-btn {
     background: linear-gradient(180deg, #7EE23F 0%, #58CC02 55%, #46A302 100%);
     border-color: #FFFFFF;
     box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.12), 0 6px 0 #3E9300, 0 12px 26px rgba(88, 204, 2, 0.4);
+    overflow: hidden;
+    padding: 0;
+}
+.gm-node-active .gm-node-active-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
 }
 .gm-node-active .gm-node-icon { color: #FFFFFF; }
 .gm-node-active::before {
