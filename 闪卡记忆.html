@@ -6465,7 +6465,6 @@
                 <div class="game-header-timer-fill" id="gameHeaderTimerFill"></div>
             </div>
             <div class="header-actions">
-                <div class="stat-item stat-new-words" id="headerNewWords"><img class="header-stat-icon" src="assets/generated-icons/daily-words.png" alt="">10</div>
             </div>
         </div>
 
@@ -11502,10 +11501,6 @@
         }
 
         function renderHeaderStats() {
-            // 刷新顶部新词数显示
-            const newWordsEl = document.getElementById('headerNewWords');
-            if (newWordsEl) newWordsEl.innerHTML = `${iconImg('dailyWords', 'header-stat-icon')}${getV2DailyGoal()}`;
-
             // 若我的/设置页打开，也刷新
             const profileScreen = document.getElementById('profileScreen');
             if (profileScreen && profileScreen.classList.contains('active')) {
