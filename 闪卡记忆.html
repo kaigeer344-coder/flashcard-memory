@@ -9263,8 +9263,19 @@
 
             _currentMapLevels = levels;
 
+            // 今日单词与设定的每日目标同步;无计划数据时回退到设定目标(冲刺=计划每日新词,自由=每日目标)
+            const todayWords = (meta.newWordsToday || 0)
+                || (mode === 'sprint'
+                    ? ((LearningSystem.getActivePlan() && LearningSystem.getActivePlan().dailyNewWords) || 0)
+                    : (settings.dailyTarget || 20));
             root.innerHTML = renderLearningMapPage({
-                stats: { words: meta.newWordsToday || 0, reset: 1, hourglass: 570, hint: 24 },
+                // 道具库存与游戏内/个人中心同源(progress 对象),不再硬编码
+                stats: {
+                    words: todayWords,
+                    reset: progress.shuffles || 0,
+                    hourglass: progress.timeBonuses || 0,
+                    hint: progress.hints || 0
+                },
                 unit,
                 tip: '跟着 Cici 每天 10 分钟，轻松拿下核心词！',
                 levels
@@ -13395,6 +13406,18 @@
                 _safeSet(_dailyPlanKey(roleId, dateStr), plan);
             }
 
+            // 判断已保存的今日计划是否与当前设置一致(词书/每日目标/冲刺计划),
+            // 一致时复用其计数,保证"今日单词/新词/复习"与设定目标同步、跨刷新不漂移
+            function _sameDailyPlanParams(plan) {
+                if (!plan) return false;
+                if (plan.mode !== _settings.mode) return false;
+                if (_settings.mode === 'sprint') {
+                    return !!plan.planId && plan.planId === _settings.activeRoleId;
+                }
+                return plan.bookId === (_settings.activeBookId || 'cet4')
+                    && plan.dailyTarget === (_settings.dailyTarget || 20);
+            }
+
             // ---------- 迁移脚本 V2.0 ----------
             function _migrate() {
                 const version = localStorage.getItem(VERSION_KEY);
@@ -13485,7 +13508,16 @@
 
                 updateSettings(patch) {
                     if (!_settings) this.load();
+                    const prev = _settings;
+                    const targetChanged = patch.dailyTarget !== undefined && Number(patch.dailyTarget) !== Number(prev.dailyTarget);
+                    const bookChanged = patch.activeBookId !== undefined && patch.activeBookId !== prev.activeBookId;
+                    const modeChanged = patch.mode !== undefined && patch.mode !== prev.mode;
                     _settings = Object.assign({}, _settings, patch);
+                    if (targetChanged || bookChanged || modeChanged) {
+                        // 学习目标/词书/模式变化时,今日计划需重新生成,立即与设定目标同步
+                        _todayPlanCache = null;
+                        _todayPlanCacheDate = null;
+                    }
                     _saveSettings();
                     return this.getSettings();
                 },
@@ -13780,25 +13812,39 @@
                         meta.reviewWordsToday = reviews.length;
                         meta.dailyTarget = dailyTarget;
                     }
-                    _todayPlanCache = queue;
+                    // 今日计划已在当天生成且参数未变(词书/每日目标/冲刺计划):
+                    // 复用其计数,保证"今日单词/新词/复习"与设定目标一致、跨刷新不漂移
+                    const roleId = _settings.activeRoleId || `free_${_settings.activeBookId}`;
+                    const saved = _loadDailyPlan(roleId, today);
+                    const paramsChanged = !_sameDailyPlanParams(saved);
+                    if (!paramsChanged) {
+                        meta.newWordsToday = saved.newWordsToday || 0;
+                        meta.reviewWordsToday = saved.reviewWordsToday || 0;
+                    }
+                    // 缓存 {queue, meta} 结构(旧版只缓存了 queue 数组,导致二次读取时 meta 丢失、显示为 0)
+                    _todayPlanCache = { queue, meta };
                     _todayPlanCacheDate = today;
-                    // 持久化今日计划
-                    if (_settings.mode) {
-                        const roleId = _settings.activeRoleId || `free_${_settings.activeBookId}`;
-                        const existing = _loadDailyPlan(roleId, today);
-                        if (!existing) {
-                            _saveDailyPlan(roleId, today, {
-                                roleId: roleId,
-                                date: today,
-                                status: 'in_progress',
-                                queue: queue.map(w => ({ wordId: w.wordId, en: w.en, type: w.type, priority: w.priority, completed: false, result: null })),
-                                newWordsToday: meta.newWordsToday || 0,
-                                reviewWordsToday: meta.reviewWordsToday || 0,
-                                completedCount: 0,
-                                startedAt: Date.now(),
-                                completedAt: null
-                            });
-                        }
+                    // 持久化今日计划:首次生成或参数变化时覆盖(新目标当日立即生效),
+                    // 参数未变时保留已保存的完成进度;无计划(如冲刺未创建)时不保存
+                    if (_settings.mode && !meta.error) {
+                        const planQueue = (!paramsChanged && saved && Array.isArray(saved.queue) && saved.queue.length)
+                            ? saved.queue
+                            : queue.map(w => ({ wordId: w.wordId, en: w.en, type: w.type, priority: w.priority, completed: false, result: null }));
+                        _saveDailyPlan(roleId, today, {
+                            roleId: roleId,
+                            date: today,
+                            status: (saved && saved.status) || 'in_progress',
+                            queue: planQueue,
+                            newWordsToday: meta.newWordsToday || 0,
+                            reviewWordsToday: meta.reviewWordsToday || 0,
+                            completedCount: (saved && saved.completedCount) || 0,
+                            startedAt: (saved && saved.startedAt) || Date.now(),
+                            completedAt: (saved && saved.completedAt) || null,
+                            mode: _settings.mode,
+                            bookId: _settings.mode === 'free' ? (_settings.activeBookId || 'cet4') : undefined,
+                            dailyTarget: _settings.mode === 'free' ? (_settings.dailyTarget || 20) : undefined,
+                            planId: _settings.mode === 'sprint' ? (_settings.activeRoleId || undefined) : undefined
+                        });
                     }
                     return { queue, meta };
                 },
