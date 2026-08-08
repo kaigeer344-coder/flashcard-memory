@@ -9467,7 +9467,8 @@
                 for (let i = 1; i <= totalDays; i++) {
                     let status = 'locked';
                     if (completedDays.includes(i)) status = 'completed';
-                    else if (i === currentDay) status = 'current';
+                    // 当日关卡:今日学习全部完成后直接视为已通过,与其他完成关卡一致
+                    else if (i === currentDay) status = isTodayTaskComplete() ? 'completed' : 'current';
                     const done = status === 'completed';
                     const cur = status === 'current';
                     const learned = done ? perLevel : (cur ? countLevelLearned(i, perLevel) : 0);
@@ -9510,7 +9511,8 @@
                 for (let i = 1; i <= totalLevels; i++) {
                     let status = 'locked';
                     if (allDone || i < currentLevel) status = 'completed';
-                    else if (i === currentLevel) status = 'current';
+                    // 当日关卡:今日学习全部完成后直接视为已通过,与其他完成关卡一致
+                    else if (i === currentLevel) status = isTodayTaskComplete() ? 'completed' : 'current';
                     const done = status === 'completed';
                     const cur = status === 'current';
                     const learned = done ? dailyTarget : (cur ? countLevelLearned(i, dailyTarget) : 0);
