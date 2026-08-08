@@ -7038,17 +7038,11 @@
             <div class="shop-balance">
                 <div class="shop-balance-item">
                     <div class="shop-balance-value" id="shopCoins">0</div>
-                    金币 <img class="shop-balance-icon" src="assets/generated-icons/coin.png" alt="">
-                </div>
-                <div class="shop-balance-item">
-                    <div class="shop-balance-value" id="shopGems">0</div>
-                    宝石 <img class="shop-balance-icon" src="assets/generated-icons/gem.png" alt="">
+                    金币 <img class="shop-balance-icon" src="assets/home/金币.png" alt="">
                 </div>
             </div>
             <div class="shop-section-label">游戏道具</div>
             <div id="shopItemsList"></div>
-            <div class="shop-section-label" style="margin-top: 14px;">货币兑换</div>
-            <div id="shopExchangeList"></div>
         </div>
     </div>
 
@@ -7733,6 +7727,11 @@
             shuffle: 'assets/generated-icons/item-shuffle.png',
             coin: 'assets/generated-icons/coin.png',
             gem: 'assets/generated-icons/gem.png',
+            // 商店专用图标:统一使用个人主页同款素材
+            shopCoin: 'assets/home/金币.png',
+            shopHint: 'assets/home/提示.png',
+            shopTimeBonus: 'assets/home/延时.png',
+            shopShuffle: 'assets/home/重置.png',
             onboardGraduation: 'assets/generated-icons/onboard-graduation.png',
             achievement: 'assets/generated-icons/achievement-trophy.png',
             streakFlame: 'assets/generated-icons/streak-flame.png',
@@ -7852,13 +7851,9 @@
 
         // ===== 商店 =====
         const SHOP_ITEMS = [
-            { id: 'hints', icon: 'hint', name: '提示道具', desc: '配对游戏中高亮一对可配对的卡片', price: 10, currency: 'coins' },
-            { id: 'timeBonuses', icon: 'timeBonus', name: '时间加成', desc: '增加 10 秒倒计时', price: 15, currency: 'coins' },
-            { id: 'shuffles', icon: 'shuffle', name: '重新洗牌', desc: '重新打乱所有未配对的卡片', price: 8, currency: 'coins' }
-        ];
-        const SHOP_EXCHANGES = [
-            { id: 'coins2gems', icon: 'gem', name: '金币换宝石', desc: '100 金币 → 1 宝石', price: 100, currency: 'coins', give: { gems: 1 } },
-            { id: 'gems2coins', icon: 'coin', name: '宝石换金币', desc: '1 宝石 → 50 金币', price: 1, currency: 'gems', give: { coins: 50 } }
+            { id: 'hints', icon: 'shopHint', name: '提示道具', desc: '配对游戏中高亮一对可配对的卡片', price: 10, currency: 'coins' },
+            { id: 'timeBonuses', icon: 'shopTimeBonus', name: '时间加成', desc: '增加 10 秒倒计时', price: 15, currency: 'coins' },
+            { id: 'shuffles', icon: 'shopShuffle', name: '重新洗牌', desc: '重新打乱所有未配对的卡片', price: 8, currency: 'coins' }
         ];
 
         function openShop() {
@@ -7874,7 +7869,6 @@
 
         function renderShop() {
             document.getElementById('shopCoins').textContent = progress.coins;
-            document.getElementById('shopGems').textContent = progress.gems;
 
             const itemsList = document.getElementById('shopItemsList');
             itemsList.innerHTML = SHOP_ITEMS.map(item => {
@@ -7889,24 +7883,7 @@
                             <div class="shop-item-count">拥有 ${count}</div>
                         </div>
                         <button class="shop-buy-btn ${item.currency}" ${canAfford ? '' : 'disabled'} onclick="buyShopItem('${item.id}')">
-                            ${item.price} ${iconImg(item.currency === 'coins' ? 'coin' : 'gem', 'shop-price-icon')}
-                        </button>
-                    </div>
-                `;
-            }).join('');
-
-            const exchangeList = document.getElementById('shopExchangeList');
-            exchangeList.innerHTML = SHOP_EXCHANGES.map(ex => {
-                const canAfford = progress[ex.currency] >= ex.price;
-                return `
-                    <div class="shop-item">
-                        <div class="shop-item-icon">${iconImg(ex.icon, 'shop-item-img')}</div>
-                        <div class="shop-item-info">
-                            <div class="shop-item-name">${ex.name}</div>
-                            <div class="shop-item-desc">${ex.desc}</div>
-                        </div>
-                        <button class="shop-buy-btn ${ex.currency}" ${canAfford ? '' : 'disabled'} onclick="buyExchange('${ex.id}')">
-                            兑换
+                            ${item.price} ${iconImg('shopCoin', 'shop-price-icon')}
                         </button>
                     </div>
                 `;
@@ -7945,23 +7922,6 @@
             SFX.coin();
             shopToast(`购买成功！${item.name} +1`);
             renderProfileScreen();
-        }
-
-        function buyExchange(exId) {
-            const ex = SHOP_EXCHANGES.find(e => e.id === exId);
-            if (!ex) return;
-            if (progress[ex.currency] < ex.price) {
-                shopToast('余额不足');
-                return;
-            }
-            progress[ex.currency] -= ex.price;
-            if (ex.give.coins) progress.coins += ex.give.coins;
-            if (ex.give.gems) progress.gems += ex.give.gems;
-            saveProgress();
-            SFX.coin();
-            shopToast('兑换成功！');
-            renderShop();
-            renderSettingsScreen();
         }
 
         let shopToastTimer = null;
