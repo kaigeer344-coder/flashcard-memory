@@ -1736,6 +1736,8 @@
 }
 .hp-nav-item:active { transform: scale(0.94); opacity: 0.8; }
 .hp-nav-item svg { width: 24px; height: 24px; }
+.hp-nav-item .hp-nav-icon { width: 24px; height: 24px; object-fit: contain; filter: grayscale(1); opacity: 0.55; transition: filter 160ms ease, opacity 160ms ease; }
+.hp-nav-item.active .hp-nav-icon { filter: none; opacity: 1; }
 .hp-nav-item.active { color: var(--hp-green); }
 .hp-nav-item.active::after {
     content: '';

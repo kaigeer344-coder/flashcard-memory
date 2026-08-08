@@ -475,16 +475,16 @@
     // ===== BottomNavigation 底部导航栏 =====
     window.renderBottomNavigation = function(activeTab) {
         const tabs = [
-            { id: 'home', label: '首页', icon: TASK_ICON_SVGS.home },
-            { id: 'wordbook', label: '单词本', icon: TASK_ICON_SVGS.wordbook },
-            { id: 'stats', label: '任务', icon: TASK_ICON_SVGS.target },
-            { id: 'profile', label: '我的', icon: TASK_ICON_SVGS.profile }
+            { id: 'home', label: '首页', icon: 'assets/home/首页.png' },
+            { id: 'wordbook', label: '单词本', icon: 'assets/home/词库.png' },
+            { id: 'stats', label: '任务', icon: 'assets/home/任务.png' },
+            { id: 'profile', label: '我的', icon: 'assets/home/个人中心.png' }
         ];
         return `
             <nav class="hp-bottom-nav" id="hpBottomNav">
                 ${tabs.map(t => `
                     <button class="hp-nav-item ${t.id === activeTab ? 'active' : ''}" data-tab="${t.id}" onclick="switchTab('${t.id}')">
-                        ${t.icon}
+                        <img class="hp-nav-icon" src="${t.icon}" alt="${t.label}" loading="lazy" onerror="this.style.display='none'">
                         <span class="hp-nav-label">${t.label}</span>
                     </button>
                 `).join('')}
