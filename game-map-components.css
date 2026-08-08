@@ -1,0 +1,271 @@
+/* ===== 闪卡记忆 - 手游式 S 型关卡地图样式 =====
+   设计: 白/极浅绿背景, 绿主色, 大圆角, soft shadow, 轻微渐变, 游戏化年轻化 */
+
+:root {
+    --gm-node-d: 92px;   /* 关卡圆形按钮直径 88~96px */
+}
+
+/* ===== 地图容器: 浅绿渐变卡, 圆角 + soft shadow ===== */
+.gm-map {
+    position: relative;
+    margin: 20px auto 0;
+    width: calc(100% - 32px);   /* 与 Banner 同宽居中 */
+    box-sizing: border-box;
+    border-radius: 28px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F6FBE7 55%, #EAF6D9 100%);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+/* 背景装饰光斑(浅绿色径向渐变, 游戏地图氛围) */
+.gm-map::before,
+.gm-map::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+.gm-map::before {
+    width: 240px; height: 240px;
+    top: 140px; left: -110px;
+    background: radial-gradient(circle, rgba(137, 226, 25, 0.16) 0%, rgba(137, 226, 25, 0) 70%);
+}
+.gm-map::after {
+    width: 280px; height: 280px;
+    bottom: 100px; right: -130px;
+    background: radial-gradient(circle, rgba(137, 226, 25, 0.13) 0%, rgba(137, 226, 25, 0) 70%);
+}
+
+/* ===== 路线引导小圆点: 浅绿色, 沿贝塞尔曲线分布 ===== */
+.gm-dot {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #C3E89F;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    box-shadow: 0 1px 3px rgba(88, 204, 2, 0.15);
+}
+
+/* ===== 关卡节点: 绝对定位, 节点中心对齐坐标点 ===== */
+.gm-node {
+    position: absolute;
+    width: var(--gm-node-d);
+    height: var(--gm-node-d);
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.gm-node-btn {
+    position: absolute;
+    inset: 0;
+    border: none;
+    border-radius: 50%;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+    background: transparent;
+    font: inherit;
+}
+.gm-node-btn:active { transform: scale(0.93); }
+.gm-node-btn:focus-visible {
+    outline: 3px solid rgba(88, 204, 2, 0.55);
+    outline-offset: 3px;
+}
+
+.gm-node-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.gm-node-icon svg {
+    width: 40px;
+    height: 40px;
+    display: block;
+}
+
+/* 完成勾徽章(右上角绿色圆) */
+.gm-node-check {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 27px;
+    height: 27px;
+    border-radius: 50%;
+    background: var(--lp-green);
+    border: 2px solid #FFFFFF;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(88, 204, 2, 0.4);
+    pointer-events: none;
+}
+.gm-node-check svg { width: 14px; height: 14px; }
+
+/* ===== 状态 1: active 当前关卡 =====
+   绿色渐变按钮 + 白色 icon + 明显阴影 + 呼吸光圈 */
+.gm-node-active .gm-node-btn {
+    background: linear-gradient(180deg, #7EE23F 0%, #58CC02 60%, #46A302 100%);
+    box-shadow: 0 5px 0 #3E9300, 0 12px 26px rgba(88, 204, 2, 0.4);
+}
+.gm-node-active .gm-node-icon { color: #FFFFFF; }
+.gm-node-active::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    background: rgba(88, 204, 2, 0.16);
+    animation: gmPulse 2.2s ease-out infinite;
+    z-index: -1;
+}
+@keyframes gmPulse {
+    0%   { transform: scale(0.85); opacity: 1; }
+    70%  { transform: scale(1.18); opacity: 0; }
+    100% { transform: scale(1.18); opacity: 0; }
+}
+
+/* ===== 状态 2: available 可挑战 =====
+   白色按钮 + 灰色 icon + 浅绿色阴影 */
+.gm-node-available .gm-node-btn {
+    background: #FFFFFF;
+    border: 2px solid #E9F3DA;
+    box-shadow: 0 4px 0 #E2F2CC, 0 8px 18px rgba(137, 226, 25, 0.18);
+}
+.gm-node-available .gm-node-icon { color: #B8BCC2; }
+
+/* ===== 状态 3: locked 未解锁 =====
+   降低透明度 + 灰色 icon */
+.gm-node-locked { opacity: 0.55; }
+.gm-node-locked .gm-node-btn {
+    background: #FFFFFF;
+    border: 2px dashed #DDE1E4;
+    box-shadow: none;
+}
+.gm-node-locked .gm-node-icon { color: #B8BCC2; }
+
+/* ===== 状态 4: completed 已完成 =====
+   绿色描边 + 完成标记 + 绿色 icon */
+.gm-node-completed .gm-node-btn {
+    background: #FFFFFF;
+    border: 3px solid var(--lp-green);
+    box-shadow: 0 4px 0 #D9F2BE, 0 8px 18px rgba(88, 204, 2, 0.14);
+}
+.gm-node-completed .gm-node-icon { color: var(--lp-green); }
+
+/* ===== 关卡标签与星星 ===== */
+.gm-node-label {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--lp-text);
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+    pointer-events: none;
+}
+.gm-node-locked .gm-node-label { color: var(--lp-text-weak); }
+
+.gm-node-stars {
+    position: absolute;
+    top: calc(100% + 26px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1px;
+    color: #FFC800;
+    pointer-events: none;
+}
+.gm-node-stars svg { width: 11px; height: 11px; display: block; }
+
+/* ===== 宝箱奖励徽章 ===== */
+.gm-node-chest {
+    position: absolute;
+    top: -12px;
+    right: -10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid #FFFFFF;
+    padding: 0;
+    background: linear-gradient(135deg, #FFE08A, #FFC928);
+    color: #8A5A00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 3;
+    -webkit-tap-highlight-color: transparent;
+}
+.gm-node-chest svg { width: 20px; height: 20px; display: block; }
+
+.gm-chest-big {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #FFD84D, #FF9F1A);
+    box-shadow: 0 3px 10px rgba(255, 159, 26, 0.45);
+}
+.gm-chest-big svg { width: 26px; height: 26px; }
+
+.gm-chest-claimable { animation: chestPulse 1.6s ease-in-out infinite; }
+
+.gm-chest-claimed {
+    background: #E2E4E8;
+    color: #B0B4BA;
+    box-shadow: none;
+}
+
+/* ===== IP 角色装饰层: 绝对定位, 不参与布局, 不影响节点 ===== */
+.gm-mascot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.gm-mascot-img {
+    width: 74px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 6px 12px rgba(88, 204, 2, 0.25));
+}
+.gm-mascot-badge {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 2px solid var(--lp-green);
+    color: var(--lp-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+.gm-mascot-badge svg { width: 15px; height: 15px; }
+
+/* ===== 响应式: 小屏节点微缩 ===== */
+@media (max-width: 360px) {
+    :root { --gm-node-d: 88px; }
+    .gm-node-icon svg { width: 36px; height: 36px; }
+    .gm-mascot-img { width: 64px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gm-node-active::before,
+    .gm-chest-claimable { animation: none; }
+}

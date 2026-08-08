@@ -32,7 +32,14 @@
             { day: 4, status: 'completed', type: '听力', icon: 'headphone' },
             { day: 5, status: 'current',   type: '阅读词汇', icon: 'book' },
             { day: 6, status: 'locked',    type: '阅读词汇', icon: 'book' },
-            { day: 7, status: 'locked',    type: '阅读词汇', icon: 'book' }
+            { day: 7, status: 'locked',    type: '阅读词汇', icon: 'book' },
+            { day: 8, status: 'locked',    type: '阅读词汇', icon: 'book' },
+            { day: 9, status: 'locked',    type: '阅读词汇', icon: 'book' },
+            { day: 10, status: 'locked',   type: '阅读词汇', icon: 'book' },
+            { day: 11, status: 'locked',   type: '写作词汇', icon: 'book' },
+            { day: 12, status: 'locked',   type: '写作词汇', icon: 'book' },
+            { day: 13, status: 'locked',   type: '写作词汇', icon: 'book' },
+            { day: 14, status: 'locked',   type: '写作词汇', icon: 'book' }
         ];
     };
 
@@ -196,6 +203,10 @@
     // ===== 白色内容大卡（全宽时间轴） =====
     window.renderUnitCard = function(data) {
         const levels = data.levels || getDefaultLevels();
+        // 手游式 S 型关卡地图(gm-*);若未加载该组件则回退到旧时间轴
+        if (window.renderLessonMap) {
+            return window.renderLessonMap(levels, {});
+        }
         return `<div class="lp-card">${renderTimeline(levels)}</div>`;
     };
 
