@@ -9137,7 +9137,7 @@
                 : {});
 
             if (mode === 'sprint') {
-                // ===== 冲刺模式:按计划天数生成关卡,先听力词汇(Day1-4)后阅读词汇,不交叉 =====
+                // ===== 冲刺模式:与自由模式一致,单一词汇内容、按周(每周 5 个学习日)划分 =====
                 const plan = LearningSystem.getActivePlan();
                 const bookId = plan ? plan.type : (settings.activeBookId || 'cet4');
                 const bookName = bookNames[bookId] || '四级';
@@ -9151,8 +9151,14 @@
                     let status = 'locked';
                     if (completedDays.includes(i)) status = 'completed';
                     else if (i === currentDay) status = 'current';
-                    const type = i <= 4 ? '听力' : '阅读词汇';
-                    levels.push({ day: i, status, type, icon: type === '听力' ? 'headphone' : 'book', ...chestProps(i) });
+                    levels.push({
+                        day: i,
+                        status,
+                        type: '词汇学习',
+                        icon: 'book',
+                        week: Math.ceil(i / 5),   // 每周 5 个学习日
+                        ...chestProps(i)
+                    });
                 }
                 unit = {
                     tag: '冲刺模式',

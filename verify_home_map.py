@@ -114,8 +114,8 @@ async def main():
         print('first cards:', info2['dayCards'])
         assert info2['mapActive'], 'FAIL: 冲刺模式未进入学习地图'
         assert info2['tag'] == '冲刺模式', f"FAIL: 缺少冲刺模式标签 {info2['tag']}"
-        assert '听力' in info2['subs'] and '阅读词汇' in info2['subs'], f"FAIL: 冲刺模式应保留听力/阅读区分 {info2['subs']}"
-        assert '听力词汇' in info2['dividers'] and '阅读词汇' in info2['dividers'], 'FAIL: 冲刺模式分组分隔错误'
+        assert info2['subs'] == ['词汇学习'], f"FAIL: 冲刺模式未统一为单一词汇 {info2['subs']}"
+        assert any('第 1 周' == d for d in info2['dividers']), f"FAIL: 冲刺模式缺少按周分组 {info2['dividers']}"
         print('B PASS')
         await ctx2.close()
 
