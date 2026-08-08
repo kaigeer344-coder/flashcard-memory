@@ -228,33 +228,28 @@
     white-space: nowrap;
 }
 
-/* ===== 波浪时间轴：SVG 贝塞尔波浪线，卡片仍左右交替 ===== */
-.lp-timeline-wave {
+/* ===== 时间轴线：6px 细线，节点更醒目 ===== */
+.lp-timeline-line {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
+    left: 50%;
+    width: 6px;
+    transform: translateX(-50%);
+    border-radius: 3px;
     z-index: 0;
 }
-.lp-timeline-wave path {
-    fill: none;
-    stroke-width: 6px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+
+/* 已完成段（绿）：从 Day1 节点中心到当前节点中心，行高 92px 故 top/bottom 各 46px */
+.lp-line-done {
+    background: var(--lp-green);
+    top: 46px;
+    z-index: 1;
 }
 
-/* 未完成段（灰点虚线）：轻柔的点状步道 */
-.lp-wave-future {
-    stroke: var(--lp-gray-line);
-    stroke-dasharray: 2 15;
-}
-
-/* 已完成段（绿色发光虚线）：长虚线 + 柔和光晕 */
-.lp-wave-done {
-    stroke: var(--lp-green);
-    stroke-dasharray: 18 11;
-    filter: drop-shadow(0 1px 5px rgba(88, 204, 2, 0.45));
+/* 未完成段（灰） */
+.lp-line-future {
+    background: var(--lp-gray-line);
+    top: 46px;
+    bottom: 46px;
 }
 
 /* ===== 时间轴行：每行占满全宽，节点垂直间距 92px ===== */
@@ -280,11 +275,10 @@
     box-shadow: 0 0 0 4px #FFFFFF;
 }
 
-/* 已完成节点：绿底白勾 + 柔和外圈光晕 */
+/* 已完成节点 */
 .lp-node-completed {
     background: var(--lp-green);
     color: #FFFFFF;
-    box-shadow: 0 0 0 4px #FFFFFF, 0 0 0 8px rgba(88, 204, 2, 0.16);
 }
 
 .lp-node-completed svg {
@@ -292,29 +286,18 @@
     height: 16px;
 }
 
-/* 当前节点：白底绿圈 + 呼吸脉动光晕 */
+/* 当前节点 */
 .lp-node-current {
     width: var(--lp-node-current);
     height: var(--lp-node-current);
     background: #FFFFFF;
     border: 4px solid var(--lp-green);
-    box-shadow: 0 0 0 4px #FFFFFF, 0 0 0 9px rgba(88, 204, 2, 0.16);
-    animation: lpNodePulse 2.4s ease-in-out infinite;
+    box-shadow: 0 0 0 4px #FFFFFF, 0 2px 8px rgba(88, 204, 2, 0.2);
 }
 
-@keyframes lpNodePulse {
-    0%, 100% { box-shadow: 0 0 0 4px #FFFFFF, 0 0 0 9px rgba(88, 204, 2, 0.16); }
-    50%      { box-shadow: 0 0 0 4px #FFFFFF, 0 0 0 15px rgba(88, 204, 2, 0.03); }
-}
-
-/* 锁定节点：空心灰圈，表"未开始" */
+/* 锁定节点 */
 .lp-node-locked {
-    background: #FFFFFF;
-    border: 3px solid var(--lp-gray-line);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .lp-node-current { animation: none; }
+    background: var(--lp-gray-line);
 }
 
 /* ===== 关卡卡片：绝对定位围绕中央轴，宽大规整 ===== */
