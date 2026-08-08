@@ -80,6 +80,11 @@
         const icon = GM_ICONS[level.icon] || GM_ICONS.book;
         const iconSvg = status === 'locked' ? GM_ICONS.lock : icon;
 
+        // 已完成关卡:按钮内容替换为「已通过」素材图,不再显示文字图标
+        const innerIcon = status === 'completed'
+            ? `<img class="gm-node-pass-img" src="assets/home/已通过.png" alt="已通过">`
+            : `<span class="gm-node-icon">${iconSvg}</span>`;
+
         // 已完成关卡显示星星(学习质量)
         let starsHtml = '';
         if (level.stars) {
@@ -102,7 +107,7 @@
                 <button class="gm-node-btn" type="button" role="button" tabindex="0"
                         aria-label="Day ${n}${type ? ' ' + type : ''}"
                         onclick="window.onLearningMapNodeClick && window.onLearningMapNodeClick(${n})">
-                    <span class="gm-node-icon">${iconSvg}</span>
+                    ${innerIcon}
                     ${checkHtml}
                 </button>
                 ${chestHtml}

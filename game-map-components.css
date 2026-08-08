@@ -141,11 +141,20 @@
 .gm-node-locked .gm-node-icon { color: #C4C4C4; }
 
 /* ===== 状态 4: completed 已完成 =====
-   白色按钮 + 绿色粗描边 + 绿色图标 */
+   按钮内容替换为「已通过」素材图:圆形裁剪铺满,保留绿色描边与硬阴影 */
 .gm-node-completed .gm-node-btn {
     background: #FFFFFF;
     border: 4px solid var(--lp-green);
     box-shadow: inset 0 -6px 0 #EAF6D9, 0 5px 0 #CBE9A0, 0 8px 18px rgba(88, 204, 2, 0.16);
+    overflow: hidden;
+    padding: 0;
+}
+.gm-node-completed .gm-node-pass-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
 }
 .gm-node-completed .gm-node-icon { color: var(--lp-green); }
 
