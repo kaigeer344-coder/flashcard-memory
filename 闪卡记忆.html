@@ -5532,16 +5532,11 @@
         }
         .today-start-close:active { transform: scale(0.92); }
         .today-start-emoji {
-            width: 84px;
-            height: 84px;
-            margin: 2px auto 14px;
-            border-radius: 50%;
-            background: linear-gradient(160deg, #d7ffb8 0%, #b6f28a 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            box-shadow: 0 6px 0 #9fe26c, 0 10px 22px rgba(88, 204, 2, 0.22);
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 12px;
+            object-fit: contain;
+            display: block;
         }
         .today-start-title {
             font-size: 23px;
@@ -6974,7 +6969,7 @@
     <div class="today-start-overlay" id="todayStartOverlay">
         <div class="today-start-card">
             <button class="today-start-close" onclick="closeTodayStart()" aria-label="关闭">✕</button>
-            <div class="today-start-emoji" id="todayStartEmoji">🎯</div>
+            <img class="today-start-emoji" id="todayStartEmoji" src="assets/home/开始学习.png" alt="开始学习" onerror="this.style.display='none'">
             <div class="today-start-title" id="todayStartTitle">开始今日学习</div>
             <div class="today-start-sub" id="todayStartSub">今天的任务已完成 <b>0</b> 关</div>
             <div class="today-start-stats">
