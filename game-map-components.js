@@ -78,11 +78,10 @@
         const n = (level.day !== undefined ? level.day : i + 1);
         const type = level.type || '';
 
-        // 独立宝箱节点:与其他关卡等大的圆形按钮,内容为宝箱素材图
-        // 点击直接开箱,不渲染右上角小徽章
-        if (level.chestNode) {
-            const st = normalizeStatus(level.status);
-            const cls = level.chestClaimed ? 'claimed' : (st === 'completed' ? 'ready' : 'locked');
+        // 宝箱关:关卡自身就显示为宝箱素材图按钮,不再额外加节点或右上角徽章
+        // 点击直接开箱
+        if (level.chest) {
+            const cls = level.chestClaimed ? 'claimed' : (status === 'completed' ? 'ready' : 'locked');
             return `
             <div class="gm-node gm-node-chestnode gm-node-chestnode-${cls}" style="left:${geom.x.toFixed(1)}%;top:${Math.round(geom.y)}px;">
                 <button class="gm-node-btn" type="button" role="button" tabindex="0"

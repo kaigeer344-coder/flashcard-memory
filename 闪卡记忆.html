@@ -7051,7 +7051,7 @@
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
     <script src="map-components.js?v=7.4"></script>
-    <script src="game-map-components.js?v=1.1"></script>
+    <script src="game-map-components.js?v=1.2"></script>
     <script src="js/achievements/data.js?v=1.0"></script>
     <script src="js/achievements/achievement-card.js?v=1.0"></script>
     <script src="js/achievements/achievement-grid.js?v=1.0"></script>
@@ -9542,28 +9542,6 @@
                 };
             }
 
-            // 宝箱由"关卡右上角小徽章"改为"独立等大关卡节点":
-            // 每个宝箱关之后插入一个 chestNode 节点,用宝箱素材图渲染
-            const expanded = [];
-            for (const lv of levels) {
-                const plain = { ...lv };
-                delete plain.chest; delete plain.chestBig; delete plain.chestClaimed;
-                expanded.push(plain);
-                if (lv.chest) {
-                    // 宝箱节点状态:对应关卡已完成→可领取(completed),否则未解锁(locked)
-                    expanded.push({
-                        day: lv.day,
-                        chestNode: true,
-                        chest: true,
-                        chestBig: lv.chestBig,
-                        chestClaimed: !!lv.chestClaimed,
-                        type: '宝箱',
-                        status: lv.status === 'completed' ? 'completed' : 'locked'
-                    });
-                }
-            }
-            levels = expanded;
-
             _currentMapLevels = levels;
             window._currentMapLevels = levels; // 供 game-map-components 窗口缩放时重渲染
 
@@ -9772,9 +9750,7 @@
         }
         window.onLevelChestClick = function(day) {
             SFX.click();
-            // chestNode 是独立的宝箱节点;day 与对应学习关卡相同,故须先匹配 chestNode
-            const level = _currentMapLevels.find(l => l.chestNode && l.day === day)
-                || _currentMapLevels.find(l => l.day === day);
+            const level = _currentMapLevels.find(l => l.day === day);
             if (!level || !level.chest) return;
             if (level.status === 'locked') {
                 showToast(`继续学习解锁 Day ${day} 宝箱`, 'warning');
