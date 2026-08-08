@@ -12619,19 +12619,6 @@
             } catch (e) {}
             const gamesCompleted = progress.gamesCompleted || 0;
             const maxCombo = progress.maxCombo || 0;
-            // 冲刺计划:完成数 + 是否提前 ≥3 天完成(实际用天数 ≤ planDays - 3)
-            const _todayStr = new Date().toISOString().slice(0, 10);
-            let sprintCompleted = 0, sprintFast = false;
-            try {
-                allPlans.forEach(p => {
-                    const days = (p.completedDays || []).length;
-                    const total = p.planDays || 0;
-                    if (total <= 0 || days < total) return;
-                    sprintCompleted++;
-                    const used = p.startDate ? (daysBetween(p.startDate, _todayStr) + 1) : total;
-                    if (used <= total - 3) sprintFast = true;
-                });
-            } catch (e) {}
             const COLLECTION_BADGES = [
                 { name: '3天连击', current: streakCount, target: 3 },
                 { name: '7天连击', current: streakCount, target: 7 },
@@ -12646,9 +12633,7 @@
                 { name: '初露锋芒', current: gamesCompleted, target: 1 },
                 { name: '连连高手', current: gamesCompleted, target: 10 },
                 { name: '连击新星', current: maxCombo, target: 10 },
-                { name: '闪卡王者', current: maxCombo, target: 20 },
-                { name: '首战告捷', current: sprintCompleted, target: 1 },
-                { name: '全速冲刺', current: sprintFast ? 1 : 0, target: 1 }
+                { name: '闪卡王者', current: maxCombo, target: 20 }
             ];
             const BADGE_PLACEHOLDER = (name, unlocked) => {
                 const color = unlocked ? '#ffc800' : '#d8d8d8';
