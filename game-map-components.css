@@ -195,11 +195,11 @@
 .gm-node-stars svg { width: 11px; height: 11px; display: block; }
 
 /* ===== 独立宝箱节点:与其他关卡等大的圆形按钮,内容为宝箱素材图 ===== */
-/* 复用 .gm-node / .gm-node-btn 圆形容器定位与白描边;图片铺满圆形 */
+/* 复用 .gm-node / .gm-node-btn 圆形容器定位;素材自身已含白色圆边,不再叠加白描边 */
 .gm-node-chestnode .gm-node-btn {
     overflow: hidden;
-    border: 4px solid #FFFFFF;
-    background: #FFFFFF;
+    border: none;
+    background: transparent;
 }
 .gm-node-chestnode-img {
     width: 100%;
