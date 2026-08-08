@@ -42,10 +42,14 @@
     }
 
     // ===== 计算全部节点坐标 =====
+    // 使用固定 8 位置循环替代 sin,保证每对相邻节点水平间距完全相等
+    // 模式: 中→右半→最右→右半→中→左半→最左→左半 (循环)
+    // 每步移动恰好 0.5 单位,消除 sin 波峰/波谷处间距不均的问题
     function computeGeom(levels) {
         const C = window.GM_CONFIG;
+        const PATTERN = [0, 0.5, 1.0, 0.5, 0, -0.5, -1.0, -0.5];
         return levels.map((lv, i) => ({
-            x: 50 + Math.sin(i * C.PHASE) * C.AMP * 100 + (Number(lv.xOffset) || 0),
+            x: 50 + PATTERN[i % 8] * C.AMP * 100 + (Number(lv.xOffset) || 0),
             y: C.START_Y + i * C.ROW_GAP
         }));
     }
