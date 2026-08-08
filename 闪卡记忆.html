@@ -2826,7 +2826,7 @@
             /* 正方形卡片:宽高 1:1 */
             aspect-ratio: 1 / 1;
             min-height: 0;
-            padding: 14px 12px 12px;
+            padding: 14px 12px 10px;
             border: 2px solid var(--border);
             border-radius: 20px;
             background: var(--surface);
@@ -2856,25 +2856,25 @@
             box-shadow: 0 6px 0 #d6a900, 0 10px 18px rgba(255, 200, 0, 0.22);
         }
         .onboard-mode-icon {
-            width: 72px; height: 72px;
-            margin-bottom: 4px;
+            width: 96px; height: 96px;
+            margin-bottom: 2px;
             display: grid; place-items: center;
         }
-        .onboard-mode-icon img { width: 72px; height: 72px; object-fit: contain; }
-        .onboard-mode-name { font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 2px; }
+        .onboard-mode-icon img { width: 96px; height: 96px; object-fit: contain; }
+        .onboard-mode-name { font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 0; }
         .onboard-mode-desc {
-            font-size: 12px;
+            font-size: 11px;
             color: #5e5e5e;  /* 修复 C-3 */
             font-weight: 600;
-            line-height: 1.4;
+            line-height: 1.3;
         }
         /* 窄屏:正方形内压缩内容防止溢出 */
         @media (max-width: 360px) {
-            .onboard-mode-card { padding: 10px 8px 10px; }
-            .onboard-mode-icon { width: 56px; height: 56px; margin-bottom: 4px; }
-            .onboard-mode-icon img { width: 56px; height: 56px; }
-            .onboard-mode-name { font-size: 15px; }
-            .onboard-mode-desc { font-size: 11px; }
+            .onboard-mode-card { padding: 10px 8px 8px; }
+            .onboard-mode-icon { width: 68px; height: 68px; margin-bottom: 2px; }
+            .onboard-mode-icon img { width: 68px; height: 68px; }
+            .onboard-mode-name { font-size: 14px; }
+            .onboard-mode-desc { font-size: 10.5px; }
         }
 
         /* 词书/考试选择网格 */
