@@ -138,20 +138,42 @@
             </div>`;
     }
 
-    // ===== 单个分组的时间轴（组内独立线，互不相连） =====
+    // ===== 单个分组的时间轴（波浪路径，组内独立、卡片左右交替布局不变） =====
     function renderTimelineGroup(group) {
         const n = group.length;
         // 绿色只覆盖已学(completed)节点:取最后一个已完成节点
-        // 无已完成节点(全未解锁/仅有当前节点)时绿线高度为 0,整组显示灰色
+        // 无已完成节点(全未解锁/仅有当前节点)时整组灰色
         let doneIdx = -1;
         for (let i = 0; i < n; i++) {
             if (group[i].status === 'completed') doneIdx = i;
         }
-        const doneRatio = (n > 1 && doneIdx >= 0) ? doneIdx / (n - 1) : 0;
+        // 最后一个已完成节点之后紧跟当前节点时,绿线延伸到当前节点中心
+        let greenLast = doneIdx - 1;
+        if (doneIdx >= 0 && doneIdx < n - 1 && group[doneIdx + 1].status === 'current') {
+            greenLast = doneIdx;
+        }
+
+        // 波浪路径:相邻节点(行高 92px,节点中心 y=46+i*92)用贝塞尔曲线连接,奇偶行左右交替弯曲
+        const ROW = 92, HALF = 46, AMP = 14;
+        let doneD = '', futureD = '', prev = null;
+        for (let i = 0; i < n; i++) {
+            const y = HALF + i * ROW;
+            if (prev !== null) {
+                const dir = (i % 2 === 1) ? 1 : -1;      // 奇偶行波浪方向交替
+                const yMid = (prev + y) / 2;
+                const seg = `M 50 ${prev} C ${50 - dir * AMP} ${yMid - 20}, ${50 + dir * AMP} ${yMid + 20}, 50 ${y}`;
+                if (i <= greenLast) doneD += seg + ' ';
+                else futureD += seg + ' ';
+            }
+            prev = y;
+        }
+        const totalH = n * ROW;
         return `
             <div class="lp-timeline-group">
-                <div class="lp-timeline-line lp-line-done" style="height: calc((100% - 92px) * ${doneRatio})"></div>
-                <div class="lp-timeline-line lp-line-future"></div>
+                <svg class="lp-timeline-wave" viewBox="0 0 100 ${totalH}" preserveAspectRatio="none" aria-hidden="true">
+                    ${futureD ? `<path class="lp-wave-future" d="${futureD.trim()}" vector-effect="non-scaling-stroke"/>` : ''}
+                    ${doneD ? `<path class="lp-wave-done" d="${doneD.trim()}" vector-effect="non-scaling-stroke"/>` : ''}
+                </svg>
                 ${group.map(level => {
                     const isLeft = level.day % 2 === 1;
                     return `
