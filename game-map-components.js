@@ -108,27 +108,42 @@
             </div>`;
     }
 
-    // ===== 地图尺寸计算: 使最左/最右关卡按钮距页面左右边缘恰好 EDGE px =====
-    // viewW: 滚动区实际宽度; nodeD: 节点直径; 返回 { width, marginLeft }
-    // 地图宽度可超出视口,左右对称溢出,保证整条路线水平居中且两端贴边可控
-    function resolveMapSize(geom, viewW, edge, nodeD) {
-        let xMin = 100, xMax = 0;
+    // ===== 重映射节点 X 坐标: 使最左/最右节点恰好贴住目标边距 =====
+    // 原始 x 为 50±sin*AMP*100, 映射后最左节点中心 = nodeD/2, 最右 = mapW - nodeD/2
+    function rescaleX(geom, mapW, nodeD) {
+        let xMin = Infinity, xMax = -Infinity;
         geom.forEach(g => {
             if (g.x < xMin) xMin = g.x;
             if (g.x > xMax) xMax = g.x;
         });
-        const span = (xMax - xMin) / 100;
-        if (span <= 0 || viewW <= 0) return { width: viewW, marginLeft: 0 };
-        const width = (viewW - 2 * edge - nodeD) / span;
-        // -16 抵消 .lp-scroll 自带左内边距,使 marginLeft 为相对屏幕的偏移
-        const marginLeft = edge - (xMin / 100) * width + nodeD / 2 - 16;
-        return { width, marginLeft };
+        if (xMax <= xMin) return geom.map(g => ({ x: 50, y: g.y }));
+        const leftPx = nodeD / 2;
+        const rightPx = mapW - nodeD / 2;
+        const leftPct = (leftPx / mapW) * 100;
+        const rightPct = (rightPx / mapW) * 100;
+        return geom.map(g => ({
+            x: leftPct + ((g.x - xMin) / (xMax - xMin)) * (rightPct - leftPct),
+            y: g.y
+        }));
     }
 
     // ===== LessonMap: 地图容器,渲染全部节点/引导点 =====
     function LessonMap(levels, opts) {
         const items = (levels && levels.length) ? levels : window.getDefaultLevels();
-        const geom = computeGeom(items);
+        const C = window.GM_CONFIG;
+        let geom = computeGeom(items);
+
+        // 滚动容器可见宽度(含 padding = 视口宽度)
+        const scrollEl = document.querySelector('.lp-scroll');
+        const viewW = (scrollEl && scrollEl.clientWidth) || window.innerWidth || 390;
+
+        // 地图宽度与偏移: margin = EDGE-16 抵消 .lp-scroll 16px 内边距
+        // EDGE=0 时地图满宽贴住屏幕左右边缘
+        const mapW = Math.max(viewW - 2 * C.EDGE, C.NODE_D + 20);
+        const mapMargin = C.EDGE - 16;
+
+        // 重映射 X 使两端节点贴住 EDGE 边距
+        geom = rescaleX(geom, mapW, C.NODE_D);
 
         // 路线引导小圆点:每两关之间 4 个
         let dots = '';
@@ -140,17 +155,10 @@
         const nodeHtml = items.map((lv, i) => LevelNode(lv, geom[i], i)).join('');
 
         // 容器高度:首节点偏移 + 末节点位置 + 底部留白(标签/阴影)
-        const C = window.GM_CONFIG;
         const height = C.START_Y + (items.length - 1) * C.ROW_GAP + 130;
 
-        // 滚动容器实际宽度(响应式,随视口变化重算)
-        const scrollEl = document.querySelector('.lp-scroll');
-        const viewW = (scrollEl && scrollEl.clientWidth) || window.innerWidth || 390;
-        const size = resolveMapSize(geom, viewW, C.EDGE, C.NODE_D);
-
-        // 节点直径与地图宽度/偏移实时写入,滑块与窗口缩放均生效
         return `
-            <div class="gm-map" style="height:${height}px;--gm-node-d:${C.NODE_D}px;width:${size.width.toFixed(1)}px;margin-left:${size.marginLeft.toFixed(1)}px;">
+            <div class="gm-map" style="height:${height}px;--gm-node-d:${C.NODE_D}px;width:${mapW.toFixed(1)}px;margin-left:${mapMargin.toFixed(1)}px;margin-right:${mapMargin.toFixed(1)}px;">
                 ${dots}
                 ${nodeHtml}
             </div>`;

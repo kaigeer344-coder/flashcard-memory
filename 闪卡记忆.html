@@ -6815,6 +6815,11 @@
                     <span class="gm-slider-val" id="gmValEdge">16</span>
                     <input type="range" id="gmSliderEdge" min="0" max="60" value="16" class="gm-slider">
                 </label>
+                <label class="gm-slider-row">
+                    <span class="gm-slider-label">S形幅度</span>
+                    <span class="gm-slider-val" id="gmValAmp">20</span>
+                    <input type="range" id="gmSliderAmp" min="2" max="45" value="20" class="gm-slider">
+                </label>
                 <button class="gm-debug-reset" id="gmDebugReset">恢复默认</button>
             </div>
             <div class="screen-nav-group-title">模拟测试数据</div>
@@ -9411,14 +9416,16 @@
             const sliders = [
                 { id: 'gmSliderNodeD', valId: 'gmValNodeD', key: 'NODE_D' },
                 { id: 'gmSliderRowGap', valId: 'gmValRowGap', key: 'ROW_GAP' },
-                { id: 'gmSliderEdge', valId: 'gmValEdge', key: 'EDGE' }
+                { id: 'gmSliderEdge', valId: 'gmValEdge', key: 'EDGE' },
+                { id: 'gmSliderAmp', valId: 'gmValAmp', key: 'AMP', transform: v => v / 100 }
             ];
             sliders.forEach(s => {
                 const el = document.getElementById(s.id);
                 const val = document.getElementById(s.valId);
                 if (!el || !val) return;
                 el.addEventListener('input', () => {
-                    window.GM_CONFIG[s.key] = parseInt(el.value, 10);
+                    const raw = parseInt(el.value, 10);
+                    window.GM_CONFIG[s.key] = s.transform ? s.transform(raw) : raw;
                     val.textContent = el.value;
                     // 仅替换地图 DOM,不重建整页,保持滚动位置
                     const mapEl = document.querySelector('.gm-map');
@@ -9434,8 +9441,8 @@
                     sliders.forEach(s => {
                         const el = document.getElementById(s.id);
                         const val = document.getElementById(s.valId);
-                        if (el) el.value = window.GM_CONFIG[s.key];
-                        if (val) val.textContent = window.GM_CONFIG[s.key];
+                        if (el) el.value = s.transform ? Math.round(window.GM_CONFIG[s.key] * 100) : window.GM_CONFIG[s.key];
+                        if (val) val.textContent = el.value;
                     });
                     const mapEl = document.querySelector('.gm-map');
                     if (mapEl && window.renderLessonMap && _currentMapLevels) {
