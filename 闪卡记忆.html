@@ -941,6 +941,16 @@
         #statsScreen .tc-section-title {
             font-size: 28px;
         }
+        /* 任务中心三个分块标题收敛到 22px(仅限 statsScreen 内具体三个 section) */
+        #statsScreen > .tc-section:nth-child(2) > .tc-section-head > .tc-section-title,
+        #statsScreen > .tc-section:nth-child(3) > .tc-section-head > .tc-section-title,
+        #statsScreen > .tc-section:nth-child(4) > .tc-section-head > .tc-section-title {
+            font-size: 22px;
+        }
+        /* 任务中心 Hero 主标题 36px→34px(仅限 statsScreen 内 Hero) */
+        #statsScreen > .tc-hero > .tc-hero-content > .tc-hero-title {
+            font-size: 34px;
+        }
         .tc-section-timer {
             font-size: 12px;
             font-weight: 800;
