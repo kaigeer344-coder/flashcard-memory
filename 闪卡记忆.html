@@ -9189,7 +9189,7 @@
                 : {});
 
             if (mode === 'sprint') {
-                // ===== 冲刺模式:与自由模式一致,单一词汇内容、按周(每周 5 个学习日)划分 =====
+                // ===== 冲刺模式:与自由模式一致,单一词汇内容、按周(每周 7 天)划分 =====
                 const plan = LearningSystem.getActivePlan();
                 const bookId = plan ? plan.type : (settings.activeBookId || 'cet4');
                 const bookName = bookNames[bookId] || '四级';
@@ -9208,7 +9208,7 @@
                         status,
                         type: '词汇学习',
                         icon: 'book',
-                        week: Math.ceil(i / 5),   // 每周 5 个学习日
+                        week: Math.ceil(i / 7),   // 每周 7 天(一周)
                         ...chestProps(i)
                     });
                 }
@@ -9220,7 +9220,7 @@
                     progressLabel: '天'
                 };
             } else {
-                // ===== 自由模式:按周划分学习单元(每周 5 个学习日),统一为单一词汇内容 =====
+                // ===== 自由模式:按周划分学习单元(每周 7 天),统一为单一词汇内容 =====
                 const bookId = settings.activeBookId || 'cet4';
                 const bookName = bookNames[bookId] || '四级';
                 const bank = wordDB[bookId] || [];
@@ -9246,7 +9246,7 @@
                         status,
                         type: '词汇学习',
                         icon: 'book',
-                        week: Math.ceil(i / 5),   // 每周 5 个学习日
+                        week: Math.ceil(i / 7),   // 每周 7 天(一周)
                         ...chestProps(i)
                     });
                 }
