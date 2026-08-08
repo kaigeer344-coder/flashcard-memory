@@ -2890,7 +2890,7 @@
             margin-bottom: 16px;
         }
         .onboard-book-card {
-            min-height: 88px;
+            min-height: 72px;
             padding: 10px 8px;
             border: 2px solid var(--border);
             border-radius: 16px;
@@ -2899,7 +2899,7 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
             transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
             -webkit-tap-highlight-color: transparent;
         }
@@ -2912,15 +2912,7 @@
             border-color: var(--primary-dark);
             box-shadow: 0 4px 0 var(--primary-dark);
         }
-        .onboard-book-icon {
-            width: 36px; height: 36px;
-            flex-shrink: 0;
-            display: grid; place-items: center;
-            border-radius: 10px;
-            background: var(--light);
-        }
-        .onboard-book-icon img { width: 28px; height: 28px; object-fit: contain; }
-        .onboard-book-info { flex: 1; min-width: 0; }
+        .onboard-book-info { flex: 1; min-width: 0; text-align: center; }
         .onboard-book-name {
             font-size: 14px; font-weight: 800; color: var(--dark);
             margin-bottom: 2px;
@@ -7902,12 +7894,9 @@
         function _renderQBook() {
             const books = LearningSystem.getAllBooksInfo();
             const cards = books.map(b => {
-                const iconMap = { cet4: 'assets/icon-cet4.png', cet6: 'assets/icon-cet6.png', toefl: 'assets/icon-toefl.png' };
-                const iconSrc = iconMap[b.id] || 'assets/generated-icons/daily-words.png';
                 return `
                     <div class="onboard-book-card ${onboardState.bookId === b.id ? 'selected' : ''}"
                          onclick="selectOnboardBook('${b.id}')" role="button" aria-label="选择 ${b.name} 词书">
-                        <div class="onboard-book-icon"><img src="${iconSrc}" alt=""></div>
                         <div class="onboard-book-info">
                             <div class="onboard-book-name">${b.name}</div>
                             <div class="onboard-book-meta">${b.totalWords} 词 · 核心 ${b.coreWords}</div>
