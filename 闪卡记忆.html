@@ -12459,6 +12459,11 @@
         }
 
         function clearSelection() {
+            // 必须移除卡片上的 selected 样式,否则同类型选择等分支会残留"选中"卡,
+            // 残留卡会被 handleCardClick 拦截,点上去无任何反应
+            (state.gameSelected || []).forEach(({ el }) => {
+                if (el) el.classList.remove('selected');
+            });
             state.gameSelected = [];
         }
 
