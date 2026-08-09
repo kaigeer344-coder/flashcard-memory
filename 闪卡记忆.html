@@ -15692,11 +15692,16 @@
             // URL 参数 ?demo=sprint-7days 注入"四级冲刺 7 天"演示数据
             // 场景:已学习 7 天,245 个词已学(180 已掌握),剩余 7 天到考试
             const demoScenario = new URLSearchParams(location.search).get('demo');
+            // 演示数据仅限本地开发环境(localhost/127.0.0.1)注入:
+            // 线上部署版绝不注入,避免假学习数据残留到真实用户词库(如"学习中 65 词")。
+            const isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
             if (demoScenario === 'sprint-7days' || demoScenario === 'sprint-7days-force') {
-                // 用户执行过"重置学习进度/清空全部本地数据"后,普通 ?demo= 不再自动注入,
-                // 防止演示数据在清空后"复活",造成词库残留假进度;
-                // 明确需要重新模拟数据时使用 ?demo=sprint-7days-force
-                if (demoScenario === 'sprint-7days' && localStorage.getItem('wordmatch_demo_killed') === '1') {
+                if (!isLocalDev) {
+                    console.log('[Demo] 非本地环境,跳过演示注入(仅本地开发可用)');
+                } else if (demoScenario === 'sprint-7days' && localStorage.getItem('wordmatch_demo_killed') === '1') {
+                    // 用户执行过"重置学习进度/清空全部本地数据"后,普通 ?demo= 不再自动注入,
+                    // 防止演示数据在清空后"复活",造成词库残留假进度;
+                    // 明确需要重新模拟数据时使用 ?demo=sprint-7days-force
                     console.log('[Demo] 用户已清除过数据,跳过演示注入(如需重新注入请用 ?demo=sprint-7days-force)');
                 } else {
                     console.log('[Demo] URL 参数检测到,开始注入...');
