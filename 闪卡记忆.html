@@ -9677,6 +9677,19 @@
             if (e.target === document.getElementById('todayStartOverlay')) closeTodayStart();
         });
 
+        // ===== 预计学习时长估算(基于真实学习流程建模) =====
+        // 新词闪卡学习较慢(约30s/词),复习词快速自评(约12s/词),
+        // 每轮连连看约60s(按 wordsPerRound 切轮),合计后向上取整,最少 3 分钟
+        function estimateStudyMinutes(total, newCount, reviewCount) {
+            const safeTotal = Math.max(1, total || 0);
+            const safeNew = Math.max(0, Math.min(newCount || 0, safeTotal));
+            const safeReview = Math.max(0, safeTotal - safeNew);
+            const flashSecs = safeNew * 30 + safeReview * 12;
+            const gameRounds = Math.max(1, Math.ceil(safeTotal / (state.wordsPerRound || 10)));
+            const gameSecs = gameRounds * 60;
+            return Math.max(3, Math.ceil((flashSecs + gameSecs) / 60));
+        }
+
         // ===== 今日学习确认弹窗:展示单词数/组数/预计时间,再进入学习 =====
         // 数据与实际学习队列同源(先预构建今日队列),保证弹窗与闪卡页组数一致
         window.openTodayStart = function(day) {
@@ -9689,8 +9702,15 @@
             const total = state.todayTaskTotal || getV2DailyGoal() || 20;
             // 组数 = 总词数 / 每组固定 5 词,与闪卡页 renderLearningProgress 一致
             const groups = Math.max(1, Math.ceil(total / GROUP_WORDS));
-            // 预计时间:每个词约 15 秒,向上取整,最少 3 分钟
-            const minutes = Math.max(3, Math.ceil(total * 15 / 60));
+            // 预计时间:按今日队列新词/复习词分别计时(新词30s/复习12s)+连连看每轮60s
+            let qNew = 0, qReview = 0;
+            if (state.todayQueue && state.todayQueue.length) {
+                state.todayQueue.forEach(w => { if (w.isNewWord) qNew++; else qReview++; });
+            } else {
+                qNew = Math.min(total, state.newWordQuota || state.dailyNewWords || Math.ceil(total / 2));
+                qReview = Math.max(0, total - qNew);
+            }
+            const minutes = estimateStudyMinutes(total, qNew, qReview);
             document.getElementById('todayStartWords').textContent = total;
             document.getElementById('todayStartGroups').textContent = groups;
             document.getElementById('todayStartTime').textContent = minutes;
@@ -11524,7 +11544,11 @@
             state.newWordQuota = Math.min(getV2DailyGoal(), stats.new);
             const remainingWords = stats.new + stats.learning + stats.dueForReview;
             const days = Math.ceil(Math.max(remainingWords, 1) / Math.max(wordsPerDay, 1));
-            const estimatedMinutes = Math.max(3, Math.ceil((getV2DailyGoal() * 35 + state.reviewDebtCount * 20) / 60));
+            const estimatedMinutes = estimateStudyMinutes(
+                getV2DailyGoal() + state.reviewDebtCount,
+                getV2DailyGoal(),
+                state.reviewDebtCount
+            );
 
             const totalWordsEl = document.getElementById('totalWordsCount');
             if (totalWordsEl) totalWordsEl.textContent = totalWords;
