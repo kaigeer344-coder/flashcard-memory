@@ -8277,6 +8277,11 @@
             const config = LearningSystem.getSprintConfig(remainingDays);
             const actualDaily = onboardState.dailyWords || config.dailyNew;
             const examCfg = LearningSystem.getExamTypes()[onboardState.examType] || {};
+            // 与 createSprintPlan 同口径:复习缓冲=天数×20%(下限1天),学习期≥5天;覆盖=学习期×每日新词
+            let reviewBufferDays = Math.max(1, Math.round(remainingDays * 0.2));
+            const learningDays = Math.max(5, remainingDays - reviewBufferDays);
+            const reviewDays = remainingDays - learningDays;
+            const coverageWords = learningDays * actualDaily;
             return `
                 <div class="onboard-q-body">
                     <div class="onboard-summary">
@@ -8284,8 +8289,8 @@
                         <div class="onboard-summary-row"><span class="label">剩余时间</span><span class="value">${remainingDays} 天</span></div>
                         <div class="onboard-summary-row"><span class="label">每日新词</span><span class="value">${actualDaily} 词</span></div>
                         <div class="onboard-summary-row"><span class="label">阶段</span><span class="value">${config.label}</span></div>
-                        <div class="onboard-summary-row"><span class="label">完成所需天数</span><span class="value highlight">${Math.ceil(config.totalWords / actualDaily)} 天</span></div>
-                        <div class="onboard-summary-row"><span class="label">是否够时间</span><span class="value">${remainingDays >= Math.ceil(config.totalWords / actualDaily) ? '✓ 时间充裕' : '⚠ 时间紧张'}</span></div>
+                        <div class="onboard-summary-row"><span class="label">学习节奏</span><span class="value highlight">${learningDays} 天学新词 + ${reviewDays} 天纯复习</span></div>
+                        <div class="onboard-summary-row"><span class="label">计划覆盖</span><span class="value">${coverageWords} 词 · 核心优先</span></div>
                     </div>
                     <div class="onboard-tip">
                         <img src="assets/generated-icons/item-hint.png" alt="">
@@ -11511,6 +11516,34 @@
         }
 
         function buildTodayQueue(level) {
+            // 冲刺模式:队列由计划驱动(学习期=计划新词+FSRS到期复习;复习期=仅复习),
+            // 与 LearningSystem.generateTodayQueue 同源,保证首页/弹窗/实际学习完全一致
+            try {
+                const s = LearningSystem.getSettings();
+                if (s && s.mode === 'sprint') {
+                    const plan = LearningSystem.getActivePlan();
+                    if (plan && plan.plan && Array.isArray(plan.plan.wordPool)) {
+                        const q = LearningSystem.buildSprintQueue(plan);
+                        state.reviewDebtCount = q.reviewCount;
+                        state.newWordQuota = q.newCount;
+                        const queued = new Map();
+                        q.queue.forEach(w => {
+                            if (queued.has(w.wordId)) return;
+                            queued.set(w.wordId, {
+                                ...w,
+                                nextReviewAt: Date.now(),
+                                queueReason: w.type === 'new' ? 'newWord' : 'dueReview',
+                                isNewWord: w.type === 'new'
+                            });
+                        });
+                        state.todayQueue = [...queued.values()];
+                        state.todayTaskTotal = state.todayQueue.length;
+                        return state.todayQueue;
+                    }
+                }
+            } catch (e) {
+                console.error('buildTodayQueue(sprint) 失败,回退默认逻辑:', e);
+            }
             const words = MemorySystem.getAllWords(level);
             const now = Date.now();
             const stats = MemorySystem.getLearningStats(level);
@@ -14132,13 +14165,20 @@
             }
 
             // ---------- 计划生成引擎 ----------
-            // 基于时间分层策略 + 真题词频排序,生成冲刺计划的目标词池
+            // 基于时间分层策略 + 真题词频排序 + 难度分层,生成冲刺计划的目标词池
+            // 排序规则:先按难度分层(难度≥2 的词优先,避免"back/bus"这类高频但过于简单的词占坑),
+            // 层内再按真题词频降序;极简词已在过滤中剔除
             function _generateWordPool(examType, totalTargetWords) {
                 const bank = wordDB[examType] || [];
                 // 过滤极简词
                 const candidates = bank.filter(w => !_isBasicWord(w.en));
-                // 按词频降序排序(高频在前)
-                candidates.sort((a, b) => _getExamFrequency(b, examType) - _getExamFrequency(a, examType));
+                // 价值排序:难度分层 → 词频降序
+                candidates.sort((a, b) => {
+                    const da = (Number(a.difficulty) || 2) >= 2 ? 1 : 0;
+                    const db = (Number(b.difficulty) || 2) >= 2 ? 1 : 0;
+                    if (da !== db) return db - da;
+                    return _getExamFrequency(b, examType) - _getExamFrequency(a, examType);
+                });
                 // 取前 N 个
                 return candidates.slice(0, totalTargetWords).map((w, idx) => ({
                     wordId: `${examType}_${idx}_${w.en}`,
@@ -14210,8 +14250,15 @@
                     const planDays = Math.max(1, _daysBetween(startDate, examDate));
                     const config = _getSprintConfig(planDays);
                     const dailyNew = Math.max(5, Math.min(80, Number(dailyWords) || config.dailyNew));
-                    const totalTarget = config.totalWords;
+                    // 倒排日程:复习缓冲期 = 总天数×20%(下限1天),学习期至少5天,其余为纯复习期。
+                    // 学习期只学新词+复习,复习期(考前)不学任何新词,保证每个词考前有完整复习闭环。
+                    let reviewBufferDays = Math.max(1, Math.round(planDays * 0.2));
+                    const learningDays = Math.max(5, planDays - reviewBufferDays);
+                    reviewBufferDays = planDays - learningDays;
+                    // 覆盖目标 = 学习期天数 × 每日新词配额(词池按价值排序只取该容量)
+                    const totalTarget = learningDays * dailyNew;
                     const wordPool = _generateWordPool(examType, totalTarget);
+                    const poolCore = wordPool.filter(w => w.isCore).length;
                     const plan = {
                         id: _genId('role'),
                         type: examType,
@@ -14228,12 +14275,18 @@
                         stage: config.stage,
                         stageLabel: config.label,
                         totalTargetWords: totalTarget,
+                        reviewStartDay: learningDays + 1, // 从这天起进入纯复习期(不学新词)
                         plan: {
-                            version: 1,
+                            version: 2,
                             generatedAt: Date.now(),
                             totalTargetWords: totalTarget,
                             stage: config.stage,
-                            wordPool: wordPool.map(w => ({ wordId: w.wordId, en: w.en, indexInBank: w.indexInBank })),
+                            learningDays: learningDays,
+                            reviewBufferDays: reviewBufferDays,
+                            dailyQuota: dailyNew,
+                            coverageTarget: totalTarget,
+                            poolStats: { total: wordPool.length, coreInPool: poolCore },
+                            wordPool: wordPool.map(w => ({ wordId: w.wordId, en: w.en, indexInBank: w.indexInBank, isCore: w.isCore, difficulty: w.difficulty })),
                             progress: {
                                 learnedWordIds: [],
                                 masteredCount: 0,
@@ -14394,6 +14447,48 @@
                 },
 
                 // ===== 计划生成 =====
+                // 冲刺每日队列(唯一口径):学习期 = 计划新词 + FSRS 到期复习;
+                // 复习期(考前 reviewBufferDays 天)不学任何新词,只复习,保证完整复习闭环。
+                // 显示层(generateTodayQueue/meta)与实际学习层(buildTodayQueue)共用此方法。
+                buildSprintQueue(plan) {
+                    const now = Date.now();
+                    const learnedSet = new Set((plan.plan.progress && plan.plan.progress.learnedWordIds) || []);
+                    const dayIndex = (plan.completedDays && plan.completedDays.length || 0) + 1;
+                    const learningDays = (plan.plan && plan.plan.learningDays)
+                        || Math.max(5, plan.planDays - ((plan.plan && plan.plan.reviewBufferDays) || 0));
+                    const isReviewDay = dayIndex > learningDays;
+                    const quota = (plan.plan && plan.plan.dailyQuota) || plan.dailyNewWords || 10;
+                    const pool = (plan.plan && Array.isArray(plan.plan.wordPool)) ? plan.plan.wordPool : [];
+                    // 复习:FSRS 到期(复习优先,不设上限,保证闭环),按记忆强度升序(弱的先复习)
+                    const dueReviews = [];
+                    for (let i = 0; i < pool.length; i++) {
+                        const w = pool[i];
+                        if (!learnedSet.has(w.wordId)) continue;
+                        let mem = null;
+                        try { mem = MemorySystem.getMemoryForWord(plan.type, { en: w.en }, w.indexInBank || 0); } catch (e) {}
+                        if (mem && mem.reviewCount > 0 && mem.status !== 'new' && mem.nextReview <= now) {
+                            dueReviews.push({ ...w, type: 'review', priority: 2, memoryData: mem });
+                        }
+                    }
+                    dueReviews.sort((a, b) => (a.memoryData.retrievability || 1) - (b.memoryData.retrievability || 1));
+                    // 新词:仅学习期;每日总量上限(新词+复习 ≤ 3×配额),复习多时新词自动让位
+                    let newQuota = isReviewDay ? 0 : quota;
+                    newQuota = Math.max(0, Math.min(newQuota, quota * 3 - dueReviews.length));
+                    const remaining = [];
+                    for (let i = 0; i < pool.length; i++) {
+                        const w = pool[i];
+                        if (!learnedSet.has(w.wordId)) remaining.push(w);
+                    }
+                    const todayNew = remaining.slice(0, newQuota).map(w => ({ ...w, type: 'new', priority: 3 }));
+                    return {
+                        queue: [...dueReviews, ...todayNew],
+                        newCount: todayNew.length,
+                        reviewCount: dueReviews.length,
+                        dayIndex: dayIndex,
+                        isReviewDay: isReviewDay
+                    };
+                },
+
                 // 生成今日学习队列(冲刺模式按 plan.wordPool,自由模式按词书顺序)
                 generateTodayQueue() {
                     const today = _todayStr();
@@ -14409,35 +14504,18 @@
                             queue = [];
                             meta.error = 'no_active_plan';
                         } else {
-                            // 计算今日应学的词(已学的 + 待学的)
-                            const learnedSet = new Set(plan.plan.progress.learnedWordIds);
-                            const remaining = plan.plan.wordPool.filter(w => !learnedSet.has(w.wordId));
-                            // 今日目标:剩 / 剩余天数(但不超 dailyNewWords)
-                            const remainingDays = Math.max(1, plan.countdownDays - plan.completedDays.length);
-                            const todayTarget = Math.min(plan.dailyNewWords, Math.ceil(remaining.length / remainingDays));
-                            const todayNew = remaining.slice(0, todayTarget);
-                            // 加上需要复习的词(从已完成天数中抽取,简化为前一天的词)
-                            const reviewWords = [];
-                            if (plan.completedDays.length > 0) {
-                                // 简化策略:从前 30% 已学词中随机抽取 30% 作为复习
-                                const learnedPool = plan.plan.wordPool.filter(w => learnedSet.has(w.wordId));
-                                const reviewCount = Math.min(10, Math.floor(learnedPool.length * 0.3));
-                                for (let i = 0; i < reviewCount; i++) {
-                                    if (learnedPool.length === 0) break;
-                                    const idx = Math.floor(Math.random() * learnedPool.length);
-                                    reviewWords.push(learnedPool.splice(idx, 1)[0]);
-                                }
-                            }
-                            queue = [
-                                ...reviewWords.map(w => ({ ...w, type: 'review', priority: 2 })),
-                                ...todayNew.map(w => ({ ...w, type: 'new', priority: 3 }))
-                            ];
+                            // 与学习会话同源:学习期=计划新词+FSRS到期复习;复习期=仅复习
+                            const q = this.buildSprintQueue(plan);
+                            queue = q.queue;
                             meta.planId = plan.id;
                             meta.currentDay = plan.currentDay;
-                            meta.newWordsToday = todayNew.length;
-                            meta.reviewWordsToday = reviewWords.length;
+                            meta.dayIndex = q.dayIndex;
+                            meta.isReviewDay = q.isReviewDay;
+                            meta.newWordsToday = q.newCount;
+                            meta.reviewWordsToday = q.reviewCount;
                             meta.totalTargetWords = plan.totalTargetWords;
-                            meta.learnedCount = plan.plan.progress.learnedWordIds.length;
+                            meta.learnedCount = (plan.plan.progress.learnedWordIds || []).length;
+                            meta.reviewStartDay = plan.reviewStartDay || (plan.plan.learningDays || 0) + 1;
                         }
                     } else if (_settings.mode === 'free') {
                         const bookId = _settings.activeBookId || 'cet4';
