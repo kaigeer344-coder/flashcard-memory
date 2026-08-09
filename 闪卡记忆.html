@@ -7644,8 +7644,13 @@
                 intervalMs = Math.max(intervalMs, minInterval);
 
                 const newReviewCount = memV2.reviewCount + 1;
+                // 记录本次学习发生的模式(free/sprint):两种模式单词记忆互通,
+                // 但"关卡进度各自独立"需要知道词在哪个模式学过,通关只认本模式学的词
+                let learnMode = 'free';
+                try { learnMode = LearningSystem.getSettings().mode; } catch (e) {}
                 const updated = {
                     ...memV2,
+                    modeLearned: { ...(memV2.modeLearned || {}), [learnMode]: true },
                     stability: newS,
                     difficulty: newD,
                     lastGrade: grade,
@@ -9464,20 +9469,17 @@
                 // 关卡数量 = 词库词汇量 / 每日学习量,动态计算生成
                 const totalLevels = Math.max(1, Math.ceil(totalWords / dailyTarget));
                 // 关卡进度按"本关单词是否学完"逐关判定,而不是按"词库总已学词数"跳关。
-                // 冲刺/自由共享学习进度,冲刺按词频价值选词会分散在词库各处,
-                // 若仅按已学总数推算,一进自由模式就会跳过大量关卡,让新用户误以为 bug。
-                // 判定规则:每关分配到的词(按词库顺序)全部已有 FSRS 学习记录才算通关;
-                // 当前关 = 第一个未学满的关,已学的词在关内体现进度而非直接通关。
+                // 两种模式单词记忆互通(FSRS 共享),但"关卡进度严格独立":
+                // 通关只认本模式(自由)内学过的词,冲刺模式学过的词不会让自由模式跳过关卡。
+                // 判定规则:每关分配到的词(按词库顺序)全部已有自由模式学习标记才算通关;
+                // 当前关 = 第一个自由模式未学满的关,已学的词在关内体现进度而非直接通关。
                 const levelSizes = [];
                 const levelLearned = [];
                 for (let i = 1; i <= totalLevels; i++) {
                     levelSizes.push(Math.max(0, Math.min(dailyTarget, totalWords - (i - 1) * dailyTarget)));
                     levelLearned.push(countLevelLearned(i, dailyTarget));
                 }
-                let currentLevel = totalLevels + 1;
-                for (let i = 0; i < totalLevels; i++) {
-                    if (levelLearned[i] < levelSizes[i]) { currentLevel = i + 1; break; }
-                }
+                let currentLevel = getFreeCurrentLevel(bookId, dailyTarget);
                 const allDone = currentLevel > totalLevels;
                 const learnedCount = levelLearned.reduce((a, b) => a + b, 0);
                 chestMap = {};
@@ -9616,6 +9618,45 @@
                 return allWords.slice(start, start + perLevel)
                     .filter(w => w.memoryData && w.memoryData.reviewCount > 0).length;
             } catch (e) { return 0; }
+        }
+
+        // 按模式统计某关卡范围内"本模式内学过"的单词数(严格独立):
+        // 另一模式学过的词只显示为已学/复习,不推进本模式的关卡通关判定
+        function countLevelLearnedByMode(day, perLevel, mode, bookId) {
+            try {
+                if (!bookId) {
+                    const s = LearningSystem.getSettings();
+                    const plan = LearningSystem.getActivePlan();
+                    bookId = s.mode === 'sprint'
+                        ? ((plan && plan.type) || 'cet4')
+                        : (s.activeBookId || 'cet4');
+                }
+                const allWords = (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords)
+                    ? MemorySystem.getAllWords(bookId) : [];
+                const start = (day - 1) * perLevel;
+                return allWords.slice(start, start + perLevel)
+                    .filter(w => w.memoryData && w.memoryData.modeLearned && w.memoryData.modeLearned[mode] === true).length;
+            } catch (e) { return 0; }
+        }
+
+        // 自由模式当前关卡:按"自由模式下学过的词"逐关判定(严格独立),
+        // 第一个未学满的关即为当前关;冲刺模式学过的词不会让自由模式跳过关卡
+        function getFreeCurrentLevel(bookId, dailyTarget) {
+            try {
+                const allWords = (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords)
+                    ? MemorySystem.getAllWords(bookId) : [];
+                const totalWords = allWords.length || 1;
+                const target = dailyTarget || 20;
+                const totalLevels = Math.max(1, Math.ceil(totalWords / target));
+                for (let i = 1; i <= totalLevels; i++) {
+                    const start = (i - 1) * target;
+                    const size = Math.max(0, Math.min(target, totalWords - start));
+                    const learned = allWords.slice(start, start + size)
+                        .filter(w => w.memoryData && w.memoryData.modeLearned && w.memoryData.modeLearned.free === true).length;
+                    if (learned < size) return i;
+                }
+                return totalLevels + 1; // 全部关都已在自由模式学满
+            } catch (e) { return 1; }
         }
 
         window.openLevelWords = function(day) {
@@ -15038,6 +15079,30 @@
                                     type: 'review',
                                     priority: 2
                                 });
+                            }
+                        }
+                        // 关卡严格独立:补入"本关内已学(含冲刺模式学的)但自由模式未确认"的词,
+                        // 让用户在本模式复习确认后打上 free 标记,否则自由模式关卡会因单词相通而无法推进
+                        if (reviews.length < 15) {
+                            const reviewEn = new Set(reviews.map(r => r.en));
+                            const curFreeLv = getFreeCurrentLevel(bookId, dailyTarget);
+                            const lvStart = (curFreeLv - 1) * dailyTarget;
+                            const lvEnd = Math.min(bank.length, lvStart + dailyTarget);
+                            for (let i = lvStart; i < lvEnd && reviews.length < 15; i++) {
+                                const w = bank[i];
+                                const mem = MemorySystem.getMemoryForWord(bookId, w, i);
+                                if (!reviewEn.has(w.en) && mem.reviewCount > 0 && !(mem.modeLearned && mem.modeLearned.free)) {
+                                    reviewEn.add(w.en);
+                                    reviews.push({
+                                        wordId: `${bookId}_${i}_${w.en}`,
+                                        en: w.en,
+                                        cn: w.cn,
+                                        phonetic: w.phonetic,
+                                        difficulty: w.difficulty,
+                                        type: 'review',
+                                        priority: 2
+                                    });
+                                }
                             }
                         }
                         queue = [...reviews, ...newWords];
