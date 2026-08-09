@@ -102,7 +102,7 @@
             <div class="gm-node gm-node-endnode gm-node-endnode-${cls}" style="left:${geom.x.toFixed(1)}%;top:${Math.round(geom.y)}px;">
                 <button class="gm-node-btn" type="button" role="button" tabindex="0"
                         data-day="${n}"
-                        aria-label="Day ${n} 终点"
+                        aria-label="第${n}关 终点"
                         onclick="window.onLearningMapNodeClick && window.onLearningMapNodeClick(${n})">
                     <img class="gm-node-endnode-img" src="assets/home/终点.png" alt="终点">
                 </button>
@@ -140,13 +140,13 @@
         return `
             <div class="gm-node gm-node-${status}" style="left:${geom.x.toFixed(1)}%;top:${Math.round(geom.y)}px;">
                 <button class="gm-node-btn" type="button" role="button" tabindex="0"
-                        aria-label="Day ${n}${type ? ' ' + type : ''}"
+                        aria-label="第${n}关${type ? ' ' + type : ''}"
                         onclick="window.onLearningMapNodeClick && window.onLearningMapNodeClick(${n})">
                     ${innerIcon}
                     ${checkHtml}
                 </button>
                 ${todayBubble}
-                <div class="gm-node-label">Day ${n}</div>
+                <div class="gm-node-label">第${n}关</div>
                 ${starsHtml}
             </div>`;
     }

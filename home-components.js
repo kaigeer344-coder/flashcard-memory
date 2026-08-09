@@ -196,7 +196,7 @@
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="#FF5B35"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
                             <span>${data.tagLabel || '极限冲刺'}</span>
                         </div>
-                        <div class="hp-sp-day">Day ${data.currentDay} / ${data.totalDays}</div>
+                        <div class="hp-sp-day">第${data.currentDay}关 / 共${data.totalDays}关</div>
                         <div class="hp-sp-progress">
                             <div class="hp-sp-track">
                                 <div class="hp-sp-fill" style="width:${pct}%"></div>
@@ -510,7 +510,7 @@
         // 开始按钮的 dayLabel 也按模式区分
         const startBtnData = mode === 'free'
             ? { dayLabel: `目标 ${(data.freeOverview || {}).dailyTarget || 10} 词`, completed: data.freeOverview && data.freeOverview.completed }
-            : { dayLabel: `Day ${data.courseTask.currentDay}`, completed: data.courseTask.completed, newWords: data.courseTask.newWords, reviewWords: data.courseTask.reviewWords };
+            : { dayLabel: `第${data.courseTask.currentDay}关`, completed: data.courseTask.completed, newWords: data.courseTask.newWords, reviewWords: data.courseTask.reviewWords };
 
         return `
             <div class="hp-page">

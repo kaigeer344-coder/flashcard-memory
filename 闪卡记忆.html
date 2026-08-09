@@ -7037,7 +7037,7 @@
         <div class="level-words-card">
             <div class="level-words-header">
                 <button class="level-words-close" onclick="closeLevelWords()" aria-label="关闭">✕</button>
-                <div class="level-words-title" id="levelWordsTitle">Day 1 关卡单词</div>
+                <div class="level-words-title" id="levelWordsTitle">第1关 关卡单词</div>
                 <div class="level-words-subtitle" id="levelWordsSubtitle">本关共学习 10 个单词</div>
             </div>
             <div class="level-words-list" id="levelWordsList"></div>
@@ -7120,9 +7120,9 @@
     <script src="data/ielts.js"></script>
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
-    <script src="home-components.js?v=7.7"></script>
+    <script src="home-components.js?v=7.8"></script>
     <script src="map-components.js?v=8.1"></script>
-    <script src="game-map-components.js?v=1.7"></script>
+    <script src="game-map-components.js?v=1.8"></script>
     <script>
         const wordDB = {
             cet4: window.CET4_WORDS || [],
@@ -9740,7 +9740,7 @@
             const list = getLevelLearnedWords(day);
             const overlay = document.getElementById('levelWordsOverlay');
             if (!overlay) return;
-            document.getElementById('levelWordsTitle').textContent = `Day ${day} 关卡单词`;
+            document.getElementById('levelWordsTitle').textContent = `第${day}关 关卡单词`;
             document.getElementById('levelWordsSubtitle').textContent = `本关共学习 ${list.length} 个单词`;
             document.getElementById('levelWordsList').innerHTML = list.length
                 ? list.map((w, i) => `
@@ -9830,7 +9830,7 @@
                 // 当前关卡:先弹确认框展示今日任务概要,点「开始学习」再进入闪卡
                 openTodayStart(day);
             } else {
-                showToast(`Day ${day} 尚未解锁`, 'warning');
+                showToast(`第${day}关 尚未解锁`, 'warning');
             }
         };
         window.onLearningMapStartClick = function() {
@@ -10206,7 +10206,7 @@
                             <div class="v2-today-head">
                                 <div>
                                     <div class="v2-today-title">今日任务</div>
-                                    <div class="v2-today-day">Day ${plan.currentDay}</div>
+                                    <div class="v2-today-day">第${plan.currentDay}关</div>
                                 </div>
                                 <button class="v2-today-map-btn" onclick="showLearningMap()" aria-label="查看学习地图">
                                     <span>学习地图</span>
@@ -10673,7 +10673,7 @@
                 <div class="v2lm-node ${isCurrent ? 'v2lm-node-current' : ''}${floatCls}"
                      style="top:${level.y}%"
                      onclick="clickPlanLevel(${level.day})" role="button" tabindex="0"
-                     aria-label="Day ${level.day}">
+                     aria-label="第${level.day}关">
                     ${marker}
                     <div class="v2lm-platform">
                         <img class="v2lm-platform-img" src="${platformImg}" alt="" onerror="this.style.display='none'">
@@ -10705,7 +10705,7 @@
                 <div class="plan-action-bar">
                     <button class="plan-action-primary" onclick="startFromPlanDetail()" ontouchstart="unlockAudio()">
                         <img src="assets/generated-icons/daily-words.png" alt="">
-                        开始 Day ${current}
+                        开始 第${current}关
                     </button>
                     <button class="plan-action-secondary" onclick="jumpToToday()" aria-label="回到今天">今天</button>
                 </div>
@@ -10869,13 +10869,13 @@
                 });
             }
             overlay.innerHTML = `
-                <div class="daydetail-sheet" role="dialog" aria-label="Day ${day} 学习详情">
+                <div class="daydetail-sheet" role="dialog" aria-label="第${day}关 学习详情">
                     <div class="daydetail-handle" aria-hidden="true"></div>
                     <div class="daydetail-hero">
                         <div class="daydetail-hero-top">
                             <div class="daydetail-hero-badge" aria-hidden="true">${badgeSVG}</div>
                             <div class="daydetail-hero-text">
-                                <div class="daydetail-hero-day">Day ${day}</div>
+                                <div class="daydetail-hero-day">第${day}关</div>
                                 <div class="daydetail-hero-title">关卡回顾</div>
                                 <div class="daydetail-hero-sub">${dateStr} ${weekStr} · 共 ${totalCount} 词</div>
                             </div>
@@ -10907,7 +10907,7 @@
                     <div class="daydetail-footer">
                         <button class="daydetail-cta" onclick="closeDayDetail();startFromPlanDetail()">
                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                            继续学习 Day ${plan.currentDay}
+                            继续学习 第${plan.currentDay}关
                         </button>
                     </div>
                 </div>`;
