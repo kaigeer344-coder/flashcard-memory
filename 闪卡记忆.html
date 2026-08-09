@@ -11997,6 +11997,8 @@
             if (hasAdjacentPair(state.gameCards)) {
                 repairAdjacentInBoard();
             }
+            // 消对后刷新 HUD(顶部进度条随剩余预检词减少)
+            if (typeof updateGameHUD === 'function') updateGameHUD();
             if (state.pretestVisible.length === 0 && state.pretestCursor >= state.pretestWords.length) {
                 finishPretest();
             }
@@ -12532,6 +12534,15 @@
                 (state.pretestErrors || []).forEach(x => learnSet.add(x));
                 (state.hintedWordIds || []).forEach(x => learnSet.add(x));
                 comboHudEl.textContent = learnSet.size;
+                // 顶部进度条 = 剩余预检词汇占比(页面未消 + 尚未出现,随消对从满到空)
+                try {
+                    const remaining = state.pretestVisible.length + Math.max(0, total - state.pretestCursor);
+                    const pct = total > 0 ? (remaining / total) * 100 : 0;
+                    const hf = document.getElementById('gameHeaderTimerFill');
+                    if (hf) hf.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+                    const ht = document.getElementById('gameHeaderTimerTrack');
+                    if (ht) ht.style.display = 'block';
+                } catch (e) {}
                 return;
             }
 
