@@ -118,7 +118,7 @@
         const innerIcon = status === 'completed'
             ? `<img class="gm-node-pass-img" src="assets/home/已通过关卡.png" alt="已通过">`
             : (status === 'active'
-                ? `<img class="gm-node-active-img" src="assets/home/选中.png" alt="今日学习">`
+                ? `<img class="gm-node-active-img" src="assets/home/选中.png" alt="当前关卡">`
                 : `<span class="gm-node-icon">${iconSvg}</span>`);
 
         // 已完成关卡显示星星(学习质量)
@@ -131,10 +131,10 @@
         // 完成标记勾已移除(右上角勾影响视觉),仅保留绿描边+星星表达已完成
         const checkHtml = '';
 
-        // 今日学习关卡:按钮左侧绿色小气泡「今日学习」
+        // 当前关卡:按钮左侧绿色小气泡「当前关卡」
         // 学完当天任务后该关卡变为已通过样式,气泡仍保留(level.today 由地图侧标记)
         const todayBubble = level.today
-            ? `<div class="gm-node-today-bubble">今日学习</div>`
+            ? `<div class="gm-node-today-bubble">当前关卡</div>`
             : '';
 
         return `

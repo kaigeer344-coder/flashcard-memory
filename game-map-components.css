@@ -182,7 +182,7 @@
 }
 .gm-node-locked .gm-node-label { color: var(--lp-text-weak); }
 
-/* ===== 当前学习关卡:按钮左侧绿色小气泡「今日学习」 ===== */
+/* ===== 当前学习关卡:按钮左侧绿色小气泡「当前关卡」 ===== */
 .gm-node-today-bubble {
     position: absolute;
     top: 50%;
