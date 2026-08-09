@@ -7039,7 +7039,6 @@
             <button class="today-start-close" onclick="closeTodayStart()" aria-label="关闭">✕</button>
             <img class="today-start-emoji" id="todayStartEmoji" src="assets/home/开始学习.png" alt="开始学习" onerror="this.style.display='none'">
             <div class="today-start-title" id="todayStartTitle">开始今日学习</div>
-            <div class="today-start-sub" id="todayStartSub">今天的任务已完成 <b>0</b> 关</div>
             <div class="today-start-stats">
                 <div class="today-start-stat">
                     <div class="today-start-stat-value" id="todayStartWords">20</div>
@@ -9774,13 +9773,6 @@
             document.getElementById('todayStartWords').textContent = total;
             document.getElementById('todayStartGroups').textContent = groups;
             document.getElementById('todayStartTime').textContent = minutes;
-            // 今日已完成单元数:与任务中心 daily_unit 同源,避免固定显示"已完成 0 关"
-            try {
-                const todayKey = _todayLocalKey();
-                const doneCount = JSON.parse(localStorage.getItem('wordmatch_daily_done_' + todayKey) || '0');
-                const subEl = document.getElementById('todayStartSub');
-                if (subEl) subEl.innerHTML = `今天的任务已完成 <b>${doneCount}</b> 关`;
-            } catch (e) {}
             overlay.classList.add('show');
         };
 
