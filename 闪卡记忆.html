@@ -6824,7 +6824,7 @@
                 <div class="word-count-selector">
                     <button class="count-btn" onclick="changeWordCount(-1)">−</button>
                     <div class="count-display">
-                        <span class="count-number" id="wordCountNum">10</span>
+                        <span class="count-number" id="wordCountNum">5</span>
                         <span class="count-unit">个/组</span>
                     </div>
                     <button class="count-btn" onclick="changeWordCount(1)">+</button>
@@ -7718,7 +7718,7 @@
         let state = {
             level: 'cet4',
             dailyNewWords: 10,
-            wordsPerRound: 10,
+            wordsPerRound: 5,
             wordOrder: 'random',
             dailyRounds: 3,
             todayQueue: [],
@@ -11409,7 +11409,8 @@
                 const saved = localStorage.getItem(WORDS_PER_ROUND_KEY);
                 const parsed = parseInt(saved, 10);
                 if (!isNaN(parsed) && parsed >= 5 && parsed <= 20) {
-                    state.wordsPerRound = parsed;
+                    // 旧版本默认值为 10,统一迁移为 5(一组 5 个单词)
+                    state.wordsPerRound = parsed === 10 ? 5 : parsed;
                 }
             } catch (e) {}
         }
