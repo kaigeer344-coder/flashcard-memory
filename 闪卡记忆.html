@@ -7723,6 +7723,7 @@
             currentGroupIndex: 0,
             todayTaskTotal: 0,
             todayTaskStarted: false,
+            learningSessionActive: false, // 本次学习会话是否已进入闪卡(首组不递增组号)
             roundResults: [],
             reviewDebtCount: 0,
             newWordQuota: 0,
@@ -9506,6 +9507,7 @@
                 state.completedToday.clear();
                 state.todayTaskTotal = 0;
                 state.todayTaskStarted = false;
+                state.learningSessionActive = false;
             }
             const bookNames = { cet4: '四级', cet6: '六级', kaoyan: '考研', ielts: '雅思', toefl: '托福' };
             const stats = LearningSystem.getGlobalStats();
@@ -11339,6 +11341,7 @@
             state.currentWords = [];
             state.todayTaskTotal = 0;
             state.todayTaskStarted = false;
+            state.learningSessionActive = false;
             state.roundResults = [];
             updateEstimate();
         }
@@ -11716,6 +11719,7 @@
             state.totalGameCoinsEarned = 0;
             state.totalGameGemsEarned = 0;
             state.todayTaskStarted = true;
+            state.learningSessionActive = false; // 新会话:首次进入闪卡组号从第 1 组开始
             state.learningIndex = 0;
             buildTodayQueue(state.level);
             // 记录本次学习会话开始前已解锁的徽章(供结果页检测本次新解锁)
@@ -11742,7 +11746,9 @@
 
         function startLearning() {
             if (!audioUnlocked) unlockAudio();
-            if (!state.todayTaskStarted) {
+            if (!state.learningSessionActive) {
+                // 会话首次进入闪卡:组号从第 1 组开始(不递增)
+                state.learningSessionActive = true;
                 state.todayTaskStarted = true;
                 state.roundResults = [];
                 state.sessionReviewQueue = [];
@@ -11751,7 +11757,10 @@
                 state.currentGroupWords = [];
                 state.groupWordIndex = 0;
                 state.currentGroupIndex = 0;
-                buildTodayQueue(state.level);
+                // 队列已由 startTodayTask/预检分流构建时不再重建,避免覆盖预检结果
+                if (state.todayQueue.length === 0) {
+                    buildTodayQueue(state.level);
+                }
                 // 记录本次学习会话开始前已解锁的徽章(供结果页检测本次新解锁)
                 try {
                     _badgeUnlockedBefore = new Set(
