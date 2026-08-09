@@ -5263,9 +5263,8 @@
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
-        /* 仅「学习设置」「显示设置」两个 section 标题放大到 15px,不影响其他实例 */
-        #settingsV2Container .settings-v2-section:nth-child(1) .settings-v2-section-title,
-        #settingsV2Container .settings-v2-section:nth-child(2) .settings-v2-section-title {
+        /* 仅「学习设置」section 标题放大到 15px,不影响其他实例 */
+        #settingsV2Container .settings-v2-section:nth-child(1) .settings-v2-section-title {
             font-size: 15px;
         }
         .settings-v2-row {
@@ -13673,51 +13672,6 @@
                         </div>`;
                 }
 
-                // 显示设置
-                const displayHTML = `
-                    <div class="settings-v2-section">
-                        <div class="settings-v2-section-title">显示设置</div>
-                        <div class="settings-v2-row">
-                            <div class="settings-v2-row-label">
-                                <div class="settings-v2-row-name">进度阶梯默认视图</div>
-                                <div class="settings-v2-row-meta">首页打开时显示的视图</div>
-                            </div>
-                            <div class="settings-v2-segmented">
-                                <button class="settings-v2-seg-btn ${settings.defaultView === 'core' ? 'active' : ''}" onclick="settingsChangeView('core')">核心</button>
-                                <button class="settings-v2-seg-btn ${settings.defaultView === 'all' ? 'active' : ''}" onclick="settingsChangeView('all')">全部</button>
-                            </div>
-                        </div>
-                        <div class="settings-v2-row">
-                            <div class="settings-v2-row-label">
-                                <div class="settings-v2-row-name">显示跨词库贡献度</div>
-                                <div class="settings-v2-row-meta">展示其他词库已学贡献</div>
-                            </div>
-                            <button class="settings-v2-toggle ${settings.showContribution ? 'on' : ''}" onclick="settingsToggleContribution()" role="switch" aria-checked="${settings.showContribution}" aria-label="显示跨词库贡献度"></button>
-                        </div>
-                    </div>`;
-
-                // 数据管理
-                const dataHTML = `
-                    <div class="settings-v2-section">
-                        <div class="settings-v2-section-title">数据管理</div>
-                        <div class="settings-v2-row">
-                            <div class="settings-v2-row-label">
-                                <div class="settings-v2-row-name">学习统计</div>
-                                <div class="settings-v2-row-meta">查看累计学习数据</div>
-                            </div>
-                            <button class="settings-v2-link" onclick="switchTab('stats')">查看</button>
-                        </div>
-                        <div class="settings-v2-row">
-                            <div class="settings-v2-row-label">
-                                <div class="settings-v2-row-name">单词本</div>
-                                <div class="settings-v2-row-meta">浏览所有单词</div>
-                            </div>
-                            <button class="settings-v2-link" onclick="switchTab('wordbook')">浏览</button>
-                        </div>
-                    </div>
-                    <button class="settings-v2-danger" onclick="confirmResetV2Data()">重置 V2.0 学习数据</button>
-                    <div class="settings-v2-info">重置将清除:学习模式、冲刺计划、累计统计。FSRS 单词记忆数据(传统模式)不受影响。</div>`;
-
                 // 关于
                 const aboutHTML = `
                     <div class="settings-v2-section">
@@ -13737,7 +13691,7 @@
                         </div>
                     </div>`;
 
-                v2El.innerHTML = `${modeHTML}${modeSpecificHTML}</div>${displayHTML}${dataHTML}${aboutHTML}`;
+                v2El.innerHTML = `${modeHTML}${modeSpecificHTML}</div>${aboutHTML}`;
             } catch (e) {
                 console.error('renderSettingsScreen V2 失败:', e);
             }
