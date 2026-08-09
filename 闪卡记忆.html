@@ -7873,14 +7873,14 @@
             const streakIcon = count >= 30 ? 'achievement' : count >= 7 ? 'streakFlame' : 'rewardSparkle';
             document.getElementById('streakFire').innerHTML = iconImg(streakIcon, 'streak-icon-img');
 
-            // 连胜天数圆点（显示最近7天 + 里程碑）
-            const showDays = Math.min(Math.max(count, 7), 7);
+            // 连胜天数圆点:从第 1 天连续显示到今天(最多最近 7 天),不出现负数
+            const showDays = Math.min(count, 7);
             const daysRow = document.getElementById('streakDaysRow');
             let dotsHtml = '';
-            for (let i = showDays - 1; i >= 0; i--) {
-                const dayNum = count - i;
-                if (i === 0) dotsHtml += `<div class="streak-day-dot today">${dayNum}</div>`;
-                else dotsHtml += `<div class="streak-day-dot done">${dayNum}</div>`;
+            for (let i = 0; i < showDays; i++) {
+                const dayNum = count - (showDays - 1 - i);
+                const isToday = i === showDays - 1;
+                dotsHtml += `<div class="streak-day-dot ${isToday ? 'today' : 'done'}">${dayNum}</div>`;
             }
             daysRow.innerHTML = dotsHtml;
 
