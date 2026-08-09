@@ -131,6 +131,12 @@
         // 完成标记勾已移除(右上角勾影响视觉),仅保留绿描边+星星表达已完成
         const checkHtml = '';
 
+        // 今日学习关卡:按钮左侧绿色小气泡「今日学习」
+        // 学完当天任务后该关卡变为已通过样式,气泡仍保留(level.today 由地图侧标记)
+        const todayBubble = level.today
+            ? `<div class="gm-node-today-bubble">今日学习</div>`
+            : '';
+
         return `
             <div class="gm-node gm-node-${status}" style="left:${geom.x.toFixed(1)}%;top:${Math.round(geom.y)}px;">
                 <button class="gm-node-btn" type="button" role="button" tabindex="0"
@@ -139,6 +145,7 @@
                     ${innerIcon}
                     ${checkHtml}
                 </button>
+                ${todayBubble}
                 <div class="gm-node-label">Day ${n}</div>
                 ${starsHtml}
             </div>`;

@@ -8,9 +8,9 @@
     <meta http-equiv="Expires" content="0">
     <title>闪卡记忆</title>
     <link rel="icon" href="assets/generated-icons/app-logo.png">
-    <link rel="stylesheet" href="home-components.css?v=7.7">
+    <link rel="stylesheet" href="home-components.css?v=7.8">
     <link rel="stylesheet" href="map-components.css?v=8.5">
-    <link rel="stylesheet" href="game-map-components.css?v=2.0">
+    <link rel="stylesheet" href="game-map-components.css?v=2.1">
     <style>
         :root {
             --primary: #58cc02;
@@ -5446,6 +5446,10 @@
             letter-spacing: 1px;
             margin-bottom: 8px;
         }
+        /* 仅"数据管理"区块标题放大(其余区块标题保持 12px) */
+        #settingsScreen .settings-v2-section-title.settings-v2-section-title-data {
+            font-size: 24px;
+        }
         #settingsScreen .settings-v2-row { border-bottom: 2px solid #f5f5f5; }
         #settingsScreen .settings-v2-row:last-child { border-bottom: none; }
         #settingsScreen .settings-v2-row-name { font-size: 15px; }
@@ -5476,6 +5480,14 @@
             box-shadow: 0 4px 0 #e03b3b;
         }
         #settingsScreen .settings-v2-danger:active { transform: translateY(3px); box-shadow: 0 1px 0 #e03b3b; }
+        /* 行内危险按钮:复用 settings-v2-link 的 44px 行内尺寸,仅换红色主题(避免整行大按钮撑乱 flex 行) */
+        #settingsScreen .settings-v2-link-danger {
+            background: #ff4b4b;
+            color: #ffffff;
+            border-color: #ff4b4b;
+            box-shadow: 0 3px 0 #e03b3b;
+        }
+        #settingsScreen .settings-v2-link-danger:active { transform: translateY(2px); box-shadow: 0 1px 0 #e03b3b; }
         /* 提示信息 */
         #settingsScreen .settings-v2-info {
             background: #eaf8e0;
@@ -7111,7 +7123,7 @@
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
     <script src="map-components.js?v=8.1"></script>
-    <script src="game-map-components.js?v=1.5"></script>
+    <script src="game-map-components.js?v=1.7"></script>
     <script>
         const wordDB = {
             cet4: window.CET4_WORDS || [],
@@ -7323,6 +7335,7 @@
                     case 'matchSuccess': return context.wasHinted ? 2 : 3;
                     case 'matchFail': return 1;
                     case 'matchTimeout': return 2;
+                    case 'pretestPassed': return 4; // 预检未学即会:强信号,按 Easy 首评(initS=5.8,约4天后到期复习)
                     default: return 3;
                 }
             }
@@ -9536,17 +9549,22 @@
                 const currentDay = plan ? Math.min(totalDays, Math.max(1, plan.currentDay || 1)) : 1;
                 getChestLevels(totalDays).forEach(c => { chestMap[c.level] = c.big; });
                 const perLevel = 10; // 冲刺模式每关 10 词
+                const todayDone = isTodayTaskComplete();
+                // 今日节点:任务进行中=当前关;任务已学完=刚学完的那一关(气泡不消失)
+                const todayNode = todayDone ? Math.max(1, currentDay - 1) : currentDay;
                 for (let i = 1; i <= totalDays; i++) {
                     let status = 'locked';
                     if (completedDays.includes(i)) status = 'completed';
-                    // 当日关卡:今日学习全部完成后直接视为已通过,与其他完成关卡一致
-                    else if (i === currentDay) status = isTodayTaskComplete() ? 'completed' : 'current';
+                    // 当前关卡:今日任务进行中才点亮为"今日学习";
+                    // 今日任务已完成则保持灰色锁定,不直接点亮下一关
+                    else if (i === currentDay) status = todayDone ? 'locked' : 'current';
                     const done = status === 'completed';
                     const cur = status === 'current';
                     const learned = done ? perLevel : (cur ? countLevelLearned(i, perLevel) : 0);
                     levels.push({
                         day: i,
                         status,
+                        today: i === todayNode,
                         type: '词汇学习',
                         icon: 'book',
                         week: Math.ceil(i / 7),   // 每周 7 天(一周)
@@ -9578,17 +9596,22 @@
                 const currentLevel = allDone ? totalLevels + 1 : Math.min(totalLevels, Math.floor(learnedCount / dailyTarget) + 1);
                 chestMap = {};
                 getChestLevels(totalLevels).forEach(c => { chestMap[c.level] = c.big; });
+                const todayDone = isTodayTaskComplete();
+                // 今日节点:任务进行中=当前关;任务已学完=刚学完的那一关(气泡不消失)
+                const todayNode = todayDone ? Math.max(1, currentLevel - 1) : Math.min(currentLevel, totalLevels);
                 for (let i = 1; i <= totalLevels; i++) {
                     let status = 'locked';
                     if (allDone || i < currentLevel) status = 'completed';
-                    // 当日关卡:今日学习全部完成后直接视为已通过,与其他完成关卡一致
-                    else if (i === currentLevel) status = isTodayTaskComplete() ? 'completed' : 'current';
+                    // 当前关卡:今日任务进行中才点亮为"今日学习";
+                    // 今日任务已完成则保持灰色锁定,不直接点亮下一关
+                    else if (i === currentLevel) status = todayDone ? 'locked' : 'current';
                     const done = status === 'completed';
                     const cur = status === 'current';
                     const learned = done ? dailyTarget : (cur ? countLevelLearned(i, dailyTarget) : 0);
                     levels.push({
                         day: i,
                         status,
+                        today: i === todayNode,
                         type: '词汇学习',
                         icon: 'book',
                         week: Math.ceil(i / 7),   // 每周 7 天(一周)
@@ -11660,7 +11683,16 @@
                 renderSettingsScreen();
             }
         }
-        function isTodayTaskComplete() { return state.todayTaskStarted && getTodayRemainingCount() === 0; }
+        function isTodayTaskComplete() {
+            if (state.todayTaskStarted) return getTodayRemainingCount() === 0;
+            // 页面刷新后今日会话状态丢失:用持久化的"今日已完成学习单元"判定,
+            // 保证当天学完后当前关保持灰色锁定,不会因刷新重新点亮下一关
+            const todayKey = _todayLocalKey();
+            try {
+                const done = JSON.parse(localStorage.getItem('wordmatch_daily_done_' + todayKey) || '0');
+                return (Number(done) || 0) > 0;
+            } catch (e) { return false; }
+        }
 
         function updateEstimate() {
             const totalWords = wordDB[state.level].length;
@@ -13702,7 +13734,20 @@
                         </div>
                     </div>`;
 
-                v2El.innerHTML = `${modeHTML}${modeSpecificHTML}</div>${aboutHTML}`;
+                // 数据管理
+                const dataHTML = `
+                    <div class="settings-v2-section">
+                        <div class="settings-v2-section-title settings-v2-section-title-data">数据管理</div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">重置学习进度</div>
+                                <div class="settings-v2-row-meta">清空单词记忆,冲刺计划进度归零(金币/宝石保留)</div>
+                            </div>
+                            <button class="settings-v2-link settings-v2-link-danger" onclick="clearLearningData()">重置</button>
+                        </div>
+                    </div>`;
+
+                v2El.innerHTML = `${modeHTML}${modeSpecificHTML}</div>${aboutHTML}${dataHTML}`;
             } catch (e) {
                 console.error('renderSettingsScreen V2 失败:', e);
             }
@@ -14016,14 +14061,27 @@
                 wordbookAllItems.sort((a, b) => (order[a.mem.status] || 2) - (order[b.mem.status] || 2) || a.mem.reviewCount - b.mem.reviewCount);
             }
 
-            const mastered = wordbookAllItems.filter(i => i.mem.status === 'mastered').length;
-            const learning = wordbookAllItems.filter(i => i.mem.status === 'learning' || i.mem.status === 'lapsed').length;
-            const newCount = wordbookAllItems.filter(i => i.mem.status === 'new').length;
+            // 统计口径与列表一致:按 FSRS4 学习周期进度计算
+            const mastered = wordbookAllItems.filter(i => wordFsrsProgress(i.mem) >= 100).length;
+            const learning = wordbookAllItems.filter(i => { const p = wordFsrsProgress(i.mem); return p > 0 && p < 100; }).length;
+            const newCount = wordbookAllItems.filter(i => wordFsrsProgress(i.mem) === 0).length;
 
             document.getElementById('wordbookSummary').textContent =
                 `共 ${wordbookAllItems.length} 词 · 已掌握 ${mastered} · 学习中 ${learning} · 未学 ${newCount}`;
 
             renderWordbookPage();
+        }
+
+        // 单词学习进度:按 FSRS4 学习周期计算
+        // 0 = 未学习;0-100 = 学习中(按稳定性 S 向掌握阈值 7 推进的比例);100 = 已掌握(S>=7)
+        function wordFsrsProgress(mem) {
+            if (!mem || mem.status === 'new' || !mem.lastReview || (mem.reviewCount || 0) === 0) return 0;
+            const S = Number(mem.stability) || 0;
+            if (mem.status === 'mastered' || S >= 7) return 100;
+            if (S > 0) return Math.max(1, Math.min(99, Math.round(S / 7 * 100)));
+            // 旧数据无稳定性:按熟悉度(0-5)近似
+            const f = Number(mem.familiarity) || 0;
+            return Math.max(1, Math.min(99, Math.round(f / 5 * 100)));
         }
 
         function renderWordbookPage() {
@@ -14042,8 +14100,6 @@
             const visible = items.slice(start, end);
             const hasMore = end < items.length;
 
-            const masteryLabel = { new: '未学', learning: '学习中', mastered: '已掌握', lapsed: '需复习' };
-
             const html = visible.map(item => {
                 const m = item.mem;
                 const w = item.word;
@@ -14053,10 +14109,11 @@
                 const isNew = (m.status === 'new' || !m.lastReview);
                 const clickAttr = isNew ? '' : `onclick="showWordbookDetail('${item.level}','${item.index}')" style="cursor:pointer"`;
                 const itemClass = isNew ? 'wordbook-item' : 'wordbook-item wordbook-item-clickable';
-                // 状态配色与百分比(记忆保持率 R)
-                const statusColor = { new: '#afafaf', learning: '#1cb0f6', mastered: '#58cc02', lapsed: '#ff4b4b' }[m.status] || '#afafaf';
-                const barColor = { new: '#d8d8d8', learning: '#1cb0f6', mastered: '#58cc02', lapsed: '#ff4b4b' }[m.status] || '#d8d8d8';
-                const pct = isNew ? 0 : Math.round(Math.max(0, Math.min(1, Number(m.retrievability) || 0)) * 100);
+                // 学习进度按 FSRS4 学习周期计算:0=未学(灰) / 0-100=学习中(蓝) / 100=已掌握(绿)
+                const pct = wordFsrsProgress(m);
+                const barColor = pct >= 100 ? '#58cc02' : pct > 0 ? '#1cb0f6' : '#d8d8d8';
+                const statusColor = pct >= 100 ? '#58cc02' : pct > 0 ? '#1cb0f6' : '#afafaf';
+                const statusLabel = pct >= 100 ? '已掌握' : pct > 0 ? '学习中' : '未学';
                 return `
                     <div class="${itemClass}" ${clickAttr}>
                         <button class="wb-item-audio" onclick="event.stopPropagation(); pronounceWord('${enSafe}')" aria-label="播放发音">
@@ -14071,7 +14128,7 @@
                         <div class="wb-item-bar"><div class="wb-item-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
                         <div class="wb-item-right">
                             <div class="wb-item-pct" style="color:${statusColor}">${pct}%</div>
-                            <div class="wb-item-status" style="color:${statusColor}">${masteryLabel[m.status] || '未学'}</div>
+                            <div class="wb-item-status" style="color:${statusColor}">${statusLabel}</div>
                         </div>
                     </div>
                 `;
@@ -14099,6 +14156,8 @@
 
             const masteryLabel = { new: '未学', learning: '学习中', mastered: '已掌握', lapsed: '需复习' };
             const masteryColor = { new: '#ccc', learning: 'var(--accent)', mastered: 'var(--primary)', lapsed: 'var(--danger)' };
+            // 状态徽章与列表一致:按 FSRS4 学习周期进度派生,100%=已掌握,其余学习中
+            const detailStatus = wordFsrsProgress(mem) >= 100 ? 'mastered' : 'learning';
 
             const S = Number(mem.stability) || 0;
             const D = Number(mem.difficulty) || 0;
@@ -14123,8 +14182,8 @@
                             <div class="wordbook-detail-word">${w.en}</div>
                             ${phoneticHtml}
                             <div class="wordbook-detail-status-badge">
-                                <div class="wordbook-detail-status-dot" style="background:${masteryColor[mem.status] || '#ccc'}"></div>
-                                ${masteryLabel[mem.status] || '未学'}
+                                <div class="wordbook-detail-status-dot" style="background:${masteryColor[detailStatus] || '#ccc'}"></div>
+                                ${masteryLabel[detailStatus] || '未学'}
                             </div>
                         </div>
                         <div class="wordbook-detail-body">
@@ -14212,14 +14271,41 @@
 
         function clearLearningData() {
             SFX.click();
-            if (!confirm('确定要清除所有学习数据吗？进度、金币、宝石会保留，但单词记忆记录将被清空。')) return;
+            if (!confirm('确定要重置学习进度吗？所有单词记忆记录将被清空，冲刺计划进度将归零。金币、宝石和设置会保留。')) return;
             try {
                 const keysToRemove = [];
                 for (let i = 0; i < localStorage.length; i++) {
                     const key = localStorage.key(i);
-                    if (key && (key.startsWith(MemorySystem.MEM_PREFIX) || key.startsWith(MemorySystem.LEGACY_PREFIX))) keysToRemove.push(key);
+                    // 单词记忆 + 每日计划 + 今日任务状态
+                    if (key && (key.startsWith(MemorySystem.MEM_PREFIX) || key.startsWith(MemorySystem.LEGACY_PREFIX)
+                        || key.startsWith('wordmatch_role_plan_') || key.startsWith('wordmatch_daily_done_')
+                        || key === 'wordmatch_task_states' || key === 'wordmatch_study_days')) {
+                        keysToRemove.push(key);
+                    }
                 }
                 keysToRemove.forEach(key => localStorage.removeItem(key));
+                // 冲刺计划进度归零:记忆已清空,计划不归零会导致已学词不再下发
+                try {
+                    const rolesRaw = localStorage.getItem('wordmatch_roles');
+                    if (rolesRaw) {
+                        const roles = JSON.parse(rolesRaw);
+                        (Array.isArray(roles) ? roles : []).forEach(r => {
+                            r.currentDay = 1;
+                            r.completedDays = [];
+                            r.status = 'active';
+                            if (r.postExam) r.postExam = { completed: false, completedAt: null, consolidationStarted: false, nextGoalSuggested: null };
+                            if (r.plan && r.plan.progress) {
+                                r.plan.progress.learnedWordIds = [];
+                                r.plan.progress.masteredCount = 0;
+                                r.plan.progress.totalLearnedSeconds = 0;
+                                r.plan.progress.lastStudyDate = null;
+                                r.plan.progress.streakDays = 0;
+                            }
+                        });
+                        localStorage.setItem('wordmatch_roles', JSON.stringify(roles));
+                    }
+                } catch (e) { console.error('重置冲刺计划进度失败:', e); }
+                if (typeof LearningSystem !== 'undefined' && LearningSystem.load) LearningSystem.load();
                 MemorySystem._memoryCache = new Map();
                 MemorySystem._allWordsCache = {};
                 MemorySystem._wordIdIndex = null;
@@ -14227,15 +14313,18 @@
                 MemorySystem._keySet = null;
                 MemorySystem._allMemoryPreloaded = false;
                 state.todayQueue = [];
+                state.sessionReviewQueue = [];
                 state.completedToday.clear();
                 state.currentWords = [];
                 state.roundResults = [];
+                state.gameRounds = [];
                 state.learningIndex = 0;
                 updateEstimate();
                 renderHeaderStats();
-                alert('学习数据已清除');
+                renderSettingsScreen();
+                alert('学习进度已重置');
             } catch (e) {
-                alert('清除失败，请重试');
+                alert('重置失败，请重试');
             }
         }
 
@@ -14942,30 +15031,25 @@
                     };
                 },
 
-                // 预检选对的词:标记"已会"(写记忆 mastered + 计入计划已处理),
-                // 后续不再分配新词/进入复习,统计口径与已学一致
+                // 预检选对的词:走 FSRS4 首评(grade4 Easy)记录记忆并计入计划已处理,
+                // 当天不再学习,约 4 天后按算法到期自动回复习,不再硬编码 mastered
                 markPretestPassed(items) {
                     if (!items || !items.length) return 0;
                     const plan = this.getActivePlan();
                     if (!plan || !plan.plan || !plan.plan.progress) return 0;
-                    const now = Date.now();
                     let n = 0;
                     for (const it of items) {
                         if (!it || !it.en) continue;
                         try {
-                            MemorySystem.saveWordMemory(MemorySystem.getSharedWordKey({ en: it.en }), {
-                                status: 'mastered',
-                                reviewCount: 1,
-                                familiarity: 4,
-                                stability: 30,
-                                difficulty: 4,
-                                lastGrade: 4,
-                                retrievability: 1,
-                                nextReview: now + 30 * 86400000,
-                                lastReview: now,
-                                algorithmVersion: 2,
-                                pretestPassed: true
-                            });
+                            // 预检通过 = 一次真实识别成功,走 FSRS4 评分(pretestPassed→grade4 Easy),
+                            // 由算法算出 S/D/R 与 nextReview(约4天后到期回复习),不再硬编码 mastered
+                            const sharedKey = MemorySystem.getSharedWordKey({ en: it.en });
+                            const mem = MemorySystem.rate(
+                                { en: it.en, wordId: it.wordId, sharedKey },
+                                'pretestPassed'
+                            );
+                            // 保留预检标记(rate 内部不感知该字段)
+                            MemorySystem.saveWordMemory(sharedKey, Object.assign({}, mem, { pretestPassed: true }));
                         } catch (e) {}
                         if (it.wordId && !plan.plan.progress.learnedWordIds.includes(it.wordId)) {
                             plan.plan.progress.learnedWordIds.push(it.wordId);

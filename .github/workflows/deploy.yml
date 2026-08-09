@@ -28,11 +28,12 @@ jobs:
         run: tcb login --cloudbase-api-key "$TCB_API_KEY" -e "$TCB_ENV_ID"
 
       # 只复制网站所需文件/目录,避免混入 node_modules/截图/脚本等
+      # 注意:项目无顶层 css/js 目录,仅复制实际存在的目录
       - name: 准备部署目录
         run: |
           mkdir -p _deploy
           cp index.html 闪卡记忆.html home-components.js home-components.css map-components.js map-components.css game-map-components.js game-map-components.css _deploy/
-          cp -r assets data css js components _deploy/
+          cp -r assets data _deploy/
 
       - name: 部署静态网站
         env:
