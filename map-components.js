@@ -24,28 +24,14 @@
     };
 
     // ===== 关卡数据 =====
+    // 默认关卡:返回空数组,杜绝"伪造学习进度"兜底(真实数据缺失时渲染空态)
     window.getDefaultLevels = function() {
-        return [
-            { day: 1, status: 'completed', type: '听力', icon: 'headphone' },
-            { day: 2, status: 'completed', type: '听力', icon: 'headphone' },
-            { day: 3, status: 'completed', type: '听力', icon: 'headphone' },
-            { day: 4, status: 'completed', type: '听力', icon: 'headphone' },
-            { day: 5, status: 'current',   type: '阅读词汇', icon: 'book' },
-            { day: 6, status: 'locked',    type: '阅读词汇', icon: 'book' },
-            { day: 7, status: 'locked',    type: '阅读词汇', icon: 'book' },
-            { day: 8, status: 'locked',    type: '阅读词汇', icon: 'book' },
-            { day: 9, status: 'locked',    type: '阅读词汇', icon: 'book' },
-            { day: 10, status: 'locked',   type: '阅读词汇', icon: 'book' },
-            { day: 11, status: 'locked',   type: '写作词汇', icon: 'book' },
-            { day: 12, status: 'locked',   type: '写作词汇', icon: 'book' },
-            { day: 13, status: 'locked',   type: '写作词汇', icon: 'book' },
-            { day: 14, status: 'locked',   type: '写作词汇', icon: 'book' }
-        ];
+        return [];
     };
 
     // ===== 顶部统计条 =====
     window.renderStatsBar = function(stats) {
-        const s = stats || { coins: 0, reset: 1, hourglass: 570, hint: 24 };
+        const s = stats || { coins: 0, reset: 0, hourglass: 0, hint: 0 };
         const items = [
             { icon: LP_ICONS.statWords,    value: s.coins,     label: '金币' },
             { icon: LP_ICONS.statReset,    value: s.reset,     label: '重置' },
@@ -70,9 +56,12 @@
     // u.progressText: 自定义进度文案(自由模式显示打卡天数)
     // u.hideBar: true 时隐藏进度条
     window.renderUnitBanner = function(unit) {
-        const u = unit || { tag: '四级词汇', title: '四级核心词汇', done: 4, total: 7 };
+        // 无数据时不展示伪造进度(总数为 0 时进度文案显示"暂无学习数据")
+        const u = unit || { tag: '学习地图', title: '学习地图', done: 0, total: 0 };
         const pct = u.total > 0 ? Math.round((u.done / u.total) * 100) : 0;
-        const progressText = u.progressText || `已完成 ${u.done}/${u.total} ${u.progressLabel || '天'}`;
+        const progressText = u.total > 0
+            ? (u.progressText || `已完成 ${u.done}/${u.total} ${u.progressLabel || '天'}`)
+            : '暂无学习数据';
         return `
             <div class="lp-banner">
                 <img class="lp-banner-img" src="assets/页面素材2.png" alt="" onerror="this.style.display='none'">

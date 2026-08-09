@@ -6633,7 +6633,7 @@
                 <span class="reward-text">获得奖励</span>
                 <span class="reward-energy">
                     <img class="energy-icon-img" src="assets/home/金币.png" alt="金币">
-                    <span id="completionEnergyValue">7</span>
+                    <span id="completionEnergyValue">0</span>
                 </span>
             </div>
 
@@ -7096,7 +7096,7 @@
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
-    <script src="map-components.js?v=8.0"></script>
+    <script src="map-components.js?v=8.1"></script>
     <script src="game-map-components.js?v=1.5"></script>
     <script>
         const wordDB = {
@@ -9625,7 +9625,7 @@
             }
         })();
 
-        // 获取某关卡学到的单词:优先读真实学习记录,无记录时用词库切片模拟
+        // 获取某关卡学到的单词:仅取真实学习记录,无记录时返回空
         function getLevelLearnedWords(day) {
             let allWords = [];
             try {
@@ -9645,10 +9645,9 @@
                 if (s.mode === 'free') perLevel = s.dailyTarget || 20;
             } catch (e) {}
             const learned = allWords.filter(w => w.memoryData && w.memoryData.reviewCount > 0);
-            // 有真实学习记录时按关卡分片,否则用词库切片模拟该关卡的单词
-            const source = learned.length >= 5 ? learned : allWords;
+            // 只展示有真实学习记录的词(无记录时返回空,由弹窗提示"暂无学习记录")
             const start = (day - 1) * perLevel;
-            return source.slice(start, start + perLevel);
+            return learned.slice(start, start + perLevel);
         }
 
         // 统计某关卡范围内已学的单词数(用于地图卡片展示"当日学习量")
@@ -9674,14 +9673,16 @@
             if (!overlay) return;
             document.getElementById('levelWordsTitle').textContent = `Day ${day} 关卡单词`;
             document.getElementById('levelWordsSubtitle').textContent = `本关共学习 ${list.length} 个单词`;
-            document.getElementById('levelWordsList').innerHTML = list.map((w, i) => `
+            document.getElementById('levelWordsList').innerHTML = list.length
+                ? list.map((w, i) => `
                 <div class="level-word-item">
                     <div class="level-word-main">
                         <span class="level-word-en">${i + 1}. ${w.en}</span>
                         <span class="level-word-phonetic">${w.phonetic || ''}</span>
                     </div>
                     <span class="level-word-cn">${w.cn || ''}</span>
-                </div>`).join('');
+                </div>`).join('')
+                : '<div class="level-word-item" style="justify-content:center;color:#a0a0a0;">该关卡暂无真实学习记录</div>';
             overlay.classList.add('show');
         };
 
@@ -9736,6 +9737,13 @@
             document.getElementById('todayStartWords').textContent = total;
             document.getElementById('todayStartGroups').textContent = groups;
             document.getElementById('todayStartTime').textContent = minutes;
+            // 今日已完成单元数:与任务中心 daily_unit 同源,避免固定显示"已完成 0 关"
+            try {
+                const todayKey = new Date().toISOString().slice(0, 10);
+                const doneCount = JSON.parse(localStorage.getItem('wordmatch_daily_done_' + todayKey) || '0');
+                const subEl = document.getElementById('todayStartSub');
+                if (subEl) subEl.innerHTML = `今天的任务已完成 <b>${doneCount}</b> 关`;
+            } catch (e) {}
             overlay.classList.add('show');
         };
 
@@ -10064,9 +10072,19 @@
                     if (examPassed && !postExam.completed) {
                         // 考后过渡卡(替换今日任务卡)
                         const learned = (plan.plan.progress.learnedWordIds || []).length;
-                        const target = plan.totalTargetWords || 500;
-                        const coverage = Math.min(100, Math.round((learned / target) * 100));
-                        const retention = 82; // 占位:实际由巩固计划复习结果计算
+                        const target = plan.totalTargetWords || (plan.plan && Array.isArray(plan.plan.wordPool) ? plan.plan.wordPool.length : 0);
+                        const coverage = target > 0 ? Math.min(100, Math.round((learned / target) * 100)) : 0;
+                        // 预估留存:取该词库已学词的 FSRS 平均记忆强度(retrievability)计算,无记录时为 0
+                        let retention = 0;
+                        try {
+                            const memWords = MemorySystem.getAllWords(plan.type);
+                            const learnedMem = memWords.filter(w => w.memoryData && w.memoryData.reviewCount > 0);
+                            if (learnedMem.length) {
+                                retention = Math.round(
+                                    learnedMem.reduce((s, w) => s + (w.memoryData.retrievability || 0), 0) / learnedMem.length * 100
+                                );
+                            }
+                        } catch (e) {}
                         todayHTML = `
                             <div class="postexam-card" role="region" aria-label="考试完成庆祝">
                                 <div class="postexam-badge" aria-hidden="true">
@@ -10452,7 +10470,7 @@
                         <span class="abh-name">闪卡记忆</span>
                     </div>
                     <div class="abh-right">
-                        ${renderEnergyBadge(data.energy)}
+                        ${typeof data.energy === 'number' ? renderEnergyBadge(data.energy) : ''}
                         ${avatarHTML}
                     </div>
                 </div>`;
@@ -10505,21 +10523,15 @@
             // 今日任务奖励 XP:新词 10 XP/个 + 复习 5 XP/个;队列未生成时展示默认 80 XP
             const rewardXP = (newToday + reviewToday) > 0 ? newToday * 10 + reviewToday * 5 : 80;
 
-            // 模拟数据系统：当前进度为第5天，已完成1-4天，共7天（集成测试）
-            const simulatedTotal = 7;
-            const simulatedCurrent = 5;
-            const simulatedCompleted = [1, 2, 3, 4];
-            const useSimulated = true; // 切换为 false 可恢复真实计划数据
+            // 计划进度全部取真实计划数据(plan.planDays / currentDay / completedDays)
+            const total = Math.max(1, plan.planDays || 1);
+            const current = Math.min(total, Math.max(1, plan.currentDay || 1));
+            const completed = Array.isArray(plan.completedDays) ? plan.completedDays : [];
 
-            const total = useSimulated ? simulatedTotal : (plan.planDays || 1);
-            const current = useSimulated ? simulatedCurrent : (plan.currentDay || 1);
-            const completed = useSimulated ? simulatedCompleted : (plan.completedDays || []);
-
-            // 渲染顶部区域(品牌栏 + 标题栏)
+            // 渲染顶部区域(品牌栏 + 标题栏);能量系统未实现,不显示硬编码能量
             topEl.innerHTML = renderLearningMapTopSection({
                 logoAsset: 'assets/generated-icons/app-logo.png',
                 avatarAsset: '',
-                energy: 10,
                 pageTitle: `${plan.name} · 学习地图`
             });
 
@@ -10653,17 +10665,26 @@
             screen.scrollTop = Math.max(0, screen.scrollTop + targetY);
         }
 
-        // 显示地图规则说明
+        // 显示地图规则说明(按真实计划天数生成,不写死 Day10/Day14)
         function showMapRules() {
             SFX.click();
-            showToast('每天完成学习任务解锁下一关,Day10 宝箱 / Day14 最终挑战', 'info');
+            let total = 14, chestDay = 10;
+            try {
+                const plan = LearningSystem.getActivePlan();
+                if (plan && plan.planDays) {
+                    total = plan.planDays;
+                    chestDay = total >= 10 ? 10 : Math.max(2, Math.ceil(total / 2));
+                }
+            } catch (e) {}
+            showToast(`每天完成学习任务解锁下一关,Day${chestDay} 宝箱 / Day${total} 最终挑战`, 'info');
         }
 
         function clickPlanLevel(day) {
             SFX.click();
-            // 与 renderPlanDetail 中的模拟数据保持一致
-            const current = 5;
-            const completed = [1, 2, 3, 4];
+            // 关卡解锁状态取真实计划数据,与 renderPlanDetail 保持一致
+            const plan = LearningSystem.getActivePlan();
+            const current = (plan && plan.currentDay) || 1;
+            const completed = (plan && Array.isArray(plan.completedDays)) ? plan.completedDays : [];
             if (!completed.includes(day) && day !== current) {
                 showToast('完成前一关后解锁', 'warning');
                 return;
@@ -12528,12 +12549,17 @@
             const score = gameResult ? (gameResult.score || 0) : 0;
             if (scoreEl) scoreEl.textContent = score;
 
-            // 奖励能量（默认 7，若有游戏结果则按规则计算：每 20 分 +1）
-            let energy = 7;
+            // 获得奖励(金币):游戏结算用真实 coinsEarned;纯学习流程按 known×2+fuzzy×1 计算;均无则为 0
+            const results = state.roundResults || [];
+            let rewardCoins = 0;
             if (gameResult) {
-                energy = Math.max(1, Math.floor(score / 20));
+                rewardCoins = gameResult.coinsEarned || 0;
+            } else {
+                const known = results.filter(r => r.rating === 'known').length;
+                const fuzzy = results.filter(r => r.rating === 'fuzzy').length;
+                rewardCoins = known * 2 + fuzzy * 1;
             }
-            if (energyEl) energyEl.textContent = energy;
+            if (energyEl) energyEl.textContent = rewardCoins;
 
             // 升级提示
             if (gameResult && gameResult.levelResult && gameResult.levelResult.leveledUp) {
@@ -12542,7 +12568,6 @@
             }
 
             // 正常今日任务流程奖励与状态更新
-            const results = state.roundResults || [];
             if (!gameResult) {
                 const known = results.filter(r => r.rating === 'known').length;
                 const fuzzy = results.filter(r => r.rating === 'fuzzy').length;
@@ -12669,8 +12694,7 @@
         const WORD_BADGE_LABELS = {
             cet4: '四级', cet6: '六级', kaoyan: '考研', ielts: '雅思', toefl: '托福'
         };
-        // 词库总词数(无计划时兜底展示)
-        const WORD_BANK_TOTALS = { cet4: 4500, cet6: 5500, kaoyan: 5500, ielts: 6000, toefl: 5000 };
+        // 词库总词数以真实 wordDB 长度为准(词库未加载时显示"词库未加载")
         const LOCK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>`;
 
         // ===== 成就徽章:统一计算当前进度与解锁状态 =====
@@ -12745,13 +12769,15 @@
                     const st = MemorySystem.getLearningStats(type);
                     learned = (st.mastered || 0) + (st.learning || 0);
                 } catch (e) {}
-                const total = (wordDB[type] && wordDB[type].length) ? wordDB[type].length : (WORD_BANK_TOTALS[type] || 0);
-                const unlocked = learned >= total;
+                // 总词数一律取真实词库长度,词库未加载时显示"词库未加载"而非静态兜底数字
+                const total = (wordDB[type] && wordDB[type].length) || 0;
+                const unlocked = total > 0 && learned >= total;
+                const progressText = total > 0 ? `已背 ${learned}/${total}` : '词库未加载';
                 return `
                     <div class="ach-badge-card ${unlocked ? '' : 'locked'}">
                         <div class="ach-shield ${unlocked ? 'shield-' + type : ''}">
                             ${WORD_BADGE_ICONS[type]}
-                            <div class="ach-badge-progress">已背 ${learned}/${total}</div>
+                            <div class="ach-badge-progress">${progressText}</div>
                             <button class="ach-lock-btn ${unlocked ? 'unlocked' : 'locked'}" type="button">${unlocked ? '已解锁' : '未解锁'}</button>
                         </div>
                     </div>
