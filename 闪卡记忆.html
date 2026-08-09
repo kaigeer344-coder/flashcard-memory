@@ -14356,6 +14356,7 @@
                 MemorySystem._memoryCache = new Map();
                 MemorySystem._allWordsCache = {};
                 MemorySystem._wordIdIndex = null;
+                MemorySystem._sharedKeyIndex = null;
                 MemorySystem._statsCache = {};
                 MemorySystem._keySet = null;
                 MemorySystem._allMemoryPreloaded = false;
@@ -14366,6 +14367,19 @@
                 state.roundResults = [];
                 state.gameRounds = [];
                 state.learningIndex = 0;
+                // 重置会话状态:清空后旧的"今日已开始"内存标记不能继续生效,
+                // 否则回到首页 isTodayTaskComplete() 会误判今日已完成/今日节点错位
+                state.todayTaskStarted = false;
+                state.sessionMode = null;
+                state.sessionCtx = null;
+                state.learningSessionActive = false;
+                state.extraGroupMode = false;
+                state.pretestPending = null;
+                state.pretestWords = [];
+                state.pretestErrors = null;
+                // 重置后普通 ?demo= 不再自动复活演示数据(避免"清空后词库残留假进度");
+                // 需要重新模拟数据请用 ?demo=sprint-7days-force
+                try { localStorage.setItem('wordmatch_demo_killed', '1'); } catch (e) {}
                 updateEstimate();
                 renderHeaderStats();
                 renderSettingsScreen();
@@ -14382,6 +14396,10 @@
             try {
                 localStorage.clear();
             } catch (e) {}
+            // 先写"演示数据已清除"标记再剥离 URL 上的 ?demo= 参数,
+            // 避免 reload 时演示数据再次注入,造成"清空不干净"的假象
+            try { localStorage.setItem('wordmatch_demo_killed', '1'); } catch (e) {}
+            try { history.replaceState(null, '', location.pathname); } catch (e) {}
             location.reload();
         }
 
@@ -15593,13 +15611,19 @@
             // URL 参数 ?demo=sprint-7days 注入"四级冲刺 7 天"演示数据
             // 场景:已学习 7 天,245 个词已学(180 已掌握),剩余 7 天到考试
             const demoScenario = new URLSearchParams(location.search).get('demo');
-            if (demoScenario === 'sprint-7days') {
-                console.log('[Demo] URL 参数检测到,开始注入...');
-                const demoResult = injectDemoData('sprint-7days');
-                console.log('[Demo] 注入结果:', demoResult);
-                // 不重定向,让后续 DOMContentLoaded 逻辑自然走 V2 流程(settings.mode='sprint')
-                // 清掉 URL 参数避免下次访问重复注入
-                history.replaceState(null, '', location.pathname);
+            if (demoScenario === 'sprint-7days' || demoScenario === 'sprint-7days-force') {
+                // 用户执行过"重置学习进度/清空全部本地数据"后,普通 ?demo= 不再自动注入,
+                // 防止演示数据在清空后"复活",造成词库残留假进度;
+                // 明确需要重新模拟数据时使用 ?demo=sprint-7days-force
+                if (demoScenario === 'sprint-7days' && localStorage.getItem('wordmatch_demo_killed') === '1') {
+                    console.log('[Demo] 用户已清除过数据,跳过演示注入(如需重新注入请用 ?demo=sprint-7days-force)');
+                } else {
+                    console.log('[Demo] URL 参数检测到,开始注入...');
+                    const demoResult = injectDemoData('sprint-7days');
+                    console.log('[Demo] 注入结果:', demoResult);
+                }
+                // 无论是否注入,都清掉 URL 参数,避免下次访问重复注入
+                try { history.replaceState(null, '', location.pathname); } catch (e) {}
             }
             // V2.0 学习系统初始化
             LearningSystem.load();
