@@ -9621,7 +9621,9 @@
         }
 
         // 按模式统计某关卡范围内"本模式内学过"的单词数(严格独立):
-        // 另一模式学过的词只显示为已学/复习,不推进本模式的关卡通关判定
+        // 另一模式学过的词只显示为已学/复习,不推进本模式的关卡通关判定。
+        // 旧数据(有学习记录但无模式标记)视为两个模式都已学过,避免升级后
+        // 已学完的关卡因缺标记而永远无法推进;新学习的词会带上模式标记精确区分
         function countLevelLearnedByMode(day, perLevel, mode, bookId) {
             try {
                 if (!bookId) {
@@ -9634,26 +9636,36 @@
                 const allWords = (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords)
                     ? MemorySystem.getAllWords(bookId) : [];
                 const start = (day - 1) * perLevel;
-                return allWords.slice(start, start + perLevel)
-                    .filter(w => w.memoryData && w.memoryData.modeLearned && w.memoryData.modeLearned[mode] === true).length;
+                return allWords.slice(start, start + perLevel).filter(w => {
+                    const m = w.memoryData;
+                    if (!m || (m.reviewCount || 0) === 0) return false;
+                    const ml = m.modeLearned;
+                    if (ml && typeof ml === 'object') return ml[mode] === true;
+                    return true; // 旧数据兼容:无标记但有学习记录
+                }).length;
             } catch (e) { return 0; }
         }
 
         // 自由模式当前关卡:按"自由模式下学过的词"逐关判定(严格独立),
-        // 第一个未学满的关即为当前关;冲刺模式学过的词不会让自由模式跳过关卡
+        // 第一个未学满的关即为当前关;冲刺模式学过的词不会让自由模式跳过关卡。
+        // 通关要求与学习队列同口径:极简词(stoplist)不进入学习,也不计入通关数量,
+        // 否则前几关若含极简词,队列学完仍差几个词导致"学完第1关不跳第2关"
         function getFreeCurrentLevel(bookId, dailyTarget) {
             try {
                 const allWords = (typeof MemorySystem !== 'undefined' && MemorySystem.getAllWords)
                     ? MemorySystem.getAllWords(bookId) : [];
-                const totalWords = allWords.length || 1;
                 const target = dailyTarget || 20;
-                const totalLevels = Math.max(1, Math.ceil(totalWords / target));
+                const totalLevels = Math.max(1, Math.ceil(allWords.length / target));
                 for (let i = 1; i <= totalLevels; i++) {
                     const start = (i - 1) * target;
-                    const size = Math.max(0, Math.min(target, totalWords - start));
-                    const learned = allWords.slice(start, start + size)
-                        .filter(w => w.memoryData && w.memoryData.modeLearned && w.memoryData.modeLearned.free === true).length;
-                    if (learned < size) return i;
+                    const slice = allWords.slice(start, start + target);
+                    const stoplist = window.BASIC_STOPLIST;
+                    const learnable = slice.filter(w => {
+                        const en = String((w && w.en) || '').trim().toLowerCase();
+                        return !(stoplist && typeof stoplist.includes === 'function' && stoplist.includes(en));
+                    }).length;
+                    const learned = countLevelLearnedByMode(i, target, 'free', bookId);
+                    if (learned < learnable) return i;
                 }
                 return totalLevels + 1; // 全部关都已在自由模式学满
             } catch (e) { return 1; }
