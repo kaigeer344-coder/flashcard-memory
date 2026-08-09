@@ -8696,6 +8696,8 @@
             try {
                 localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
             } catch (e) {}
+            // 金币/道具变化后全局同步首页地图统计条、个人中心、游戏道具栏
+            if (typeof syncAssetsUI === 'function') syncAssetsUI();
         }
 
         let progress = loadProgress();
@@ -9813,16 +9815,7 @@
                 chestNode.classList.remove('gm-node-chestnode-ready', 'gm-node-chestnode-locked');
                 chestNode.classList.add('gm-node-chestnode-claimed');
             }
-            // 金币/道具数量变化后同步刷新地图顶部统计条(金币与个人主页同源)
-            const sb = document.querySelector('.lp-scroll .lp-statsbar');
-            if (sb && window.renderStatsBar) {
-                sb.outerHTML = window.renderStatsBar({
-                    coins: progress.coins || 0,
-                    reset: progress.shuffles || 0,
-                    hourglass: progress.timeBonuses || 0,
-                    hint: progress.hints || 0
-                });
-            }
+            // 统计条/个人中心/游戏道具栏由 saveProgress 内的 syncAssetsUI 统一刷新
         };
         // 横幅卡右侧「学习清单」按钮
         window.onLearningMapGuideClick = function() {
@@ -12111,6 +12104,29 @@
                 shuffleCount.textContent = progress.shuffles || 0;
                 document.getElementById('useShuffleBtn').disabled = !progress.shuffles;
             }
+        }
+
+        // ===== 资产数据全局同步:金币/提示/重置/延时统一从 progress 刷新(不整页重绘) =====
+        // 由 saveProgress 自动调用,确保首页学习地图/个人中心/配对游戏三处始终一致
+        function syncAssetsUI() {
+            // 1) 首页学习地图统计条(若已渲染)
+            const mapSb = document.querySelector('#learningMapScreen .lp-statsbar');
+            if (mapSb && window.renderStatsBar) {
+                mapSb.outerHTML = window.renderStatsBar({
+                    coins: progress.coins || 0,
+                    reset: progress.shuffles || 0,
+                    hourglass: progress.timeBonuses || 0,
+                    hint: progress.hints || 0
+                });
+            }
+            // 2) 个人中心统计条(若已渲染)
+            const profileMap = { profileCoins: 'coins', profileHints: 'hints', profileShuffles: 'shuffles', profileTimeBonuses: 'timeBonuses' };
+            Object.keys(profileMap).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = progress[profileMap[id]] || 0;
+            });
+            // 3) 配对游戏道具栏
+            if (typeof updateGameItemsBar === 'function') updateGameItemsBar();
         }
 
         function useHint() {
