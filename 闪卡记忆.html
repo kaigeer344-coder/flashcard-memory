@@ -13054,8 +13054,8 @@
                 document.getElementById('profileXpFill').style.width = '100%';
             }
 
-            // 渲染徽章模块（已迁移到个人中心）
-            if (document.getElementById('achWordBadges') && !document.getElementById('achWordBadges').children.length) {
+            // 渲染徽章模块（每次进入个人中心都重刷,保证进度/解锁状态实时更新）
+            if (document.getElementById('achWordBadges')) {
                 renderProfileBadges();
             }
         }
