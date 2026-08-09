@@ -11,7 +11,7 @@
         statWords: `<img class="lp-stat-icon-img" src="assets/home/金币.png" alt="金币">`,
         statReset: `<img class="lp-stat-icon-img" src="assets/home/重置.png" alt="重置">`,
         statHourglass: `<img class="lp-stat-icon-img" src="assets/home/延时.png" alt="延时">`,
-        statHint: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg>`,
+        statHint: `<img class="lp-stat-icon-img" src="assets/home/提示.png" alt="提示">`,
         // 关卡类型图标
         headphone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="2" y="13" width="5" height="8" rx="2" fill="currentColor" stroke="none" opacity="0.15"/><rect x="17" y="13" width="5" height="8" rx="2" fill="currentColor" stroke="none" opacity="0.15"/><rect x="2" y="13" width="5" height="8" rx="2"/><rect x="17" y="13" width="5" height="8" rx="2"/></svg>`,
         book: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h7a2 2 0 0 1 2 2v14a1 1 0 0 0-1-1H4z"/><path d="M20 4h-7a2 2 0 0 0-2 2v14a1 1 0 0 1 1-1h8z"/></svg>`,
