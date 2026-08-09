@@ -1124,7 +1124,7 @@
             max-width: none;
         }
 
-        /* 界面清单侧栏 */
+        /* 界面清单侧栏(开发工具,默认隐藏;按 F9 或 window.toggleScreenNavSidebar(true) 调出) */
         .screen-nav-sidebar {
             position: fixed;
             top: 22px;
@@ -1138,6 +1138,7 @@
             padding: 16px 12px;
             overflow-y: auto;
             z-index: 200;
+            display: none;
         }
         .screen-nav-title {
             font-size: 14px;
@@ -11289,6 +11290,18 @@
         function initScreenNavSidebar() {
             const sidebar = document.getElementById('screenNavSidebar');
             if (!sidebar) return;
+            // 全局开关:默认隐藏,按 F9 或 window.toggleScreenNavSidebar(true) 调出
+            window.toggleScreenNavSidebar = function(show) {
+                sidebar.style.display = show ? 'block' : 'none';
+            };
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'F9') {
+                    e.preventDefault();
+                    const isHidden = sidebar.style.display === 'none'
+                        || getComputedStyle(sidebar).display === 'none';
+                    window.toggleScreenNavSidebar(isHidden);
+                }
+            });
             sidebar.addEventListener('click', (e) => {
                 const item = e.target.closest('.screen-nav-item');
                 // 测试数据按钮无 data-screen,由自身 onclick 处理,跳过这里
