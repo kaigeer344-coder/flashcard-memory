@@ -7719,6 +7719,11 @@
             roundResults: [],
             reviewDebtCount: 0,
             newWordQuota: 0,
+            // 预检模式:闪卡学习前用配对游戏检验今日新词,选错/提示过的词才进入学习
+            pretestMode: false,
+            pretestErrors: null,
+            pretestWords: [],
+            pretestPending: null,
             gameCards: [],
             gameSelected: [],
             gameScore: 0,
@@ -9776,7 +9781,8 @@
         window.startFromTodayStart = function() {
             SFX.click();
             closeTodayStart();
-            startLearning();
+            // 统一走 startTodayTask,保证冲刺模式新词先过预检
+            startTodayTask();
         };
 
         window.onLearningMapNodeClick = function(day) {
@@ -11701,8 +11707,25 @@
             state.todayTaskStarted = true;
             state.learningIndex = 0;
             buildTodayQueue(state.level);
+            // 记录本次学习会话开始前已解锁的徽章(供结果页检测本次新解锁)
+            try {
+                _badgeUnlockedBefore = new Set(
+                    computeCollectionBadges().filter(b => b.current >= b.target).map(b => b.name)
+                );
+            } catch (e) { _badgeUnlockedBefore = new Set(); }
             updateTodayProgressHeader();
             updateEstimate();
+            // 冲刺模式:今日新词先过配对游戏预检,选错/提示过的才进入闪卡学习;
+            // 复习期或自由模式无新词时直接进入学习
+            try {
+                const s = LearningSystem.getSettings();
+                const newWords = state.todayQueue.filter(w => w.isNewWord);
+                if (s && s.mode === 'sprint' && newWords.length > 0) {
+                    state.pretestPending = { reviews: state.todayQueue.filter(w => !w.isNewWord) };
+                    startPretest(newWords);
+                    return;
+                }
+            } catch (e) { console.error('预检启动失败,直接进入学习:', e); }
             startLearning();
         }
 
@@ -11916,6 +11939,70 @@
 
         // ================== 单词配对游戏 ==================
 
+        // ===== 预检模式:闪卡学习前用配对游戏检验今日新词 =====
+        // 选对且未提示过的词 = 已会 → markPretestPassed 标记跳过;
+        // 选错/提示过的词 → 进入闪卡学习 + 配对游戏复习
+        function startPretest(words) {
+            if (!audioUnlocked) unlockAudio();
+            state.pretestMode = true;
+            state.pretestErrors = new Set();
+            state.pretestWords = words || [];
+            state.currentWords = (words || []).map(w => ({
+                en: w.en, cn: w.cn, wordId: w.wordId, memoryData: null
+            }));
+            startGame(); // 复用配对游戏(预检模式跳过计时)
+            const roundEl = document.getElementById('gameRoundInfo');
+            if (roundEl) {
+                roundEl.textContent = `预检 ${(words || []).length} 个新词 · 认识的词会跳过`;
+                roundEl.style.display = 'block';
+            }
+        }
+
+        function finishPretest() {
+            state.pretestMode = false;
+            try { clearGameTimer(); } catch (e) {}
+            const passed = state.pretestWords.filter(w =>
+                !state.pretestErrors.has(w.wordId) && !state.hintedWordIds.has(w.wordId)
+            );
+            const toLearn = state.pretestWords.filter(w =>
+                state.pretestErrors.has(w.wordId) || state.hintedWordIds.has(w.wordId)
+            );
+            if (passed.length) {
+                LearningSystem.markPretestPassed(passed.map(w => ({ wordId: w.wordId, en: w.en })));
+                showToast(`预检通过 ${passed.length} 个已会单词,已跳过`, 'success');
+            }
+            // 学习队列 = 预检选错词(新学) + 今日到期复习
+            const reviews = (state.pretestPending && state.pretestPending.reviews) || [];
+            const queued = new Map();
+            toLearn.forEach(w => {
+                if (queued.has(w.wordId)) return;
+                queued.set(w.wordId, { ...w, nextReviewAt: Date.now(), queueReason: 'newWord', isNewWord: true });
+            });
+            reviews.forEach(w => {
+                if (queued.has(w.wordId)) return;
+                queued.set(w.wordId, { ...w, nextReviewAt: Date.now(), queueReason: 'dueReview', isNewWord: false });
+            });
+            state.todayQueue = [...queued.values()];
+            state.todayTaskTotal = state.todayQueue.length;
+            state.currentGroupWords = [];
+            state.groupWordIndex = 0;
+            state.currentGroupIndex = 0;
+            state.roundResults = [];
+            state.pretestWords = [];
+            state.pretestPending = null;
+            state.pretestErrors = null;
+            updateTodayProgressHeader();
+            updateEstimate();
+            if (state.todayQueue.length === 0) {
+                // 全部预检通过,无需学习,直接完成
+                try { recordDailyUnitDone(); } catch (e) {}
+                SFX.taskComplete();
+                showCompletionSummary(null);
+                return;
+            }
+            startLearning();
+        }
+
         function startReviewGame() {
             if (!audioUnlocked) unlockAudio();
             // 只取当前组（currentGroupWords）对应的 roundResults，避免重复游戏之前组的结果
@@ -11976,7 +12063,8 @@
             updateGameHUD();
             SFX.roundStart();
             showScreen('gameScreen');
-            startGameTimer();
+            // 预检模式不计时(配对完成即按结果分流)
+            if (!state.pretestMode) startGameTimer();
         }
 
         function calcGameDuration(pairCount) {
@@ -12064,20 +12152,27 @@
                 if (state.gameCombo >= 2) showComboPopup(state.gameCombo);
                 if (state.gameCombo >= 5) showMegaCombo(state.gameCombo);
 
-                // 配对成功：统一调用 MemorySystem.rate
-                const word1 = state.currentWords[first.card.pairId];
-                const word2 = state.currentWords[second.card.pairId];
-                if (word1) {
-                    const mem1 = MemorySystem.rate(word1, 'matchSuccess', { wasHinted: state.hintedWordIds.has(word1.wordId) });
-                    recordRoundResult(word1, 'matchSuccess', mem1);
-                }
-                if (word2 && word2.wordId !== word1.wordId) {
-                    const mem2 = MemorySystem.rate(word2, 'matchSuccess', { wasHinted: state.hintedWordIds.has(word2.wordId) });
-                    recordRoundResult(word2, 'matchSuccess', mem2);
+                // 预检模式:不评分不写记忆,配对完成即按结果分流
+                if (!state.pretestMode) {
+                    // 配对成功：统一调用 MemorySystem.rate
+                    const word1 = state.currentWords[first.card.pairId];
+                    const word2 = state.currentWords[second.card.pairId];
+                    if (word1) {
+                        const mem1 = MemorySystem.rate(word1, 'matchSuccess', { wasHinted: state.hintedWordIds.has(word1.wordId) });
+                        recordRoundResult(word1, 'matchSuccess', mem1);
+                    }
+                    if (word2 && word2.wordId !== word1.wordId) {
+                        const mem2 = MemorySystem.rate(word2, 'matchSuccess', { wasHinted: state.hintedWordIds.has(word2.wordId) });
+                        recordRoundResult(word2, 'matchSuccess', mem2);
+                    }
                 }
 
                 if (state.gameMatchedPairs >= state.currentWords.length) {
-                    setTimeout(() => endGame('cleared'), 420);
+                    if (state.pretestMode) {
+                        setTimeout(() => finishPretest(), 420);
+                    } else {
+                        setTimeout(() => endGame('cleared'), 420);
+                    }
                 }
             } else {
                 if (state.gameCombo >= 2) hideComboPopup();
@@ -12087,21 +12182,29 @@
                 shakeCards(first.el, second.el);
                 updateGameHUD(true);
 
-                // 配对失败：统一调用 MemorySystem.rate
-                const word1 = state.currentWords[first.card.pairId];
-                const word2 = state.currentWords[second.card.pairId];
-                if (word1) {
-                    const mem1 = MemorySystem.rate(word1, 'matchFail');
-                    recordRoundResult(word1, 'matchFail', mem1);
-                    if (!state.sessionReviewQueue.some(w => w.wordId === word1.wordId)) {
-                        state.sessionReviewQueue.push(word1);
+                // 预检模式:记录选错词(进入学习),不评分
+                if (state.pretestMode) {
+                    const w1 = state.currentWords[first.card.pairId];
+                    const w2 = state.currentWords[second.card.pairId];
+                    if (w1) state.pretestErrors.add(w1.wordId);
+                    if (w2 && w2.wordId !== w1.wordId) state.pretestErrors.add(w2.wordId);
+                } else {
+                    // 配对失败：统一调用 MemorySystem.rate
+                    const word1 = state.currentWords[first.card.pairId];
+                    const word2 = state.currentWords[second.card.pairId];
+                    if (word1) {
+                        const mem1 = MemorySystem.rate(word1, 'matchFail');
+                        recordRoundResult(word1, 'matchFail', mem1);
+                        if (!state.sessionReviewQueue.some(w => w.wordId === word1.wordId)) {
+                            state.sessionReviewQueue.push(word1);
+                        }
                     }
-                }
-                if (word2 && word2.wordId !== word1.wordId) {
-                    const mem2 = MemorySystem.rate(word2, 'matchFail');
-                    recordRoundResult(word2, 'matchFail', mem2);
-                    if (!state.sessionReviewQueue.some(w => w.wordId === word2.wordId)) {
-                        state.sessionReviewQueue.push(word2);
+                    if (word2 && word2.wordId !== word1.wordId) {
+                        const mem2 = MemorySystem.rate(word2, 'matchFail');
+                        recordRoundResult(word2, 'matchFail', mem2);
+                        if (!state.sessionReviewQueue.some(w => w.wordId === word2.wordId)) {
+                            state.sessionReviewQueue.push(word2);
+                        }
                     }
                 }
             }
@@ -13882,6 +13985,11 @@
             state.gameSelected = [];
             state.gameCards = [];
             state.currentWords = [];
+            // 退出时重置预检状态,避免残留影响下一次任务
+            state.pretestMode = false;
+            state.pretestErrors = null;
+            state.pretestWords = [];
+            state.pretestPending = null;
             state.todayQueue = [];
             state.completedToday.clear();
             state.todayTaskTotal = 0;
@@ -14165,19 +14273,28 @@
             }
 
             // ---------- 计划生成引擎 ----------
-            // 基于时间分层策略 + 真题词频排序 + 难度分层,生成冲刺计划的目标词池
-            // 排序规则:先按难度分层(难度≥2 的词优先,避免"back/bus"这类高频但过于简单的词占坑),
-            // 层内再按真题词频降序;极简词已在过滤中剔除
+            // 难度系数:让"高频但过于简单"的词自然沉底(难度2/3/4→1.0/1.3/1.6)
+            const DIFF_COEFF = { 2: 1.0, 3: 1.3, 4: 1.6 };
+            // 核心词计数(freq≥15 且非基础词),供长计划"完整覆盖核心词"计算每日配额
+            function _countCoreWords(examType) {
+                const bank = wordDB[examType] || [];
+                return bank.filter(w => !_isBasicWord(w.en) && _isCoreWord(w, examType)).length;
+            }
+            // 基于时间分层策略 + 真题词频 + 难度加权,生成冲刺计划的目标词池
+            // 排序:核心词优先(非核心词全部排后),组内按「词频×难度系数」降序,
+            // 保证考前学到的都是"高频且值得学"的词
             function _generateWordPool(examType, totalTargetWords) {
                 const bank = wordDB[examType] || [];
                 // 过滤极简词
                 const candidates = bank.filter(w => !_isBasicWord(w.en));
-                // 价值排序:难度分层 → 词频降序
+                // 价值排序:核心词优先 → 词频×难度系数降序
                 candidates.sort((a, b) => {
-                    const da = (Number(a.difficulty) || 2) >= 2 ? 1 : 0;
-                    const db = (Number(b.difficulty) || 2) >= 2 ? 1 : 0;
-                    if (da !== db) return db - da;
-                    return _getExamFrequency(b, examType) - _getExamFrequency(a, examType);
+                    const ca = _isCoreWord(a, examType) ? 1 : 0;
+                    const cb = _isCoreWord(b, examType) ? 1 : 0;
+                    if (ca !== cb) return cb - ca;
+                    const va = _getExamFrequency(a, examType) * (DIFF_COEFF[Number(a.difficulty) || 2] || 1);
+                    const vb = _getExamFrequency(b, examType) * (DIFF_COEFF[Number(b.difficulty) || 2] || 1);
+                    return vb - va;
                 });
                 // 取前 N 个
                 return candidates.slice(0, totalTargetWords).map((w, idx) => ({
@@ -14249,16 +14366,28 @@
                     const startDate = _todayStr();
                     const planDays = Math.max(1, _daysBetween(startDate, examDate));
                     const config = _getSprintConfig(planDays);
-                    const dailyNew = Math.max(5, Math.min(80, Number(dailyWords) || config.dailyNew));
                     // 倒排日程:复习缓冲期 = 总天数×20%(下限1天),学习期至少5天,其余为纯复习期。
                     // 学习期只学新词+复习,复习期(考前)不学任何新词,保证每个词考前有完整复习闭环。
                     let reviewBufferDays = Math.max(1, Math.round(planDays * 0.2));
                     const learningDays = Math.max(5, planDays - reviewBufferDays);
                     reviewBufferDays = planDays - learningDays;
+                    // 长短计划分流:
+                    // >14天:完整覆盖核心词,每日新词配额=ceil(核心词数/学习期天数)自动排布
+                    //       (上限150,下限取用户配置与需量的较大值,保证核心词全部进计划)
+                    // ≤14天:按配置配额(8-14天默认45)取容量,词池按价值排序自动避开简单词
+                    const userDaily = Number(dailyWords) || 0;
+                    let dailyQuota;
+                    if (planDays > 14) {
+                        const needQuota = Math.max(1, Math.ceil(_countCoreWords(examType) / learningDays));
+                        dailyQuota = Math.min(150, Math.max(needQuota, userDaily));
+                    } else {
+                        dailyQuota = Math.max(5, Math.min(80, userDaily || config.dailyNew));
+                    }
                     // 覆盖目标 = 学习期天数 × 每日新词配额(词池按价值排序只取该容量)
-                    const totalTarget = learningDays * dailyNew;
+                    const totalTarget = learningDays * dailyQuota;
                     const wordPool = _generateWordPool(examType, totalTarget);
                     const poolCore = wordPool.filter(w => w.isCore).length;
+                    const coreTotal = _countCoreWords(examType);
                     const plan = {
                         id: _genId('role'),
                         type: examType,
@@ -14269,7 +14398,7 @@
                         examDate: examDate,
                         countdownDays: planDays,
                         planDays: planDays,
-                        dailyNewWords: dailyNew,
+                        dailyNewWords: dailyQuota,
                         currentDay: 1,
                         completedDays: [],
                         stage: config.stage,
@@ -14277,15 +14406,15 @@
                         totalTargetWords: totalTarget,
                         reviewStartDay: learningDays + 1, // 从这天起进入纯复习期(不学新词)
                         plan: {
-                            version: 2,
+                            version: 3,
                             generatedAt: Date.now(),
                             totalTargetWords: totalTarget,
                             stage: config.stage,
                             learningDays: learningDays,
                             reviewBufferDays: reviewBufferDays,
-                            dailyQuota: dailyNew,
+                            dailyQuota: dailyQuota,
                             coverageTarget: totalTarget,
-                            poolStats: { total: wordPool.length, coreInPool: poolCore },
+                            poolStats: { total: wordPool.length, coreInPool: poolCore, coreTotal: coreTotal },
                             wordPool: wordPool.map(w => ({ wordId: w.wordId, en: w.en, indexInBank: w.indexInBank, isCore: w.isCore, difficulty: w.difficulty })),
                             progress: {
                                 learnedWordIds: [],
@@ -14487,6 +14616,40 @@
                         dayIndex: dayIndex,
                         isReviewDay: isReviewDay
                     };
+                },
+
+                // 预检选对的词:标记"已会"(写记忆 mastered + 计入计划已处理),
+                // 后续不再分配新词/进入复习,统计口径与已学一致
+                markPretestPassed(items) {
+                    if (!items || !items.length) return 0;
+                    const plan = this.getActivePlan();
+                    if (!plan || !plan.plan || !plan.plan.progress) return 0;
+                    const now = Date.now();
+                    let n = 0;
+                    for (const it of items) {
+                        if (!it || !it.en) continue;
+                        try {
+                            MemorySystem.saveWordMemory(MemorySystem.getSharedWordKey({ en: it.en }), {
+                                status: 'mastered',
+                                reviewCount: 1,
+                                familiarity: 4,
+                                stability: 30,
+                                difficulty: 4,
+                                lastGrade: 4,
+                                retrievability: 1,
+                                nextReview: now + 30 * 86400000,
+                                lastReview: now,
+                                algorithmVersion: 2,
+                                pretestPassed: true
+                            });
+                        } catch (e) {}
+                        if (it.wordId && !plan.plan.progress.learnedWordIds.includes(it.wordId)) {
+                            plan.plan.progress.learnedWordIds.push(it.wordId);
+                        }
+                        n++;
+                    }
+                    _saveRoles();
+                    return n;
                 },
 
                 // 生成今日学习队列(冲刺模式按 plan.wordPool,自由模式按词书顺序)
