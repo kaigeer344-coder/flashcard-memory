@@ -1899,7 +1899,7 @@
             border-radius: 50%;
             pointer-events: none;
         }
-        /* 个人信息卡右上角设置小按钮 */
+        /* 个人信息卡右上角设置小按钮:透明底,仅图标 */
         .profile-settings-btn {
             position: absolute;
             top: 14px;
@@ -1909,10 +1909,9 @@
             height: 42px;
             border-radius: 50%;
             border: none;
-            background: #ffffff;
+            background: transparent;
             display: grid;
             place-items: center;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.12);
             cursor: pointer;
             transition: transform 120ms ease;
             -webkit-tap-highlight-color: transparent;
@@ -1921,8 +1920,8 @@
             transform: scale(0.92);
         }
         .profile-settings-btn img {
-            width: 22px;
-            height: 22px;
+            width: 30px;
+            height: 30px;
             object-fit: contain;
         }
         .profile-header-top {
