@@ -9784,7 +9784,7 @@
             const level = _currentMapLevels.find(l => l.day === day);
             if (!level || !level.chest) return;
             if (level.status === 'locked') {
-                showToast(`继续学习解锁 Day ${day} 宝箱`, 'warning');
+                showToast('继续学习解锁宝箱', 'warning');
                 return;
             }
             if (level.status === 'current') {
