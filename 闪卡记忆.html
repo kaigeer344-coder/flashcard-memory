@@ -1725,6 +1725,16 @@
             color: #a0a0a0;
             line-height: 1.2;
         }
+        /* 未获得的成就徽章:素材置灰 + 文字变淡 */
+        .collection-badge-card.locked .collection-badge-graphic img {
+            filter: grayscale(1) brightness(0.9);
+            opacity: 0.55;
+        }
+        .collection-badge-card.locked .collection-badge-name,
+        .collection-badge-card.locked .collection-badge-count {
+            color: #b5b5b5;
+            opacity: 0.7;
+        }
 
         /* 连击徽章：素材图 + 名称 + 进度小字 */
         .ach-streak-graphic {
@@ -12704,7 +12714,7 @@
             const collectionHtml = COLLECTION_BADGES.map(b => {
                 const unlocked = b.current >= b.target;
                 return `
-                    <div class="collection-badge-card">
+                    <div class="collection-badge-card ${unlocked ? '' : 'locked'}">
                         <div class="collection-badge-graphic">${BADGE_PLACEHOLDER(b.name, unlocked)}</div>
                         <div class="collection-badge-name">${b.name}</div>
                         <div class="collection-badge-count">${Math.min(b.current, b.target)}/${b.target}</div>
