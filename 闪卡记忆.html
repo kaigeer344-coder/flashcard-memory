@@ -13112,23 +13112,31 @@
                     saveProgress();
                     SFX.coin();
                 }
-                // V2.0:冲刺模式标记当天完成并推进 currentDay(apple-design:学习完成有可感知反馈)
-                try {
-                    const settings = LearningSystem.getSettings();
-                    if (settings.mode === 'sprint' && settings.activeRoleId) {
-                        const plan = LearningSystem.getActivePlan();
-                        if (plan && !(plan.completedDays || []).includes(plan.currentDay)) {
-                            LearningSystem.markDayCompleted(settings.activeRoleId);
-                        }
-                    }
-                } catch (e) {
-                    console.error('markDayCompleted 失败:', e);
-                }
                 if (results.length === 0) {
                     SFX.taskComplete();
                 } else {
                     SFX.victory();
                 }
+            }
+
+            // V2.0:冲刺模式今日任务完成即推进计划关卡(currentDay/completedDays)。
+            // 必须同时覆盖两条完成路径:纯闪卡完成(gameResult=null)与
+            // 闪卡+配对游戏完成(gameResult 有值,handleGameEnd 只记 daily_done),
+            // 否则游戏路径完成后 currentDay 不前进,地图会把刚学完的关渲染成灰色锁定。
+            try {
+                const settings = LearningSystem.getSettings();
+                if (settings.mode === 'sprint' && settings.activeRoleId) {
+                    // "再学一组"额外组与调试入口不算完成当天任务,不推进关卡
+                    const isDayComplete = !state.extraGroupMode && isTodayTaskComplete();
+                    if (isDayComplete) {
+                        const plan = LearningSystem.getActivePlan();
+                        if (plan && !(plan.completedDays || []).includes(plan.currentDay)) {
+                            LearningSystem.markDayCompleted(settings.activeRoleId);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('markDayCompleted 失败:', e);
             }
 
             // 冲刺模式:多学的词自动重排后续每日学习量(剩余词 ÷ 剩余学习天数)
