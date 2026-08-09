@@ -5263,9 +5263,14 @@
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
-        /* 仅「学习设置」section 标题放大到 15px,不影响其他实例 */
-        #settingsV2Container .settings-v2-section:nth-child(1) .settings-v2-section-title {
-            font-size: 15px;
+        /* 设置页 section 标题放大到 24px:仅「学习设置」「关于」两个,不影响其他实例 */
+        #settingsV2Container .settings-v2-section:nth-child(1) .settings-v2-section-title,
+        #settingsV2Container .settings-v2-section:nth-child(2) .settings-v2-section-title {
+            font-size: 24px;
+        }
+        /* 设置页「每组单词数」标题放大到 24px */
+        #settingsScreen .word-count-section .section-label {
+            font-size: 24px;
         }
         .settings-v2-row {
             display: flex;
