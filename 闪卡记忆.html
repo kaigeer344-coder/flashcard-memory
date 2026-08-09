@@ -13607,6 +13607,7 @@
                 const books = LearningSystem.getAllBooksInfo();
 
                 // 学习设置:模式切换
+                const currentBookId = settings.mode === 'sprint' && plan ? plan.type : (settings.activeBookId || 'cet4');
                 const modeHTML = `
                     <div class="settings-v2-section">
                         <div class="settings-v2-section-title">学习设置</div>
@@ -13619,6 +13620,15 @@
                                 <button class="settings-v2-seg-btn ${settings.mode === 'free' ? 'active' : ''}" onclick="settingsChangeMode('free')" role="tab" aria-selected="${settings.mode === 'free'}">自由</button>
                                 <button class="settings-v2-seg-btn ${settings.mode === 'sprint' ? 'active' : ''}" onclick="settingsChangeMode('sprint')" role="tab" aria-selected="${settings.mode === 'sprint'}">冲刺</button>
                             </div>
+                        </div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">词库</div>
+                                <div class="settings-v2-row-meta">${settings.mode === 'sprint' && plan ? '冲刺模式词库由考试计划决定' : '四级/六级/考研/雅思/托福'}</div>
+                            </div>
+                            <select class="settings-v2-input" onchange="settingsChangeBook(this.value)" aria-label="切换词库" ${settings.mode === 'sprint' && plan ? 'disabled' : ''}>
+                                ${books.map(b => `<option value="${b.id}" ${b.id === currentBookId ? 'selected' : ''}>${b.name}</option>`).join('')}
+                            </select>
                         </div>`;
 
                 // 模式特定配置
@@ -13645,17 +13655,7 @@
                             </div>
                         </div>`;
                 } else if (settings.mode === 'free') {
-                    const bookInfo = LearningSystem.getBookInfo(settings.activeBookId);
                     modeSpecificHTML = `
-                        <div class="settings-v2-row">
-                            <div class="settings-v2-row-label">
-                                <div class="settings-v2-row-name">当前词书</div>
-                                <div class="settings-v2-row-meta">${bookInfo.name} · ${bookInfo.totalWords} 词</div>
-                            </div>
-                            <select class="settings-v2-input" onchange="settingsChangeBook(this.value)" aria-label="切换词书">
-                                ${books.map(b => `<option value="${b.id}" ${b.id === settings.activeBookId ? 'selected' : ''}>${b.name}</option>`).join('')}
-                            </select>
-                        </div>
                         <div class="settings-v2-row">
                             <div class="settings-v2-row-label">
                                 <div class="settings-v2-row-name">每日目标</div>
