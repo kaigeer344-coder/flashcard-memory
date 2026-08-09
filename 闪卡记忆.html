@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="home-components.css?v=7.7">
     <link rel="stylesheet" href="map-components.css?v=8.5">
     <link rel="stylesheet" href="game-map-components.css?v=1.8">
-    <link rel="stylesheet" href="css/achievements.css?v=1.0">
     <style>
         :root {
             --primary: #58cc02;
@@ -6932,9 +6931,6 @@
     <!-- 统一底部导航容器(冲刺模式首页同款模板) -->
     <div id="hpBottomNavContainer"></div>
 
-    <!-- 打卡连击成就抽屉挂载点(全屏, 可延伸到底部导航栏后方) -->
-    <div id="achievementPage"></div>
-
     <!-- 界面清单侧栏（开发/测试用） -->
     <aside class="screen-nav-sidebar" id="screenNavSidebar">
         <div class="screen-nav-title">界面清单</div>
@@ -6949,7 +6945,6 @@
             <button class="screen-nav-item" data-screen="wordbookScreen">单词本</button>
             <button class="screen-nav-item" data-screen="statsScreen">任务中心</button>
             <button class="screen-nav-item" data-screen="profileScreen">个人中心</button>
-            <button class="screen-nav-item" onclick="toggleLegacyAchievements()">打卡连击徽章</button>
             <button class="screen-nav-item" data-screen="settingsScreen">设置</button>
             <button class="screen-nav-item" data-screen="vipScreen">会员中心</button>
             <button class="screen-nav-item" data-screen="learningMapScreen" data-variant="path">学习路径图</button>
@@ -7081,10 +7076,6 @@
     <script src="home-components.js?v=7.7"></script>
     <script src="map-components.js?v=8.0"></script>
     <script src="game-map-components.js?v=1.3"></script>
-    <script src="js/achievements/data.js?v=1.0"></script>
-    <script src="js/achievements/achievement-card.js?v=1.0"></script>
-    <script src="js/achievements/achievement-grid.js?v=1.0"></script>
-    <script src="js/achievements/achievement-page.js?v=1.0"></script>
     <script>
         const wordDB = {
             cet4: window.CET4_WORDS || [],
@@ -9344,14 +9335,6 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             updateBottomNavVisibility();
-            // 打卡连击徽章抽屉已移除(任务中心不再需要)
-            const sheet = document.getElementById('achievementSheet');
-            if (sheet) {
-                sheet.classList.remove('expanded');
-                sheet.style.display = 'none';
-                const backdrop = document.getElementById('achBackdrop');
-                if (backdrop) backdrop.classList.remove('show');
-            }
             // 进入任务中心时刷新数据
             if (id === 'statsScreen') {
                 renderTaskCenter();
@@ -12899,115 +12882,6 @@
                     return `<div class="ach-streak-block ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}"></div>`;
                 }).join('');
             }
-        }
-
-        // ===== 旧版打卡连击徽章抽屉:保留旧数据,仅通过「界面清单」按钮打开 =====
-        function toggleLegacyAchievements() {
-            const wrap = document.getElementById('achievementPage');
-            if (!wrap) return;
-            if (typeof SFX !== 'undefined' && SFX.click) SFX.click();
-            let sheet = document.getElementById('achievementSheet');
-            if (!sheet) {
-                // 首次点击:渲染旧版静态数据(js/achievements/data.js,写死进度)
-                wrap.innerHTML = AchievementPage();
-                sheet = document.getElementById('achievementSheet');
-                const backdrop = document.getElementById('achBackdrop');
-                const collapse = () => {
-                    if (sheet) sheet.classList.remove('expanded');
-                    if (backdrop) backdrop.classList.remove('show');
-                };
-                if (backdrop) backdrop.addEventListener('click', collapse);
-                // 顶部手柄/标题再次点击收起
-                const head = document.getElementById('achHead');
-                const handle = document.getElementById('achHandle');
-                if (head) head.addEventListener('click', toggleLegacyAchievements);
-                if (handle) handle.addEventListener('click', toggleLegacyAchievements);
-            }
-            // showScreen 切换界面时会隐藏抽屉(display:none),打开前恢复
-            sheet.style.display = '';
-            const expanding = !sheet.classList.contains('expanded');
-            sheet.classList.toggle('expanded', expanding);
-            const backdrop = document.getElementById('achBackdrop');
-            if (backdrop) backdrop.classList.toggle('show', expanding);
-        }
-
-        // 底部抽屉：打卡连击徽章
-        function initAchievementSheet() {
-            const sheet = document.getElementById('achievementSheet');
-            const backdrop = document.getElementById('achBackdrop');
-            if (!sheet) return;
-
-            function toggle() {
-                const expanding = !sheet.classList.contains('expanded');
-                sheet.classList.toggle('expanded');
-                if (backdrop) backdrop.classList.toggle('show', expanding);
-            }
-            function collapse() {
-                sheet.classList.remove('expanded');
-                if (backdrop) backdrop.classList.remove('show');
-            }
-
-            // 顶部手柄/标题点击展开
-            const handle = document.getElementById('achHandle');
-            const head = document.getElementById('achHead');
-            if (handle) handle.addEventListener('click', toggle);
-            if (head) head.addEventListener('click', toggle);
-            // 点击蒙版收起
-            if (backdrop) backdrop.addEventListener('click', collapse);
-
-            // 触摸拖拽
-            let startY = 0, startTranslate = 0, dragging = false;
-            const onStart = (e) => {
-                const touch = e.touches ? e.touches[0] : e;
-                startY = touch.clientY;
-                startTranslate = sheet.classList.contains('expanded') ? 0 :
-                    parseFloat(getComputedStyle(sheet).transform.split(',')[5] || 0) ||
-                    sheet.getBoundingClientRect().top;
-                dragging = true;
-                sheet.style.transition = 'none';
-            };
-            const onMove = (e) => {
-                if (!dragging) return;
-                const touch = e.touches ? e.touches[0] : e;
-                const dy = touch.clientY - startY;
-                const newTranslate = dy;
-                if (newTranslate > 0) {
-                    sheet.style.transform = `translateX(-50%) translateY(${newTranslate}px)`;
-                } else {
-                    sheet.style.transform = `translateX(-50%) translateY(${newTranslate * 0.3}px)`;
-                }
-            };
-            const onEnd = () => {
-                if (!dragging) return;
-                dragging = false;
-                sheet.style.transition = '';
-                sheet.style.transform = '';
-                const rect = sheet.getBoundingClientRect();
-                const sheetHeight = sheet.scrollHeight;
-                const visible = window.innerHeight - rect.top;
-                // 如果露出超过一半就展开，否则收起
-                if (visible > sheetHeight * 0.45) {
-                    sheet.classList.add('expanded');
-                    if (backdrop) backdrop.classList.add('show');
-                } else {
-                    sheet.classList.remove('expanded');
-                    if (backdrop) backdrop.classList.remove('show');
-                }
-            };
-
-            // 触摸事件
-            const dragArea = handle || sheet;
-            dragArea.addEventListener('touchstart', onStart, { passive: true });
-            dragArea.addEventListener('touchmove', onMove, { passive: true });
-            dragArea.addEventListener('touchend', onEnd);
-            // 鼠标拖拽（桌面端）
-            dragArea.addEventListener('mousedown', onStart);
-            document.addEventListener('mousemove', onMove);
-            document.addEventListener('mouseup', onEnd);
-
-            // 初始状态：收起
-            sheet.classList.remove('expanded');
-            if (backdrop) backdrop.classList.remove('show');
         }
 
         function onAchievementCardClick(cardId) {
