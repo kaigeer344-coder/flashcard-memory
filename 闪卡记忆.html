@@ -7997,7 +7997,7 @@
         const ONBOARD_Q = {
             mode:    { title: '你想怎么学习？',     desc: '两种模式随时可以切换,进度不丢失' },
             book:    { title: '你想学哪本词书？',     desc: '学习进度在所有词书间共享,不会丢失' },
-            exam:    { title: '你要考哪个考试？',     desc: '系统将按考试真题词频为你安排' },
+            exam:    { title: '你要考哪个考试？',     desc: '冲刺模式下优先学习核心词汇,时间越少越聚焦高频词' },
             date:    { title: '考试日期是哪天？',     desc: '我们将按剩余天数倒排学习计划' },
             daily:   { title: '每天想学多少新词？',   desc: '随时可以在设置中调整' },
             confirm: { title: '学习计划已准备好！',   desc: '确认后开启你的学习之旅' }
@@ -8188,18 +8188,21 @@
         }
 
         // Q: 选择考试类型(卡片,多邻国式)
+        // 词数一律取真实词库:总词数 + 核心词汇数(冲刺模式优先学核心词)
         function _renderQExam() {
             const examTypes = LearningSystem.getExamTypes();
             const cards = Object.entries(examTypes)
                 .filter(([id]) => id !== 'gre') // 隐藏 GRE 入口
-                .map(([id, cfg]) => `
+                .map(([id, cfg]) => {
+                    const info = LearningSystem.getBookInfo(id);
+                    return `
                     <div class="onboard-q-card ${onboardState.examType === id ? 'selected' : ''}"
                          style="--q-accent:${cfg.color}"
                          onclick="selectOnboardExam('${id}')" role="button" aria-label="选择 ${cfg.name}">
                         <div class="onboard-q-card-name">${cfg.name}</div>
-                        <div class="onboard-q-card-sub">${cfg.totalWords} 词</div>
-                    </div>
-                `).join('');
+                        <div class="onboard-q-card-sub">${info.totalWords} 词 · 核心 ${info.coreWords}</div>
+                    </div>`;
+                }).join('');
             return `<div class="onboard-q-body"><div class="onboard-q-grid">${cards}</div></div>`;
         }
 
