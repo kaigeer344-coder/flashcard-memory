@@ -7322,6 +7322,7 @@
             _memoryCache: null,
             _allWordsCache: {},
             _wordIdIndex: null, // wordId → word 对象索引(性能优化:saveWordMemory 用 O(1) 替代 .find() O(N))
+            _sharedKeyIndex: null, // 共享词 key → word 对象数组(跨词库同一英文词所有副本,保存时同步刷新)
             _statsCache: {},
             _keySet: null,
             _migrated: false,
@@ -7416,6 +7417,12 @@
                 return `${level}_${word.en}`;
             },
 
+            // 跨词库共享记忆 key:同一英文词在四级/六级/考研等词库共用一条学习记录
+            // 存储统一走共享 key;旧词库级 key(wordId/legacyKey)仅作读取兜底与迁移
+            getSharedWordKey(word) {
+                return 'w_' + encodeURIComponent(String((word && word.en) || '').trim().toLowerCase());
+            },
+
             getDefaultMemory(wordKey) {
                 return {
                     id: wordKey,
@@ -7467,10 +7474,12 @@
             },
 
             getMemoryForWord(level, word, index) {
+                // 优先读跨词库共享 key;旧词库级 key(wordId/legacyKey)命中则返回(写入时自动迁移)
+                const sharedKey = this.getSharedWordKey(word);
                 const wordKey = this.getWordId(level, word, index);
                 const legacyKey = this.getLegacyKey(level, word);
-                const stored = this.getStoredMemory(wordKey) || this.getStoredMemory(legacyKey);
-                return this.normalizeMemory(stored, wordKey);
+                const stored = this.getStoredMemory(sharedKey) || this.getStoredMemory(wordKey) || this.getStoredMemory(legacyKey);
+                return this.normalizeMemory(stored, sharedKey);
             },
 
             saveWordMemory(wordKey, mem) {
@@ -7481,19 +7490,15 @@
                 this._memoryCache.set(fullKey, normalized);
                 this._keySet.add(fullKey);
                 this._statsCache = {};
-                // 性能优化:用 wordId 索引 O(1) 替代 .find() O(N),避免 6 词库 × 4500 词线性扫描
-                if (this._wordIdIndex && this._wordIdIndex.has(wordKey)) {
-                    this._wordIdIndex.get(wordKey).memoryData = normalized;
+                // 跨词库同步:更新所有词库中同一英文词(wordKey 为共享 key)的记忆副本,
+                // 保证四级/六级等词库的统计与进度实时一致
+                if (this._sharedKeyIndex && this._sharedKeyIndex.has(wordKey)) {
+                    this._sharedKeyIndex.get(wordKey).forEach(w => { w.memoryData = normalized; });
                 } else {
-                    // 兜底:索引未构建时降级为遍历(仅首次保存未访问过的词库)
+                    // 兜底:索引未构建时遍历已缓存词库(按 sharedKey 匹配)
                     for (const level in this._allWordsCache) {
-                        const cachedWords = this._allWordsCache[level];
-                        const word = cachedWords.find(w => w.wordId === wordKey);
-                        if (word) {
-                            word.memoryData = normalized;
-                            if (!this._wordIdIndex) this._wordIdIndex = new Map();
-                            this._wordIdIndex.set(wordKey, word);
-                            break;
+                        for (const w of this._allWordsCache[level]) {
+                            if (w.sharedKey === wordKey) w.memoryData = normalized;
                         }
                     }
                 }
@@ -7638,16 +7643,18 @@
                     status: this._statusFromFSRS(newS, grade, newReviewCount)
                 };
 
-                this.saveWordMemory(word.wordId, updated);
+                // 跨词库共享:统一按英文词保存,保证同一单词在各词库进度一致
+                this.saveWordMemory(word.sharedKey || this.getSharedWordKey(word), updated);
                 word.memoryData = updated;
                 return updated;
             },
 
             hydrateWord(level, word, index) {
-                const memoryKey = this.getWordId(level, word, index);
+                const sharedKey = this.getSharedWordKey(word); // 存储/共享身份(跨词库一致)
+                const wordId = this.getWordId(level, word, index); // 词库内身份(队列/计划进度用)
                 const legacyKey = this.getLegacyKey(level, word);
                 const memoryData = this.getMemoryForWord(level, word, index);
-                return { ...word, wordId: memoryKey, memoryKey, legacyKey, memoryData, sourceIndex: index };
+                return { ...word, wordId, memoryKey: sharedKey, sharedKey, legacyKey, memoryData, sourceIndex: index };
             },
 
             getAllWords(level) {
@@ -7657,10 +7664,16 @@
                 this._allWordsCache[level] = words;
                 // 性能优化:同步构建 wordId → word 索引,saveWordMemory 用 O(1) 查找
                 if (!this._wordIdIndex) this._wordIdIndex = new Map();
+                // 共享 key → 词副本数组:保存记忆时同步刷新所有词库中的同一英文词
+                if (!this._sharedKeyIndex) this._sharedKeyIndex = new Map();
                 for (let i = 0; i < words.length; i++) {
                     const w = words[i];
                     if (w.wordId && !this._wordIdIndex.has(w.wordId)) {
                         this._wordIdIndex.set(w.wordId, w);
+                    }
+                    if (w.sharedKey) {
+                        if (!this._sharedKeyIndex.has(w.sharedKey)) this._sharedKeyIndex.set(w.sharedKey, []);
+                        this._sharedKeyIndex.get(w.sharedKey).push(w);
                     }
                 }
                 return words;
@@ -11117,7 +11130,8 @@
                 const n = Math.min(count, words.length);
                 for (let i = 0; i < n; i++) {
                     const w = words[i];
-                    MemorySystem.saveWordMemory(w.wordId, {
+                    // 模拟数据也写共享 key,与其他词库进度保持一致
+                    MemorySystem.saveWordMemory(w.sharedKey || MemorySystem.getSharedWordKey(w), {
                         algorithmVersion: 2,
                         status: 'learning',
                         reviewCount: 2,
