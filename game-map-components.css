@@ -226,9 +226,11 @@
     opacity: 0.7;
 }
 
+/* 呼吸动画必须保留容器的 translate(-50%,-50%) 居中偏移,
+   否则 transform:scale 会覆盖居中导致节点位置偏移 */
 @keyframes chestPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.08); }
 }
 
 /* ===== 终点节点:最后一个关卡,显示为「终点」素材图 ===== */
