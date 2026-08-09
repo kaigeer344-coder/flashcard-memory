@@ -9752,7 +9752,7 @@
             document.getElementById('todayStartTime').textContent = minutes;
             // 今日已完成单元数:与任务中心 daily_unit 同源,避免固定显示"已完成 0 关"
             try {
-                const todayKey = new Date().toISOString().slice(0, 10);
+                const todayKey = _todayLocalKey();
                 const doneCount = JSON.parse(localStorage.getItem('wordmatch_daily_done_' + todayKey) || '0');
                 const subEl = document.getElementById('todayStartSub');
                 if (subEl) subEl.innerHTML = `今天的任务已完成 <b>${doneCount}</b> 关`;
@@ -11160,6 +11160,15 @@
                         const k = localStorage.key(i);
                         if (k && (k.indexOf('wordmatch_mem_') === 0 || k.indexOf('wordmem_') === 0)) toRemove.push(k);
                     }
+                    toRemove.forEach(k => localStorage.removeItem(k));
+                    // 清理按天/会话计数的残留(测试场景会产生),保证"全新用户"从 0 开始
+                    ['wordmatch_daily_done_', 'wordmatch_streak', 'wordmatch_study_days', 'wordmatch_study_slots',
+                     'wordmatch_chest_claimed', 'wordmatch_task_states', 'wordmatch_global_stats'].forEach(prefix => {
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const k = localStorage.key(i);
+                            if (k && k.indexOf(prefix) === 0) toRemove.push(k);
+                        }
+                    });
                     toRemove.forEach(k => localStorage.removeItem(k));
                     MemorySystem._allWordsCache = {};
                     MemorySystem._memoryCache = null;
@@ -12876,7 +12885,7 @@
             }
             if (taskId === 'daily_unit') {
                 // 今日已完成的学习单元数
-                const todayKey = new Date().toISOString().slice(0, 10);
+                const todayKey = _todayLocalKey();
                 try {
                     return JSON.parse(localStorage.getItem('wordmatch_daily_done_' + todayKey) || '0');
                 } catch (e) { return 0; }
@@ -12982,9 +12991,15 @@
             if (typeof renderProfileScreen === 'function') renderProfileScreen();
         }
 
+        // 今日日期(本地时区,YYYY-MM-DD)。避免 UTC toISOString 在凌晨 0-8 点读到前一天
+        function _todayLocalKey() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
         // 记录今日完成的学习单元数(供 daily_unit 任务统计)
         function recordDailyUnitDone() {
-            const todayKey = new Date().toISOString().slice(0, 10);
+            const todayKey = _todayLocalKey();
             const key = 'wordmatch_daily_done_' + todayKey;
             let count = 0;
             try { count = JSON.parse(localStorage.getItem(key) || '0'); } catch (e) {}
