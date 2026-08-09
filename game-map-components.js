@@ -86,7 +86,7 @@
             <div class="gm-node gm-node-chestnode gm-node-chestnode-${cls}" style="left:${geom.x.toFixed(1)}%;top:${Math.round(geom.y)}px;">
                 <button class="gm-node-btn" type="button" role="button" tabindex="0"
                         data-day="${n}"
-                        aria-label="Day ${n} 宝箱奖励"
+                        aria-label="宝箱奖励"
                         onclick="window.onLevelChestClick && window.onLevelChestClick(${n})">
                     <img class="gm-node-chestnode-img" src="assets/home/宝箱.png" alt="宝箱">
                 </button>
