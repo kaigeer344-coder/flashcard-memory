@@ -728,6 +728,11 @@
             flex-shrink: 0;
             margin-top: 35px;
         }
+        /* 徽章庆祝:徽章素材竖版大图,缩小到原尺寸 2/3,避免挡住上方标题 */
+        #completionMascot img.badge-celebration {
+            width: 266px;
+            height: 249px;
+        }
         .mascot-burst {
             position: absolute;
             inset: -10%;
@@ -12570,15 +12575,17 @@
             updateEstimate();
             showScreen('completionScreen');
 
-            // 结果页庆祝素材:本次新解锁徽章则替换为徽章素材,否则恢复默认素材
+            // 结果页庆祝素材:本次新解锁徽章则替换为徽章素材(缩小2/3防遮挡),否则恢复默认素材
             const mascotImg = document.querySelector('#completionMascot img');
             if (mascotImg) {
                 if (newBadgeName && BADGE_IMAGES[newBadgeName]) {
                     mascotImg.src = BADGE_IMAGES[newBadgeName];
                     mascotImg.alt = newBadgeName;
+                    mascotImg.classList.add('badge-celebration');
                 } else {
                     mascotImg.src = 'assets/xuexichengguo/结果页素材.png';
                     mascotImg.alt = 'IP 形象';
+                    mascotImg.classList.remove('badge-celebration');
                 }
                 mascotImg.style.display = '';
             }
