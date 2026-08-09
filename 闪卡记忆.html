@@ -13638,13 +13638,6 @@
                                 <button class="settings-v2-seg-btn ${plan.dailyNewWords === 35 ? 'active' : ''}" onclick="settingsChangeDailyWords(${35})">35</button>
                                 <button class="settings-v2-seg-btn ${plan.dailyNewWords === 50 ? 'active' : ''}" onclick="settingsChangeDailyWords(${50})">50</button>
                             </div>
-                        </div>
-                        <div class="settings-v2-row">
-                            <div class="settings-v2-row-label">
-                                <div class="settings-v2-row-name">查看学习地图</div>
-                                <div class="settings-v2-row-meta">第 ${plan.currentDay} / ${plan.planDays} 天</div>
-                            </div>
-                            <button class="settings-v2-link" onclick="showLearningMap()">查看</button>
                         </div>`;
                 } else if (settings.mode === 'free') {
                     const bookInfo = LearningSystem.getBookInfo(settings.activeBookId);
