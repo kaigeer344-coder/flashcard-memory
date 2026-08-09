@@ -7724,6 +7724,10 @@
             pretestErrors: null,
             pretestWords: [],
             pretestPending: null,
+            pretestVisible: [],     // 当前页面显示的词序号(滚动窗口,保持5对)
+            pretestCursor: 0,       // 下一个待补入的词序号
+            pretestBatchSize: 5,    // 页面同时显示的配对对数
+            pretestPassedCount: 0,  // 预检已认识(未出错且未提示)的词数
             gameCards: [],
             gameSelected: [],
             gameScore: 0,
@@ -11947,20 +11951,54 @@
             state.pretestMode = true;
             state.pretestErrors = new Set();
             state.pretestWords = words || [];
+            state.pretestVisible = [];
+            state.pretestCursor = 0;
+            state.pretestBatchSize = 5;
+            state.pretestPassedCount = 0;
             state.currentWords = (words || []).map(w => ({
                 en: w.en, cn: w.cn, wordId: w.wordId, memoryData: null
             }));
-            startGame(); // 复用配对游戏(预检模式跳过计时)
+            startGame(); // 复用配对游戏(预检模式跳过计时,滚动窗口保持 5 对)
+            setPretestHudLabels();
             const roundEl = document.getElementById('gameRoundInfo');
             if (roundEl) {
-                roundEl.textContent = `预检 ${(words || []).length} 个新词 · 认识的词会跳过`;
+                roundEl.textContent = `预检 ${(words || []).length} 个新词 · 页面保持 5 对,认识的词会跳过`;
                 roundEl.style.display = 'block';
             }
+        }
+
+        // 预检:消掉一对后补入下一对(保持页面持续 5 对)
+        function pretestAddPair(globalIndex) {
+            const word = state.currentWords[globalIndex];
+            if (!word) return;
+            state.pretestVisible.push(globalIndex);
+            const en = { id: `en-${globalIndex}`, type: 'en', text: word.en, pairId: globalIndex };
+            const cn = { id: `cn-${globalIndex}`, type: 'cn', text: getDisplayMeanings(word), pairId: globalIndex };
+            state.gameCards.push(en, cn);
+            const board = document.getElementById('gameBoard');
+            if (board) board.insertAdjacentHTML('beforeend', pretestCardHTML(en) + pretestCardHTML(cn));
+        }
+
+        function pretestCardHTML(card) {
+            return `<div class="match-card ${card.type}-card" data-id="${card.id}" data-pair="${card.pairId}" data-type="${card.type}" onclick="handleCardClick('${card.id}')">
+                <div class="card-text">${escapeHtml(card.text)}</div>
+            </div>`;
+        }
+
+        // 预检 HUD 标签:总词数 / 已认识 / 待学习(退出时还原)
+        function setPretestHudLabels() {
+            const map = { '.game-timer .hud-label': '总词数', '.game-score .hud-label': '已认识', '.game-combo .hud-label': '待学习' };
+            Object.keys(map).forEach(sel => { const el = document.querySelector(sel); if (el) el.textContent = map[sel]; });
+        }
+        function restoreGameHudLabels() {
+            const map = { '.game-timer .hud-label': '第几组', '.game-score .hud-label': '得分', '.game-combo .hud-label': '连击' };
+            Object.keys(map).forEach(sel => { const el = document.querySelector(sel); if (el) el.textContent = map[sel]; });
         }
 
         function finishPretest() {
             state.pretestMode = false;
             try { clearGameTimer(); } catch (e) {}
+            restoreGameHudLabels();
             const passed = state.pretestWords.filter(w =>
                 !state.pretestErrors.has(w.wordId) && !state.hintedWordIds.has(w.wordId)
             );
@@ -12073,7 +12111,17 @@
 
         function buildGameCards() {
             const cards = [];
-            state.currentWords.forEach((word, index) => {
+            let words = state.currentWords;
+            if (state.pretestMode) {
+                // 预检:初始窗口显示前 5 对(不足则全部),之后消一对补一对
+                const size = state.pretestBatchSize;
+                state.pretestVisible = [];
+                for (let i = 0; i < size && i < state.currentWords.length; i++) state.pretestVisible.push(i);
+                state.pretestCursor = Math.min(size, state.currentWords.length);
+                words = state.pretestVisible.map(i => state.currentWords[i]);
+            }
+            words.forEach((word, localIndex) => {
+                const index = state.pretestMode ? state.pretestVisible[localIndex] : localIndex;
                 cards.push({
                     id: `en-${index}`,
                     type: 'en',
@@ -12092,11 +12140,7 @@
 
         function renderGameBoard() {
             const board = document.getElementById('gameBoard');
-            board.innerHTML = state.gameCards.map(card => `
-                <div class="match-card ${card.type}-card" data-id="${card.id}" data-pair="${card.pairId}" data-type="${card.type}" onclick="handleCardClick('${card.id}')">
-                    <div class="card-text">${escapeHtml(card.text)}</div>
-                </div>
-            `).join('');
+            board.innerHTML = state.gameCards.map(card => pretestCardHTML(card)).join('');
         }
 
         function escapeHtml(str) {
@@ -12165,14 +12209,34 @@
                         const mem2 = MemorySystem.rate(word2, 'matchSuccess', { wasHinted: state.hintedWordIds.has(word2.wordId) });
                         recordRoundResult(word2, 'matchSuccess', mem2);
                     }
+                } else {
+                    // 预检:未出错且未提示过的词计为"已认识"
+                    const word = state.currentWords[first.card.pairId];
+                    if (word && !state.pretestErrors.has(word.wordId) && !state.hintedWordIds.has(word.wordId)) {
+                        state.pretestPassedCount++;
+                    }
+                    updateGameHUD();
                 }
 
-                if (state.gameMatchedPairs >= state.currentWords.length) {
-                    if (state.pretestMode) {
-                        setTimeout(() => finishPretest(), 420);
-                    } else {
-                        setTimeout(() => endGame('cleared'), 420);
-                    }
+                // 预检:消掉已匹配对,补入下一对(保持页面持续 5 对);全部完成则结束
+                if (state.pretestMode) {
+                    const pairId = first.card.pairId;
+                    setTimeout(() => {
+                        if (first.el && first.el.parentNode) first.el.remove();
+                        if (second.el && second.el.parentNode) second.el.remove();
+                        state.gameCards = state.gameCards.filter(c => c.pairId !== pairId);
+                        state.pretestVisible = state.pretestVisible.filter(i => i !== pairId);
+                        if (state.pretestCursor < state.pretestWords.length) {
+                            const next = state.pretestCursor;
+                            state.pretestCursor++;
+                            pretestAddPair(next);
+                        }
+                        if (state.pretestVisible.length === 0 && state.pretestCursor >= state.pretestWords.length) {
+                            finishPretest();
+                        }
+                    }, 260);
+                } else if (state.gameMatchedPairs >= state.currentWords.length) {
+                    setTimeout(() => endGame('cleared'), 420);
                 }
             } else {
                 if (state.gameCombo >= 2) hideComboPopup();
@@ -12268,6 +12332,16 @@
             const scoreEl = document.getElementById('gameScore');
             const comboHudEl = document.getElementById('gameCombo');
             const timerHudEl = document.querySelector('.game-timer');
+
+            // 预检模式 HUD:总词数 / 已认识 / 待学习
+            if (state.pretestMode) {
+                const total = (state.pretestWords || []).length;
+                const passed = state.pretestPassedCount || 0;
+                timerEl.textContent = total;
+                scoreEl.textContent = passed;
+                comboHudEl.textContent = Math.max(0, total - passed);
+                return;
+            }
 
             // 显示当前学习组数
             timerEl.textContent = state.currentGroupIndex + 1;
@@ -13990,6 +14064,10 @@
             state.pretestErrors = null;
             state.pretestWords = [];
             state.pretestPending = null;
+            state.pretestVisible = [];
+            state.pretestCursor = 0;
+            state.pretestPassedCount = 0;
+            restoreGameHudLabels();
             state.todayQueue = [];
             state.completedToday.clear();
             state.todayTaskTotal = 0;
@@ -14415,7 +14493,7 @@
                             dailyQuota: dailyQuota,
                             coverageTarget: totalTarget,
                             poolStats: { total: wordPool.length, coreInPool: poolCore, coreTotal: coreTotal },
-                            wordPool: wordPool.map(w => ({ wordId: w.wordId, en: w.en, indexInBank: w.indexInBank, isCore: w.isCore, difficulty: w.difficulty })),
+                            wordPool: wordPool.map(w => ({ wordId: w.wordId, en: w.en, cn: w.cn, phonetic: w.phonetic, indexInBank: w.indexInBank, isCore: w.isCore, difficulty: w.difficulty })),
                             progress: {
                                 learnedWordIds: [],
                                 masteredCount: 0,
@@ -14588,6 +14666,21 @@
                     const isReviewDay = dayIndex > learningDays;
                     const quota = (plan.plan && plan.plan.dailyQuota) || plan.dailyNewWords || 10;
                     const pool = (plan.plan && Array.isArray(plan.plan.wordPool)) ? plan.plan.wordPool : [];
+                    // 兼容旧计划:池内词可能缺 cn/phonetic,从词库按 en 回填(建一次索引)
+                    let bankIndex = null;
+                    const ensureFull = (w) => {
+                        if (w.cn) return w;
+                        if (!bankIndex) {
+                            bankIndex = new Map();
+                            (wordDB[plan.type] || []).forEach(b => { if (!bankIndex.has(b.en)) bankIndex.set(b.en, b); });
+                        }
+                        const found = bankIndex.get(w.en);
+                        if (found) {
+                            w.cn = found.cn;
+                            w.phonetic = w.phonetic || found.phonetic;
+                        }
+                        return w;
+                    };
                     // 复习:FSRS 到期(复习优先,不设上限,保证闭环),按记忆强度升序(弱的先复习)
                     const dueReviews = [];
                     for (let i = 0; i < pool.length; i++) {
@@ -14596,7 +14689,7 @@
                         let mem = null;
                         try { mem = MemorySystem.getMemoryForWord(plan.type, { en: w.en }, w.indexInBank || 0); } catch (e) {}
                         if (mem && mem.reviewCount > 0 && mem.status !== 'new' && mem.nextReview <= now) {
-                            dueReviews.push({ ...w, type: 'review', priority: 2, memoryData: mem });
+                            dueReviews.push({ ...ensureFull(w), type: 'review', priority: 2, memoryData: mem });
                         }
                     }
                     dueReviews.sort((a, b) => (a.memoryData.retrievability || 1) - (b.memoryData.retrievability || 1));
@@ -14608,7 +14701,7 @@
                         const w = pool[i];
                         if (!learnedSet.has(w.wordId)) remaining.push(w);
                     }
-                    const todayNew = remaining.slice(0, newQuota).map(w => ({ ...w, type: 'new', priority: 3 }));
+                    const todayNew = remaining.slice(0, newQuota).map(w => ({ ...ensureFull(w), type: 'new', priority: 3 }));
                     return {
                         queue: [...dueReviews, ...todayNew],
                         newCount: todayNew.length,
