@@ -11683,13 +11683,31 @@
                 renderSettingsScreen();
             }
         }
+        // 今日完成判定 key:按"日期+模式+上下文"(自由=词库/冲刺=计划)区分,
+        // 避免同一天切换模式后,新模式的当前关被误锁为灰色
+        function _todayDoneKey() {
+            let mode = 'free', ctx = 'cet4';
+            try {
+                const s = LearningSystem.getSettings();
+                if (s) {
+                    mode = s.mode || 'free';
+                    if (mode === 'sprint') {
+                        const plan = LearningSystem.getActivePlan();
+                        ctx = (plan && plan.id) || 'sprint';
+                    } else {
+                        ctx = s.activeBookId || 'cet4';
+                    }
+                }
+            } catch (e) {}
+            return 'wordmatch_daily_done_' + _todayLocalKey() + '_' + mode + '_' + ctx;
+        }
+
         function isTodayTaskComplete() {
             if (state.todayTaskStarted) return getTodayRemainingCount() === 0;
             // 页面刷新后今日会话状态丢失:用持久化的"今日已完成学习单元"判定,
             // 保证当天学完后当前关保持灰色锁定,不会因刷新重新点亮下一关
-            const todayKey = _todayLocalKey();
             try {
-                const done = JSON.parse(localStorage.getItem('wordmatch_daily_done_' + todayKey) || '0');
+                const done = JSON.parse(localStorage.getItem(_todayDoneKey()) || '0');
                 return (Number(done) || 0) > 0;
             } catch (e) { return false; }
         }
@@ -13528,11 +13546,17 @@
         // 记录今日完成的学习单元数(供 daily_unit 任务统计)
         function recordDailyUnitDone() {
             const todayKey = _todayLocalKey();
+            // 旧格式:任务中心累计今日完成单元数(跨模式聚合)
             const key = 'wordmatch_daily_done_' + todayKey;
             let count = 0;
             try { count = JSON.parse(localStorage.getItem(key) || '0'); } catch (e) {}
             count = (Number(count) || 0) + 1;
             localStorage.setItem(key, JSON.stringify(count));
+            // 新格式:按 日期+模式+上下文 单独记录,供地图"今日已学完"判定,
+            // 防止同一天切换模式后新模式的当前关被误锁
+            try {
+                localStorage.setItem(_todayDoneKey(), '1');
+            } catch (e) {}
         }
 
         // 连续学习进度卡：显示距下一枚打卡徽章还差几天
