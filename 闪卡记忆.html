@@ -5263,6 +5263,11 @@
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
+        /* 仅「学习设置」「显示设置」两个 section 标题放大到 15px,不影响其他实例 */
+        #settingsV2Container .settings-v2-section:nth-child(1) .settings-v2-section-title,
+        #settingsV2Container .settings-v2-section:nth-child(2) .settings-v2-section-title {
+            font-size: 15px;
+        }
         .settings-v2-row {
             display: flex;
             align-items: center;
