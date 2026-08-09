@@ -11968,6 +11968,7 @@
         }
 
         // 预检:消掉一对后补入下一对(保持页面持续 5 对)
+        // 新对的中英文分别随机插入,且 cn 避开 en 相邻位置,保证同对不相邻
         function pretestAddPair(globalIndex) {
             const word = state.currentWords[globalIndex];
             if (!word) return;
@@ -11976,7 +11977,35 @@
             const cn = { id: `cn-${globalIndex}`, type: 'cn', text: getDisplayMeanings(word), pairId: globalIndex };
             state.gameCards.push(en, cn);
             const board = document.getElementById('gameBoard');
-            if (board) board.insertAdjacentHTML('beforeend', pretestCardHTML(en) + pretestCardHTML(cn));
+            if (!board) return;
+            pretestInsertRandom(board, pretestCardHTML(en));
+            pretestInsertRandom(board, pretestCardHTML(cn), `[data-id="en-${globalIndex}"]`);
+        }
+
+        // 将卡片 HTML 随机插入现有卡片之间(含末尾);
+        // excludeAdjacentTo:CSS 选择器,插入位置排除该卡片相邻的两个位置(保证同对中英文不相邻)
+        function pretestInsertRandom(board, html, excludeAdjacentTo) {
+            const children = Array.from(board.querySelectorAll('.match-card'));
+            const positions = children.map((_, i) => i);
+            positions.push(children.length); // 末尾位置
+            if (excludeAdjacentTo) {
+                const target = board.querySelector(excludeAdjacentTo);
+                const targetIdx = target ? children.indexOf(target) : -1;
+                if (targetIdx >= 0) {
+                    const valid = positions.filter(i => i !== targetIdx && i !== targetIdx + 1);
+                    if (valid.length) {
+                        const pos = valid[Math.floor(Math.random() * valid.length)];
+                        const before = pos < children.length ? children[pos] : null;
+                        if (before && before.parentNode) before.insertAdjacentHTML('beforebegin', html);
+                        else board.insertAdjacentHTML('beforeend', html);
+                        return;
+                    }
+                }
+            }
+            const pos = positions[Math.floor(Math.random() * positions.length)];
+            const before = pos < children.length ? children[pos] : null;
+            if (before && before.parentNode) before.insertAdjacentHTML('beforebegin', html);
+            else board.insertAdjacentHTML('beforeend', html);
         }
 
         function pretestCardHTML(card) {
@@ -12135,7 +12164,25 @@
                     pairId: index
                 });
             });
-            return shuffle(cards);
+            // 乱序:避免同一对中英文相邻,暴露配对规律
+            return shuffleNoAdjacent(cards);
+        }
+
+        // 是否存在相邻的同一对(en-i 紧挨 cn-i)
+        function hasAdjacentPair(cards) {
+            for (let i = 1; i < cards.length; i++) {
+                if (cards[i - 1].pairId === cards[i].pairId) return true;
+            }
+            return false;
+        }
+
+        // 乱序且保证无相邻同对(最多重试 12 次)
+        function shuffleNoAdjacent(cards) {
+            let result = shuffle(cards);
+            for (let attempt = 0; attempt < 12 && hasAdjacentPair(result); attempt++) {
+                result = shuffle(cards);
+            }
+            return result;
         }
 
         function renderGameBoard() {
@@ -12230,6 +12277,11 @@
                             const next = state.pretestCursor;
                             state.pretestCursor++;
                             pretestAddPair(next);
+                        }
+                        // 移除隔板卡可能让现存同对变相邻,重排消除并重绘
+                        if (hasAdjacentPair(state.gameCards)) {
+                            state.gameCards = shuffleNoAdjacent(state.gameCards);
+                            renderGameBoard();
                         }
                         if (state.pretestVisible.length === 0 && state.pretestCursor >= state.pretestWords.length) {
                             finishPretest();
