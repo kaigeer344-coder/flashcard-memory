@@ -7742,6 +7742,8 @@
             currentGroupIndex: 0,
             todayTaskTotal: 0,
             todayTaskStarted: false,
+            sessionMode: null,   // 当前学习会话所属模式('free'|'sprint'),切模式后旧会话状态不生效
+            sessionCtx: null,    // 会话所属上下文(自由=词库ID / 冲刺=计划ID)
             learningSessionActive: false, // 本次学习会话是否已进入闪卡(首组不递增组号)
             extraGroupMode: false, // 结果页"再学一组"独立学习组(不推进天数/不计今日完成单元)
             roundResults: [],
@@ -11682,9 +11684,8 @@
                 renderSettingsScreen();
             }
         }
-        // 今日完成判定 key:按"日期+模式+上下文"(自由=词库/冲刺=计划)区分,
-        // 避免同一天切换模式后,新模式的当前关被误锁为灰色
-        function _todayDoneKey() {
+        // 当前设置对应的模式/上下文(自由=词库ID / 冲刺=计划ID)
+        function _currentModeCtx() {
             let mode = 'free', ctx = 'cet4';
             try {
                 const s = LearningSystem.getSettings();
@@ -11698,11 +11699,23 @@
                     }
                 }
             } catch (e) {}
+            return { mode, ctx };
+        }
+
+        // 今日完成判定 key:按"日期+模式+上下文"(自由=词库/冲刺=计划)区分,
+        // 避免同一天切换模式后,新模式的当前关被误锁为灰色
+        function _todayDoneKey() {
+            const { mode, ctx } = _currentModeCtx();
             return 'wordmatch_daily_done_' + _todayLocalKey() + '_' + mode + '_' + ctx;
         }
 
         function isTodayTaskComplete() {
-            if (state.todayTaskStarted) return getTodayRemainingCount() === 0;
+            // 内存会话判定仅在"会话属于当前模式/上下文"时有效:
+            // 切模式后旧会话的今日完成状态不再作用于新模式的当前关
+            const { mode, ctx } = _currentModeCtx();
+            if (state.todayTaskStarted && state.sessionMode === mode && state.sessionCtx === ctx) {
+                return getTodayRemainingCount() === 0;
+            }
             // 页面刷新后今日会话状态丢失:用持久化的"今日已完成学习单元"判定,
             // 保证当天学完后当前关保持灰色锁定,不会因刷新重新点亮下一关
             try {
@@ -11768,6 +11781,10 @@
             state.totalGameCoinsEarned = 0;
             state.totalGameGemsEarned = 0;
             state.todayTaskStarted = true;
+            // 记录会话所属模式/上下文:切模式后旧会话的"今日完成"状态不再作用于新模式
+            const _sctx = _currentModeCtx();
+            state.sessionMode = _sctx.mode;
+            state.sessionCtx = _sctx.ctx;
             state.learningSessionActive = false; // 新会话:首次进入闪卡组号从第 1 组开始
             state.extraGroupMode = false; // 正常任务学习,非"再学一组"
             state.learningIndex = 0;
