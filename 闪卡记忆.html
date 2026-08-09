@@ -6958,6 +6958,7 @@
             <button class="screen-nav-item" data-screen="learningScreen">闪卡学习</button>
             <button class="screen-nav-item" data-screen="gameScreen">配对游戏</button>
             <button class="screen-nav-item" data-screen="completionScreen">结果页</button>
+            <button class="screen-nav-item" onclick="simulateNewBadge()">模拟徽章获得</button>
             <button class="screen-nav-item" data-screen="wordbookScreen">单词本</button>
             <button class="screen-nav-item" data-screen="statsScreen">任务中心</button>
             <button class="screen-nav-item" data-screen="profileScreen">个人中心</button>
@@ -11173,6 +11174,19 @@
             }
         };
 
+        // ===== 模拟徽章获得(界面清单按钮,用于检验结果页徽章庆祝效果) =====
+        function simulateNewBadge() {
+            SFX.click();
+            let name = '';
+            try {
+                // 优先挑当前未解锁的徽章,全部解锁时用第一个
+                const badges = computeCollectionBadges();
+                const locked = badges.filter(b => b.current < b.target);
+                name = locked.length ? locked[0].name : badges[0].name;
+            } catch (e) { name = '3天连击'; }
+            showCompletionSummary(null, name);
+        }
+
         function initScreenNavSidebar() {
             const sidebar = document.getElementById('screenNavSidebar');
             if (!sidebar) return;
@@ -11619,6 +11633,12 @@
                 state.groupWordIndex = 0;
                 state.currentGroupIndex = 0;
                 buildTodayQueue(state.level);
+                // 记录本次学习会话开始前已解锁的徽章(供结果页检测本次新解锁)
+                try {
+                    _badgeUnlockedBefore = new Set(
+                        computeCollectionBadges().filter(b => b.current >= b.target).map(b => b.name)
+                    );
+                } catch (e) { _badgeUnlockedBefore = new Set(); }
             } else {
                 state.currentGroupIndex++;
             }
@@ -12478,9 +12498,23 @@
             } catch (e) {}
         }
 
-        function showCompletionSummary(gameResult) {
+        function showCompletionSummary(gameResult, forcedNewBadge) {
             // 完成当日学习即记录学习时段(供成就徽章判定)
             recordStudySlot();
+            // 检测本次学习会话新解锁的成就徽章(界面清单"模拟徽章获得"按钮可强制指定)
+            let newBadgeName = forcedNewBadge || null;
+            // 仅真实学习会话(_badgeUnlockedBefore 已记录基线)才自动检测,
+            // 避免调试入口(如侧栏"结果页")把历史已解锁徽章误判为新获得
+            if (!newBadgeName && _badgeUnlockedBefore !== null) {
+                try {
+                    const badges = computeCollectionBadges();
+                    const unlockedNow = new Set(badges.filter(b => b.current >= b.target).map(b => b.name));
+                    const prev = _badgeUnlockedBefore || new Set();
+                    // 数组按难度从易到难,取难度最高的新解锁徽章展示
+                    const newly = badges.filter(b => unlockedNow.has(b.name) && !prev.has(b.name));
+                    if (newly.length) newBadgeName = newly[newly.length - 1].name;
+                } catch (e) {}
+            }
             // 结果页新设计：只显示标题、吉祥物占位、得分、奖励卡片
             const scoreEl = document.getElementById('gameResultScore');
             const energyEl = document.getElementById('completionEnergyValue');
@@ -12535,6 +12569,19 @@
             updateTodayProgressHeader();
             updateEstimate();
             showScreen('completionScreen');
+
+            // 结果页庆祝素材:本次新解锁徽章则替换为徽章素材,否则恢复默认素材
+            const mascotImg = document.querySelector('#completionMascot img');
+            if (mascotImg) {
+                if (newBadgeName && BADGE_IMAGES[newBadgeName]) {
+                    mascotImg.src = BADGE_IMAGES[newBadgeName];
+                    mascotImg.alt = newBadgeName;
+                } else {
+                    mascotImg.src = 'assets/xuexichengguo/结果页素材.png';
+                    mascotImg.alt = 'IP 形象';
+                }
+                mascotImg.style.display = '';
+            }
 
             // 爆炸特效
             triggerCompletionExplosion(score);
@@ -12619,6 +12666,66 @@
         const WORD_BANK_TOTALS = { cet4: 4500, cet6: 5500, kaoyan: 5500, ielts: 6000, toefl: 5000 };
         const LOCK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>`;
 
+        // ===== 成就徽章:统一计算当前进度与解锁状态 =====
+        // 个人中心渲染与学习结果页"新解锁徽章"检测共用同一套数据源
+        function computeCollectionBadges() {
+            const streakCount = getStreakData().count;
+            // 学习时段(早起/夜读)终身记录
+            let studySlots = [];
+            try { studySlots = JSON.parse(localStorage.getItem('wordmatch_study_slots') || '[]'); } catch (e) {}
+            const hasEarly = studySlots.indexOf('early') >= 0;
+            const hasNight = studySlots.indexOf('night') >= 0;
+            // 跨词库累计学习/掌握词数(词库间共享进度)
+            let totalLearned = 0, totalMastered = 0;
+            try {
+                Object.keys(wordDB).forEach(k => {
+                    const st = MemorySystem.getLearningStats(k);
+                    totalLearned += (st.mastered || 0) + (st.learning || 0);
+                    totalMastered += (st.mastered || 0);
+                });
+            } catch (e) {}
+            const gamesCompleted = progress.gamesCompleted || 0;
+            const maxCombo = progress.maxCombo || 0;
+            // 成就徽章按达成难度从易到难排列(越容易越靠上,越难越靠下)
+            return [
+                { name: '初露锋芒', current: gamesCompleted, target: 1 },
+                { name: '3天连击', current: streakCount, target: 3 },
+                { name: '初学乍练', current: totalLearned, target: 50 },
+                { name: '早起达人', current: hasEarly ? 1 : 0, target: 1 },
+                { name: '夜读之星', current: hasNight ? 1 : 0, target: 1 },
+                { name: '连击新星', current: maxCombo, target: 10 },
+                { name: '7天连击', current: streakCount, target: 7 },
+                { name: '渐入佳境', current: totalLearned, target: 300 },
+                { name: '连连高手', current: gamesCompleted, target: 10 },
+                { name: '闪卡王者', current: maxCombo, target: 20 },
+                { name: '30天连击', current: streakCount, target: 30 },
+                { name: '词汇达人', current: totalLearned, target: 1000 },
+                { name: '词汇大师', current: totalMastered, target: 500 },
+                { name: '60天连击', current: streakCount, target: 60 }
+            ];
+        }
+
+        // 成就徽章素材图(assets/个人中心),无素材的徽章保留 SVG 占位
+        const BADGE_IMAGES = {
+            '3天连击': 'assets/个人中心/3天打卡.png',
+            '7天连击': 'assets/个人中心/7天打卡.png',
+            '30天连击': 'assets/个人中心/30天打卡.png',
+            '60天连击': 'assets/个人中心/60天打卡.png',
+            '初学乍练': 'assets/个人中心/初学乍练.png',
+            '词汇达人': 'assets/个人中心/词汇达人.png',
+            '渐入佳境': 'assets/个人中心/渐入佳境.png',
+            '夜读之星': 'assets/个人中心/夜读之星.png',
+            '早起达人': 'assets/个人中心/早起达人.png',
+            '词汇大师': 'assets/个人中心/词汇大师.png',
+            '初露锋芒': 'assets/个人中心/初露锋芒.png',
+            '连连高手': 'assets/个人中心/连连高手.png',
+            '连击新星': 'assets/个人中心/连击新星.png',
+            '闪卡王者': 'assets/个人中心/闪卡王者.png'
+        };
+
+        // 本次学习会话开始前已解锁的徽章集合(用于结果页检测"本次新解锁")
+        let _badgeUnlockedBefore = null;
+
         // ===== 个人中心徽章渲染(从旧成果页迁移) =====
         function renderProfileBadges() {
             // 词库徽章
@@ -12649,57 +12756,7 @@
             if (wordEl) wordEl.innerHTML = wordHtml;
 
             // 成就徽章:进度与解锁状态全部按真实数据实时计算,不再写死占位
-            const streakCount = getStreakData().count;
-            // 学习时段(早起/夜读)终身记录
-            let studySlots = [];
-            try { studySlots = JSON.parse(localStorage.getItem('wordmatch_study_slots') || '[]'); } catch (e) {}
-            const hasEarly = studySlots.indexOf('early') >= 0;
-            const hasNight = studySlots.indexOf('night') >= 0;
-            // 跨词库累计学习/掌握词数(词库间共享进度)
-            let totalLearned = 0, totalMastered = 0;
-            try {
-                Object.keys(wordDB).forEach(k => {
-                    const st = MemorySystem.getLearningStats(k);
-                    totalLearned += (st.mastered || 0) + (st.learning || 0);
-                    totalMastered += (st.mastered || 0);
-                });
-            } catch (e) {}
-            const gamesCompleted = progress.gamesCompleted || 0;
-            const maxCombo = progress.maxCombo || 0;
-            // 成就徽章按达成难度从易到难排列(越容易越靠上,越难越靠下)
-            const COLLECTION_BADGES = [
-                { name: '初露锋芒', current: gamesCompleted, target: 1 },
-                { name: '3天连击', current: streakCount, target: 3 },
-                { name: '初学乍练', current: totalLearned, target: 50 },
-                { name: '早起达人', current: hasEarly ? 1 : 0, target: 1 },
-                { name: '夜读之星', current: hasNight ? 1 : 0, target: 1 },
-                { name: '连击新星', current: maxCombo, target: 10 },
-                { name: '7天连击', current: streakCount, target: 7 },
-                { name: '渐入佳境', current: totalLearned, target: 300 },
-                { name: '连连高手', current: gamesCompleted, target: 10 },
-                { name: '闪卡王者', current: maxCombo, target: 20 },
-                { name: '30天连击', current: streakCount, target: 30 },
-                { name: '词汇达人', current: totalLearned, target: 1000 },
-                { name: '词汇大师', current: totalMastered, target: 500 },
-                { name: '60天连击', current: streakCount, target: 60 }
-            ];
-            // 成就徽章素材图(assets/个人中心),无素材的徽章保留 SVG 占位
-            const BADGE_IMAGES = {
-                '3天连击': 'assets/个人中心/3天打卡.png',
-                '7天连击': 'assets/个人中心/7天打卡.png',
-                '30天连击': 'assets/个人中心/30天打卡.png',
-                '60天连击': 'assets/个人中心/60天打卡.png',
-                '初学乍练': 'assets/个人中心/初学乍练.png',
-                '词汇达人': 'assets/个人中心/词汇达人.png',
-                '渐入佳境': 'assets/个人中心/渐入佳境.png',
-                '夜读之星': 'assets/个人中心/夜读之星.png',
-                '早起达人': 'assets/个人中心/早起达人.png',
-                '词汇大师': 'assets/个人中心/词汇大师.png',
-                '初露锋芒': 'assets/个人中心/初露锋芒.png',
-                '连连高手': 'assets/个人中心/连连高手.png',
-                '连击新星': 'assets/个人中心/连击新星.png',
-                '闪卡王者': 'assets/个人中心/闪卡王者.png'
-            };
+            const COLLECTION_BADGES = computeCollectionBadges();
             const BADGE_PLACEHOLDER = (name, unlocked) => {
                 const src = BADGE_IMAGES[name];
                 if (src) return `<img src="${src}" alt="${name}">`;
