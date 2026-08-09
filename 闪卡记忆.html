@@ -9391,6 +9391,15 @@
         }
 
         function showScreen(id) {
+            // 离开配对游戏界面时中断计时器,避免退出后进度条继续流逝并强制跳转闪卡
+            const prevScreen = document.querySelector('.screen.active');
+            if (prevScreen && prevScreen.id === 'gameScreen' && id !== 'gameScreen') {
+                clearGameTimer();
+                state.gameActive = false;
+                state.timeFrozen = false;
+                state.gameMatchLock = false;
+                state.gameSelected = [];
+            }
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             updateBottomNavVisibility();
