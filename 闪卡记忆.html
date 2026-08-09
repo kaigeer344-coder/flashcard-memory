@@ -9816,10 +9816,12 @@
             else { SFX.correct(); }
             showToast(`🎁 ${level.chestBig ? '大宝箱' : '宝箱'}盲盒开出：${rewardText}！`, 'success');
             // 就地更新宝箱节点为已领取态,不整页重绘
-            const badge = document.querySelector(`.gm-node-chestnode[data-day="${day}"]`);
-            if (badge) {
-                badge.classList.remove('gm-node-chestnode-ready');
-                badge.classList.add('gm-node-chestnode-claimed');
+            // 注意:data-day 在内部 button 上,gm-node-chestnode-* 状态类在父容器 div 上
+            const chestBtn = document.querySelector(`.gm-node-chestnode .gm-node-btn[data-day="${day}"]`);
+            const chestNode = chestBtn && chestBtn.closest('.gm-node-chestnode');
+            if (chestNode) {
+                chestNode.classList.remove('gm-node-chestnode-ready', 'gm-node-chestnode-locked');
+                chestNode.classList.add('gm-node-chestnode-claimed');
             }
             // 金币/道具数量变化后同步刷新地图顶部统计条(金币与个人主页同源)
             const sb = document.querySelector('.lp-scroll .lp-statsbar');
