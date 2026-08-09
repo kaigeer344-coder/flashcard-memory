@@ -84,10 +84,10 @@
     display: block;
 }
 
-/* 统计条图片图标(如重置素材图):与 svg 图标同尺寸 */
+/* 统计条图片图标(如金币/重置/延时/提示素材图):放大图标,数字保持原尺寸 */
 .lp-stat-icon-img {
-    width: 20px;
-    height: 20px;
+    width: 26px;
+    height: 26px;
     display: block;
     object-fit: contain;
 }
