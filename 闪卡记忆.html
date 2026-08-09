@@ -9,7 +9,7 @@
     <title>闪卡记忆</title>
     <link rel="icon" href="assets/generated-icons/app-logo.png">
     <link rel="stylesheet" href="home-components.css?v=7.7">
-    <link rel="stylesheet" href="map-components.css?v=8.1">
+    <link rel="stylesheet" href="map-components.css?v=8.5">
     <link rel="stylesheet" href="game-map-components.css?v=1.8">
     <link rel="stylesheet" href="css/achievements.css?v=1.0">
     <style>
@@ -191,7 +191,7 @@
         .header-settings-btn:active { transform: scale(0.92); }
         .screen {
             display: none;
-            padding: 24px 20px 28px;
+            padding: 24px 18px 28px;
             animation: duoScreenIn 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         .screen.active { display: block; }
@@ -405,7 +405,7 @@
             text-align: center;
             min-height: 100dvh;
             background: linear-gradient(180deg, rgba(200, 240, 180, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%);
-            padding: 24px 20px 28px;
+            padding: 24px 18px 28px;
         }
         .learning-screen.active { display: flex; flex-direction: column; }
         .learning-screen h3 { color: var(--dark); font-size: 22px; font-weight: 1000; margin-bottom: 8px; }
@@ -654,7 +654,7 @@
             background: url('assets/progress/back.png') center center / cover no-repeat;
             color: #ffffff;
             text-align: center;
-            padding: 48px 24px 24px;
+            padding: 48px 18px 24px;
             flex-direction: column;
             justify-content: space-between;
             position: absolute;
@@ -1098,7 +1098,7 @@
 
         #statsScreen .ach-hero,
         #statsScreen .ach-section {
-            width: 469px;
+            width: 480px;
             max-width: none;
         }
 
@@ -1379,7 +1379,7 @@
         .ach-hero {
             position: relative;
             margin: 0 auto 18px;
-            width: 469px;
+            width: 480px;
             max-width: 100%;
             box-sizing: border-box;
             border-radius: 28px;
@@ -1483,7 +1483,7 @@
         }
         .ach-section {
             margin: 0 auto 22px;
-            width: 469px;
+            width: 480px;
             max-width: 100%;
             box-sizing: border-box;
         }
@@ -2336,7 +2336,7 @@
             .game-header-timer-track { margin: 0 10px; }
         }
         .game-screen {
-            padding: 18px 14px 22px;
+            padding: 18px 18px 22px;
             display: none;
             flex-direction: column;
             height: calc(100dvh - 82px);
@@ -2672,7 +2672,7 @@
             margin-top: 10px;
         }
         @media (max-width: 480px) {
-            .game-screen { padding: 14px 12px 18px; height: calc(100dvh - 74px); }
+            .game-screen { padding: 14px 18px 18px; height: calc(100dvh - 74px); }
             .completion-screen { padding: 32px 18px 18px; }
             .completion-title { font-size: 26px; }
             .completion-subtitle { font-size: 15px; }
@@ -4430,7 +4430,7 @@
             box-shadow: 0 2px 0 var(--border);
         }
         .plan-empty {
-            margin: 40px 24px;
+            margin: 40px 18px;
             padding: 24px;
             border-radius: 22px;
             background: var(--surface);
@@ -4455,7 +4455,7 @@
 
         /* ===== V2.1 学习地图单列居中布局(参考图风格) ===== */
         .v2lm-card {
-            margin: 14px 16px 20px;
+            margin: 14px 18px 20px;
             background: #fff;
             border-radius: 28px;
             box-shadow: 0 8px 0 #e5e5e5;
@@ -4729,7 +4729,7 @@
 
         /* 考前预埋下一目标 */
         .preexam-hint {
-            margin: 0 16px 12px;
+            margin: 0 18px 12px;
             padding: 14px 16px;
             border-radius: 18px;
             background: #eef5ff;
@@ -4916,7 +4916,7 @@
         /* 顶部 Hero 区:绿色渐变 + 勋章 + 鼓励语 */
         .daydetail-hero {
             position: relative;
-            padding: 18px 20px 22px;
+            padding: 18px 18px 22px;
             background: linear-gradient(135deg, #58cc02 0%, #4cb302 100%);
             color: #fff;
             flex-shrink: 0;
@@ -5932,7 +5932,7 @@
         .wordbook-level-selector {
             display: flex;
             gap: 10px;
-            margin: 20px 16px 14px;
+            margin: 20px 18px 14px;
             overflow-x: auto;
             padding-bottom: 4px;
             -webkit-overflow-scrolling: touch;
@@ -5970,7 +5970,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin: 0 16px 14px;
+            margin: 0 18px 14px;
         }
         .wordbook-filter {
             display: flex;
@@ -6046,7 +6046,7 @@
         .wordbook-summary {
             font-size: 13px;
             color: var(--muted);
-            margin: 0 16px 12px;
+            margin: 0 18px 12px;
             text-align: center;
         }
         /* 单词本页:头部 Hero 铺满容器宽度,顶部贴齐 header */
@@ -6139,7 +6139,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin: 0 16px;
+            margin: 0 18px;
         }
         .wordbook-item {
             display: flex;
