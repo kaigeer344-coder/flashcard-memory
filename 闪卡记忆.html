@@ -9749,9 +9749,9 @@
             SFX.click();
             const overlay = document.getElementById('todayStartOverlay');
             if (!overlay) { startLearning(); return; }
-            if (!state.todayTaskStarted || state.todayQueue.length === 0) {
-                buildTodayQueue(state.level);
-            }
+            // 每次打开都重建队列:与当前模式/计划强制同步,避免沿用旧缓存
+            // (如先按旧配额开始过学习,再改每日单词数,弹窗仍显示旧值)
+            buildTodayQueue(state.level);
             const total = state.todayTaskTotal || getV2DailyGoal() || 20;
             // 组数 = 总词数 / 每组固定 5 词,与闪卡页 renderLearningProgress 一致
             const groups = Math.max(1, Math.ceil(total / GROUP_WORDS));
