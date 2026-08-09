@@ -664,6 +664,24 @@
             overflow: hidden;
         }
         .completion-screen.active { display: flex; }
+        .completion-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 0;
+            background: rgba(255, 255, 255, 0.28);
+            color: #ffffff;
+            font-size: 17px;
+            line-height: 1;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            z-index: 2;
+        }
+        .completion-close:active { transform: scale(0.92); }
         .completion-content {
             display: flex;
             flex-direction: column;
@@ -6591,6 +6609,7 @@
         </div>
 
         <div class="screen completion-screen" id="completionScreen">
+            <button class="completion-close" onclick="exitCompletion()" aria-label="关闭">✕</button>
             <div class="completion-content">
                 <div class="completion-title-wrap">
                     <h2 class="completion-title"><span>学</span><span>习</span><span>完</span><span>成</span></h2>
@@ -6627,7 +6646,7 @@
             </div>
 
             <div class="completion-btns">
-                <button class="btn-home" onclick="switchTab('home')">返回首页</button>
+                <button class="btn-home" id="completionPrimaryBtn" onclick="switchTab('home')">返回首页</button>
             </div>
         </div>
 
@@ -7706,6 +7725,7 @@
             todayTaskTotal: 0,
             todayTaskStarted: false,
             learningSessionActive: false, // 本次学习会话是否已进入闪卡(首组不递增组号)
+            extraGroupMode: false, // 结果页"再学一组"独立学习组(不推进天数/不计今日完成单元)
             roundResults: [],
             reviewDebtCount: 0,
             newWordQuota: 0,
@@ -11691,6 +11711,7 @@
             state.totalGameGemsEarned = 0;
             state.todayTaskStarted = true;
             state.learningSessionActive = false; // 新会话:首次进入闪卡组号从第 1 组开始
+            state.extraGroupMode = false; // 正常任务学习,非"再学一组"
             state.learningIndex = 0;
             buildTodayQueue(state.level);
             // 记录本次学习会话开始前已解锁的徽章(供结果页检测本次新解锁)
@@ -12805,8 +12826,8 @@
             progress.gamesCompleted = (progress.gamesCompleted || 0) + 1; // 成就徽章:累计完成局数
             saveProgress();
             renderHeaderStats();
-            // 记录今日完成的学习单元(供任务中心统计)
-            recordDailyUnitDone();
+            // 记录今日完成的学习单元(供任务中心统计);"再学一组"为额外组不重复计数
+            if (!state.extraGroupMode) recordDailyUnitDone();
 
             showCompletionSummary({
                 score: state.totalGameScore,
@@ -13003,6 +13024,24 @@
                 }
             }
 
+            // 冲刺模式:多学的词自动重排后续每日学习量(剩余词 ÷ 剩余学习天数)
+            try {
+                const s2 = LearningSystem.getSettings();
+                if (s2.mode === 'sprint' && s2.activeRoleId) {
+                    const extraIds = state.extraGroupMode ? (state.roundResults || []).map(r => r.wordId) : [];
+                    LearningSystem.rebalanceSprintQuota(s2.activeRoleId, extraIds);
+                }
+            } catch (e) { console.error('rebalanceSprintQuota 失败:', e); }
+
+            // 结果页主按钮:冲刺模式=再学一组,其他=返回首页(返回首页移至右上角叉)
+            const primaryBtn = document.getElementById('completionPrimaryBtn');
+            if (primaryBtn) {
+                let isSprint = false;
+                try { isSprint = LearningSystem.getSettings().mode === 'sprint'; } catch (e) {}
+                primaryBtn.textContent = isSprint ? '再学一组' : '返回首页';
+                primaryBtn.setAttribute('onclick', isSprint ? 'startExtraGroup()' : 'switchTab(\'home\')');
+            }
+
             updateTodayProgressHeader();
             updateEstimate();
             showScreen('completionScreen');
@@ -13033,6 +13072,59 @@
             state.totalGameMatchedPairs = 0;
             state.totalGameCoinsEarned = 0;
             state.totalGameGemsEarned = 0;
+        }
+
+        // ===== 冲刺模式:结果页"再学一组" =====
+        // 从冲刺计划取下一批未学新词(一组5个)继续学习,学完回到结果页可继续再学;
+        // 多学的词由 showCompletionSummary 内 rebalanceSprintQuota 重排后续每日学习量
+        function startExtraGroup() {
+            SFX.click();
+            let plan = null;
+            try {
+                if (LearningSystem.getSettings().mode !== 'sprint') { switchTab('home'); return; }
+                plan = LearningSystem.getActivePlan();
+            } catch (e) {}
+            if (!plan || !plan.plan || !Array.isArray(plan.plan.wordPool)) { switchTab('home'); return; }
+            const learned = new Set((plan.plan.progress && plan.plan.progress.learnedWordIds) || []);
+            const remaining = plan.plan.wordPool.filter(w => !learned.has(w.wordId));
+            if (remaining.length === 0) {
+                showToast('计划单词已全部学完', 'success');
+                switchTab('home');
+                return;
+            }
+            const group = remaining.slice(0, GROUP_WORDS);
+            // 兼容旧计划:池内词缺 cn/phonetic 时按 en 从词库回填
+            try {
+                const bank = wordDB[plan.type] || [];
+                const idx = new Map(bank.map(w => [w.en, w]));
+                group.forEach(w => {
+                    const found = idx.get(w.en);
+                    if (found) {
+                        w.cn = w.cn || found.cn;
+                        w.phonetic = w.phonetic || found.phonetic;
+                    }
+                });
+            } catch (e) {}
+            // 独立组学习:不推进天数、不重复记录今日完成单元
+            state.extraGroupMode = true;
+            state.learningSessionActive = false; // 首组从第 1 组开始显示
+            state.currentGroupWords = group;
+            state.groupWordIndex = 0;
+            state.currentGroupIndex = 0;
+            state.currentWords = [group[0]];
+            state.learningIndex = 0;
+            state.roundResults = [];
+            state.sessionReviewQueue = [];
+            renderLearningProgress();
+            renderQueueInfo();
+            showLearningCard();
+            showScreen('learningScreen');
+        }
+
+        // 结果页右上角叉:返回首页
+        function exitCompletion() {
+            SFX.click();
+            switchTab('home');
         }
 
         // ===== 学习成果页 =====
@@ -15094,6 +15186,31 @@
                     plan.currentDay = Math.min(plan.planDays, todayDayNum + 1);
                     _saveRoles();
                     return plan;
+                },
+
+                // 多学词后自动重排后续每日学习量:剩余未学词 ÷ 剩余学习天数。
+                // extraWordIds:本次额外组(再学一组)已学的词,先并入计划进度。
+                rebalanceSprintQuota(roleId, extraWordIds) {
+                    if (!_roles) _roles = _loadRoles();
+                    const plan = _roles.find(r => r.id === roleId);
+                    if (!plan || !plan.plan || !Array.isArray(plan.plan.wordPool)) return null;
+                    const progress = plan.plan.progress || (plan.plan.progress = { learnedWordIds: [], masteredCount: 0, totalLearnedSeconds: 0, lastStudyDate: null, streakDays: 0 });
+                    if (Array.isArray(extraWordIds)) {
+                        extraWordIds.forEach(id => {
+                            if (id && !progress.learnedWordIds.includes(id)) progress.learnedWordIds.push(id);
+                        });
+                    }
+                    progress.masteredCount = progress.learnedWordIds.length;
+                    progress.lastStudyDate = _todayStr();
+                    const remaining = Math.max(0, plan.plan.wordPool.length - progress.learnedWordIds.length);
+                    const learningDays = plan.plan.learningDays || 1;
+                    const completedLearning = (plan.completedDays || []).filter(d => d <= learningDays).length;
+                    const remainingDays = Math.max(1, learningDays - completedLearning);
+                    const newQuota = Math.min(150, Math.max(1, Math.ceil(remaining / remainingDays)));
+                    plan.plan.dailyQuota = newQuota;
+                    plan.dailyNewWords = newQuota;
+                    _saveRoles();
+                    return newQuota;
                 },
 
                 // ===== 进度阶梯计算 =====
