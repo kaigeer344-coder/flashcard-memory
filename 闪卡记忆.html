@@ -11979,8 +11979,8 @@
             const word = state.currentWords[globalIndex];
             if (!word) return;
             state.pretestVisible.push(globalIndex);
-            const en = { id: `en-${globalIndex}`, type: 'en', text: word.en, pairId: globalIndex };
-            const cn = { id: `cn-${globalIndex}`, type: 'cn', text: getDisplayMeanings(word), pairId: globalIndex };
+            const en = { id: `en-${globalIndex}`, type: 'en', text: word.en, pairId: globalIndex, _fresh: true };
+            const cn = { id: `cn-${globalIndex}`, type: 'cn', text: getDisplayMeanings(word), pairId: globalIndex, _fresh: true };
             const board = document.getElementById('gameBoard');
             if (!board) return;
             pretestInsertRandom(board, en);
@@ -12000,10 +12000,9 @@
                 state.pretestCursor++;
                 pretestAddPair(next);
             }
-            // 补齐后若出现同对相邻,重排消除并重绘
+            // 补齐后若出现同对相邻:局部交换修复,不动原有剩对的位置
             if (hasAdjacentPair(state.gameCards)) {
-                state.gameCards = shuffleNoAdjacent(state.gameCards);
-                renderGameBoard();
+                repairAdjacentInBoard();
             }
         }
 
@@ -12022,7 +12021,10 @@
             if (excludeAdjacentTo) {
                 const target = board.querySelector(excludeAdjacentTo);
                 const targetIdx = target ? children.indexOf(target) : -1;
-                if (targetIdx >= 0) candidates = candidates.filter(i => i !== targetIdx && i !== targetIdx + 1);
+                if (targetIdx >= 0) {
+                    // 排除 en 前一位/自身/后一位,保证同对中英文永不相邻
+                    candidates = candidates.filter(i => i !== targetIdx - 1 && i !== targetIdx && i !== targetIdx + 1);
+                }
             }
             let pos = candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : undefined;
             if (pos === undefined) pos = positions[Math.floor(Math.random() * positions.length)];
@@ -12221,6 +12223,69 @@
             return result;
         }
 
+        // 局部修复相邻同对:把相邻两卡之一与远端不同对卡交换位置,只动两张卡,
+        // 不做全量重排,保证预检中"剩对/已摆好的卡"位置尽量稳定;
+        // 若相邻的是本次新补的卡(_fresh),交换目标也只选新补卡,绝不动原有剩对
+        function repairAdjacentInBoard() {
+            const cards = state.gameCards;
+            for (let attempt = 0; attempt < 20 && hasAdjacentPair(cards); attempt++) {
+                let fixed = false;
+                for (let i = 1; i < cards.length; i++) {
+                    const a = cards[i - 1], b = cards[i];
+                    if (a.type === 'placeholder' || b.type === 'placeholder' || a.pairId !== b.pairId) continue;
+                    const protectExisting = !!(a._fresh || b._fresh);
+                    // 将 b 与后面第一张不同对、非占位的卡交换
+                    for (let j = i + 1; j < cards.length; j++) {
+                        const c = cards[j];
+                        if (c.type === 'placeholder' || c.pairId === b.pairId) continue;
+                        if (protectExisting && !c._fresh) continue;
+                        swapCardsInPlace(i, j, b, c);
+                        fixed = true;
+                        break;
+                    }
+                    if (!fixed) {
+                        // 后面没有可换的,将 a 与前面第一张不同对、非占位的卡交换
+                        for (let j = i - 2; j >= 0; j--) {
+                            const c = cards[j];
+                            if (c.type === 'placeholder' || c.pairId === a.pairId) continue;
+                            if (protectExisting && !c._fresh) continue;
+                            swapCardsInPlace(i - 1, j, a, c);
+                            fixed = true;
+                            break;
+                        }
+                    }
+                    if (fixed) break;
+                }
+                if (!fixed) break;
+            }
+            return !hasAdjacentPair(cards);
+        }
+
+        // 交换数组中两张卡的位置,并同步交换 DOM 节点,保持数组顺序 = DOM 顺序
+        function swapCardsInPlace(i, j, card1, card2) {
+            const cards = state.gameCards;
+            cards[i] = card2;
+            cards[j] = card1;
+            const el1 = document.querySelector(`.match-card[data-id="${card1.id}"]`);
+            const el2 = document.querySelector(`.match-card[data-id="${card2.id}"]`);
+            if (!el1 || !el2 || el1 === el2 || el1.parentNode !== el2.parentNode) return;
+            const parent = el1.parentNode;
+            if (el1.nextSibling === el2) {
+                // el1 紧挨 el2 前:把 el1 移到 el2 后
+                parent.insertBefore(el1, el2.nextSibling);
+            } else if (el2.nextSibling === el1) {
+                // el2 紧挨 el1 前:把 el2 移到 el1 后
+                parent.insertBefore(el2, el1.nextSibling);
+            } else {
+                // 不相邻:占位节点交换
+                const tmp = document.createElement('div');
+                parent.insertBefore(tmp, el1);
+                parent.insertBefore(el1, el2);
+                parent.insertBefore(el2, tmp);
+                tmp.remove();
+            }
+        }
+
         function pretestPlaceholderHTML() {
             return `<div class="match-card placeholder-card"></div>`;
         }
@@ -12328,10 +12393,9 @@
                         if (state.pretestCursor < state.pretestWords.length && remainingPairs <= 1) {
                             pretestRefillBoard();
                         }
-                        // 移除隔板卡可能让现存同对变相邻,重排消除并重绘
+                        // 移除隔板卡可能让现存同对变相邻:局部交换修复,不做全量重排
                         if (hasAdjacentPair(state.gameCards)) {
-                            state.gameCards = shuffleNoAdjacent(state.gameCards);
-                            renderGameBoard();
+                            repairAdjacentInBoard();
                         }
                         if (state.pretestVisible.length === 0 && state.pretestCursor >= state.pretestWords.length) {
                             finishPretest();
