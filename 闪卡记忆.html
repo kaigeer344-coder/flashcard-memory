@@ -6949,6 +6949,7 @@
             <button class="screen-nav-item" data-screen="wordbookScreen">单词本</button>
             <button class="screen-nav-item" data-screen="statsScreen">任务中心</button>
             <button class="screen-nav-item" data-screen="profileScreen">个人中心</button>
+            <button class="screen-nav-item" onclick="toggleLegacyAchievements()">打卡连击徽章</button>
             <button class="screen-nav-item" data-screen="settingsScreen">设置</button>
             <button class="screen-nav-item" data-screen="vipScreen">会员中心</button>
             <button class="screen-nav-item" data-screen="learningMapScreen" data-variant="path">学习路径图</button>
@@ -12605,25 +12606,18 @@
 
         // ===== 个人中心徽章渲染(从旧成果页迁移) =====
         function renderProfileBadges() {
-            const allPlans = (typeof LearningSystem !== 'undefined' && LearningSystem.getAllPlans) ? LearningSystem.getAllPlans() : [];
-            const bestByType = {};
-            allPlans.forEach(p => {
-                const cur = bestByType[p.type];
-                if (!cur) { bestByType[p.type] = p; return; }
-                const aDone = cur.status === 'completed';
-                const bDone = p.status === 'completed';
-                if (bDone && !aDone) bestByType[p.type] = p;
-                else if (aDone && bDone && (p.updatedAt || 0) > (cur.updatedAt || 0)) bestByType[p.type] = p;
-            });
-
             // 词库徽章
             const wordTypes = ['cet4', 'cet6', 'kaoyan', 'ielts', 'toefl'];
-            const DEMO_ALL_BADGES_UNLOCKED = true;
+            // 真实解锁:该词库累计已学词数 >= 词库总词数即通关解锁
+            // 已学/总数与词库共享进度体系一致(MemorySystem 按词库统计)
             const buildBadge = type => {
-                const plan = bestByType[type];
-                const unlocked = DEMO_ALL_BADGES_UNLOCKED || !!(plan && plan.status === 'completed');
-                const learned = (plan && plan.plan && plan.plan.progress && plan.plan.progress.learnedWordIds) ? plan.plan.progress.learnedWordIds.length : 0;
-                const total = (plan && plan.totalTargetWords) ? plan.totalTargetWords : (WORD_BANK_TOTALS[type] || 0);
+                let learned = 0;
+                try {
+                    const st = MemorySystem.getLearningStats(type);
+                    learned = (st.mastered || 0) + (st.learning || 0);
+                } catch (e) {}
+                const total = (wordDB[type] && wordDB[type].length) ? wordDB[type].length : (WORD_BANK_TOTALS[type] || 0);
+                const unlocked = learned >= total;
                 return `
                     <div class="ach-badge-card ${unlocked ? '' : 'locked'}">
                         <div class="ach-shield ${unlocked ? 'shield-' + type : ''}">
@@ -12905,6 +12899,36 @@
                     return `<div class="ach-streak-block ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}"></div>`;
                 }).join('');
             }
+        }
+
+        // ===== 旧版打卡连击徽章抽屉:保留旧数据,仅通过「界面清单」按钮打开 =====
+        function toggleLegacyAchievements() {
+            const wrap = document.getElementById('achievementPage');
+            if (!wrap) return;
+            if (typeof SFX !== 'undefined' && SFX.click) SFX.click();
+            let sheet = document.getElementById('achievementSheet');
+            if (!sheet) {
+                // 首次点击:渲染旧版静态数据(js/achievements/data.js,写死进度)
+                wrap.innerHTML = AchievementPage();
+                sheet = document.getElementById('achievementSheet');
+                const backdrop = document.getElementById('achBackdrop');
+                const collapse = () => {
+                    if (sheet) sheet.classList.remove('expanded');
+                    if (backdrop) backdrop.classList.remove('show');
+                };
+                if (backdrop) backdrop.addEventListener('click', collapse);
+                // 顶部手柄/标题再次点击收起
+                const head = document.getElementById('achHead');
+                const handle = document.getElementById('achHandle');
+                if (head) head.addEventListener('click', toggleLegacyAchievements);
+                if (handle) handle.addEventListener('click', toggleLegacyAchievements);
+            }
+            // showScreen 切换界面时会隐藏抽屉(display:none),打开前恢复
+            sheet.style.display = '';
+            const expanding = !sheet.classList.contains('expanded');
+            sheet.classList.toggle('expanded', expanding);
+            const backdrop = document.getElementById('achBackdrop');
+            if (backdrop) backdrop.classList.toggle('show', expanding);
         }
 
         // 底部抽屉：打卡连击徽章
