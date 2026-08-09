@@ -7022,10 +7022,6 @@
                 </label>
                 <button class="gm-debug-reset" id="gmDebugReset">恢复默认</button>
             </div>
-            <div class="screen-nav-group-title">模拟测试数据</div>
-            <button class="screen-nav-item test" onclick="loadTestScenario('fresh')">① 全新用户 · 无任何数据</button>
-            <button class="screen-nav-item test" onclick="loadTestScenario('sprint9')">② 冲刺 · 四级14天 · 第9天</button>
-            <button class="screen-nav-item test" onclick="loadTestScenario('free10')">③ 自由 · 四级 · Day10 · 20词/天</button>
         </nav>
     </aside>
 
@@ -8514,149 +8510,6 @@
 
         function isOnboarded() {
             try { return localStorage.getItem(ONBOARDING_KEY) === '1'; } catch (e) { return false; }
-        }
-
-        // ========== 模拟数据注入(演示用) ==========
-        // 用法:访问 ?demo=sprint-7days 注入"四级冲刺 7 天"演示数据
-        // 场景:已学习 7 天,245 个词已学(180 已掌握),剩余 7 天到考试
-        function injectDemoData(scenario) {
-            try {
-                if (scenario !== 'sprint-7days') return false;
-                document.title = '[Demo] 1/7 开始...';
-                console.log('[Demo] 开始注入模拟数据:四级冲刺 7 天...');
-
-                // 1. 清空旧 V2 数据 + FSRS 单词记忆
-                localStorage.removeItem('wordmatch_settings');
-                localStorage.removeItem('wordmatch_roles');
-                localStorage.removeItem('wordmatch_global_stats');
-                const keysToRemove = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key && key.startsWith('wordmatch_mem_')) keysToRemove.push(key);
-                }
-                keysToRemove.forEach(key => localStorage.removeItem(key));
-                console.log(`[Demo] 清空 ${keysToRemove.length} 个旧记忆数据`);
-
-                // 清空 MemorySystem 缓存
-                MemorySystem._memoryCache = null;
-                MemorySystem._allWordsCache = {};
-                MemorySystem._wordIdIndex = null;
-                MemorySystem._statsCache = {};
-                MemorySystem._keySet = null;
-                MemorySystem._allMemoryPreloaded = false;
-
-                // 2. 初始化 LearningSystem + 创建冲刺计划
-                document.title = '[Demo] 2/7 创建计划...';
-                LearningSystem.load();
-                LearningSystem.switchMode('sprint');
-                const examDate = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
-                const plan = LearningSystem.createSprintPlan('cet4', examDate, 35);
-                console.log(`[Demo] 创建计划:${plan.name},考试日期 ${examDate}`);
-
-                // 3. 预加载 CET4 词库(触发 _allWordsCache 构建)
-                document.title = '[Demo] 3/7 加载词库...';
-                const memWords = MemorySystem.getAllWords('cet4');
-                console.log(`[Demo] CET4 词库共 ${memWords.length} 词`);
-
-                // 4. 注入 FSRS 记忆数据(前 245 个词:180 已掌握 + 65 学习中)
-                document.title = '[Demo] 4/7 注入记忆数据...';
-                const totalLearned = Math.min(245, memWords.length);
-                const masteredCount = 180;
-                const learnedIds = [];
-                const DAY_MS = 86400000;
-
-                for (let i = 0; i < totalLearned; i++) {
-                    const w = memWords[i];
-                    const wordKey = w.wordId;
-                    const isMastered = i < masteredCount;
-                    const reviewCount = isMastered ? 5 + Math.floor(Math.random() * 5) : 2 + Math.floor(Math.random() * 3);
-                    const stability = isMastered ? 10 + Math.floor(Math.random() * 20) : 2 + Math.floor(Math.random() * 4);
-                    const difficulty = isMastered ? 3 + Math.floor(Math.random() * 3) : 5 + Math.floor(Math.random() * 3);
-                    const familiarity = isMastered ? 4 + Math.floor(Math.random() * 2) : 2 + Math.floor(Math.random() * 2);
-                    const dayOffset = Math.floor(i / 35); // 0-6,模拟第 1-7 天学的
-                    const firstLearnedAt = Date.now() - (6 - dayOffset) * DAY_MS - Math.floor(Math.random() * DAY_MS);
-                    const lastReview = firstLearnedAt + Math.floor(Math.random() * DAY_MS);
-                    const nextReview = Date.now() + (isMastered ? 3 + Math.floor(Math.random() * 7) : 1 + Math.floor(Math.random() * 3)) * DAY_MS;
-
-                    MemorySystem.saveWordMemory(wordKey, {
-                        id: wordKey,
-                        status: isMastered ? 'mastered' : 'learning',
-                        familiarity,
-                        intervalIndex: isMastered ? 4 + Math.floor(Math.random() * 3) : 1 + Math.floor(Math.random() * 2),
-                        reviewCount,
-                        correctCount: Math.floor(reviewCount * 0.8),
-                        wrongCount: Math.floor(reviewCount * 0.2),
-                        fuzzyCount: Math.floor(reviewCount * 0.1),
-                        consecutiveCorrect: isMastered ? 3 + Math.floor(Math.random() * 3) : Math.floor(Math.random() * 2),
-                        lapseCount: Math.floor(Math.random() * 2),
-                        stability,
-                        difficulty,
-                        lastGrade: isMastered ? 3 + Math.floor(Math.random() * 2) : 2 + Math.floor(Math.random() * 2),
-                        retrievability: 0.85 + Math.random() * 0.1,
-                        algorithmVersion: 2,
-                        firstLearnedAt,
-                        lastReview,
-                        nextReview
-                    });
-                    learnedIds.push(wordKey);
-                }
-                document.title = `[Demo] 5/7 已注入 ${learnedIds.length} 词`;
-                console.log(`[Demo] 注入 ${learnedIds.length} 个词的记忆数据(${masteredCount} 已掌握,${learnedIds.length - masteredCount} 学习中)`);
-
-                // 5. 修改 plan:模拟已学习 7 天
-                document.title = '[Demo] 6/7 修改计划...';
-                const rolesRaw = localStorage.getItem('wordmatch_roles');
-                const roles = JSON.parse(rolesRaw);
-                const planIdx = roles.findIndex(r => r.id === plan.id);
-                if (planIdx >= 0) {
-                    const startDate = new Date(Date.now() - 7 * DAY_MS).toISOString().slice(0, 10);
-                    roles[planIdx].startDate = startDate;
-                    roles[planIdx].planDays = 14;
-                    roles[planIdx].countdownDays = 14;
-                    roles[planIdx].currentDay = 8;
-                    roles[planIdx].completedDays = [1, 2, 3, 4, 5, 6, 7];
-                    roles[planIdx].plan.progress.learnedWordIds = learnedIds;
-                    roles[planIdx].plan.progress.masteredCount = masteredCount;
-                    roles[planIdx].plan.progress.streakDays = 7;
-                    roles[planIdx].plan.progress.lastStudyDate = new Date().toISOString().slice(0, 10);
-                    localStorage.setItem('wordmatch_roles', JSON.stringify(roles));
-                    console.log(`[Demo] 更新计划:startDate=${startDate},currentDay=8,completedDays=[1-7]`);
-                }
-
-                // 6. 设置 globalStats
-                const statsRaw = localStorage.getItem('wordmatch_global_stats');
-                const stats = statsRaw ? JSON.parse(statsRaw) : {};
-                stats.cumulativeLearningDays = 7;
-                stats.totalMasteredWords = masteredCount;
-                stats.joinedAt = Date.now() - 7 * DAY_MS;
-                localStorage.setItem('wordmatch_global_stats', JSON.stringify(stats));
-
-                // 7. 标记已引导 + 清空缓存
-                localStorage.setItem('wordmatch_onboarded', '1');
-                MemorySystem._memoryCache = null;
-                MemorySystem._allWordsCache = {};
-                MemorySystem._wordIdIndex = null;
-                MemorySystem._statsCache = {};
-                MemorySystem._keySet = null;
-                MemorySystem._allMemoryPreloaded = false;
-
-                document.title = '[演示数据] 闪卡记忆 - 四级冲刺 7 天';
-                console.log('[Demo] 模拟数据注入完成!');
-                return true;
-            } catch (e) {
-                document.title = '[Demo 错误] ' + e.message;
-                console.error('[Demo] 注入失败:', e);
-                // 把错误信息也写到页面顶部,方便截图查看
-                let dbg = document.getElementById('__demo_error');
-                if (!dbg) {
-                    dbg = document.createElement('div');
-                    dbg.id = '__demo_error';
-                    dbg.style.cssText = 'position:fixed;top:0;left:0;right:0;background:red;color:white;font-family:monospace;font-size:14px;padding:10px;z-index:99999;word-break:break-all;';
-                    document.body.appendChild(dbg);
-                }
-                dbg.textContent = '[Demo 错误] ' + e.message + ' | stack: ' + (e.stack || '').slice(0, 500);
-                return false;
-            }
         }
 
         function updateStudyDays() {
@@ -11200,108 +11053,6 @@
             }
             showScreen(screenId);
         }
-
-        // ===== 模拟测试数据(页面清单侧栏入口,方便开发/测试) =====
-        // 把指定词库前 count 个词标记为已学(用于模拟学习进度)
-        function simulateLearnedWords(bookId, count) {
-            try {
-                const words = MemorySystem.getAllWords(bookId);
-                const now = Date.now();
-                const n = Math.min(count, words.length);
-                for (let i = 0; i < n; i++) {
-                    const w = words[i];
-                    // 模拟数据也写共享 key,与其他词库进度保持一致
-                    MemorySystem.saveWordMemory(w.sharedKey || MemorySystem.getSharedWordKey(w), {
-                        algorithmVersion: 2,
-                        status: 'learning',
-                        reviewCount: 2,
-                        stability: 12,
-                        difficulty: 4,
-                        familiarity: 3,
-                        consecutiveCorrect: 2,
-                        lastReview: now - 24 * 3600000,
-                        nextReview: now + 24 * 3600000
-                    });
-                }
-                return n;
-            } catch (e) {
-                console.error('simulateLearnedWords 失败:', e);
-                return 0;
-            }
-        }
-
-        window.loadTestScenario = function(scenario) {
-            try {
-                if (scenario === 'fresh') {
-                    // ① 全新用户:清除 V2 设置/计划与全部单词记忆,恢复首次使用状态
-                    LearningSystem.resetAllV2Data();
-                    const toRemove = [];
-                    for (let i = 0; i < localStorage.length; i++) {
-                        const k = localStorage.key(i);
-                        if (k && (k.indexOf('wordmatch_mem_') === 0 || k.indexOf('wordmem_') === 0)) toRemove.push(k);
-                    }
-                    toRemove.forEach(k => localStorage.removeItem(k));
-                    // 清理按天/会话计数的残留(测试场景会产生),保证"全新用户"从 0 开始
-                    ['wordmatch_daily_done_', 'wordmatch_streak', 'wordmatch_study_days', 'wordmatch_study_slots',
-                     'wordmatch_chest_claimed', 'wordmatch_task_states', 'wordmatch_global_stats'].forEach(prefix => {
-                        for (let i = 0; i < localStorage.length; i++) {
-                            const k = localStorage.key(i);
-                            if (k && k.indexOf(prefix) === 0) toRemove.push(k);
-                        }
-                    });
-                    toRemove.forEach(k => localStorage.removeItem(k));
-                    MemorySystem._allWordsCache = {};
-                    MemorySystem._memoryCache = null;
-                    MemorySystem._statsCache = {};
-                    MemorySystem._wordIdIndex = null;
-                    MemorySystem._allMemoryPreloaded = false;
-                    showToast('已载入:全新用户(无任何数据)', 'success');
-                    startOnboarding();
-                    return;
-                }
-                if (scenario === 'sprint9') {
-                    // ② 冲刺模式:四级 14 天后考试,已学到第 9 天(完成 1-8 天)
-                    LearningSystem.resetAllV2Data();
-                    LearningSystem.switchMode('sprint');
-                    const future = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
-                    const plan = LearningSystem.createSprintPlan('cet4', future);
-                    LearningSystem.updateSettings({ mode: 'sprint', activeRoleId: plan.id });
-                    const roles = JSON.parse(localStorage.getItem('wordmatch_roles') || '[]');
-                    const p = roles.find(r => r.id === plan.id);
-                    if (p) {
-                        p.completedDays = [1, 2, 3, 4, 5, 6, 7, 8];
-                        p.currentDay = 9;
-                        if (p.plan && Array.isArray(p.plan.wordPool)) {
-                            p.plan.progress = p.plan.progress || {};
-                            p.plan.progress.learnedWordIds = p.plan.wordPool.slice(0, 80).map(w => w.wordId);
-                            p.plan.progress.masteredCount = 80;
-                            p.plan.progress.lastStudyDate = new Date().toISOString().slice(0, 10);
-                        }
-                    }
-                    localStorage.setItem('wordmatch_roles', JSON.stringify(roles));
-                    localStorage.setItem('wordmatch_onboarded', '1');
-                    LearningSystem.load();
-                    simulateLearnedWords('cet4', 80);
-                    showToast('已载入:冲刺模式 · 四级14天 · 第9天', 'success');
-                    showHomeScreen();
-                    return;
-                }
-                if (scenario === 'free10') {
-                    // ③ 自由模式:四级词库,每天 20 词,进行到第 10 天(已学 200 词)
-                    LearningSystem.resetAllV2Data();
-                    LearningSystem.updateSettings({ mode: 'free', activeRoleId: null, activeBookId: 'cet4', dailyTarget: 20 });
-                    localStorage.setItem('wordmatch_onboarded', '1');
-                    LearningSystem.load();
-                    simulateLearnedWords('cet4', 200);
-                    showToast('已载入:自由模式 · 四级 · Day10 · 20词/天', 'success');
-                    showHomeScreen();
-                    return;
-                }
-            } catch (e) {
-                console.error('loadTestScenario 失败:', e);
-                showToast('模拟数据加载失败', 'warning');
-            }
-        };
 
         // ===== 模拟徽章获得(界面清单按钮,用于检验结果页徽章庆祝效果) =====
         function simulateNewBadge() {
@@ -14089,15 +13840,16 @@
 
         function updateWordbookPreviewStats() {
             try {
-                // 跟随下方词库按钮:全部 统计全部词库,单个 只统计该词库
+                // 跟随下方词库按钮:全部 统计全部词库(按英文词去重),单个 只统计该词库
                 const level = wordbookState.level;
                 let total = 0, mastered = 0, due = 0;
                 if (level === 'all') {
-                    Object.keys(LEVEL_NAMES).forEach(l => {
-                        const stats = MemorySystem.getLearningStats(l);
-                        total += stats.total || 0;
-                        mastered += stats.mastered || 0;
-                        due += stats.dueForReview || 0;
+                    // 与列表同一口径:跨词库按英文词去重,避免重复计数
+                    getWordbookAllItemsDeduped().forEach(item => {
+                        const mem = item.mem;
+                        total++;
+                        if (mem.algorithmVersion >= 2 ? (mem.stability >= 7 || mem.status === 'mastered') : (mem.status === 'mastered' || mem.familiarity >= 4)) mastered++;
+                        if (mem.nextReview <= Date.now() && mem.reviewCount > 0 && mem.status !== 'new') due++;
                     });
                 } else {
                     const stats = MemorySystem.getLearningStats(level);
@@ -14155,18 +13907,29 @@
 
         let wordbookAllItems = [];
 
+        // 全部词库视图:跨词库共享记忆,同一英文词只在首个出现的词库计数一次,
+        // 避免"一个词在四级/六级/考研/雅思/托福都出现"导致学习中/已掌握数量虚高
+        function getWordbookAllItemsDeduped() {
+            const items = [];
+            const seen = new Set();
+            Object.keys(LEVEL_NAMES).forEach(lv => {
+                const words = wordDB[lv] || [];
+                words.forEach((w, i) => {
+                    const key = String((w && w.en) || '').trim().toLowerCase();
+                    if (!key || seen.has(key)) return;
+                    seen.add(key);
+                    items.push({ word: w, index: i, level: lv, mem: MemorySystem.getMemoryForWord(lv, w, i) });
+                });
+            });
+            return items;
+        }
+
         function renderWordbook() {
             const level = wordbookState.level;
             const sort = wordbookState.sort;
 
             if (level === 'all') {
-                wordbookAllItems = [];
-                Object.keys(LEVEL_NAMES).forEach(lv => {
-                    const words = wordDB[lv] || [];
-                    words.forEach((w, i) => {
-                        wordbookAllItems.push({ word: w, index: i, level: lv, mem: MemorySystem.getMemoryForWord(lv, w, i) });
-                    });
-                });
+                wordbookAllItems = getWordbookAllItemsDeduped();
             } else {
                 const words = wordDB[level] || [];
                 wordbookAllItems = words.map((w, i) => {
@@ -14451,9 +14214,6 @@
                 state.pretestPending = null;
                 state.pretestWords = [];
                 state.pretestErrors = null;
-                // 重置后普通 ?demo= 不再自动复活演示数据(避免"清空后词库残留假进度");
-                // 需要重新模拟数据请用 ?demo=sprint-7days-force
-                try { localStorage.setItem('wordmatch_demo_killed', '1'); } catch (e) {}
                 updateEstimate();
                 renderHeaderStats();
                 renderSettingsScreen();
@@ -14470,9 +14230,6 @@
             try {
                 localStorage.clear();
             } catch (e) {}
-            // 先写"演示数据已清除"标记再剥离 URL 上的 ?demo= 参数,
-            // 避免 reload 时演示数据再次注入,造成"清空不干净"的假象
-            try { localStorage.setItem('wordmatch_demo_killed', '1'); } catch (e) {}
             try { history.replaceState(null, '', location.pathname); } catch (e) {}
             location.reload();
         }
@@ -15688,28 +15445,6 @@
                     location.replace(location.pathname);  // 干净重定向,去掉 query 参数
                     return;  // 终止后续逻辑,等待重定向
                 } catch (e) { console.warn('reset-v2 失败:', e); }
-            }
-            // URL 参数 ?demo=sprint-7days 注入"四级冲刺 7 天"演示数据
-            // 场景:已学习 7 天,245 个词已学(180 已掌握),剩余 7 天到考试
-            const demoScenario = new URLSearchParams(location.search).get('demo');
-            // 演示数据仅限本地开发环境(localhost/127.0.0.1)注入:
-            // 线上部署版绝不注入,避免假学习数据残留到真实用户词库(如"学习中 65 词")。
-            const isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-            if (demoScenario === 'sprint-7days' || demoScenario === 'sprint-7days-force') {
-                if (!isLocalDev) {
-                    console.log('[Demo] 非本地环境,跳过演示注入(仅本地开发可用)');
-                } else if (demoScenario === 'sprint-7days' && localStorage.getItem('wordmatch_demo_killed') === '1') {
-                    // 用户执行过"重置学习进度/清空全部本地数据"后,普通 ?demo= 不再自动注入,
-                    // 防止演示数据在清空后"复活",造成词库残留假进度;
-                    // 明确需要重新模拟数据时使用 ?demo=sprint-7days-force
-                    console.log('[Demo] 用户已清除过数据,跳过演示注入(如需重新注入请用 ?demo=sprint-7days-force)');
-                } else {
-                    console.log('[Demo] URL 参数检测到,开始注入...');
-                    const demoResult = injectDemoData('sprint-7days');
-                    console.log('[Demo] 注入结果:', demoResult);
-                }
-                // 无论是否注入,都清掉 URL 参数,避免下次访问重复注入
-                try { history.replaceState(null, '', location.pathname); } catch (e) {}
             }
             // V2.0 学习系统初始化
             LearningSystem.load();
