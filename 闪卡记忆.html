@@ -12666,21 +12666,22 @@
             } catch (e) {}
             const gamesCompleted = progress.gamesCompleted || 0;
             const maxCombo = progress.maxCombo || 0;
+            // 成就徽章按达成难度从易到难排列(越容易越靠上,越难越靠下)
             const COLLECTION_BADGES = [
+                { name: '初露锋芒', current: gamesCompleted, target: 1 },
                 { name: '3天连击', current: streakCount, target: 3 },
-                { name: '7天连击', current: streakCount, target: 7 },
-                { name: '30天连击', current: streakCount, target: 30 },
-                { name: '60天连击', current: streakCount, target: 60 },
+                { name: '初学乍练', current: totalLearned, target: 50 },
                 { name: '早起达人', current: hasEarly ? 1 : 0, target: 1 },
                 { name: '夜读之星', current: hasNight ? 1 : 0, target: 1 },
-                { name: '初学乍练', current: totalLearned, target: 50 },
+                { name: '连击新星', current: maxCombo, target: 10 },
+                { name: '7天连击', current: streakCount, target: 7 },
                 { name: '渐入佳境', current: totalLearned, target: 300 },
+                { name: '连连高手', current: gamesCompleted, target: 10 },
+                { name: '闪卡王者', current: maxCombo, target: 20 },
+                { name: '30天连击', current: streakCount, target: 30 },
                 { name: '词汇达人', current: totalLearned, target: 1000 },
                 { name: '词汇大师', current: totalMastered, target: 500 },
-                { name: '初露锋芒', current: gamesCompleted, target: 1 },
-                { name: '连连高手', current: gamesCompleted, target: 10 },
-                { name: '连击新星', current: maxCombo, target: 10 },
-                { name: '闪卡王者', current: maxCombo, target: 20 }
+                { name: '60天连击', current: streakCount, target: 60 }
             ];
             // 成就徽章素材图(assets/个人中心),无素材的徽章保留 SVG 占位
             const BADGE_IMAGES = {
