@@ -11967,45 +11967,62 @@
             }
         }
 
-        // 预检:消掉一对后补入下一对(保持页面持续 5 对)
-        // 新对的中英文分别随机插入,且 cn 避开 en 相邻位置,保证同对不相邻
+        // 预检:补入新对,中英文分别随机插入且 cn 避开 en 相邻位,保证同对不相邻
         function pretestAddPair(globalIndex) {
             const word = state.currentWords[globalIndex];
             if (!word) return;
             state.pretestVisible.push(globalIndex);
             const en = { id: `en-${globalIndex}`, type: 'en', text: word.en, pairId: globalIndex };
             const cn = { id: `cn-${globalIndex}`, type: 'cn', text: getDisplayMeanings(word), pairId: globalIndex };
-            state.gameCards.push(en, cn);
             const board = document.getElementById('gameBoard');
             if (!board) return;
-            pretestInsertRandom(board, pretestCardHTML(en));
-            pretestInsertRandom(board, pretestCardHTML(cn), `[data-id="en-${globalIndex}"]`);
+            pretestInsertRandom(board, en);
+            pretestInsertRandom(board, cn, `[data-id="en-${globalIndex}"]`);
         }
 
-        // 将卡片 HTML 随机插入现有卡片之间(含末尾);
+        // 预检:消到只剩一对(或零对)时,一次性补齐到 5 对。
+        // 不逐对顶上来,否则用户能从"新卡出现位置"猜出中英文配对
+        function pretestRefillBoard() {
+            const board = document.getElementById('gameBoard');
+            if (!board) return;
+            const currentPairs = state.gameCards.length / 2;
+            const maxAdd = state.pretestWords.length - state.pretestCursor;
+            const addCount = Math.min(state.pretestBatchSize - currentPairs, maxAdd);
+            for (let i = 0; i < addCount; i++) {
+                const next = state.pretestCursor;
+                state.pretestCursor++;
+                pretestAddPair(next);
+            }
+            // 补齐后若出现同对相邻,重排消除并重绘
+            if (hasAdjacentPair(state.gameCards)) {
+                state.gameCards = shuffleNoAdjacent(state.gameCards);
+                renderGameBoard();
+            }
+        }
+
+        // 将卡片随机插入现有卡片之间(含末尾),并同步 gameCards 数组顺序 = DOM 顺序,
+        // 保证 hasAdjacentPair 检查与实际布局一致;
         // excludeAdjacentTo:CSS 选择器,插入位置排除该卡片相邻的两个位置(保证同对中英文不相邻)
-        function pretestInsertRandom(board, html, excludeAdjacentTo) {
+        function pretestInsertRandom(board, card, excludeAdjacentTo) {
             const children = Array.from(board.querySelectorAll('.match-card'));
             const positions = children.map((_, i) => i);
             positions.push(children.length); // 末尾位置
+            let pos;
             if (excludeAdjacentTo) {
                 const target = board.querySelector(excludeAdjacentTo);
                 const targetIdx = target ? children.indexOf(target) : -1;
                 if (targetIdx >= 0) {
                     const valid = positions.filter(i => i !== targetIdx && i !== targetIdx + 1);
-                    if (valid.length) {
-                        const pos = valid[Math.floor(Math.random() * valid.length)];
-                        const before = pos < children.length ? children[pos] : null;
-                        if (before && before.parentNode) before.insertAdjacentHTML('beforebegin', html);
-                        else board.insertAdjacentHTML('beforeend', html);
-                        return;
-                    }
+                    if (valid.length) pos = valid[Math.floor(Math.random() * valid.length)];
                 }
             }
-            const pos = positions[Math.floor(Math.random() * positions.length)];
+            if (pos === undefined) pos = positions[Math.floor(Math.random() * positions.length)];
             const before = pos < children.length ? children[pos] : null;
-            if (before && before.parentNode) before.insertAdjacentHTML('beforebegin', html);
-            else board.insertAdjacentHTML('beforeend', html);
+            if (before && before.parentNode) before.insertAdjacentHTML('beforebegin', pretestCardHTML(card));
+            else board.insertAdjacentHTML('beforeend', pretestCardHTML(card));
+            const inArray = state.gameCards.indexOf(card);
+            if (inArray >= 0) state.gameCards.splice(inArray, 1);
+            state.gameCards.splice(pos, 0, card);
         }
 
         function pretestCardHTML(card) {
@@ -12142,7 +12159,7 @@
             const cards = [];
             let words = state.currentWords;
             if (state.pretestMode) {
-                // 预检:初始窗口显示前 5 对(不足则全部),之后消一对补一对
+                // 预检:初始窗口显示前 5 对(不足则全部),消到只剩一对时一次性补齐
                 const size = state.pretestBatchSize;
                 state.pretestVisible = [];
                 for (let i = 0; i < size && i < state.currentWords.length; i++) state.pretestVisible.push(i);
@@ -12273,10 +12290,9 @@
                         if (second.el && second.el.parentNode) second.el.remove();
                         state.gameCards = state.gameCards.filter(c => c.pairId !== pairId);
                         state.pretestVisible = state.pretestVisible.filter(i => i !== pairId);
-                        if (state.pretestCursor < state.pretestWords.length) {
-                            const next = state.pretestCursor;
-                            state.pretestCursor++;
-                            pretestAddPair(next);
+                        // 不逐对补:消掉的位置留空,其他配对留在原位,等只剩一对时一次性补齐到 5 对
+                        if (state.pretestCursor < state.pretestWords.length && state.gameCards.length / 2 <= 1) {
+                            pretestRefillBoard();
                         }
                         // 移除隔板卡可能让现存同对变相邻,重排消除并重绘
                         if (hasAdjacentPair(state.gameCards)) {
