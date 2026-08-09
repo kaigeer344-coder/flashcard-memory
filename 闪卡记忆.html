@@ -9551,15 +9551,12 @@
                 const currentDay = plan ? Math.min(totalDays, Math.max(1, plan.currentDay || 1)) : 1;
                 getChestLevels(totalDays).forEach(c => { chestMap[c.level] = c.big; });
                 const perLevel = 10; // 冲刺模式每关 10 词
-                const todayDone = isTodayTaskComplete();
-                // 今日节点:任务进行中=当前关;任务已学完=刚学完的那一关(气泡不消失)
-                const todayNode = todayDone ? Math.max(1, currentDay - 1) : currentDay;
+                // 当前关卡直接解锁:学完第 N 关后第 N+1 关立即变为当前关可学习
+                const todayNode = Math.min(currentDay, totalDays);
                 for (let i = 1; i <= totalDays; i++) {
                     let status = 'locked';
                     if (completedDays.includes(i)) status = 'completed';
-                    // 当前关卡:今日任务进行中才点亮为"今日学习";
-                    // 今日任务已完成则保持灰色锁定,不直接点亮下一关
-                    else if (i === currentDay) status = todayDone ? 'locked' : 'current';
+                    else if (i === currentDay) status = 'current';
                     const done = status === 'completed';
                     const cur = status === 'current';
                     const learned = done ? perLevel : (cur ? countLevelLearned(i, perLevel) : 0);
@@ -9598,15 +9595,12 @@
                 const currentLevel = allDone ? totalLevels + 1 : Math.min(totalLevels, Math.floor(learnedCount / dailyTarget) + 1);
                 chestMap = {};
                 getChestLevels(totalLevels).forEach(c => { chestMap[c.level] = c.big; });
-                const todayDone = isTodayTaskComplete();
-                // 今日节点:任务进行中=当前关;任务已学完=刚学完的那一关(气泡不消失)
-                const todayNode = todayDone ? Math.max(1, currentLevel - 1) : Math.min(currentLevel, totalLevels);
+                // 当前关卡直接解锁:学完第 N 关后第 N+1 关立即变为当前关可学习
+                const todayNode = Math.min(currentLevel, totalLevels);
                 for (let i = 1; i <= totalLevels; i++) {
                     let status = 'locked';
                     if (allDone || i < currentLevel) status = 'completed';
-                    // 当前关卡:今日任务进行中才点亮为"今日学习";
-                    // 今日任务已完成则保持灰色锁定,不直接点亮下一关
-                    else if (i === currentLevel) status = todayDone ? 'locked' : 'current';
+                    else if (i === currentLevel) status = 'current';
                     const done = status === 'completed';
                     const cur = status === 'current';
                     const learned = done ? dailyTarget : (cur ? countLevelLearned(i, dailyTarget) : 0);
