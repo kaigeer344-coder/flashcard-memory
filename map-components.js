@@ -45,9 +45,9 @@
 
     // ===== 顶部统计条 =====
     window.renderStatsBar = function(stats) {
-        const s = stats || { words: 20, reset: 1, hourglass: 570, hint: 24 };
+        const s = stats || { coins: 0, reset: 1, hourglass: 570, hint: 24 };
         const items = [
-            { icon: LP_ICONS.statWords,    value: s.words,     label: '今日单词' },
+            { icon: LP_ICONS.statWords,    value: s.coins,     label: '金币' },
             { icon: LP_ICONS.statReset,    value: s.reset,     label: '重置' },
             { icon: LP_ICONS.statHourglass,value: s.hourglass, label: '延时' },
             { icon: LP_ICONS.statHint,     value: s.hint,      label: '提示' }

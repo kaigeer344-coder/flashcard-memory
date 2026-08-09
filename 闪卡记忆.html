@@ -7078,7 +7078,7 @@
     <script src="data/basic-stoplist.js"></script>
     <script src="data/exam-frequency.js"></script>
     <script src="home-components.js?v=7.7"></script>
-    <script src="map-components.js?v=7.9"></script>
+    <script src="map-components.js?v=8.0"></script>
     <script src="game-map-components.js?v=1.3"></script>
     <script src="js/achievements/data.js?v=1.0"></script>
     <script src="js/achievements/achievement-card.js?v=1.0"></script>
@@ -9542,14 +9542,10 @@
             _currentMapLevels = levels;
             window._currentMapLevels = levels; // 供 game-map-components 窗口缩放时重渲染
 
-            // 今日单词与闪卡学习队列同口径(新词配额+复习+遗忘),避免地图/弹窗/闪卡三处数字不一致
-            const todayWords = getTodayTaskEstimate() || (mode === 'sprint'
-                    ? ((LearningSystem.getActivePlan() && LearningSystem.getActivePlan().dailyNewWords) || 0)
-                    : (settings.dailyTarget || 20));
             root.innerHTML = renderLearningMapPage({
-                // 道具库存与游戏内/个人中心同源(progress 对象),不再硬编码
+                // 金币余额与个人主页同源(progress 对象),道具库存同理
                 stats: {
-                    words: todayWords,
+                    coins: progress.coins || 0,
                     reset: progress.shuffles || 0,
                     hourglass: progress.timeBonuses || 0,
                     hint: progress.hints || 0
