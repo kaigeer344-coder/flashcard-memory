@@ -11759,10 +11759,31 @@
             updateTodayProgressHeader();
         }
 
+        // 复位预检状态:新会话开始 / 切换模式时调用,
+        // 防止冲刺模式残留的预检标记(HUD/文案)泄漏到自由模式的配对游戏环节
+        function resetPretestState() {
+            state.pretestMode = false;
+            state.pretestErrors = null;
+            state.pretestWords = [];
+            state.pretestPending = null;
+            state.pretestVisible = [];
+            state.pretestCursor = 0;
+            state.pretestBatchSize = 5;
+            state.pretestPassedCount = 0;
+            try { restoreGameHudLabels(); } catch (e) {}
+            try {
+                const roundEl = document.getElementById('gameRoundInfo');
+                if (roundEl) { roundEl.textContent = ''; roundEl.style.display = 'none'; }
+            } catch (e) {}
+        }
+
         function startTodayTask() {
             if (!audioUnlocked) unlockAudio();
             if (audioCtx) playSilentBuffer(audioCtx);
             SFX.taskStart();
+            // 新会话必须先复位预检状态:冲刺模式的预检状态若残留,
+            // 切到自由模式后配对游戏环节会误显示"预检"界面与预检 HUD
+            resetPretestState();
             state.currentWords = [];
             state.currentGroupWords = [];
             state.groupWordIndex = 0;
@@ -13819,6 +13840,9 @@
                 }
                 renderSettingsScreen();
                 renderStartScreenV2();
+                // 切换模式后复位预检状态,避免旧模式残留的预检 HUD/文案
+                // 泄漏到新模式的学习会话(自由模式配对游戏误显示预检界面)
+                resetPretestState();
                 showToast(`已切换到 ${mode === 'sprint' ? '考试冲刺' : '自由学习'} 模式`, 'success');
             } catch (e) {
                 console.error('settingsChangeMode 失败:', e);
