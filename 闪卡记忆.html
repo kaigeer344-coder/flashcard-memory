@@ -13745,6 +13745,13 @@
                             </div>
                             <button class="settings-v2-link settings-v2-link-danger" onclick="clearLearningData()">重置</button>
                         </div>
+                        <div class="settings-v2-row">
+                            <div class="settings-v2-row-label">
+                                <div class="settings-v2-row-name">清空全部本地数据</div>
+                                <div class="settings-v2-row-meta">彻底清除本机全部数据(含设置/成就/金币),回到全新状态</div>
+                            </div>
+                            <button class="settings-v2-link settings-v2-link-danger" onclick="clearAllLocalData()">清空</button>
+                        </div>
                     </div>`;
 
                 v2El.innerHTML = `${modeHTML}${modeSpecificHTML}</div>${aboutHTML}${dataHTML}`;
@@ -14326,6 +14333,16 @@
             } catch (e) {
                 alert('重置失败，请重试');
             }
+        }
+
+        // 硬重置兜底:彻底清空本机全部 localStorage(含设置/成就/金币),回到全新状态
+        function clearAllLocalData() {
+            SFX.click();
+            if (!confirm('确定要清空本机全部数据吗？设置、成就、金币、冲刺计划都会被清除，且无法恢复。')) return;
+            try {
+                localStorage.clear();
+            } catch (e) {}
+            location.reload();
         }
 
         function clearAchievementData() {
