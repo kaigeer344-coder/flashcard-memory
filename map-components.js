@@ -8,7 +8,7 @@
     // ===== SVG 图标库 =====
     const LP_ICONS = {
         // 顶部统计图标
-        statWords: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>`,
+        statWords: `<img class="lp-stat-icon-img" src="assets/home/金币.png" alt="金币">`,
         statReset: `<img class="lp-stat-icon-img" src="assets/home/重置.png" alt="重置">`,
         statHourglass: `<img class="lp-stat-icon-img" src="assets/home/延时.png" alt="延时">`,
         statHint: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg>`,
