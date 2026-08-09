@@ -11453,7 +11453,6 @@
 
             const dueReviews = [];
             const lapsedWords = [];
-            const newWords = [];
             for (let i = 0; i < words.length; i++) {
                 const word = words[i];
                 const mem = word.memoryData;
@@ -11463,9 +11462,6 @@
                 if (mem.status === 'lapsed') {
                     lapsedWords.push(word);
                 }
-                if (mem.reviewCount === 0 || mem.status === 'new') {
-                    newWords.push(word);
-                }
             }
 
             dueReviews.sort((a, b) => MemorySystem.getRetrievability(a) - MemorySystem.getRetrievability(b));
@@ -11474,10 +11470,48 @@
             lapsedWords.sort((a, b) => b.memoryData.lapseCount - a.memoryData.lapseCount);
             lapsedWords.forEach(word => addWord(word, 'lapsed', false));
 
-            const sortedNewWords = state.wordOrder === 'random'
-                ? shuffle(newWords)
-                : newWords.sort((a, b) => (a.difficulty || 1) - (b.difficulty || 1));
-            sortedNewWords.slice(0, state.newWordQuota).forEach(word => addWord(word, 'newWord', true));
+            // 关卡严格独立:补入当前关内"已学(含其他模式学的)但自由模式未确认"的词,
+            // 复习确认后打上本模式标记,避免因单词相通而无法推进自由模式关卡
+            try {
+                const s2 = LearningSystem.getSettings();
+                if (s2 && s2.mode === 'free') {
+                    const target = getV2DailyGoal() || 20;
+                    const freeCur = getFreeCurrentLevel(level, target);
+                    const lvStart = (freeCur - 1) * target;
+                    const lvEnd = Math.min(words.length, lvStart + target);
+                    for (let i = lvStart; i < lvEnd && queued.size < 30; i++) {
+                        const w = words[i];
+                        const mem = w.memoryData;
+                        if (mem.reviewCount > 0 && !(mem.modeLearned && mem.modeLearned.free)) {
+                            addWord(w, 'modeConfirm', false);
+                        }
+                    }
+                }
+            } catch (e) {}
+
+            // 新词从当前关开始按词库顺序取(本关范围内可按用户设置随机),
+            // 与 generateTodayQueue/关卡判定口径一致,保证"学满本关 → 自动跳下一关",
+            // 而不是按难度/随机在全词库取词导致第1关的词永远学不满
+            const target = getV2DailyGoal() || 20;
+            const freeCur = getFreeCurrentLevel(level, target);
+            const orderedNewWords = [];
+            for (let i = (freeCur - 1) * target; i < words.length && orderedNewWords.length < state.newWordQuota; i++) {
+                const w = words[i];
+                if (w.memoryData.reviewCount === 0 || w.memoryData.status === 'new') {
+                    orderedNewWords.push(w);
+                }
+            }
+            // 当前关已学满(剩余不足)时,从下一关继续顺序取词补足今日新词配额
+            if (orderedNewWords.length < state.newWordQuota) {
+                for (let i = 0; i < words.length && orderedNewWords.length < state.newWordQuota; i++) {
+                    const w = words[i];
+                    if (!orderedNewWords.includes(w) && (w.memoryData.reviewCount === 0 || w.memoryData.status === 'new')) {
+                        orderedNewWords.push(w);
+                    }
+                }
+            }
+            if (state.wordOrder === 'random') shuffle(orderedNewWords);
+            orderedNewWords.forEach(word => addWord(word, 'newWord', true));
 
             state.todayQueue = [...queued.values()];
             state.todayTaskTotal = state.todayQueue.length;
