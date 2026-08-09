@@ -11974,6 +11974,33 @@
             }
         }
 
+        // 预检:把单张卡替换为透明占位格(数组 + DOM 同步),其他卡位置不动
+        function pretestReplaceWithPlaceholder(card, el) {
+            const idx = state.gameCards.indexOf(card);
+            if (idx >= 0) state.gameCards[idx] = { id: 'ph-' + card.id, type: 'placeholder', pairId: -1 };
+            const target = el || document.querySelector(`.match-card[data-id="${card.id}"]`);
+            if (target && target.parentNode) {
+                const ph = document.createElement('div');
+                ph.className = 'match-card placeholder-card';
+                target.replaceWith(ph);
+            }
+        }
+
+        // 预检:消掉若干对后统一收尾——剩一对时补齐、相邻修复、全部完成则结束
+        function pretestSettle() {
+            const remainingPairs = state.gameCards.filter(c => c.type !== 'placeholder').length / 2;
+            if (state.pretestCursor < state.pretestWords.length && remainingPairs <= 1) {
+                pretestRefillBoard();
+            }
+            // 移除隔板卡可能让现存同对变相邻:局部交换修复,不做全量重排
+            if (hasAdjacentPair(state.gameCards)) {
+                repairAdjacentInBoard();
+            }
+            if (state.pretestVisible.length === 0 && state.pretestCursor >= state.pretestWords.length) {
+                finishPretest();
+            }
+        }
+
         // 预检:补入新对,中英文分别随机插入且 cn 避开 en 相邻位,保证同对不相邻
         function pretestAddPair(globalIndex) {
             const word = state.currentWords[globalIndex];
@@ -12377,63 +12404,52 @@
                 if (state.pretestMode) {
                     const pairId = first.card.pairId;
                     setTimeout(() => {
-                        // 用占位格替换已配对卡片,保持 grid 格子位置不塌陷
-                        state.gameCards = state.gameCards.map(c =>
-                            c.pairId === pairId ? { id: 'ph-' + c.id, type: 'placeholder', pairId: -1 } : c
-                        );
-                        const ph1 = document.createElement('div');
-                        ph1.className = 'match-card placeholder-card';
-                        const ph2 = document.createElement('div');
-                        ph2.className = 'match-card placeholder-card';
-                        if (first.el && first.el.parentNode) first.el.replaceWith(ph1);
-                        if (second.el && second.el.parentNode) second.el.replaceWith(ph2);
+                        // 用占位格替换该对两张卡片,保持 grid 格子位置不塌陷
+                        state.gameCards.forEach(c => {
+                            if (c.type !== 'placeholder' && c.pairId === pairId) pretestReplaceWithPlaceholder(c, null);
+                        });
                         state.pretestVisible = state.pretestVisible.filter(i => i !== pairId);
-                        // 不逐对补:消掉的位置留空,其他配对留在原位,等只剩一对时一次性补齐到 5 对
-                        const remainingPairs = state.gameCards.filter(c => c.type !== 'placeholder').length / 2;
-                        if (state.pretestCursor < state.pretestWords.length && remainingPairs <= 1) {
-                            pretestRefillBoard();
-                        }
-                        // 移除隔板卡可能让现存同对变相邻:局部交换修复,不做全量重排
-                        if (hasAdjacentPair(state.gameCards)) {
-                            repairAdjacentInBoard();
-                        }
-                        if (state.pretestVisible.length === 0 && state.pretestCursor >= state.pretestWords.length) {
-                            finishPretest();
-                        }
+                        pretestSettle();
                     }, 260);
                 } else if (state.gameMatchedPairs >= state.currentWords.length) {
                     setTimeout(() => endGame('cleared'), 420);
                 }
             } else {
-                if (state.gameCombo >= 2) hideComboPopup();
-                state.gameCombo = 0;
-                state.gameTimeLeft = Math.max(0, state.gameTimeLeft - 2);
-                SFX.matchFail();
-                shakeCards(first.el, second.el);
-                updateGameHUD(true);
-
-                // 预检模式:记录选错词(进入学习),不评分
-                if (state.pretestMode) {
-                    const w1 = state.currentWords[first.card.pairId];
-                    const w2 = state.currentWords[second.card.pairId];
-                    if (w1) state.pretestErrors.add(w1.wordId);
-                    if (w2 && w2.wordId !== w1.wordId) state.pretestErrors.add(w2.wordId);
+                // 预检:同类型选择(英文+英文/中文+中文)无任何变化,不惩罚不记录
+                if (state.pretestMode && first.card.type === second.card.type) {
+                    // 末尾统一 clearSelection
                 } else {
-                    // 配对失败：统一调用 MemorySystem.rate
-                    const word1 = state.currentWords[first.card.pairId];
-                    const word2 = state.currentWords[second.card.pairId];
-                    if (word1) {
-                        const mem1 = MemorySystem.rate(word1, 'matchFail');
-                        recordRoundResult(word1, 'matchFail', mem1);
-                        if (!state.sessionReviewQueue.some(w => w.wordId === word1.wordId)) {
-                            state.sessionReviewQueue.push(word1);
+                    if (state.gameCombo >= 2) hideComboPopup();
+                    state.gameCombo = 0;
+                    state.gameTimeLeft = Math.max(0, state.gameTimeLeft - 2);
+                    SFX.matchFail();
+                    shakeCards(first.el, second.el);
+                    updateGameHUD(true);
+
+                    // 预检:英文配错中文 → 两词都记入待学习(气泡+1),不消卡,用户可继续配对
+                    if (state.pretestMode) {
+                        const w1 = state.currentWords[first.card.pairId];
+                        const w2 = state.currentWords[second.card.pairId];
+                        if (w1) state.pretestErrors.add(w1.wordId);
+                        if (w2 && w2.wordId !== w1.wordId) state.pretestErrors.add(w2.wordId);
+                        updateGameHUD();
+                    } else {
+                        // 配对失败：统一调用 MemorySystem.rate
+                        const word1 = state.currentWords[first.card.pairId];
+                        const word2 = state.currentWords[second.card.pairId];
+                        if (word1) {
+                            const mem1 = MemorySystem.rate(word1, 'matchFail');
+                            recordRoundResult(word1, 'matchFail', mem1);
+                            if (!state.sessionReviewQueue.some(w => w.wordId === word1.wordId)) {
+                                state.sessionReviewQueue.push(word1);
+                            }
                         }
-                    }
-                    if (word2 && word2.wordId !== word1.wordId) {
-                        const mem2 = MemorySystem.rate(word2, 'matchFail');
-                        recordRoundResult(word2, 'matchFail', mem2);
-                        if (!state.sessionReviewQueue.some(w => w.wordId === word2.wordId)) {
-                            state.sessionReviewQueue.push(word2);
+                        if (word2 && word2.wordId !== word1.wordId) {
+                            const mem2 = MemorySystem.rate(word2, 'matchFail');
+                            recordRoundResult(word2, 'matchFail', mem2);
+                            if (!state.sessionReviewQueue.some(w => w.wordId === word2.wordId)) {
+                                state.sessionReviewQueue.push(word2);
+                            }
                         }
                     }
                 }
@@ -12505,7 +12521,11 @@
                 const passed = state.pretestPassedCount || 0;
                 timerEl.textContent = total;
                 scoreEl.textContent = passed;
-                comboHudEl.textContent = Math.max(0, total - passed);
+                // 待学习 = 已确认要学的词数(配错/提示过的词),配错消掉时即 +1 反馈
+                const learnSet = new Set();
+                (state.pretestErrors || []).forEach(x => learnSet.add(x));
+                (state.hintedWordIds || []).forEach(x => learnSet.add(x));
+                comboHudEl.textContent = learnSet.size;
                 return;
             }
 
