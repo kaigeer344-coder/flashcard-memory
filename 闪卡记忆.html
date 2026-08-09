@@ -1527,7 +1527,7 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior-x: contain;
-            padding: 4px 4px 10px;
+            padding: 4px 4px 22px;
             scroll-snap-type: x proximity;
         }
         #achWordBadges::-webkit-scrollbar { display: none; }
@@ -1634,6 +1634,12 @@
         }
         .ach-badge-card.locked .ach-badge-progress {
             opacity: 0.55;
+        }
+        /* 词库徽章:进度文字(已背X/总数)改灰色并整体下移 20px(原绝对定位 bottom 4px) */
+        #achWordBadges .ach-badge-progress {
+            color: #8a8a8a;
+            text-shadow: none;
+            bottom: -16px;
         }
 
         /* 多邻国风格解锁状态按钮:素材下方小号胶囊 */
