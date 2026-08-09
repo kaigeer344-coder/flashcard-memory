@@ -9511,6 +9511,28 @@
             return result;
         }
 
+        // ===== 关卡状态切换日志(排查用) =====
+        // 记录时间戳 + 关卡推进/解锁/当前关变化事件;
+        // 数据缓存在 window.__levelTransitions(最多 100 条),同时输出到 console
+        function logLevelTransition(msg, detail) {
+            try {
+                const entry = { t: new Date().toISOString(), msg: msg, detail: detail || null };
+                if (!window.__levelTransitions) window.__levelTransitions = [];
+                window.__levelTransitions.push(entry);
+                if (window.__levelTransitions.length > 100) window.__levelTransitions.shift();
+                console.log('[关卡状态]', entry.t, msg, detail ? JSON.stringify(detail) : '');
+            } catch (e) {}
+        }
+        // 地图渲染时按「模式:当前关」去重记录当前关变化(只在变化时打日志,避免每次渲染刷屏)
+        function logMapCurrentIfChanged(mode, current, extra) {
+            try {
+                const key = mode + ':' + current;
+                if (window.__lastMapCurrent === key) return;
+                window.__lastMapCurrent = key;
+                logLevelTransition('地图当前关变化', Object.assign({ mode: mode, current: current }, extra || {}));
+            } catch (e) {}
+        }
+
         function renderLearningMapScreen() {
             const root = document.getElementById('learningMapRoot');
             if (!root) return;
@@ -9553,6 +9575,7 @@
                 const perLevel = 10; // 冲刺模式每关 10 词
                 // 当前关卡直接解锁:学完第 N 关后第 N+1 关立即变为当前关可学习
                 const todayNode = Math.min(currentDay, totalDays);
+                logMapCurrentIfChanged('sprint', currentDay, { completedDays: completedDays.length });
                 for (let i = 1; i <= totalDays; i++) {
                     let status = 'locked';
                     if (completedDays.includes(i)) status = 'completed';
@@ -9597,6 +9620,7 @@
                 getChestLevels(totalLevels).forEach(c => { chestMap[c.level] = c.big; });
                 // 当前关卡直接解锁:学完第 N 关后第 N+1 关立即变为当前关可学习
                 const todayNode = Math.min(currentLevel, totalLevels);
+                logMapCurrentIfChanged('free', currentLevel, { learned: learnedCount });
                 for (let i = 1; i <= totalLevels; i++) {
                     let status = 'locked';
                     if (allDone || i < currentLevel) status = 'completed';
@@ -15351,6 +15375,13 @@
                     }
                     plan.currentDay = Math.min(plan.planDays, todayDayNum + 1);
                     _saveRoles();
+                    // 日志:冲刺关卡完成推进(记录切换时间,排查用)
+                    logLevelTransition('冲刺关卡完成推进', {
+                        roleId: roleId,
+                        from: todayDayNum,
+                        to: plan.currentDay,
+                        completedDays: (plan.completedDays || []).slice()
+                    });
                     return plan;
                 },
 
