@@ -9610,12 +9610,23 @@
                 const dailyTarget = settings.dailyTarget || 20;
                 // 关卡数量 = 词库词汇量 / 每日学习量,动态计算生成
                 const totalLevels = Math.max(1, Math.ceil(totalWords / dailyTarget));
-                // 当前进度:以该词库已学词数推算当前所在关卡
-                const ladder = LearningSystem.calculateLadderProgress();
-                const prog = ladder[bookId] || { all: { learned: 0 } };
-                const learnedCount = (prog.all && prog.all.learned) || 0;
-                const allDone = learnedCount >= totalWords;
-                const currentLevel = allDone ? totalLevels + 1 : Math.min(totalLevels, Math.floor(learnedCount / dailyTarget) + 1);
+                // 关卡进度按"本关单词是否学完"逐关判定,而不是按"词库总已学词数"跳关。
+                // 冲刺/自由共享学习进度,冲刺按词频价值选词会分散在词库各处,
+                // 若仅按已学总数推算,一进自由模式就会跳过大量关卡,让新用户误以为 bug。
+                // 判定规则:每关分配到的词(按词库顺序)全部已有 FSRS 学习记录才算通关;
+                // 当前关 = 第一个未学满的关,已学的词在关内体现进度而非直接通关。
+                const levelSizes = [];
+                const levelLearned = [];
+                for (let i = 1; i <= totalLevels; i++) {
+                    levelSizes.push(Math.max(0, Math.min(dailyTarget, totalWords - (i - 1) * dailyTarget)));
+                    levelLearned.push(countLevelLearned(i, dailyTarget));
+                }
+                let currentLevel = totalLevels + 1;
+                for (let i = 0; i < totalLevels; i++) {
+                    if (levelLearned[i] < levelSizes[i]) { currentLevel = i + 1; break; }
+                }
+                const allDone = currentLevel > totalLevels;
+                const learnedCount = levelLearned.reduce((a, b) => a + b, 0);
                 chestMap = {};
                 getChestLevels(totalLevels).forEach(c => { chestMap[c.level] = c.big; });
                 // 当前关卡直接解锁:学完第 N 关后第 N+1 关立即变为当前关可学习
@@ -9627,7 +9638,7 @@
                     else if (i === currentLevel) status = 'current';
                     const done = status === 'completed';
                     const cur = status === 'current';
-                    const learned = done ? dailyTarget : (cur ? countLevelLearned(i, dailyTarget) : 0);
+                    const learned = done ? levelLearned[i - 1] : (cur ? countLevelLearned(i, dailyTarget) : 0);
                     levels.push({
                         day: i,
                         status,
