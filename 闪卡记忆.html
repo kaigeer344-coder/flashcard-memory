@@ -6969,6 +6969,7 @@
             <button class="screen-nav-item" onclick="simulateNewBadge()">模拟徽章获得</button>
             <button class="screen-nav-item" data-screen="wordbookScreen">单词本</button>
             <button class="screen-nav-item" data-screen="statsScreen">任务中心</button>
+            <button class="screen-nav-item" onclick="showStreakReward(true)">打卡签到</button>
             <button class="screen-nav-item" data-screen="profileScreen">个人中心</button>
             <button class="screen-nav-item" data-screen="settingsScreen">设置</button>
             <button class="screen-nav-item" data-screen="vipScreen">会员中心</button>
@@ -7856,9 +7857,9 @@
             return true;
         }
 
-        function showStreakReward() {
+        function showStreakReward(force) {
             const streak = getStreakData();
-            if (streak.rewardClaimed) return;
+            if (!force && streak.rewardClaimed) return;
             const count = streak.count;
             const reward = getStreakReward(count);
             document.getElementById('streakTitle').textContent = `连续学习 ${count} 天`;
