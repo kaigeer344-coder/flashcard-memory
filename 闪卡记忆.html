@@ -8322,9 +8322,10 @@
         // ===== 多邻国式分步提问(mode-config) =====
         // 问题流:自由 = 词书→词数→确认;冲刺 = 考试→日期→词数→确认
         function _getQuestionFlow() {
+            // 冲刺模式:每日新词由系统按考试日期倒排自动计算,不提供手动选择
             return onboardState.mode === 'free'
                 ? ['book', 'daily', 'confirm']
-                : ['exam', 'date', 'daily', 'confirm'];
+                : ['exam', 'date', 'confirm'];
         }
 
         // 顶部进度条 + IP 形象 + 对话气泡(showBack=false 时无返回按钮)
@@ -8466,7 +8467,8 @@
             const examTs = onboardState.examDate ? new Date(onboardState.examDate) : new Date(today.getTime() + 14 * 86400000);
             const remainingDays = Math.max(1, Math.round((examTs - today) / 86400000));
             const config = LearningSystem.getSprintConfig(remainingDays);
-            const actualDaily = onboardState.dailyWords || config.dailyNew;
+            // 每日新词由系统按考试日期自动倒排,确认页展示自动计算值
+            const actualDaily = config.dailyNew;
             const examCfg = LearningSystem.getExamTypes()[onboardState.examType] || {};
             // 与 createSprintPlan 同口径:复习缓冲=天数×20%(下限1天),学习期≥5天;覆盖=学习期×每日新词
             let reviewBufferDays = Math.max(1, Math.round(remainingDays * 0.2));
@@ -8619,10 +8621,10 @@
                     LearningSystem.setFreeDailyTarget(onboardState.dailyTarget);
                 } else if (onboardState.mode === 'sprint') {
                     LearningSystem.switchMode('sprint');
+                    // 每日新词不手动指定:由 createSprintPlan 按考试日期自动倒排
                     LearningSystem.createSprintPlan(
                         onboardState.examType,
-                        onboardState.examDate,
-                        onboardState.dailyWords
+                        onboardState.examDate
                     );
                 }
                 // 只有选了模式才标记为已引导,避免跳过引导后 settings.mode=null 回退到 V1
@@ -13957,12 +13959,7 @@
                         <div class="settings-v2-row">
                             <div class="settings-v2-row-label">
                                 <div class="settings-v2-row-name">每日新词</div>
-                                <div class="settings-v2-row-meta">当前 ${plan.dailyNewWords} 词/天</div>
-                            </div>
-                            <div class="settings-v2-segmented">
-                                <button class="settings-v2-seg-btn ${plan.dailyNewWords === 20 ? 'active' : ''}" onclick="settingsChangeDailyWords(${20})">20</button>
-                                <button class="settings-v2-seg-btn ${plan.dailyNewWords === 35 ? 'active' : ''}" onclick="settingsChangeDailyWords(${35})">35</button>
-                                <button class="settings-v2-seg-btn ${plan.dailyNewWords === 50 ? 'active' : ''}" onclick="settingsChangeDailyWords(${50})">50</button>
+                                <div class="settings-v2-row-meta">${plan.dailyNewWords} 词/天 · 按考试日期自动排布</div>
                             </div>
                         </div>`;
                 } else if (settings.mode === 'free') {
@@ -14065,22 +14062,6 @@
                 showToast('已更新考试日期', 'success');
             } catch (e) {
                 console.error('settingsChangeExamDate 失败:', e);
-                showToast('更新失败', 'warning');
-            }
-        }
-
-        function settingsChangeDailyWords(num) {
-            SFX.click();
-            try {
-                const plan = LearningSystem.getActivePlan();
-                if (!plan) return;
-                // 修改 plan.dailyNewWords(没有专门 API,通过内部更新)
-                plan.dailyNewWords = num;
-                LearningSystem.modifyExamDate(plan.id, plan.examDate); // 触发保存
-                renderSettingsScreen();
-                showToast(`已设置每日 ${num} 新词`, 'success');
-            } catch (e) {
-                console.error('settingsChangeDailyWords 失败:', e);
                 showToast('更新失败', 'warning');
             }
         }
