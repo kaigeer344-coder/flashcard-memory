@@ -1959,6 +1959,7 @@
             z-index: 1;
         }
         .profile-avatar {
+            position: relative;
             width: 72px;
             height: 72px;
             border-radius: 50%;
@@ -1968,12 +1969,112 @@
             flex-shrink: 0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             border: 4px solid rgba(255,255,255,0.9);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
         .profile-avatar img {
             width: 42px;
             height: 42px;
             object-fit: contain;
+            border-radius: 50%;
         }
+        .profile-avatar img.custom {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        /* 头像右下角相机编辑徽章(iOS 惯例:提示可更换) */
+        .avatar-edit-badge {
+            position: absolute;
+            right: -3px;
+            bottom: -3px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #58CC02;
+            color: #fff;
+            display: grid;
+            place-items: center;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+        }
+        .avatar-edit-badge svg { width: 15px; height: 15px; }
+        /* ===== 更换头像 Action Sheet(iOS 风格底部弹出) ===== */
+        .avatar-sheet-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(0,0,0,0.42);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .22s ease;
+        }
+        .avatar-sheet-overlay.show { opacity: 1; pointer-events: auto; }
+        .avatar-sheet {
+            width: 100%;
+            max-width: 520px;
+            background: rgba(250,250,252,0.94);
+            -webkit-backdrop-filter: blur(24px) saturate(1.4);
+            backdrop-filter: blur(24px) saturate(1.4);
+            border-radius: 20px 20px 0 0;
+            padding: 10px 14px calc(24px + env(safe-area-inset-bottom, 0px));
+            box-sizing: border-box;
+            transform: translateY(100%);
+            transition: transform .26s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        .avatar-sheet-overlay.show .avatar-sheet { transform: translateY(0); }
+        .avatar-sheet-grabber {
+            width: 40px;
+            height: 5px;
+            border-radius: 3px;
+            background: rgba(60,60,67,0.25);
+            margin: 6px auto 12px;
+        }
+        .avatar-sheet-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6E6E73;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .avatar-sheet-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 15px 18px;
+            margin-top: 10px;
+            font-size: 17px;
+            font-weight: 500;
+            color: #161616;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .avatar-sheet-item svg { width: 22px; height: 22px; color: #58CC02; flex-shrink: 0; }
+        .avatar-sheet-item-danger { color: #FF3B30; }
+        .avatar-sheet-item-danger svg { color: #FF3B30; }
+        .avatar-sheet-item:active { background: #F0F0F3; }
+        .avatar-sheet-cancel {
+            width: 100%;
+            margin-top: 10px;
+            background: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 15px;
+            font-size: 17px;
+            font-weight: 600;
+            color: #007AFF;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .avatar-sheet-cancel:active { background: #F0F0F3; }
         .profile-info { flex: 1; }
         .profile-level {
             font-size: 22px;
@@ -6764,7 +6865,12 @@
                 </button>
                 <div class="profile-header-top">
                     <div class="profile-header-content">
-                        <div class="profile-avatar"><img src="assets/generated-icons/nav-profile.png" alt=""></div>
+                        <div class="profile-avatar" onclick="onProfileAvatarClick()" role="button" tabindex="0" aria-label="更换头像">
+                            <img src="assets/generated-icons/nav-profile.png" alt="头像">
+                            <span class="avatar-edit-badge" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-2h6l2 2h3v12H4V7z"/><circle cx="12" cy="13" r="3.4"/></svg>
+                            </span>
+                        </div>
                         <div class="profile-info">
                             <div class="profile-level" id="profileLevelTitle">新手上路</div>
                             <div class="profile-level-badge" id="profileLevelBadge">Lv.1</div>
@@ -6827,6 +6933,25 @@
                 <div class="achievement-badge-grid" id="achCollectionBadges"></div>
             </div>
         </div>
+
+        <!-- 更换头像 Action Sheet(iOS 风格底部弹出) -->
+        <div class="avatar-sheet-overlay" id="avatarSheetOverlay" onclick="onAvatarSheetBackdrop(event)">
+            <div class="avatar-sheet">
+                <div class="avatar-sheet-grabber"></div>
+                <div class="avatar-sheet-title">更换头像</div>
+                <button class="avatar-sheet-item" type="button" onclick="chooseAvatarPhoto()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5-9 9"/></svg>
+                    <span>从相册选择</span>
+                </button>
+                <button class="avatar-sheet-item avatar-sheet-item-danger" type="button" onclick="resetAvatarPhoto()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.4"/><path d="M3 4v5h5"/></svg>
+                    <span>恢复默认头像</span>
+                </button>
+                <button class="avatar-sheet-cancel" type="button" onclick="closeAvatarSheet()">取消</button>
+            </div>
+        </div>
+        <input type="file" id="avatarFileInput" accept="image/*" style="display:none" onchange="handleAvatarFile(this)">
+
         <div class="screen settings-screen" id="settingsScreen">
             <div class="settings-subheader">
                 <button class="settings-back" onclick="switchTab('profile')" aria-label="返回">‹</button>
@@ -13560,6 +13685,7 @@
 
         // 个人中心主页渲染：等级 / 金币 / 宝石 / 道具
         function renderProfileScreen() {
+            applyProfileAvatar();
             const levelInfo = getLevelByScore(progress.totalScore);
             const nextLevel = LEVELS.find(l => l.level === levelInfo.level + 1);
             document.getElementById('profileLevelTitle').textContent = levelInfo.title;
@@ -13587,6 +13713,81 @@
                 renderProfileBadges();
             }
         }
+
+        // ===== 更换头像(iOS Action Sheet 交互) =====
+        const AVATAR_KEY = 'wordmatch_avatar';
+        // 应用自定义头像:有 localStorage 头像则显示,否则回退默认图
+        function applyProfileAvatar() {
+            const img = document.querySelector('#profileScreen .profile-avatar img');
+            if (!img) return;
+            const saved = localStorage.getItem(AVATAR_KEY);
+            if (saved) {
+                img.src = saved;
+                img.classList.add('custom');
+            } else {
+                img.src = 'assets/generated-icons/nav-profile.png';
+                img.classList.remove('custom');
+            }
+        }
+        // 点击头像 → 弹出底部 Action Sheet
+        window.onProfileAvatarClick = function() {
+            if (typeof SFX !== 'undefined') SFX.click();
+            const overlay = document.getElementById('avatarSheetOverlay');
+            if (overlay) overlay.classList.add('show');
+        };
+        // 点击遮罩(非面板区域)关闭
+        window.onAvatarSheetBackdrop = function(e) {
+            if (e.target === e.currentTarget) closeAvatarSheet();
+        };
+        window.closeAvatarSheet = function() {
+            const overlay = document.getElementById('avatarSheetOverlay');
+            if (overlay) overlay.classList.remove('show');
+        };
+        window.chooseAvatarPhoto = function() {
+            const input = document.getElementById('avatarFileInput');
+            if (input) input.click();
+        };
+        // 读取本地图片 → 居中裁剪为正方形并压缩到 256px → 存 localStorage
+        window.handleAvatarFile = function(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = new Image();
+                img.onload = function() {
+                    try {
+                        const size = 256;
+                        const canvas = document.createElement('canvas');
+                        canvas.width = size;
+                        canvas.height = size;
+                        const ctx = canvas.getContext('2d');
+                        const min = Math.min(img.width, img.height);
+                        const sx = (img.width - min) / 2;
+                        const sy = (img.height - min) / 2;
+                        ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+                        localStorage.setItem(AVATAR_KEY, canvas.toDataURL('image/jpeg', 0.85));
+                        applyProfileAvatar();
+                        closeAvatarSheet();
+                        if (typeof showToast === 'function') showToast('头像已更新', 'success');
+                    } catch (e) {
+                        if (typeof showToast === 'function') showToast('图片处理失败，请换一张试试', 'warning');
+                    }
+                };
+                img.onerror = function() {
+                    if (typeof showToast === 'function') showToast('图片读取失败', 'warning');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+            input.value = '';
+        };
+        window.resetAvatarPhoto = function() {
+            if (typeof SFX !== 'undefined') SFX.click();
+            localStorage.removeItem(AVATAR_KEY);
+            applyProfileAvatar();
+            closeAvatarSheet();
+            if (typeof showToast === 'function') showToast('已恢复默认头像', 'info');
+        };
 
         // 设置子页渲染：今日新词数等配置项
         function renderSettingsScreen() {
@@ -15571,6 +15772,7 @@
             if (wcEl) wcEl.textContent = state.wordsPerRound;
             updateStudyDays();
             renderHeaderStats();
+            applyProfileAvatar();
             initScreenNavSidebar();
             updateBottomNavVisibility();
             requestAnimationFrame(() => {
