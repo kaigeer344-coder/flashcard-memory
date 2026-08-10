@@ -1900,6 +1900,21 @@
             border-radius: 50%;
             pointer-events: none;
         }
+        /* 自定义背景图时:半透明白色遮罩保证等级/名字/进度文字可读(iOS banner scrim) */
+        .profile-header-card.custom-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background: rgba(255,255,255,0.42);
+            pointer-events: none;
+        }
+        .profile-header-card.custom-banner .profile-header-top,
+        .profile-header-card.custom-banner .profile-header-xp {
+            position: relative;
+            z-index: 1;
+        }
+        .profile-header-card { cursor: pointer; }
         /* 个人信息卡右上角设置小按钮:透明底,仅图标 */
         .profile-settings-btn {
             position: absolute;
@@ -6860,8 +6875,8 @@
 
         <!-- 个人中心主页 -->
         <div class="screen settings-screen" id="profileScreen">
-            <!-- Hero 卡片：绿色渐变 + 头像 + 等级 + XP -->
-            <div class="profile-header-card">
+            <!-- Hero 卡片：绿色渐变 + 头像 + 等级 + XP(点击空白区可更换背景图) -->
+            <div class="profile-header-card" id="profileHeaderCard" onclick="onProfileBannerClick(event)">
                 <button class="profile-settings-btn" onclick="switchTab('settings')" aria-label="学习设置">
                     <img src="assets/generated-icons/settings.png" alt="">
                 </button>
@@ -6953,6 +6968,24 @@
             </div>
         </div>
         <input type="file" id="avatarFileInput" accept="image/*" style="display:none" onchange="handleAvatarFile(this)">
+
+        <!-- 更换个人中心背景 Action Sheet(iOS 风格底部弹出) -->
+        <div class="avatar-sheet-overlay" id="bannerSheetOverlay" onclick="onBannerSheetBackdrop(event)">
+            <div class="avatar-sheet">
+                <div class="avatar-sheet-grabber"></div>
+                <div class="avatar-sheet-title">更换背景</div>
+                <button class="avatar-sheet-item" type="button" onclick="chooseBannerPhoto()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="M21 15l-5-5-9 9"/></svg>
+                    <span>从相册选择</span>
+                </button>
+                <button class="avatar-sheet-item avatar-sheet-item-danger" type="button" onclick="resetBannerPhoto()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.4"/><path d="M3 4v5h5"/></svg>
+                    <span>恢复默认背景</span>
+                </button>
+                <button class="avatar-sheet-cancel" type="button" onclick="closeBannerSheet()">取消</button>
+            </div>
+        </div>
+        <input type="file" id="bannerFileInput" accept="image/*" style="display:none" onchange="handleBannerFile(this)">
 
         <div class="screen settings-screen" id="settingsScreen">
             <div class="settings-subheader">
@@ -13688,6 +13721,7 @@
         // 个人中心主页渲染：等级 / 金币 / 宝石 / 道具
         function renderProfileScreen() {
             applyProfileAvatar();
+            applyProfileBanner();
             const levelInfo = getLevelByScore(progress.totalScore);
             const nextLevel = LEVELS.find(l => l.level === levelInfo.level + 1);
             document.getElementById('profileLevelTitle').textContent = levelInfo.title;
@@ -13789,6 +13823,85 @@
             applyProfileAvatar();
             closeAvatarSheet();
             if (typeof showToast === 'function') showToast('已恢复默认头像', 'info');
+        };
+
+        // ===== 更换个人中心 Banner 背景(iOS Action Sheet 交互) =====
+        const BANNER_KEY = 'wordmatch_banner';
+        // 应用自定义背景:有则铺图(cover),无则回退 CSS 绿色渐变
+        function applyProfileBanner() {
+            const card = document.getElementById('profileHeaderCard');
+            if (!card) return;
+            const saved = localStorage.getItem(BANNER_KEY);
+            if (saved) {
+                card.style.backgroundImage = `url(${saved})`;
+                card.style.backgroundSize = 'cover';
+                card.style.backgroundPosition = 'center';
+                card.classList.add('custom-banner');
+            } else {
+                card.style.backgroundImage = '';
+                card.classList.remove('custom-banner');
+            }
+        }
+        // 点击 banner 空白区域 → 弹出换背景窗口(头像/设置按钮区域不触发)
+        window.onProfileBannerClick = function(e) {
+            if (e.target && e.target.closest &&
+                (e.target.closest('.profile-avatar') || e.target.closest('.profile-settings-btn'))) {
+                return;
+            }
+            if (typeof SFX !== 'undefined') SFX.click();
+            const overlay = document.getElementById('bannerSheetOverlay');
+            if (overlay) overlay.classList.add('show');
+        };
+        window.onBannerSheetBackdrop = function(e) {
+            if (e.target === e.currentTarget) closeBannerSheet();
+        };
+        window.closeBannerSheet = function() {
+            const overlay = document.getElementById('bannerSheetOverlay');
+            if (overlay) overlay.classList.remove('show');
+        };
+        window.chooseBannerPhoto = function() {
+            const input = document.getElementById('bannerFileInput');
+            if (input) input.click();
+        };
+        // 读取本地图片 → 压缩到 1040px 宽(适配 2x 屏) → 存 localStorage
+        window.handleBannerFile = function(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = new Image();
+                img.onload = function() {
+                    try {
+                        const maxW = 1040;
+                        const scale = Math.min(1, maxW / img.width);
+                        const w = Math.round(img.width * scale);
+                        const h = Math.round(img.height * scale);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        localStorage.setItem(BANNER_KEY, canvas.toDataURL('image/jpeg', 0.82));
+                        applyProfileBanner();
+                        closeBannerSheet();
+                        if (typeof showToast === 'function') showToast('背景已更新', 'success');
+                    } catch (e) {
+                        if (typeof showToast === 'function') showToast('图片处理失败，请换一张试试', 'warning');
+                    }
+                };
+                img.onerror = function() {
+                    if (typeof showToast === 'function') showToast('图片读取失败', 'warning');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+            input.value = '';
+        };
+        window.resetBannerPhoto = function() {
+            if (typeof SFX !== 'undefined') SFX.click();
+            localStorage.removeItem(BANNER_KEY);
+            applyProfileBanner();
+            closeBannerSheet();
+            if (typeof showToast === 'function') showToast('已恢复默认背景', 'info');
         };
 
         // 设置子页渲染：今日新词数等配置项
@@ -15775,6 +15888,7 @@
             updateStudyDays();
             renderHeaderStats();
             applyProfileAvatar();
+            applyProfileBanner();
             initScreenNavSidebar();
             updateBottomNavVisibility();
             requestAnimationFrame(() => {
