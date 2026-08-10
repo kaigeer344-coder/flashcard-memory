@@ -1999,6 +1999,8 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.18);
         }
         .avatar-edit-badge svg { width: 15px; height: 15px; }
+        /* 已上传自定义头像后隐藏相机小标,仅默认头像时显示 */
+        .profile-avatar img.custom ~ .avatar-edit-badge { display: none; }
         /* ===== 更换头像 Action Sheet(iOS 风格底部弹出) ===== */
         .avatar-sheet-overlay {
             position: fixed;
