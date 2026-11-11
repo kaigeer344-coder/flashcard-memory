@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body>
+<div id="out" style="position:fixed;top:0;left:0;background:#fff;z-index:99999;font:10px monospace;white-space:pre;max-height:100%;overflow:auto">debug</div>
+<script>
+var p = new URLSearchParams(location.search);
+localStorage.setItem('wordmatch_onboarded', '1');
+localStorage.setItem('wordmatch_learning_version', '2');
+var today = new Date().toISOString().slice(0, 10);
+localStorage.setItem('wordmatch_streak', JSON.stringify({count: 12, lastDate: today, rewardClaimed: true}));
+localStorage.setItem('wordmatch_settings', JSON.stringify({mode:'free', activeRoleId:null, activeBookId:'cet4', dailyTarget:20, defaultView:'core', showContribution:true, reminder:{dailyEnabled:true,dailyTime:'20:00',reviewEnabled:true,examCountdown:true,streakProtection:true}, audio:{autoPlay:true,speed:'normal',accent:'us',volume:0.8}, theme:'default', fontSize:'standard'}));
+var f = document.createElement('iframe');
+f.src = '闪卡记忆.html';
+f.style.cssText = 'width:100%;height:100%;border:0;position:fixed;inset:0';
+f.onload = function () {
+  var w = f.contentWindow;
+  setTimeout(function () {
+    var info = {err: null, out: null};
+    try {
+      var js = p.get('js');
+      info.out = js ? String(w.eval(decodeURIComponent(js))) : 'no-js';
+    } catch (e) { info.err = e.message + '|' + (e.stack||'').split('\n')[0]; }
+    try { info.gbKids = w.document.getElementById('gameBoard') ? w.document.getElementById('gameBoard').children.length : 'no-el'; } catch(e){}
+    try { info.active = w.document.querySelector('.screen.active') ? w.document.querySelector('.screen.active').id : 'none'; } catch(e){}
+    document.getElementById('out').textContent = JSON.stringify(info, null, 1);
+  }, 1500);
+};
+document.body.appendChild(f);
+</script>
+</body>
+</html>

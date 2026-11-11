@@ -553,13 +553,18 @@
             margin-top: 8px;
         }
         .flip-hint-card {
+            display: inline-block;
             text-align: center;
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 12px;
+            font-weight: 800;
             color: var(--muted);
+            background: #f4f4f4;
+            border-radius: 999px;
+            padding: 6px 14px;
             margin-top: 5px;
             line-height: 1.2;
         }
+        .flashcard.flipped .flip-hint-card { visibility: hidden; }
 
         /* 未记住提示 */
         #learningReminder { min-height: 15px; margin-bottom: 8px; }
@@ -601,10 +606,10 @@
             min-height: 280px;
             height: 480px;
             padding: 34px 22px 38px;
-            border: none;
+            border: 2px solid var(--border);
             border-radius: 28px;
             background: #ffffff;
-            box-shadow: none;
+            box-shadow: 0 8px 0 #e4e4e4;
             margin-bottom: 18px;
             display: flex;
             flex-direction: column;
@@ -615,7 +620,8 @@
         }
         .flashcard:hover {
             transform: translateY(-2px);
-            box-shadow: 0 14px 0 #e5e5e5, 0 12px 28px rgba(0,0,0,0.08);
+            border-color: #dcdcdc;
+            box-shadow: 0 10px 0 #e0e0e0, 0 16px 30px rgba(0,0,0,0.07);
         }
         .flashcard .word { color: #1f1f1f; font-size: 44px; font-weight: 1000; line-height: 1.1; margin-bottom: 8px; }
         .flashcard .phonetic { color: #1cb0f6; font-size: 18px; font-weight: 800; margin-bottom: 16px; }
@@ -627,16 +633,16 @@
             height: 44px;
             border-radius: 50%;
             border: none;
-            background: #4ECDC4;
+            background: var(--secondary);
             color: #ffffff;
             font-size: 20px;
             cursor: pointer;
             margin-bottom: 16px;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
-            box-shadow: 0 4px 10px rgba(78, 205, 196, 0.35);
+            box-shadow: 0 4px 0 var(--secondary-dark);
         }
-        .pronounce-btn:hover { transform: scale(1.12); }
-        .pronounce-btn:active { transform: scale(0.95); }
+        .pronounce-btn:hover { transform: scale(1.08); }
+        .pronounce-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--secondary-dark); }
         .flashcard .meaning { color: var(--primary-dark); font-size: 24px; font-weight: 1000; opacity: 0; }
         .flashcard.flipped .meaning { opacity: 1; }
         .learning-btns { display: flex; gap: 10px; margin-top: 4px; }
@@ -2903,12 +2909,14 @@
         .match-card:active:not(.selected):not(.matched) {
             transform: scale(0.95);
         }
+        /* 选中态反色(NYT Connections 风格):深蓝底 + 白字 */
         .match-card.selected {
-            border-color: var(--primary);
-            background: var(--primary-soft);
-            box-shadow: 0 0 0 3px var(--primary-soft), 0 6px 0 var(--primary-dark);
+            border-color: var(--navy);
+            background: var(--navy);
+            box-shadow: 0 4px 0 #0f2440;
             transform: translateY(-4px);
         }
+        .match-card.selected .card-text { color: #ffffff !important; }
         .match-card.shake {
             animation: cardShake 420ms ease-in-out;
         }
@@ -4842,6 +4850,28 @@
             height: 18px;
             color: #fff;
         }
+        /* 节点状态分色(对齐 Duolingo 地图语义):锁定=浅灰、完成=金、当前=绿、终点=金渐变奖杯 */
+        .v2lm-bubble-locked {
+            background: #E5E5E5;
+            color: #A0A0A0;
+            box-shadow: 0 2px 0 #C9C9C9;
+        }
+        .v2lm-bubble-locked svg { color: #A0A0A0; }
+        .v2lm-bubble-done {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 2px 0 #D6A900;
+        }
+        .v2lm-bubble-current {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 0 var(--primary-dark), 0 0 0 5px rgba(88,204,2,0.22);
+        }
+        .v2lm-bubble-final {
+            background: linear-gradient(160deg, #FFD94D 0%, #FFB800 100%);
+            color: #fff;
+            box-shadow: 0 2px 0 #D6A900, 0 0 14px rgba(255,200,0,0.45);
+        }
         .v2lm-stars {
             position: absolute;
             bottom: 10px;
@@ -5981,6 +6011,31 @@
             color: #4a4a4a;
             text-align: right;
             flex-shrink: 0;
+        }
+        .level-word-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 34px 20px 30px;
+        }
+        .level-word-empty img {
+            width: 74px;
+            height: 74px;
+            object-fit: contain;
+            opacity: 0.85;
+            margin-bottom: 10px;
+        }
+        .level-word-empty-title {
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--muted);
+        }
+        .level-word-empty-sub {
+            margin-top: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #b0b0b0;
         }
         .settings-v2-confirm-title {
             font-size: 17px;
@@ -9983,7 +10038,11 @@
                     </div>
                     <span class="level-word-cn">${w.cn || ''}</span>
                 </div>`).join('')
-                : '<div class="level-word-item" style="justify-content:center;color:#a0a0a0;">该关卡暂无真实学习记录</div>';
+                : `<div class="level-word-empty">
+                    <img src="assets/progress/IP形象-test.png" alt="" onerror="this.outerHTML='<span style=&quot;font-size:34px&quot;>📖</span>'">
+                    <div class="level-word-empty-title">该关卡暂无学习记录</div>
+                    <div class="level-word-empty-sub">完成本关学习后,学过的单词会出现在这里</div>
+                </div>`;
             overlay.classList.add('show');
         };
 
@@ -10887,9 +10946,13 @@
 
                 let bubbleHtml = '';
                 if (isFinal) {
-                    bubbleHtml = `<div class="v2lm-bubble" aria-label="最终目标">${TROPHY_SVG}</div>`;
+                    bubbleHtml = `<div class="v2lm-bubble v2lm-bubble-final" aria-label="最终目标">${TROPHY_SVG}</div>`;
                 } else if (isLocked) {
-                    bubbleHtml = `<div class="v2lm-bubble" aria-label="未解锁">${LOCK_SVG}</div>`;
+                    bubbleHtml = `<div class="v2lm-bubble v2lm-bubble-locked" aria-label="未解锁">${LOCK_SVG}</div>`;
+                } else if (isCompleted) {
+                    bubbleHtml = `<div class="v2lm-bubble v2lm-bubble-done" aria-label="第 ${level.day} 关,已完成">${level.day}</div>`;
+                } else if (isCurrent) {
+                    bubbleHtml = `<div class="v2lm-bubble v2lm-bubble-current" aria-label="第 ${level.day} 关,当前关">${level.day}</div>`;
                 } else {
                     bubbleHtml = `<div class="v2lm-bubble" aria-label="第 ${level.day} 关">${level.day}</div>`;
                 }
