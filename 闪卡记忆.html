@@ -32,6 +32,12 @@
             --shadow-blue: 0 6px 0 var(--secondary-dark);
             --shadow-neutral: 0 5px 0 #d8d8d8;
             --card-shadow: 0 8px 0 #e5e5e5;
+            --purple: #ce82ff;
+            --orange: #ff9600;
+            --navy: #1b365d;
+            --navy-2: #274b8f;
+            --gold: #ffc800;
+            --gold-deep: #d6a900;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { background: #f7f7f7; }
@@ -2289,31 +2295,68 @@
             line-height: 1.5;
         }
 
-        /* ============ 会员中心页样式 ============ */
-        .vip-screen { background: #faf6ee; }
+        /* ============ 会员中心页样式(多邻国 Super 付费墙风) ============ */
+        .vip-screen { background: #faf6ee; padding-bottom: 190px; }
 
-        /* 顶部会员卡片：金色渐变 */
+        /* 顶部深蓝 hero:全宽破边 + 波浪底边 + 浮动 IP */
+        .vip-hero-wrap {
+            margin: -8px -18px 0;
+            position: relative;
+        }
         .vip-hero {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            border-radius: 18px;
-            padding: 24px 20px;
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(120% 90% at 82% 12%, rgba(255, 200, 0, 0.28) 0%, rgba(255, 200, 0, 0) 46%),
+                linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 58%, #3e5fb8 100%);
+            padding: 34px 22px 30px;
             display: flex;
             align-items: center;
             gap: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 6px 20px rgba(255, 165, 0, 0.25);
+        }
+        .vip-hero::before,
+        .vip-hero::after {
+            content: '';
+            position: absolute;
+            background: rgba(255,255,255,0.85);
+            clip-path: polygon(50% 0%, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0% 50%, 37% 37%);
+            animation: vipTwinkle 2.6s ease-in-out infinite;
+        }
+        .vip-hero::before { width: 16px; height: 16px; top: 26px; right: 30%; }
+        .vip-hero::after { width: 10px; height: 10px; top: 64px; right: 16%; animation-delay: 1.3s; }
+        @keyframes vipTwinkle {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+            50% { transform: scale(0.55) rotate(45deg); opacity: 0.35; }
         }
         .vip-hero-icon {
-            width: 64px;
-            height: 64px;
+            width: 84px;
+            height: 84px;
             display: grid;
             place-items: center;
             flex-shrink: 0;
+            background: rgba(255,255,255,0.10);
+            border-radius: 24px;
+            animation: vipFloat 2.6s ease-in-out infinite;
+            z-index: 1;
         }
         .vip-hero-icon img {
-            width: 100%;
-            height: 100%;
+            width: 62px;
+            height: 62px;
             object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+        }
+        @keyframes vipFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-7px); }
+        }
+        .vip-hero-mascot {
+            position: absolute;
+            right: -14px;
+            bottom: -18px;
+            width: 128px;
+            height: auto;
+            animation: vipFloat 2.6s ease-in-out infinite 0.5s;
+            pointer-events: none;
         }
         .vip-inline-icon {
             width: 22px;
@@ -2322,24 +2365,35 @@
             vertical-align: -5px;
             margin-right: 3px;
         }
-        .vip-hero-text { flex: 1; }
+        .vip-hero-text { flex: 1; min-width: 0; z-index: 1; }
         .vip-hero-title {
-            font-size: 22px;
+            font-size: 25px;
             font-weight: 1000;
             color: #ffffff;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.22);
+            line-height: 1.2;
         }
         .vip-hero-sub {
             font-size: 13px;
             font-weight: 800;
-            color: rgba(255,255,255,0.92);
-            margin-top: 4px;
+            color: rgba(255,255,255,0.88);
+            margin-top: 5px;
+            max-width: 210px;
         }
         /* 已开通状态：显示到期时间 */
         .vip-hero.activated .vip-hero-title::after {
             content: ' · 已开通';
             font-size: 14px;
             font-weight: 700;
+            color: var(--gold);
+        }
+        /* 波浪分割:hero 底部弧形过渡到米色内容区 */
+        .vip-hero-wave {
+            display: block;
+            width: 100%;
+            height: 26px;
+            margin-top: -1px;
+            margin-bottom: 18px;
         }
 
         /* 区块通用 */
@@ -2351,44 +2405,63 @@
             margin-bottom: 10px;
         }
 
-        /* 权益对比表 */
+        /* 权益对比表:描边卡 + VIP 列金色衬底 */
         .vip-benefits {
             background: #ffffff;
-            border-radius: 14px;
-            padding: 6px 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 2px solid #efe6d2;
+            border-radius: 16px;
+            padding: 4px 0;
+            overflow: hidden;
         }
         .vip-benefit-header,
         .vip-benefit-row {
             display: grid;
             grid-template-columns: 1.4fr 1fr 1fr;
             align-items: center;
-            padding: 11px 0;
+            padding: 11px 14px 11px;
             border-bottom: 1px solid #f1ece2;
+            position: relative;
         }
         .vip-benefit-header {
             font-size: 12px;
             font-weight: 1000;
             color: var(--muted);
         }
+        /* VIP 列整列金色衬底 */
+        .vip-benefit-header::after,
+        .vip-benefit-row::after {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; right: 0;
+            width: 29.5%;
+            background: linear-gradient(180deg, #fff8e1 0%, #fff3cf 100%);
+            z-index: 0;
+            border-left: 1px solid #f3e4b8;
+            pointer-events: none;
+        }
         .vip-benefit-row:last-child { border-bottom: none; }
+        .vip-benefit-row:last-child::after { border-radius: 0 0 14px 14px; }
         .vip-benefit-name {
             font-size: 13px;
             font-weight: 800;
             color: var(--dark);
+            position: relative;
+            z-index: 1;
         }
         .vip-benefit-col {
             font-size: 13px;
             font-weight: 700;
             color: var(--muted);
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
         .vip-benefit-col-vip {
-            color: #b8860b;
+            color: #a8720a;
             font-weight: 1000;
         }
 
-        /* 套餐卡片 */
+        /* 套餐卡片:选中金框 + 角标 */
         .vip-plans {
             display: grid;
             grid-template-columns: 1fr 1.15fr 1fr;
@@ -2396,10 +2469,10 @@
         }
         .vip-plan-card {
             background: #ffffff;
-            border-radius: 14px;
-            padding: 18px 10px;
+            border-radius: 16px;
+            padding: 20px 8px 16px;
             text-align: center;
-            border: 2px solid #f0e6d0;
+            border: 2px solid #eee4cf;
             cursor: pointer;
             transition: transform 120ms ease, border-color 160ms ease, box-shadow 160ms ease;
             position: relative;
@@ -2409,13 +2482,30 @@
             gap: 4px;
         }
         .vip-plan-card:active { transform: scale(0.97); }
-        .vip-plan-card.featured {
-            border-color: #FFA500;
-            box-shadow: 0 4px 16px rgba(255, 165, 0, 0.22);
+        .vip-plan-card.selected {
+            border-color: var(--gold-deep);
+            box-shadow: 0 4px 0 rgba(214, 169, 0, 0.35), 0 10px 22px rgba(255, 200, 0, 0.18);
         }
+        .vip-plan-card .vip-plan-check {
+            position: absolute;
+            top: -9px;
+            right: -7px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 1000;
+            display: none;
+            place-items: center;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .vip-plan-card.selected .vip-plan-check { display: grid; }
         .vip-plan-label {
             position: absolute;
-            top: -8px;
+            top: -9px;
             left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(135deg, #FFD700, #FFA500);
@@ -2453,6 +2543,36 @@
             font-size: 12px;
             font-weight: 1000;
             color: #FFA500;
+        }
+
+        /* 底部固定 CTA:多邻国 3D 主按钮 */
+        .vip-sticky-cta {
+            position: fixed;
+            left: 50%;
+            bottom: 100px;
+            transform: translateX(-50%);
+            width: min(440px, calc(100% - 32px));
+            max-width: 440px;
+            z-index: 120;
+        }
+        .vip-cta-btn {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 14px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 1000;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 0 var(--primary-dark), 0 10px 22px rgba(88, 204, 2, 0.28);
+            cursor: pointer;
+            transition: transform 80ms ease, box-shadow 80ms ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .vip-cta-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 var(--primary-dark), 0 4px 10px rgba(88, 204, 2, 0.28);
         }
 
         /* 底部说明 */
@@ -7073,13 +7193,21 @@
                 <h2>会员中心</h2>
             </div>
 
-            <!-- 顶部会员卡片区（动态） -->
-            <div class="vip-hero" id="vipHero">
-                <div class="vip-hero-icon"><img src="assets/generated-icons/vip-crown.png" alt=""></div>
-                <div class="vip-hero-text">
-                    <div class="vip-hero-title" id="vipHeroTitle">开通会员</div>
-                    <div class="vip-hero-sub" id="vipHeroSub">解锁全部词库 · 享无限道具</div>
+            <!-- 顶部会员 hero:深蓝渐变 + IP 浮动 + 波浪底边(多邻国 Super 风) -->
+            <div class="vip-hero-wrap">
+                <div class="vip-hero" id="vipHero">
+                    <div class="vip-hero-icon"><img src="assets/generated-icons/vip-crown.png" alt=""></div>
+                    <div class="vip-hero-text">
+                        <div class="vip-hero-title" id="vipHeroTitle">开通会员</div>
+                        <div class="vip-hero-sub" id="vipHeroSub">解锁全部词库 · 享无限道具</div>
+                    </div>
+                    <img class="vip-hero-mascot" src="assets/IP素材.png" alt="" onerror="this.style.display='none'">
                 </div>
+                <svg class="vip-hero-wave" viewBox="0 0 390 26" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M0,0 H390 V8 C320,26 250,26 195,18 C130,8 60,22 0,14 Z" fill="var(--navy-2)" opacity="0.35"/>
+                    <path d="M0,0 H390 V4 C310,20 240,22 185,14 C120,5 55,18 0,10 Z" fill="#3e5fb8" opacity="0.5"/>
+                    <path d="M0,0 H390 V0 C300,14 210,16 160,10 C100,3 45,12 0,6 Z" fill="var(--navy)"/>
+                </svg>
             </div>
 
             <!-- 权益对比表 -->
@@ -7132,6 +7260,11 @@
                 <div>· 订阅自动续费，可随时取消</div>
                 <div>· 已开通会员不再享受免费试用</div>
                 <div class="vip-demo-tip">Demo 环境 · 不接入真实支付</div>
+            </div>
+
+            <!-- 底部固定 CTA(多邻国 3D 主按钮) -->
+            <div class="vip-sticky-cta">
+                <button class="vip-cta-btn" id="vipCtaBtn" onclick="openPay(_vipSelectedPlan)">立即开通</button>
             </div>
         </div>
 
@@ -14189,16 +14322,17 @@
                 heroSub.textContent = '解锁全部词库 · 享无限道具';
             }
 
-            // 套餐卡片
+            // 套餐卡片:点选切换选中态,CTA 统一发起开通
             const plansBox = document.getElementById('vipPlans');
             const planIds = ['quarterly', 'monthly', 'yearly']; // 月卡居中
             plansBox.innerHTML = planIds.map(id => {
                 const p = VIP_PLANS[id];
-                const featuredCls = p.featured ? ' featured' : '';
+                const selectedCls = id === _vipSelectedPlan ? ' selected' : '';
                 const labelHtml = p.label ? `<div class="vip-plan-label">${p.label}</div>` : '';
                 return `
-                    <div class="vip-plan-card${featuredCls}" onclick="openPay('${p.id}')">
+                    <div class="vip-plan-card${selectedCls}" onclick="selectVipPlan('${p.id}')">
                         ${labelHtml}
+                        <div class="vip-plan-check">✓</div>
                         <div class="vip-plan-name">${p.name}</div>
                         <div class="vip-plan-price"><span class="vip-plan-currency">¥</span>${p.price}</div>
                         <div class="vip-plan-unit">${p.unit}</div>
@@ -14206,6 +14340,32 @@
                     </div>
                 `;
             }).join('');
+
+            // 底部 CTA 文案跟随选中套餐
+            const ctaBtn = document.getElementById('vipCtaBtn');
+            if (ctaBtn) {
+                const sel = VIP_PLANS[_vipSelectedPlan];
+                if (sel) ctaBtn.textContent = `${isVip() ? '续费' : '立即开通'} · ¥${sel.price}${sel.unit}`;
+            }
+        }
+
+        // 当前选中的套餐(默认主推月卡)
+        let _vipSelectedPlan = 'monthly';
+
+        function selectVipPlan(planId) {
+            if (!VIP_PLANS[planId]) return;
+            _vipSelectedPlan = planId;
+            SFX.click();
+            renderVipScreen();
+        }
+
+        // Demo 支付入口:直接激活会员(原 openPay 引用缺失,这里补上)
+        function openPay(planId) {
+            const plan = VIP_PLANS[planId];
+            if (!plan) return;
+            activateVip(planId);
+            renderVipScreen();
+            showToast(`已${isVip() ? '开通' : '续费'}「${plan.name}」· Demo 未扣款`, 'success');
         }
 
         // === 单词本功能 ===
