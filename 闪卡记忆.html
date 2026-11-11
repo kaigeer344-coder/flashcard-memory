@@ -602,26 +602,64 @@
             box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
             white-space: nowrap;
         }
+        /* 闪卡 - CapWords 实体卡质感:纸面渐变 + 卡堆层叠 + IP 贴纸 */
         .flashcard {
             min-height: 280px;
             height: 480px;
             padding: 34px 22px 38px;
-            border: 2px solid var(--border);
-            border-radius: 28px;
-            background: #ffffff;
-            box-shadow: 0 8px 0 #e4e4e4;
+            border: 2px solid #ecdfc8;
+            border-radius: 30px;
+            background: linear-gradient(165deg, #fffdf7 0%, #fdf4e1 100%);
+            box-shadow: 0 8px 0 #e6d9bd;
             margin-bottom: 18px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: transform 180ms ease, box-shadow 180ms ease;
+            transition: transform 180ms ease, box-shadow 180ms ease, background 240ms ease, border-color 240ms ease;
             position: relative;
+        }
+        /* 卡堆层叠:底下两张微旋的牌,营造"一沓实体卡"的厚度感 */
+        .flashcard::before,
+        .flashcard::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 30px;
+            border: 2px solid #ece0c9;
+            background: #fdf7e8;
+            z-index: -1;
+        }
+        .flashcard::before { transform: rotate(-2.4deg) translateY(8px); box-shadow: 0 8px 0 #e6d9bd; }
+        .flashcard::after { transform: rotate(1.6deg) translateY(15px); opacity: 0.7; }
+        /* IP 贴纸:斜贴在卡角,像实体卡上的贴纸 */
+        .flashcard-sticker {
+            position: absolute;
+            top: -24px;
+            right: -10px;
+            width: 78px;
+            height: 78px;
+            object-fit: contain;
+            transform: rotate(10deg);
+            filter: drop-shadow(0 4px 5px rgba(0,0,0,0.16));
+            pointer-events: none;
+            z-index: 3;
+            animation: stickerBob 3.2s ease-in-out infinite;
+        }
+        @keyframes stickerBob {
+            0%, 100% { transform: rotate(9deg) translateY(0); }
+            50% { transform: rotate(13deg) translateY(-5px); }
+        }
+        /* 翻面=答案面:换浅绿卡面,物理卡翻面手感 */
+        .flashcard.flipped {
+            background: linear-gradient(165deg, #f4fbe6 0%, #e3f5c4 100%);
+            border-color: #bce28f;
+            box-shadow: 0 8px 0 #c5dfa0;
         }
         .flashcard:hover {
             transform: translateY(-2px);
-            border-color: #dcdcdc;
-            box-shadow: 0 10px 0 #e0e0e0, 0 16px 30px rgba(0,0,0,0.07);
+            border-color: #e0d2b4;
+            box-shadow: 0 10px 0 #e0d4b6, 0 16px 30px rgba(0,0,0,0.07);
         }
         .flashcard .word { color: #1f1f1f; font-size: 44px; font-weight: 1000; line-height: 1.1; margin-bottom: 8px; }
         .flashcard .phonetic { color: #1cb0f6; font-size: 18px; font-weight: 800; margin-bottom: 16px; }
@@ -1000,20 +1038,20 @@
             box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
         }
         .tc-task-card {
-            background: transparent;
-            border: none;
-            border-radius: 0;
-            box-shadow: none;
-            padding: 10px 2px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 3px 0 #e5e5e5;
+            padding: 14px 14px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 14px;
             cursor: pointer;
-            transition: transform 120ms ease;
+            transition: transform 120ms ease, box-shadow 120ms ease;
             -webkit-tap-highlight-color: transparent;
         }
-        .tc-task-card:not(:last-child) { border-bottom: 1px solid #f0f0f0; }
-        .tc-task-card:active { transform: scale(0.98); }
+        .tc-task-card:active { transform: scale(0.98); box-shadow: 0 1px 0 #e5e5e5; }
         .tc-task-card:last-child { margin-bottom: 0; }
         /* 任务左侧图标泡泡 */
         .tc-task-icon {
@@ -1038,10 +1076,11 @@
             background: rgba(88, 204, 2, 0.12);
             color: var(--primary);
         }
+        /* 周末大挑战特色卡:暖金底,与普通任务区分层级 */
         .tc-task-featured {
-            background: transparent;
-            border: none;
-            box-shadow: none;
+            background: linear-gradient(135deg, #fffbe8 0%, #fff1bd 100%);
+            border-color: #f0dc9a;
+            box-shadow: 0 3px 0 #e6cf8a;
         }
         .tc-task-info { flex: 1; min-width: 0; }
         .tc-task-name {
@@ -1891,7 +1930,7 @@
         }
         .profile-header-card {
             position: relative;
-            background: linear-gradient(135deg, #dff5cd 0%, #c9efa6 55%, #b0e882 100%);
+            background: linear-gradient(135deg, #6BDB14 0%, #58CC02 55%, #43A003 100%);
             border-radius: 0;
             padding: 22px 20px 18px;
             /* 打破屏内边距:左右贴边、顶部贴齐页面 */
@@ -1974,10 +2013,10 @@
             padding: 0;
             box-shadow: none;
         }
-        .profile-header-xp .xp-progress-label { color: rgba(45,110,19,0.82); }
-        .profile-header-xp .xp-progress-value { color: #2d6e13; }
-        .profile-header-xp .xp-progress-bar { background: rgba(88,204,2,0.25); }
-        .profile-header-xp .xp-progress-fill { background: #58cc02; box-shadow: none; }
+        .profile-header-xp .xp-progress-label { color: rgba(255,255,255,0.88); }
+        .profile-header-xp .xp-progress-value { color: #ffffff; }
+        .profile-header-xp .xp-progress-bar { background: rgba(255,255,255,0.32); }
+        .profile-header-xp .xp-progress-fill { background: #ffffff; box-shadow: none; }
         .profile-header-content {
             display: flex;
             align-items: center;
@@ -2108,10 +2147,10 @@
         .profile-level {
             font-size: 22px;
             font-weight: 1000;
-            color: #2d6e13;
+            color: #ffffff;
             margin-bottom: 6px;
             letter-spacing: -0.3px;
-            text-shadow: none;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.16);
         }
         .profile-level-badge {
             display: inline-flex;
@@ -2120,7 +2159,7 @@
             padding: 4px 12px;
             border-radius: 999px;
             background: #ffffff;
-            color: #58cc02;
+            color: #43a003;
             font-size: 13px;
             font-weight: 900;
             box-shadow: 0 2px 0 rgba(0,0,0,0.1);
@@ -2927,10 +2966,15 @@
             60% { transform: translateX(-5px) rotate(-1deg); }
             80% { transform: translateX(5px) rotate(1deg); }
         }
+        /* 配对成功:NYT Connections 式分类色揭示——整对染成类别色再消隐 */
         .match-card.matched {
-            animation: cardMatched 360ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            animation: cardMatched 380ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             pointer-events: none;
+            background: var(--match-color, var(--primary));
+            border-color: var(--match-color, var(--primary));
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18);
         }
+        .match-card.matched .card-text { color: #ffffff !important; }
         .match-card.placeholder-card {
             visibility: hidden;
             pointer-events: none;
@@ -3145,7 +3189,7 @@
             top: 0; bottom: 0;
             width: 100%;
             max-width: 520px;
-            background: rgba(28, 28, 28, 0.92);
+            background: linear-gradient(170deg, #d9f2c3 0%, #f4fbf0 45%, #eaf7ff 100%);
             display: none;
             align-items: center; justify-content: center;
             z-index: 4000;
@@ -4893,6 +4937,58 @@
             height: 10px;
             color: #FFB800;
         }
+        /* Flighty 式倒数 hero:大数字 + 进度环 */
+        .pd-hero {
+            margin: 12px 14px 4px;
+            padding: 18px 20px;
+            border-radius: 24px;
+            border: 2px solid #cdeead;
+            background: linear-gradient(135deg, #edffd9 0%, #d7f8b8 55%, #c9f29e 100%);
+            box-shadow: 0 4px 0 #b9e38c;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+        .pd-hero-label {
+            font-size: 13px;
+            font-weight: 900;
+            color: #3d7a0f;
+            letter-spacing: 0.3px;
+        }
+        .pd-hero-count {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .pd-hero-num {
+            font-size: 52px;
+            font-weight: 1000;
+            color: var(--primary-dark);
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        .pd-hero-unit { font-size: 15px; font-weight: 900; color: #3d7a0f; }
+        .pd-hero-meta { margin-top: 6px; font-size: 12px; font-weight: 700; color: #5f9b30; }
+        .pd-hero-ring { position: relative; width: 74px; height: 74px; flex-shrink: 0; }
+        .pd-hero-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .pd-ring-bg { fill: none; stroke: rgba(88, 204, 2, 0.18); stroke-width: 7; }
+        .pd-ring-fill {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 7;
+            stroke-linecap: round;
+        }
+        .pd-hero-pct {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            font-size: 15px;
+            font-weight: 1000;
+            color: var(--primary-dark);
+        }
         .v2lm-current-marker {
             position: absolute;
             top: -46px;
@@ -5531,9 +5627,30 @@
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
-        /* 设置页 section 标题放大到 24px:仅「学习设置」「关于」两个,不影响其他实例 */
-        #settingsV2Container .settings-v2-section:nth-child(1) .settings-v2-section-title,
-        #settingsV2Container .settings-v2-section:nth-child(2) .settings-v2-section-title {
+        /* iOS 设置页顶部用户卡 */
+        .settings-profile-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            padding: 16px 18px !important;
+        }
+        .settings-profile-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e8f5d8;
+            border: 2px solid #d8efb8;
+            flex-shrink: 0;
+        }
+        .settings-profile-info { flex: 1; min-width: 0; }
+        .settings-profile-name { font-size: 19px; font-weight: 900; color: var(--dark); }
+        .settings-profile-meta { margin-top: 3px; font-size: 12.5px; font-weight: 700; color: var(--muted); }
+        .settings-profile-chevron { width: 20px; height: 20px; color: #c7c7cc; flex-shrink: 0; }
+        /* 设置页 section 标题放大到 24px:「学习设置」「关于」(用户卡为第 1 个 section 后顺延) */
+        #settingsV2Container .settings-v2-section:nth-child(2) .settings-v2-section-title,
+        #settingsV2Container .settings-v2-section:nth-child(3) .settings-v2-section-title {
             font-size: 24px;
         }
         /* 设置页「每组单词数」标题放大到 24px */
@@ -6485,6 +6602,26 @@
             gap: 8px;
             margin: 0 18px;
         }
+        /* Crouton 式词库概览卡:四态词数 */
+        .wb-summary {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding: 14px 6px;
+            border: 2px solid var(--border);
+            border-radius: 18px;
+            background: var(--surface);
+            box-shadow: 0 3px 0 #e5e5e5;
+        }
+        .wb-summary-cell {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        .wb-summary-num { font-size: 21px; font-weight: 1000; color: var(--dark); line-height: 1.1; }
+        .wb-summary-label { font-size: 11px; font-weight: 800; color: var(--muted); }
         .wordbook-item {
             display: flex;
             align-items: center;
@@ -6859,6 +6996,7 @@
                 </div>
             </div>
             <div class="flashcard" id="flashcard" onclick="flipCard()">
+                <img class="flashcard-sticker" src="assets/progress/IP形象-test.png" alt="" onerror="this.style.display='none'">
                 <div class="card-word-row">
                     <div class="word" id="cardWord"></div>
                     <div id="familiarityIndicator"></div>
@@ -10993,7 +11131,28 @@
                     </div>
                 </div>`;
 
+            // Flighty 式倒数 hero:大数字倒计时 + 进度环,先于地图给出行程感
+            const daysLeft = Math.max(0, Math.ceil((new Date(plan.examDate + 'T23:59:59') - Date.now()) / 86400000));
+            const doneCnt = completed.length;
+            const planPct = Math.min(100, Math.round((doneCnt / total) * 100));
+            const heroHTML = `
+                <div class="pd-hero">
+                    <div class="pd-hero-main">
+                        <div class="pd-hero-label">${plan.name} · ${plan.examDate}</div>
+                        <div class="pd-hero-count"><span class="pd-hero-num">${daysLeft}</span><span class="pd-hero-unit">天后考试</span></div>
+                        <div class="pd-hero-meta">第 ${current} / ${total} 关 · 每日 ${plan.dailyNewWords || 0} 新词</div>
+                    </div>
+                    <div class="pd-hero-ring" role="img" aria-label="计划完成 ${planPct}%">
+                        <svg viewBox="0 0 64 64">
+                            <circle class="pd-ring-bg" cx="32" cy="32" r="26"/>
+                            <circle class="pd-ring-fill" cx="32" cy="32" r="26" stroke-dasharray="${(planPct * 1.634).toFixed(1)} 163.4"/>
+                        </svg>
+                        <span class="pd-hero-pct">${planPct}%</span>
+                    </div>
+                </div>`;
+
             bodyEl.innerHTML = `
+                ${heroHTML}
                 ${mapHTML}
                 <div id="levelMapScrollAnchor" style="height:0"></div>
 
@@ -12805,9 +12964,14 @@
             state.gameSelected = [];
         }
 
+        // 配对揭示色(Connections 四类色循环):每消一对染成对应类别色
+        const MATCH_COLORS = ['#58cc02', '#1cb0f6', '#ffc800', '#ce82ff'];
         function markMatched(el1, el2) {
+            const color = MATCH_COLORS[(state.gameMatchedPairs || 0) % MATCH_COLORS.length];
             el1.classList.remove('selected');
             el2.classList.remove('selected');
+            el1.style.setProperty('--match-color', color);
+            el2.style.setProperty('--match-color', color);
             spawnSparkle(el1);
             spawnSparkle(el2);
             el1.classList.add('matched');
@@ -14213,7 +14377,20 @@
                         </div>
                     </div>`;
 
-                v2El.innerHTML = `${modeHTML}${modeSpecificHTML}</div>${aboutHTML}${dataHTML}`;
+                // iOS 设置页顶部用户卡:头像+等级+资产摘要,点击进个人中心
+                const levelInfo = getLevelByScore(progress.totalScore);
+                const avatarSrc = localStorage.getItem('wordmatch_avatar') || 'assets/generated-icons/nav-profile.png';
+                const profileCardHTML = `
+                    <div class="settings-v2-section settings-profile-card" onclick="SFX.click();showScreen('profileScreen')" role="button" tabindex="0" aria-label="进入个人中心">
+                        <img class="settings-profile-avatar" src="${avatarSrc}" alt="" onerror="this.src='assets/generated-icons/nav-profile.png'">
+                        <div class="settings-profile-info">
+                            <div class="settings-profile-name">${levelInfo.title}</div>
+                            <div class="settings-profile-meta">Lv.${levelInfo.level} · 金币 ${progress.coins} · 查看个人中心</div>
+                        </div>
+                        <svg class="settings-profile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>`;
+
+                v2El.innerHTML = `${profileCardHTML}${modeHTML}${modeSpecificHTML}</div>${aboutHTML}${dataHTML}`;
             } catch (e) {
                 console.error('renderSettingsScreen V2 失败:', e);
             }
@@ -14630,7 +14807,19 @@
                 ? `<button class="btn-secondary" style="margin-top:12px;" onclick="loadMoreWordbook()">加载更多（剩余 ${items.length - end} 词）</button>`
                 : (items.length > wordbookState.pageSize ? '<div style="text-align:center;color:var(--muted);font-size:13px;padding:16px;">已显示全部</div>' : '');
 
-            document.getElementById('wordbookList').innerHTML = html + loadMoreHtml;
+            // Crouton 式概览卡:当前词库四态词数一览
+            const masteredW = items.filter(i => wordFsrsProgress(i.mem) >= 100).length;
+            const learningW = items.filter(i => { const p = wordFsrsProgress(i.mem); return p > 0 && p < 100; }).length;
+            const newW = items.length - masteredW - learningW;
+            const summaryHTML = `
+                <div class="wb-summary">
+                    <div class="wb-summary-cell"><span class="wb-summary-num">${items.length}</span><span class="wb-summary-label">总词数</span></div>
+                    <div class="wb-summary-cell"><span class="wb-summary-num" style="color:#1cb0f6">${learningW}</span><span class="wb-summary-label">学习中</span></div>
+                    <div class="wb-summary-cell"><span class="wb-summary-num" style="color:#58cc02">${masteredW}</span><span class="wb-summary-label">已掌握</span></div>
+                    <div class="wb-summary-cell"><span class="wb-summary-num" style="color:#afafaf">${newW}</span><span class="wb-summary-label">未学</span></div>
+                </div>`;
+
+            document.getElementById('wordbookList').innerHTML = summaryHTML + html + loadMoreHtml;
         }
 
         function loadMoreWordbook() {

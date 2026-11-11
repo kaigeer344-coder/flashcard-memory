@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>闪卡记忆 · iPhone 样机预览</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SF Pro Rounded', sans-serif;
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #e8f7df 0%, transparent 55%),
+      radial-gradient(1000px 500px at 90% 110%, #d8f0ff 0%, transparent 50%),
+      linear-gradient(160deg, #f6f7f9 0%, #eef0f3 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+    padding: 22px 12px 34px;
+    overflow-x: hidden;
+  }
+  .stage-head { text-align: center; margin-bottom: 14px; }
+  .stage-head h1 { font-size: 17px; font-weight: 800; color: #3c3c3c; letter-spacing: .3px; }
+  .stage-head p { font-size: 12px; color: #8a8a8a; margin-top: 4px; }
+
+  /* ===== 页面切换器 ===== */
+  .switcher {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    max-width: 560px; margin-bottom: 20px;
+  }
+  .switcher button {
+    border: 2px solid #e2e2e2; background: #fff; color: #555;
+    font: 700 12.5px/1 -apple-system, 'PingFang SC', sans-serif;
+    padding: 9px 13px; border-radius: 999px; cursor: pointer;
+    box-shadow: 0 2px 0 #e2e2e2; transition: all .12s ease;
+  }
+  .switcher button:hover { border-color: #58cc02; color: #46a302; }
+  .switcher button.active {
+    background: #58cc02; border-color: #58cc02; color: #fff;
+    box-shadow: 0 2px 0 #46a302;
+  }
+
+  /* ===== iPhone 样机 ===== */
+  .device {
+    position: relative;
+    width: 412px; height: 872px;
+    background: linear-gradient(155deg, #4a4a4f 0%, #17171a 45%, #3a3a3f 100%);
+    border-radius: 58px;
+    padding: 11px;
+    box-shadow:
+      0 0 0 2px #2b2b30,
+      0 30px 60px rgba(0,0,0,0.28),
+      0 8px 22px rgba(0,0,0,0.18),
+      inset 0 0 4px rgba(255,255,255,0.15);
+  }
+  /* 侧边按键 */
+  .device::before { /* 电源键 */
+    content: ''; position: absolute; right: -2.5px; top: 200px;
+    width: 3px; height: 88px; border-radius: 2px;
+    background: linear-gradient(90deg, #3c3c42, #26262b);
+  }
+  .btn-vol-up, .btn-vol-down, .btn-action {
+    position: absolute; left: -2.5px; width: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, #26262b, #3c3c42);
+  }
+  .btn-action { top: 148px; height: 34px; }
+  .btn-vol-up { top: 196px; height: 58px; }
+  .btn-vol-down { top: 262px; height: 58px; }
+
+  .screen-bezel {
+    position: relative; width: 100%; height: 100%;
+    background: #000; border-radius: 47px; overflow: hidden;
+  }
+  .screen-bezel iframe {
+    width: 100%; height: calc(100% - 47px); border: 0; display: block;
+    margin-top: 47px; /* 模拟 iPhone 安全区,内容避开灵动岛+状态栏 */
+    background: #fff;
+  }
+  /* 灵动岛 */
+  .dynamic-island {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    width: 122px; height: 34px; background: #000; border-radius: 20px;
+    z-index: 30; pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  .dynamic-island::after { /* 前摄 */
+    content: ''; position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%); width: 10px; height: 10px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #1c2a3a 0%, #05070a 65%);
+  }
+  /* Home 指示条 */
+  .home-indicator {
+    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+    width: 134px; height: 5px; border-radius: 3px;
+    background: rgba(0,0,0,0.85); z-index: 30; pointer-events: none;
+    mix-blend-mode: normal;
+  }
+  .status-bar {
+    position: absolute; top: 0; left: 0; right: 0; height: 52px;
+    z-index: 29; pointer-events: none;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 18px 30px 0 34px;
+  }
+  .status-bar .time { font: 700 15px/1 -apple-system, sans-serif; color: #1a1a1a; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+  .status-bar .icons svg { display: block; }
+
+  .device-name { margin-top: 16px; font-size: 11.5px; color: #9a9a9a; font-weight: 600; letter-spacing: .4px; }
+</style>
+</head>
+<body>
+<div class="stage-head">
+  <h1>闪卡记忆 · iOS 重设计预览</h1>
+  <p>iPhone 15 Pro 390×844 · 分支 feature/ios-app-redesign</p>
+</div>
+<div class="switcher" id="switcher"></div>
+
+<div class="device">
+  <span class="btn-action"></span><span class="btn-vol-up"></span><span class="btn-vol-down"></span>
+  <div class="screen-bezel">
+    <div class="status-bar">
+      <span class="time" id="sbTime">9:41</span>
+      <span class="icons">
+        <svg width="18" height="12" viewBox="0 0 18 12"><g fill="#1a1a1a"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="4.5" y="5" width="3" height="7" rx="1"/><rect x="9" y="2.5" width="3" height="9.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></g></svg>
+        <svg width="17" height="12" viewBox="0 0 17 12"><path fill="#1a1a1a" d="M8.5 9.6a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2zM8.5 6.2c1.9 0 3.6.7 4.9 1.9l-1.4 1.5a5 5 0 0 0-7 0L3.6 8.1a7 7 0 0 1 4.9-1.9zm0-3.4c2.9 0 5.6 1.1 7.6 3L14.7 7.3a9 9 0 0 0-12.4 0L.9 5.8a11.2 11.2 0 0 1 7.6-3z"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="20" height="11" rx="3" fill="none" stroke="#1a1a1a" stroke-opacity=".5"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="#1a1a1a"/><path d="M22.5 4v4a2 2 0 0 0 0-4z" fill="#1a1a1a" fill-opacity=".5"/></svg>
+      </span>
+    </div>
+    <div class="dynamic-island"></div>
+    <iframe id="app" src="闪卡记忆.html"></iframe>
+    <div class="home-indicator"></div>
+  </div>
+</div>
+<div class="device-name">iPhone 15 Pro · 深空黑</div>
+
+<script>
+// ===== 种子数据:跳过引导/打卡弹层 =====
+localStorage.setItem('wordmatch_onboarded', '1');
+localStorage.setItem('wordmatch_learning_version', '2');
+localStorage.setItem('wordmatch_streak', JSON.stringify({
+  count: 12, lastDate: new Date().toISOString().slice(0,10), rewardClaimed: true
+}));
+localStorage.setItem('wordmatch_settings', JSON.stringify({
+  mode: 'free', activeRoleId: null, activeBookId: 'cet4',
+  dailyTarget: 20, defaultView: 'core', showContribution: true,
+  reminder: {dailyEnabled:true, dailyTime:'20:00', reviewEnabled:true, examCountdown:true, streakProtection:true},
+  audio: {autoPlay:true, speed:'normal', accent:'us', volume:0.8},
+  theme: 'default', fontSize: 'standard'
+}));
+
+// ===== 页面清单:label + 注入表达式 =====
+var SCREENS = [
+  ['学习地图', "showHomeScreen()"],
+  ['闪卡学习', "startLearning()"],
+  ['配对游戏', "state.currentWords=[{en:'apple',cn:'苹果',wordId:'w1'},{en:'banana',cn:'香蕉',wordId:'w2'},{en:'cherry',cn:'樱桃',wordId:'w3'},{en:'grape',cn:'葡萄',wordId:'w4'},{en:'melon',cn:'甜瓜',wordId:'w5'},{en:'peach',cn:'桃子',wordId:'w6'},{en:'lemon',cn:'柠檬',wordId:'w7'},{en:'mango',cn:'芒果',wordId:'w8'}];startGame()"],
+  ['结果页', "navigateToScreen('completionScreen')"],
+  ['计划详情', "try{LearningSystem.updateSettings({mode:'sprint'});var p=LearningSystem.getActivePlan()||LearningSystem.createSprintPlan('cet4','2026-06-15',30);}catch(e){}renderPlanDetail();showScreen('planDetailScreen')"],
+  ['单词本', "if(!wordbookAllItems.length){var mk=function(i,en,cn,f){return{word:{en:en,cn:cn,phonetic:'/'+en+'/'},mem:{status:f>=5?'mastered':(f>0?'learning':'new'),familiarity:f,lastReview:f>0?Date.now()-86400000:null,reviewCount:f*2,correctCount:f*2-1,consecutiveCorrect:f,lapseCount:0,stability:f*8,difficulty:3,retrievability:f/5,nextReview:Date.now()+86400000*(f||1)},level:'cet4',index:i}};wordbookAllItems=[mk(0,'abandon','放弃',5),mk(1,'ability','能力',4),mk(2,'absorb','吸收',3),mk(3,'abstract','抽象的',2),mk(4,'academic','学术的',1),mk(5,'access','通道',4),mk(6,'achieve','实现',5),mk(7,'acquire','获得',2),mk(8,'adapt','适应',0),mk(9,'admire','钦佩',3),mk(10,'advocate','提倡',1),mk(11,'ancient','古老的',4)];}navigateToScreen('wordbookScreen')"],
+  ['任务中心', "navigateToScreen('statsScreen')"],
+  ['个人中心', "navigateToScreen('profileScreen')"],
+  ['设置', "navigateToScreen('settingsScreen')"],
+  ['会员中心', "navigateToScreen('vipScreen')"],
+  ['streak弹层', "showStreakReward(true)"],
+  ['商店弹层', "openShop()"],
+];
+
+var app = document.getElementById('app');
+var sw = document.getElementById('switcher');
+var appReady = false;
+
+SCREENS.forEach(function (s, i) {
+  var b = document.createElement('button');
+  b.textContent = s[0];
+  b.onclick = function () { go(i); };
+  sw.appendChild(b);
+});
+
+function go(i) {
+  var btns = sw.children;
+  for (var k = 0; k < btns.length; k++) btns[k].classList.toggle('active', k === i);
+  if (!appReady) return;
+  try { app.contentWindow.eval(SCREENS[i][1]); }
+  catch (e) { console.warn('switch fail', e); }
+}
+
+app.addEventListener('load', function () {
+  setTimeout(function () {
+    appReady = true;
+    if (new URLSearchParams(location.search).get('nofx')) {
+      try {
+        var st = app.contentWindow.document.createElement('style');
+        st.textContent = '*{animation:none!important;transition:none!important}';
+        app.contentWindow.document.head.appendChild(st);
+      } catch (e) {}
+    }
+    var q = new URLSearchParams(location.search).get('screen');
+    var idx = q ? SCREENS.findIndex(s => s[0] === q || s[1].includes(q)) : 0;
+    go(idx >= 0 ? idx : 0);
+  }, 900);
+});
+</script>
+</body>
+</html>
